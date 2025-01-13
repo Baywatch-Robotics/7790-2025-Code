@@ -9,27 +9,29 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 
 
 public class Arm extends SubsystemBase {
 
-  private final DCMotor armGearbox = DCMotor.getNeo550(1);
 
     private SparkMax armMotor;
 
     private final ProfiledPIDController pidController = new ProfiledPIDController(kP, kI, kD, MOVEMENT_CONSTRAINTS);
 
+    private final double estimateMOI();
+
     private final SingleJointedArmSim armSim =
       new SingleJointedArmSim(
-        armGearbox,
-          Constants.ArmGearboxRatio,
-          Constants.ArmGearboxRatio,
-          Constants.ArmGearboxRatio,
-          Constants.ArmGearboxRatio,
-          Constants.ArmGearboxRatio,
-          true,
-          0,
-          0.01,
-          0.0);
+        ArmConstants.armGearboxMotor,
+      ArmConstants.armGearboxRatio,
+      ArmConstants.armGearboxRatio,
+      ArmConstants.armGearboxRatio,
+      ArmConstants.armGearboxRatio,
+      ArmConstants.armGearboxRatio,
+      true,
+      0,
+      0,
+      0.0);
 
 }

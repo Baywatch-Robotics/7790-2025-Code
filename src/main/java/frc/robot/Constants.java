@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Millimeters;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -26,6 +29,9 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(22.1);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
+
+
+
 //  public static final class AutonConstants
 //  {
 //
@@ -35,12 +41,11 @@ public final class Constants
 
   public static final class DrivebaseConstants
   {
-
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static class OperatorConstants
+  public static final class OperatorConstants
   {
 
     // Joystick Deadband
@@ -48,5 +53,17 @@ public final class Constants
     public static final double LEFT_Y_DEADBAND = 0.1;
     public static final double RIGHT_X_DEADBAND = 0.1;
     public static final double TURN_CONSTANT    = 6;
+  }
+
+  public static final class ArmConstants{
+
+    public final static DCMotor armGearboxMotor = DCMotor.getNEO(1);
+    
+    public final static int armGearboxRatio = 25;
+
+    public final static double armLength = Units.inchesToMeters(21);
+
+    public final static double armMass = Units.lbsToKilograms(8);
+    
   }
 }
