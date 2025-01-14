@@ -55,15 +55,34 @@ public final class Constants
     public static final double TURN_CONSTANT    = 6;
   }
 
-  public static final class ArmConstants{
 
-    public final static DCMotor armGearboxMotor = DCMotor.getNEO(1);
+
+  
+  public static final class BallArmConstants{
     
-    public final static int armGearboxRatio = 25;
+  }
 
-    public final static double armLength = Units.inchesToMeters(21);
+  public static final class ClimberConstants{
+    
+  }
+  
+  public static final class ElevatorConstants{
+    
+  }
 
-    public final static double armMass = Units.lbsToKilograms(8);
+  public static final class FunnelConstants{
+    
+  }
+
+  public static final class LEDConstants{
+    
+  }
+
+  public static final class ShooterArmConstants{
+    
+  }
+
+  public static final class ShooterPivotConstants{
     
   }
 }
