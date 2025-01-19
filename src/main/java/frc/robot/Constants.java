@@ -64,12 +64,12 @@ public final class Constants
   
   public static final class ElevatorConstants{
 
-    public static final int elevatorID = 0;
+    public static final int ID = 0;
 
-    public static final float elevatorMaxSpeed = 0.1f;
+    public static final float MaxSpeed = 0.1f;
     
-    public static final float elevatorMin = 0.0f;
-    public static final float elevatorMax = 0.0f;
+    public static final float Min = 0.0f;
+    public static final float Max = 0.0f;
 
     public static final float L4Pose = 0.0f;
     public static final float L3Pose = 0.0f;
@@ -77,10 +77,12 @@ public final class Constants
     public static final float L1Pose = 0.0f;
 
 
-    public static final float elevatorP = 0.0f;
-    public static final float elevatorI = 0.0f;
-    public static final float elevatorD = 0.0f;
-    public static final float elevatorFF = 0.0f;
+    public static final float P = 0.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    public static final float maxVelocity = 2100;
+    public static final float maxAcceleration = 3000;
+    public static final float allowedClosedLoopError = .5f;
   }
 
   public static final class FunnelConstants{
