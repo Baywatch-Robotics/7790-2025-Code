@@ -19,10 +19,10 @@ import swervelib.math.Matter;
 public final class Constants
 {
 
-  public static final double ROBOT_MASS = Units.lbsToKilograms(110); 
+  public static final float ROBOT_MASS = (float) Units.lbsToKilograms(110); 
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
-  public static final double LOOP_TIME  = 0.13; //s, 20ms + 110ms sprk max velocity lag
-  public static final double MAX_SPEED  = Units.feetToMeters(22.1);
+  public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms sprk max velocity lag
+  public static final float MAX_SPEED  = (float) Units.feetToMeters(22.1);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
 
@@ -38,17 +38,17 @@ public final class Constants
   public static final class DrivebaseConstants
   {
     // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
+    public static final float WHEEL_LOCK_TIME = 10f; // seconds
   }
 
   public static final class OperatorConstants
   {
 
     // Joystick Deadband
-    public static final double DEADBAND        = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
-    public static final double TURN_CONSTANT    = 6;
+    public static final float DEADBAND        = 0.1f;
+    public static final float LEFT_Y_DEADBAND = 0.1f;
+    public static final float RIGHT_X_DEADBAND = 0.1f;
+    public static final float TURN_CONSTANT    = 6f;
   }
 
 
@@ -63,7 +63,22 @@ public final class Constants
   }
   
   public static final class ElevatorConstants{
+
+    public static final int elevatorID = 0;
+
+    public static final float elevatorMaxSpeed = 0.1f;
     
+    public static final float minimumExtension = 0.0f;
+    public static final float maximumExtension = 0.0f;
+
+
+    public static final float elevatorP = 0.0f;
+    public static final float elevatorI = 0.0f;
+    public static final float elevatorD = 0.0f;
+    public static final float elevatorFF = 0.0f;
+
+
+  
   }
 
   public static final class FunnelConstants{
