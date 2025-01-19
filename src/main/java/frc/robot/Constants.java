@@ -68,17 +68,19 @@ public final class Constants
 
     public static final float elevatorMaxSpeed = 0.1f;
     
-    public static final float minimumExtension = 0.0f;
-    public static final float maximumExtension = 0.0f;
+    public static final float elevatorMin = 0.0f;
+    public static final float elevatorMax = 0.0f;
+
+    public static final float L4Pose = 0.0f;
+    public static final float L3Pose = 0.0f;
+    public static final float L2Pose = 0.0f;
+    public static final float L1Pose = 0.0f;
 
 
     public static final float elevatorP = 0.0f;
     public static final float elevatorI = 0.0f;
     public static final float elevatorD = 0.0f;
     public static final float elevatorFF = 0.0f;
-
-
-  
   }
 
   public static final class FunnelConstants{

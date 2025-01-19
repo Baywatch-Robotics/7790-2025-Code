@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -10,11 +9,8 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,20 +27,22 @@ public class Elevator extends SubsystemBase {
         private float elevatorMin;
 
         //List different poses here
+        private float L4Pose;
+        private float L3Pose;
+        private float L2Pose;
+        private float L1Pose;
 
-    
-        private RelativeEncoder elevatorEncoder;
         private SparkClosedLoopController elevatorController;
     
         public Elevator() {
 
             desiredPosition = 0.0f;
     
-            elevatorMax = Constants.ElevatorConstants.maximumExtension;
-            elevatorMin = Constants.ElevatorConstants.minimumExtension;
+            elevatorMax = Constants.ElevatorConstants.elevatorMax;
+            elevatorMin = Constants.ElevatorConstants.elevatorMin;
 
             //different positions for scoring below here
-    
+            
             elevatorMotor = new SparkMax(Constants.ElevatorConstants.elevatorID, SparkLowLevel.MotorType.kBrushless);
             
 
@@ -87,51 +85,49 @@ public class Elevator extends SubsystemBase {
             }
     
             float scale = 0.2f;
-            this.setDesiredPosition(this.desiredPosition + amount * scale);
+            setDesiredPosition(desiredPosition + amount * scale);
          }
     
-        public void setClimb() {
-            this.setDesiredPosition(this.climbPose);     
-            
+        public void setL4() {
+            setDesiredPosition(L4Pose);     
         }
-        public void setGroundPose() {
-            this.setDesiredPosition(this.groundPickupPose);       
+        public void setL3() {
+            setDesiredPosition(L3Pose);       
         }
-        public void setHomeState() {
-            this.setDesiredPosition(this.homeStatePose);
+        public void setL2() {
+            setDesiredPosition(L2Pose);
         }
-    
-        public void setAmpPose() {
-            this.setDesiredPosition(this.ampScorePose);       
+        public void setL1() {
+            setDesiredPosition(L1Pose);       
         }
     
         //Commands
-        public Command homeStateCommand()
-        {
-            Command command = new InstantCommand(()-> this.setHomeState(), this);
-            return command;
-        }
         public Command fullRetractCommand()
         {
             Command command = new InstantCommand(()-> this.setFullRetract(), this);
             return command;
         }
     
-        public Command ampScoreCommand()
+        public Command setL4Command()
         {
-            Command command = new InstantCommand(()-> this.setAmpPose(), this);
+            Command command = new InstantCommand(()-> this.setL4(), this);
             return command;
         }
     
-        public Command groundScoreCommand()
+        public Command setL3Command()
         {
-            Command command = new InstantCommand(()-> this.setGroundPose(), this);
+            Command command = new InstantCommand(()-> this.setL3(), this);
             return command;
         }
     
-        public Command setClimbCommand()
+        public Command setL2Command()
         {
-            Command command = new InstantCommand(()-> this.setClimb(), this);
+            Command command = new InstantCommand(()-> this.setL2(), this);
+            return command;
+        }
+        public Command setL1Command()
+        {
+            Command command = new InstantCommand(()-> this.setL1(), this);
             return command;
         }
         
@@ -139,5 +135,4 @@ public class Elevator extends SubsystemBase {
         public void periodic() {
             elevatorController.setReference(desiredPosition, ControlType.kMAXMotionPositionControl);
         }
-    
     }
