@@ -19,7 +19,7 @@ import swervelib.math.Matter;
 public final class Constants
 {
 
-  public static final float ROBOT_MASS = (float) Units.lbsToKilograms(110); 
+  public static final float ROBOT_MASS = (float) Units.lbsToKilograms(115); 
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms sprk max velocity lag
   public static final float MAX_SPEED  = (float) Units.feetToMeters(22.1);
