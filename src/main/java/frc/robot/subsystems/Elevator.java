@@ -108,9 +108,10 @@ public class Elevator extends SubsystemBase {
             return command;
         }
         
-        private void moveToSetpoint() {
+        private void moveToSetpoint() 
+        {
         elevatorClosedLoopController.setReference(desiredPosition, ControlType.kMAXMotionPositionControl);
-          }
+        }
 
           @Override
           public void periodic(){

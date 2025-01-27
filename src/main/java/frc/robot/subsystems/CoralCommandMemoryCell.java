@@ -20,7 +20,7 @@ public class CoralCommandMemoryCell extends SubsystemBase {
 
     Elastic.Notification selectionNotification = new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, "All selections must be made before locking in.", "Be Better!");
 
-    Elastic.Notification repeatNotification = new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, "You've Already Selected", "Override If Needed");
+    Elastic.Notification repeatNotification = new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, "Error: Position " + position + " on " + side + " has already been used.", "Override If Needed");
 
 
     // Lock-in button action
@@ -33,9 +33,10 @@ public class CoralCommandMemoryCell extends SubsystemBase {
         String command = source + "-" + side + "-" + position;
 
     if (usedPositions.contains(command) && !manualOverride) {
-        System.out.println("Error: Position " + position + " on " + side + " has already been used.");
-    } else {
-        if (!manualOverride) {
+        Elastic.sendNotification(repeatNotification);
+    } 
+    else {
+        if (manualOverride) {
             usedPositions.add(command); // Only add to used positions if not overriding
         }
         System.out.println("Command locked in: " + command);
