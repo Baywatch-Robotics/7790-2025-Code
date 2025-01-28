@@ -54,8 +54,31 @@ public final class Constants
 
 
   
-  public static final class BallArmConstants{
+  public static final class AlgeaArmConstants{
     
+  }
+
+  public static final class AlgeaShooteronstants{
+    
+  }
+
+  public static final class ScopeConstants{
+    
+  }
+  public static final class ShooterConstants{
+    
+  }
+
+  public static final class ShooterArmConstants{
+    
+  }
+
+  public static final class ShooterPivotConstants{
+    
+  }
+
+  public static final class AimingConstants{
+
   }
 
   public static final class ClimberConstants{
@@ -90,14 +113,6 @@ public final class Constants
   }
 
   public static final class LEDConstants{
-    
-  }
-
-  public static final class ShooterArmConstants{
-    
-  }
-
-  public static final class ShooterPivotConstants{
     
   }
 }

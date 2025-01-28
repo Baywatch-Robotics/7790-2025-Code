@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Algea;
 
-public class AlgeaShooter {
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class AlgeaShooter extends SubsystemBase{
     
 }
