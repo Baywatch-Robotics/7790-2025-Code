@@ -342,28 +342,28 @@ public class Vision
      * Left Camera
      */
     LEFT_CAM("left",
-             new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
-             new Translation3d(Units.inchesToMeters(12.056),
-                               Units.inchesToMeters(10.981),
-                               Units.inchesToMeters(8.44)),
+             new Rotation3d(0, Math.toRadians(20), Math.toRadians(-15)),
+             new Translation3d(Units.inchesToMeters(7.83619003),
+                               Units.inchesToMeters(5.32863186),
+                               Units.inchesToMeters(23.13093082)),
              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
     /**
      * Right Camera
      */
     RIGHT_CAM("right",
-              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
-              new Translation3d(Units.inchesToMeters(12.056),
-                                Units.inchesToMeters(-10.981),
-                                Units.inchesToMeters(8.44)),
+              new Rotation3d(0, Math.toRadians(15), Math.toRadians(15)),
+              new Translation3d(Units.inchesToMeters(4.6964293),
+                                Units.inchesToMeters(-8.05244547),
+                                Units.inchesToMeters(16.22614036)),
               VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
     /**
      * Center Camera
      */
-    CENTER_CAM("center",
-               new Rotation3d(0, Units.degreesToRadians(18), 0),
-               new Translation3d(Units.inchesToMeters(-4.628),
-                                 Units.inchesToMeters(-10.687),
-                                 Units.inchesToMeters(16.129)),
+    LIMELIGHT("limelight",
+               new Rotation3d(0, Units.degreesToRadians(-30), -180),
+               new Translation3d(Units.inchesToMeters(-1.5873107),
+                                 Units.inchesToMeters(0),
+                                 Units.inchesToMeters(36.47029886)),
                VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1));
 
     /**
@@ -443,7 +443,7 @@ public class Vision
       {
         SimCameraProperties cameraProp = new SimCameraProperties();
         // A 640 x 480 camera with a 100 degree diagonal FOV.
-        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(100));
+        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(70));
         // Approximate detection noise with average and standard deviation error in pixels.
         cameraProp.setCalibError(0.25, 0.08);
         // Set the camera image capture framerate (Note: this is limited by robot loop rate).

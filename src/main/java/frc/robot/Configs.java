@@ -44,7 +44,7 @@ public final class Configs {
           .closedLoop
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
-          .pid(.P, ElevatorConstants.I, ElevatorConstants.D)
+          .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
