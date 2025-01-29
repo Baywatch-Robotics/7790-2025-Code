@@ -53,4 +53,12 @@ public final class Configs {
           .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
     }
   }
+  public static final class Shooter {
+    public static final SparkMaxConfig shooterConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the elevator motor
+      shooterConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+    }
+  }
 }

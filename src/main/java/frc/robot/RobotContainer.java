@@ -14,11 +14,25 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.LED;
+import frc.robot.subsystems.Algea.AlgeaArm;
+import frc.robot.subsystems.Algea.AlgeaShooter;
+import frc.robot.subsystems.Coral.CoralCommandMemoryCell;
+import frc.robot.subsystems.Coral.Scope;
+import frc.robot.subsystems.Coral.Shooter;
+import frc.robot.subsystems.Coral.ShooterArm;
+import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.VisionOwn;
+
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -37,13 +51,29 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final         CommandXboxController driverXbox = new CommandXboxController(0);
 
-  
+  final CommandGenericHID buttonBox1 = new CommandGenericHID(1);
+  final CommandGenericHID buttonBox2 = new CommandGenericHID(2);
+  final CommandXboxController opXbox = new CommandXboxController(3);
+
+
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
-                                                                                
-  //private final Elevator elevator = new Elevator();
-
+  
+  
+  private final AlgeaArm algeaArm = new AlgeaArm();
+  private final AlgeaShooter algeaShooter = new AlgeaShooter();
+  private final CoralCommandMemoryCell coralCommandMemoryCell = new CoralCommandMemoryCell();
+  private final Scope scope = new Scope();
+  private final Shooter shooter = new Shooter();
+  private final ShooterArm shooterArm = new ShooterArm();
+  private final ShooterPivot shooterPivot = new ShooterPivot();
+  private final VisionOwn visionOwn = new VisionOwn();
+  private final Climber climber = new Climber();
+  private final Elevator elevator = new Elevator();
+  private final Funnel funnel = new Funnel();
+  private final LED LED = new LED();
+  
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driverXbox.getLeftY() * -1,
@@ -141,15 +171,14 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
 
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+      driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
     } else
     {
-
-
-
-      driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
+      //Maincontrols here
+      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
+      driverXbox.a().whileTrue(Commands.run());
 
     }
 

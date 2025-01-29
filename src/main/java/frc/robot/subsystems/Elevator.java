@@ -33,7 +33,12 @@ public class Elevator extends SubsystemBase {
 
     public Elevator() {
 
-        desiredPosition = 0.0f;
+        desiredPosition = 0;
+
+        L4Pose = ElevatorConstants.L4Pose;
+        L3Pose = ElevatorConstants.L3Pose;
+        L2Pose = ElevatorConstants.L2Pose;
+        L1Pose = ElevatorConstants.L1Pose;
 
         elevatorMax = ElevatorConstants.Max;
         elevatorMin = ElevatorConstants.Min;

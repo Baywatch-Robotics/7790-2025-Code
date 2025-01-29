@@ -66,7 +66,8 @@ public final class Constants
     
   }
   public static final class ShooterConstants{
-    
+    public static final float intake = -0.1f;
+    public static final float outake = 0.1f;
   }
 
   public static final class ShooterArmConstants{
