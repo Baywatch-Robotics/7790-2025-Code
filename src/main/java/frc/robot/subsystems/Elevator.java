@@ -21,12 +21,6 @@ public class Elevator extends SubsystemBase {
     private float elevatorMax;
     private float elevatorMin;
 
-    // List different poses here
-    private float L4Pose;
-    private float L3Pose;
-    private float L2Pose;
-    private float L1Pose;
-
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
@@ -34,11 +28,6 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
 
         desiredPosition = 0;
-
-        L4Pose = ElevatorConstants.L4Pose;
-        L3Pose = ElevatorConstants.L3Pose;
-        L2Pose = ElevatorConstants.L2Pose;
-        L1Pose = ElevatorConstants.L1Pose;
 
         elevatorMax = ElevatorConstants.Max;
         elevatorMin = ElevatorConstants.Min;
@@ -65,19 +54,19 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setL4() {
-        setDesiredPosition(L4Pose);
+        setDesiredPosition(ElevatorConstants.L4Pose);
     }
 
     public void setL3() {
-        setDesiredPosition(L3Pose);
+        setDesiredPosition(ElevatorConstants.L3Pose);
     }
 
     public void setL2() {
-        setDesiredPosition(L2Pose);
+        setDesiredPosition(ElevatorConstants.L2Pose);
     }
 
     public void setL1() {
-        setDesiredPosition(L1Pose);
+        setDesiredPosition(ElevatorConstants.L1Pose);
     }
 
     // Commands
