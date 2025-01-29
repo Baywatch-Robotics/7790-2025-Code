@@ -53,12 +53,35 @@ public final class Configs {
           .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
     }
   }
-  public static final class Shooter {
-    public static final SparkMaxConfig shooterConfig = new SparkMaxConfig();
+  public static final class ShooterPivot {
+    public static final SparkMaxConfig shooterPivotConfig = new SparkMaxConfig();
 
     static {
       // Configure basic settings of the elevator motor
-      shooterConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+      shooterPivotConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(20).voltageCompensation(12);
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      shooterPivotConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(ElevatorConstants.maxVelocity)
+          .maxAcceleration(ElevatorConstants.maxAcceleration)
+          .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
+    }
+  }
+  public static final class Shooter {
+    public static final SparkMaxConfig shooterConfig = new SparkMaxConfig();
+    
+    static {
+      // Configure basic settings of the elevator motor
+      shooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
     }
   }
 }
