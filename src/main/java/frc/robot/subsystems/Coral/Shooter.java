@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,38 +14,36 @@ import frc.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
 
-    private double desiredSpeed;
-
-    private float intake;
-    private float outake;
-
     private SparkMax shooterMotor = new SparkMax(ShooterConstants.ID, MotorType.kBrushless);
 
+    private DigitalInput coralSensor = new DigitalInput(0);
+
+    public boolean coralLoaded;
+
+    private boolean isLoading;
+
     public Shooter() {
-
-        desiredSpeed = 0.0f;
-
-        intake = ShooterConstants.intake;
-        outake = ShooterConstants.outake;
-
-
         shooterMotor.configure(
                 Configs.Shooter.shooterConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+
+        coralLoaded = false;
+        isLoading = false;
     }
                 
     public void setZeroSpeed() {
 
-        this.desiredSpeed = 0.0f;
+        shooterMotor.set(0);
     }
 
     public void setIntake() {
-        this.desiredSpeed = intake;
+        isLoading = true;
+        shooterMotor.set(ShooterConstants.intake);
     }
 
     public void setOutake() {
-        this.desiredSpeed = outake;
+        shooterMotor.set(ShooterConstants.outake);
     }
 
     // Commands
@@ -62,9 +61,15 @@ public class Shooter extends SubsystemBase {
         Command command = new InstantCommand(() -> setOutake());
         return command;
     }
-
+    
     @Override
-    public void periodic() {
-        shooterMotor.set(desiredSpeed);
+    public void periodic(){
+        coralLoaded = !coralSensor.get();
+
+        if (coralLoaded){
+            if(isLoading) {
+            setZeroSpeedCommand();
+            }
+        }
     }
 }

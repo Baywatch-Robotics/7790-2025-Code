@@ -98,7 +98,12 @@ public final class Constants
   }
 
   public static final class ShooterPivotConstants{
-    
+    public static final float angleOffset = 0.0f;
+
+    public static final float maxAngle = 0.0f;
+    public static final float minAngle = 0.0f;
+
+    public static final float manualMultiplier = 0.1f;
 
     public static final float P = 0.0f;
     public static final float I = 0.0f;

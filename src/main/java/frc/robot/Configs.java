@@ -45,6 +45,15 @@ public final class Configs {
   }
 
 
+  
+  public static final class Shooter {
+    public static final SparkMaxConfig shooterConfig = new SparkMaxConfig();
+    
+    static {
+      // Configure basic settings of the elevator motor
+      shooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+    }
+  }
   public static final class ShooterArm {
     public static final SparkMaxConfig shooterArmConfig = new SparkMaxConfig();
 
@@ -91,14 +100,7 @@ public final class Configs {
           .allowedClosedLoopError(ShooterPivotConstants.allowedClosedLoopError);      
     }
   }
-  public static final class Shooter {
-    public static final SparkMaxConfig shooterConfig = new SparkMaxConfig();
-    
-    static {
-      // Configure basic settings of the elevator motor
-      shooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
-    }
-  }
+
 
 
 

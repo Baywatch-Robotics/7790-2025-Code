@@ -18,9 +18,6 @@ public class Elevator extends SubsystemBase {
 
     private double desiredPosition;
 
-    private float elevatorMax;
-    private float elevatorMin;
-
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
@@ -29,8 +26,6 @@ public class Elevator extends SubsystemBase {
 
         desiredPosition = 0;
 
-        elevatorMax = ElevatorConstants.Max;
-        elevatorMin = ElevatorConstants.Min;
 
         // different positions for scoring below here
 
@@ -43,7 +38,7 @@ public class Elevator extends SubsystemBase {
 
     public void setDesiredPosition(final float desiredPose) {
 
-        float newDesiredPose = (float) MathUtil.clamp(desiredPose, elevatorMin, elevatorMax);
+        float newDesiredPose = (float) MathUtil.clamp(desiredPose, ElevatorConstants.Min, ElevatorConstants.Max);
 
         this.desiredPosition = (newDesiredPose);
     }
