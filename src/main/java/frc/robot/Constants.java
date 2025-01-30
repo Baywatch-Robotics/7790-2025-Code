@@ -53,13 +53,27 @@ public final class Constants
 
 
 
+
+
+
   
   public static final class AlgeaArmConstants{
     
+
+
+
+    public static final float P = 0.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    public static final float maxVelocity = 2100;
+    public static final float maxAcceleration = 3000;
+    public static final float allowedClosedLoopError = .5f;
   }
 
-  public static final class AlgeaShooteronstants{
-    
+  public static final class AlgeaShooterConstants{
+    public static final int ID = 10;
+    public static final float intake = -0.1f;
+    public static final float outake = 0.1f;
   }
 
   public static final class ScopeConstants{
@@ -72,11 +86,26 @@ public final class Constants
   }
 
   public static final class ShooterArmConstants{
-    
+
+
+
+    public static final float P = 0.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    public static final float maxVelocity = 2100;
+    public static final float maxAcceleration = 3000;
+    public static final float allowedClosedLoopError = .5f;
   }
 
   public static final class ShooterPivotConstants{
     
+
+    public static final float P = 0.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    public static final float maxVelocity = 2100;
+    public static final float maxAcceleration = 3000;
+    public static final float allowedClosedLoopError = .5f;
   }
 
   public static final class AimingConstants{

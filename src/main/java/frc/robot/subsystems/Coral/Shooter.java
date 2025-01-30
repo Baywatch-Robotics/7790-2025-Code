@@ -66,6 +66,5 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         shooterMotor.set(desiredSpeed);
-        
     }
 }

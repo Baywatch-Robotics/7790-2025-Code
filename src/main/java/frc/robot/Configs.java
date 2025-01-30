@@ -4,7 +4,10 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import frc.robot.Constants.AlgeaArmConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ShooterArmConstants;
+import frc.robot.Constants.ShooterPivotConstants;
 
 public final class Configs {
   public static final class Elevator {
@@ -12,7 +15,7 @@ public final class Configs {
 
     static {
       // Configure basic settings of the elevator motor
-      elevatorConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
@@ -30,12 +33,24 @@ public final class Configs {
           .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
     }
   }
+
+
+  public static final class Climber {
+    public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the elevator motor
+      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+    }
+  }
+
+
   public static final class ShooterArm {
     public static final SparkMaxConfig shooterArmConfig = new SparkMaxConfig();
 
     static {
       // Configure basic settings of the elevator motor
-      shooterArmConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(40).voltageCompensation(12);
+      shooterArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
@@ -44,13 +59,13 @@ public final class Configs {
           .closedLoop
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
-          .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
+          .pid(ShooterArmConstants.P, ShooterArmConstants.I, ShooterArmConstants.D)
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
-          .maxVelocity(ElevatorConstants.maxVelocity)
-          .maxAcceleration(ElevatorConstants.maxAcceleration)
-          .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
+          .maxVelocity(ShooterArmConstants.maxVelocity)
+          .maxAcceleration(ShooterArmConstants.maxAcceleration)
+          .allowedClosedLoopError(ShooterArmConstants.allowedClosedLoopError);      
     }
   }
   public static final class ShooterPivot {
@@ -58,7 +73,7 @@ public final class Configs {
 
     static {
       // Configure basic settings of the elevator motor
-      shooterPivotConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(20).voltageCompensation(12);
+      shooterPivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
@@ -67,13 +82,13 @@ public final class Configs {
           .closedLoop
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
-          .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
+          .pid(ShooterPivotConstants.P, ShooterPivotConstants.I, ShooterPivotConstants.D)
           .outputRange(-1, 1)
           .maxMotion
           // Set MAXMotion parameters for position control
-          .maxVelocity(ElevatorConstants.maxVelocity)
-          .maxAcceleration(ElevatorConstants.maxAcceleration)
-          .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
+          .maxVelocity(ShooterPivotConstants.maxVelocity)
+          .maxAcceleration(ShooterPivotConstants.maxAcceleration)
+          .allowedClosedLoopError(ShooterPivotConstants.allowedClosedLoopError);      
     }
   }
   public static final class Shooter {
@@ -82,6 +97,40 @@ public final class Configs {
     static {
       // Configure basic settings of the elevator motor
       shooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+    }
+  }
+
+
+
+  public static final class AlgeaArm {
+    public static final SparkMaxConfig algeaArmConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the elevator motor
+      algeaArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      algeaArmConfig
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .pid(AlgeaArmConstants.P, AlgeaArmConstants.I, AlgeaArmConstants.D)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(AlgeaArmConstants.maxVelocity)
+          .maxAcceleration(AlgeaArmConstants.maxAcceleration)
+          .allowedClosedLoopError(AlgeaArmConstants.allowedClosedLoopError);      
+    }
+  }
+  public static final class AlgeaShooter {
+    public static final SparkMaxConfig algeaShooterConfig = new SparkMaxConfig();
+    
+    static {
+      // Configure basic settings of the elevator motor
+      algeaShooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
     }
   }
 }
