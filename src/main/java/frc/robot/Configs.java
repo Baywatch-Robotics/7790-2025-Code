@@ -16,11 +16,13 @@ public final class Configs {
     static {
       // Configure basic settings of the elevator motor
       elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
       elevatorConfig
+          .inverted(false)
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
@@ -41,6 +43,9 @@ public final class Configs {
     static {
       // Configure basic settings of the elevator motor
       climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+
+      climberConfig
+      .inverted(false);
     }
   }
 
