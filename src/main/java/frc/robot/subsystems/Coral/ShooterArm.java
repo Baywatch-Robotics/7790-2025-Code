@@ -31,25 +31,23 @@ public class ShooterArm extends SubsystemBase {
 
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        shooterArmDesiredAngle = NormalizeAngle((float)(shooterArmEncoder.getPosition()*360));
+        shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
         }
 
 
-
-
-    private void setLeftInitial() {
-        shooterArmDesiredAngle = (ShooterArmConstants.);
+    private void setScore() {
+        shooterArmDesiredAngle = ShooterArmConstants.scoreAngle + ShooterArmConstants.angleOffset;
     }
     private void setRightInitial() {
-        shooterArmDesiredAngle = (ShooterArmConstants.);
+        shooterArmDesiredAngle = ShooterArmConstants. + ShooterArmConstants.angleOffset;
     }
     private void setCenter() {
-        shooterArmDesiredAngle = (ShooterPivotConstants.);
+        shooterArmDesiredAngle = ShooterArmConstants. + ShooterArmConstants.angleOffset;
     }
 
-    public Command shooterPivotLeftInitialCommand()
+    public Command shooterArmScoreCommand()
     {
-        Command command = new InstantCommand(() -> this.setLeftInitial());
+        Command command = new InstantCommand(() -> setScore());
         return command;
     }
 
@@ -66,22 +64,6 @@ public class ShooterArm extends SubsystemBase {
     }
 
 
-
-
-
-    private float NormalizeAngle(float angle) {
-        float newAngle = angle - ShooterArmConstants.angleOffset;
- 
-        while (newAngle > 180) {
-            newAngle -= 360;
-        }
-
-        while (newAngle < -180) {
-            newAngle += 360;
-        }
-        return newAngle;
-    }
-
     public void moveAmount(final float amount) {
 
         if (Math.abs(amount) < 0.2) {
@@ -90,7 +72,7 @@ public class ShooterArm extends SubsystemBase {
 
         float scale = ShooterArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, AlgaeArmConstants.minAngle, AlgaeArmConstants.maxAngle);
+        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.minAngle, ShooterArmConstants.maxAngle);
 
         shooterArmDesiredAngle = f;
     }
@@ -98,6 +80,6 @@ public class ShooterArm extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
-        SmartDashboard.putNumber("Shooter Arm Current Angle", NormalizeAngle((float)shooterArmEncoder.getPosition()*360));
+        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
     }
 }

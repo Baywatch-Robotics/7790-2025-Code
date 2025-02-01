@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ShooterPivotConstants;
 
 public class Elevator extends SubsystemBase {
 
@@ -102,7 +101,7 @@ public class Elevator extends SubsystemBase {
 
 
         
-        elevatorDesiredPosition = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.Min, ElevatorConstants.Max);
+        elevatorDesiredPosition = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
         
         elevatorClosedLoopController.setReference(elevatorDesiredPosition, ControlType.kMAXMotionPositionControl);
     }

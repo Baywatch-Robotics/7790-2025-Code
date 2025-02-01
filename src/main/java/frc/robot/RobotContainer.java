@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
@@ -74,7 +73,7 @@ public class RobotContainer
   () -> driverXbox.getLeftY() * -1,
   () -> driverXbox.getLeftX() * -1)
 .withControllerRotationAxis(driverXbox::getRightX)
-.deadband(OperatorConstants.DEADBAND)
+.deadband(Constants.DEADBAND)
 .scaleTranslation(0.8)
 .allianceRelativeControl(true);
 
@@ -95,7 +94,7 @@ SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.
           () -> -driverXbox.getLeftX())
       .withControllerRotationAxis(() -> driverXbox.getRawAxis(
           2))
-      .deadband(OperatorConstants.DEADBAND)
+      .deadband(Constants.DEADBAND)
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
 // Derive the heading axis with math!
@@ -175,10 +174,10 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      driverXbox.a().onTrue(Commands.run(shooter::setIntake));
-      driverXbox.a().onFalse(Commands.run(shooter::setZeroSpeed));
-      driverXbox.b().onTrue(Commands.run(shooter::setOutake));
-      driverXbox.b().onFalse(Commands.run(shooter::setZeroSpeed));
+      driverXbox.a().onTrue(Commands.run(shooter::shooterIntakeCommand));
+      driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
+      driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
+      driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
     }
 
   }

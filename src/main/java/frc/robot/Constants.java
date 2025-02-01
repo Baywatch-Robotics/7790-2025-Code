@@ -29,11 +29,24 @@ public final class Constants
   public static final float slowSpeedMultiplier = 0.15f;
   public static final float mediumSpeedMultiplier = 0.3f;
 
-
+  public static final float DEADBAND = 0.1f;
 
   
   public static final class AlgaeArmConstants{
-    
+    public static final int ID = 11;
+
+    public static final float leftAngleInitial = 0.0f;
+    public static final float rightAngleInitial = 0.0f;
+    public static final float centerAngle = 0;
+
+    public static final float angleOffset = 0.0f;
+
+    public static final float maxAngle = 0.0f;
+    public static final float minAngle = 0.0f;
+
+    public static final float manualMultiplier = 0.1f;
+
+
     public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
@@ -104,10 +117,12 @@ public final class Constants
 
     public static final int ID = 0;
 
-    public static final float MaxSpeed = 0.1f;
+    public static final float maxSpeed = 0.1f;
     
-    public static final float Min = 0.0f;
-    public static final float Max = 0.0f;
+    public static final float manualMultiplier = 0.1f;
+
+    public static final float min = 0.0f;
+    public static final float max = 0.0f;
 
     public static final float L4Pose = 0.0f;
     public static final float L3Pose = 0.0f;
