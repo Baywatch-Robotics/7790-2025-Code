@@ -8,15 +8,17 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Configs.ShooterPivot;
 import frc.robot.Constants.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
 
-    private double desiredPosition;
+    public float elevatorDesiredPosition;
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
 
@@ -36,32 +38,25 @@ public class Elevator extends SubsystemBase {
 
     }
 
-    public void setDesiredPosition(final float desiredPose) {
+    private void setFullRetract() {
 
-        float newDesiredPose = (float) MathUtil.clamp(desiredPose, ElevatorConstants.Min, ElevatorConstants.Max);
-
-        this.desiredPosition = (newDesiredPose);
+        elevatorDesiredPosition = 0;
     }
 
-    public void setFullRetract() {
-
-        this.desiredPosition = 0;
+    private void setL4() {
+        elevatorDesiredPosition = ElevatorConstants.L4Pose;
     }
 
-    public void setL4() {
-        setDesiredPosition(ElevatorConstants.L4Pose);
+    private void setL3() {
+        elevatorDesiredPosition = ElevatorConstants.L3Pose;
     }
 
-    public void setL3() {
-        setDesiredPosition(ElevatorConstants.L3Pose);
+    private void setL2() {
+        elevatorDesiredPosition = ElevatorConstants.L2Pose;
     }
 
-    public void setL2() {
-        setDesiredPosition(ElevatorConstants.L2Pose);
-    }
-
-    public void setL1() {
-        setDesiredPosition(ElevatorConstants.L1Pose);
+    private void setL1() {
+        elevatorDesiredPosition = ElevatorConstants.L1Pose;
     }
 
     // Commands
@@ -96,6 +91,14 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        moveToSetpoint();
+
+         //Code for inverse kinematics
+
+        desiredPosition = ShooterPivot;
+
+
+        
+        //moveToSetpoint();
+        
     }
 }

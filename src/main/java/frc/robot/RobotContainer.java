@@ -20,8 +20,8 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
-import frc.robot.subsystems.Algea.AlgeaArm;
-import frc.robot.subsystems.Algea.AlgeaShooter;
+import frc.robot.subsystems.Algae.AlgaeArm;
+import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.CoralCommandMemoryCell;
 import frc.robot.subsystems.Coral.Scope;
 import frc.robot.subsystems.Coral.Shooter;
@@ -56,8 +56,8 @@ public class RobotContainer
                                                                                 "swerve/neo"));
   
   
-  private final AlgeaArm algeaArm = new AlgeaArm();
-  private final AlgeaShooter algeaShooter = new AlgeaShooter();
+  private final AlgaeArm algaeArm = new AlgaeArm();
+  private final AlgaeShooter algaeShooter = new AlgaeShooter();
   private final CoralCommandMemoryCell coralCommandMemoryCell = new CoralCommandMemoryCell();
   private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();

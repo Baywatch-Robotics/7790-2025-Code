@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Coral;
+package frc.robot.subsystems.Algae;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
@@ -13,36 +13,39 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants.AlgaeArmConstants;
+import frc.robot.Constants.ShooterArmConstants;
 import frc.robot.Constants.ShooterPivotConstants;
 
-public class ShooterPivot extends SubsystemBase {
+public class AlgaeArm extends SubsystemBase {
 
-    public float shooterPivotDesiredAngle;
+    public float algaeArmDesiredAngle;
 
-    private SparkMax shooterPivotMotor = new SparkMax(ShooterPivotConstants.ID, MotorType.kBrushless);
+    private SparkMax algaeArmMotor = new SparkMax(AlgaeArmConstants.ID, MotorType.kBrushless);
 
-    private SparkClosedLoopController shooterPivotController = shooterPivotMotor.getClosedLoopController();
+    private SparkClosedLoopController algaeArmController = algaeArmMotor.getClosedLoopController();
 
-    private AbsoluteEncoder shooterPivotEncoder = shooterPivotMotor.getAbsoluteEncoder();
+    private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
 
-    public ShooterPivot() {
+    public AlgaeArm() {
 
-        shooterPivotMotor.configure(Configs.ShooterPivot.shooterPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        shooterPivotDesiredAngle = NormalizeAngle((float)(shooterPivotEncoder.getPosition()*360));
+        
+        algaeArmDesiredAngle = NormalizeAngle((float)(algaeArmEncoder.getPosition()*360));
         }
 
 
 
 
     public void setLeftInitial() {
-        shooterPivotDesiredAngle = (ShooterPivotConstants.leftAngleInitial);
+        algaeArmDesiredAngle = (AlgaeArmConstants.);
     }
     public void setRightInitial() {
-        shooterPivotDesiredAngle = (ShooterPivotConstants.rightAngleInitial);
+        algaeArmDesiredAngle = (AlgaeArmConstants.);
     }
     public void setCenter() {
-        shooterPivotDesiredAngle = (ShooterPivotConstants.centerAngle);
+        algaeArmDesiredAngle = (AlgaeArmConstants.);
     }
 
     public Command setLeftInitialCommand()
@@ -68,8 +71,8 @@ public class ShooterPivot extends SubsystemBase {
 
 
     public float NormalizeAngle(float angle) {
-        float newAngle = angle - ShooterPivotConstants.angleOffset;
-
+        float newAngle = angle - AlgaeArmConstants.angleOffset;
+ 
         while (newAngle > 180) {
             newAngle -= 360;
         }
@@ -86,16 +89,16 @@ public class ShooterPivot extends SubsystemBase {
             return;
         }
 
-        float scale = ShooterPivotConstants.manualMultiplier;
+        float scale = AlgaeArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(shooterPivotDesiredAngle + amount * scale, ShooterPivotConstants.minAngle, ShooterPivotConstants.maxAngle);
+        float f = (float) MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.minAngle, AlgaeArmConstants.maxAngle);
 
-        shooterPivotDesiredAngle = f;
+        algaeArmDesiredAngle = f;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);
-        SmartDashboard.putNumber("Shooter Pivot Current Angle", NormalizeAngle((float)shooterPivotEncoder.getPosition()));
+        SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
+        SmartDashboard.putNumber("Algae Arm Current Angle", NormalizeAngle((float)algaeArmEncoder.getPosition()*360));
     }
 }

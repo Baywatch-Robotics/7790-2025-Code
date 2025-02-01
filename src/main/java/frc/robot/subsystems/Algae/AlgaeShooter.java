@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Algea;
+package frc.robot.subsystems.Algae;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -9,42 +9,29 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.AlgeaShooterConstants;
+import frc.robot.Constants.AlgaeShooterConstants;
 
-public class AlgeaShooter extends SubsystemBase {
+public class AlgaeShooter extends SubsystemBase {
 
-    private double desiredSpeed;
+    private SparkMax algaeShooterMotor = new SparkMax(AlgaeShooterConstants.ID, MotorType.kBrushless);
 
-    private float intake;
-    private float outake;
-
-    private SparkMax algeaShooterMotor = new SparkMax(AlgeaShooterConstants.ID, MotorType.kBrushless);
-
-    public AlgeaShooter() {
-
-        desiredSpeed = 0.0f;
-
-        intake = AlgeaShooterConstants.intake;
-        outake = AlgeaShooterConstants.outake;
-
-
-        algeaShooterMotor.configure(
-                Configs.AlgeaShooter.algeaShooterConfig,
+    public AlgaeShooter() {
+        algaeShooterMotor.configure(
+                Configs.AlgaeShooter.algaeShooterConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
                 
     public void setZeroSpeed() {
-
-        this.desiredSpeed = 0.0f;
+        algaeShooterMotor.set(0);
     }
 
     public void setIntake() {
-        this.desiredSpeed = intake;
+        algaeShooterMotor.set(AlgaeShooterConstants.intake);
     }
 
     public void setOutake() {
-        this.desiredSpeed = outake;
+        algaeShooterMotor.set(AlgaeShooterConstants.outake);
     }
 
     // Commands
@@ -61,10 +48,5 @@ public class AlgeaShooter extends SubsystemBase {
     public Command setOutakeCommand() {
         Command command = new InstantCommand(() -> setOutake());
         return command;
-    }
-
-    @Override
-    public void periodic() {
-        algeaShooterMotor.set(desiredSpeed);
     }
 }

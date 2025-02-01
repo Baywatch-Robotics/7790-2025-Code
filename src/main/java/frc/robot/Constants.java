@@ -25,43 +25,14 @@ public final class Constants
   public static final float MAX_SPEED  = (float) Units.feetToMeters(22.1);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-
-
-
-//  public static final class AutonConstants
-//  {
-//
-//    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-//    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-//  }
-
-  public static final class DrivebaseConstants
-  {
-    // Hold time on motor brakes when disabled
-    public static final float WHEEL_LOCK_TIME = 10f; // seconds
-  }
-
-  public static final class OperatorConstants
-  {
-
-    // Joystick Deadband
-    public static final float DEADBAND        = 0.1f;
-    public static final float LEFT_Y_DEADBAND = 0.1f;
-    public static final float RIGHT_X_DEADBAND = 0.1f;
-    public static final float TURN_CONSTANT    = 6f;
-  }
-
-
-
+  public static final float slowSpeedMultiplier = 0.15f;
+  public static final float mediumSpeedMultiplier = 0.3f;
 
 
 
   
-  public static final class AlgeaArmConstants{
+  public static final class AlgaeArmConstants{
     
-
-
-
     public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
@@ -70,7 +41,7 @@ public final class Constants
     public static final float allowedClosedLoopError = .5f;
   }
 
-  public static final class AlgeaShooterConstants{
+  public static final class AlgaeShooterConstants{
     public static final int ID = 10;
     public static final float intake = -0.1f;
     public static final float outake = 0.1f;
@@ -98,6 +69,13 @@ public final class Constants
   }
 
   public static final class ShooterPivotConstants{
+
+    public static final int ID = 11;
+
+    public static final float leftAngleInitial = 0.0f;
+    public static final float rightAngleInitial = 0.0f;
+    public static final float centerAngle = 0;
+
     public static final float angleOffset = 0.0f;
 
     public static final float maxAngle = 0.0f;
