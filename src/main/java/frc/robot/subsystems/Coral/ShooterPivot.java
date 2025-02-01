@@ -18,7 +18,9 @@ import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterPivot extends SubsystemBase {
 
-    public float shooterPivotDesiredAngle;
+    public static float shooterPivotDesiredAngle;
+
+    public static boolean isStraight;
 
     private SparkMax shooterPivotMotor = new SparkMax(ShooterPivotConstants.ID, MotorType.kBrushless);
 
@@ -30,17 +32,22 @@ public class ShooterPivot extends SubsystemBase {
 
         shooterPivotMotor.configure(Configs.ShooterPivot.shooterPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        isStraight = true;
+
         shooterPivotDesiredAngle = (float)shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset;
         }
 
     private void setLeftInitial() {
         shooterPivotDesiredAngle = ShooterPivotConstants.leftAngleInitial + ShooterPivotConstants.angleOffset;
+        isStraight = false;
     }
     private void setRightInitial() {
         shooterPivotDesiredAngle = ShooterPivotConstants.rightAngleInitial + ShooterPivotConstants.angleOffset;
+        isStraight = false;
     }
     private void setCenter() {
         shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle + ShooterPivotConstants.angleOffset;
+        isStraight = true;
     }
 
     public Command setLeftInitialCommand()

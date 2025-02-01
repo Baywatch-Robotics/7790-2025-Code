@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Coral.ShooterPivot;
 
 public class Elevator extends SubsystemBase {
 
@@ -96,8 +97,14 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
 
          //Code for inverse kinematics
+        if(!ShooterPivot.isStraight) {
+        float ang;
+        float h;
+        ang = ShooterPivot.shooterPivotDesiredAngle * (360/25);
+        h = elevatorDesiredPosition;
 
-        //elevatorDesiredPosition = //ShooterPivot;
+        }
+
 
 
         

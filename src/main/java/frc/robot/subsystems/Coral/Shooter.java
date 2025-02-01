@@ -18,7 +18,7 @@ public class Shooter extends SubsystemBase {
 
     private DigitalInput coralSensor = new DigitalInput(0);
 
-    public boolean coralLoaded;
+    public static boolean coralLoaded;
 
     private boolean isLoading;
 

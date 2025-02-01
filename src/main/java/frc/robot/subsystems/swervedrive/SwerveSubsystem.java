@@ -619,19 +619,4 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return swerveDrive;
   }
-
-
-  public double swerveSpeedLimitMultiplier(){
-
-     double speedLimit;
-
-    speedLimit = 0;
-    //in ft per second
-
-
-
-    
-    
-    return speedLimit;
-  }
 }

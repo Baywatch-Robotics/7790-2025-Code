@@ -1,5 +1,7 @@
 package frc.robot.subsystems.swervedrive;
 
+import java.util.function.Supplier;
+
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,8 +16,9 @@ public class AprilTagVision extends SubsystemBase{
     PhotonCamera leftCam = new PhotonCamera("leftCam");
     PhotonCamera limelight = new PhotonCamera("limelight");
 
-AprilTagVision(){
-    this.currentPose = SwerveSubsytem.getPose();
+
+public AprilTagVision(){
+    
 }
 
 
