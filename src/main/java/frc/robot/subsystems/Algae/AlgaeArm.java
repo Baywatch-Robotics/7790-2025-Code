@@ -83,7 +83,7 @@ public class AlgaeArm extends SubsystemBase {
 
         algaeArmDesiredAngle = (float)MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
         
-        algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+        //algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
 
     }
 }

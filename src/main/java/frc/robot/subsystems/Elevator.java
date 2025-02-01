@@ -12,12 +12,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.Coral.ShooterPivot;
 
 public class Elevator extends SubsystemBase {
 
     public float elevatorDesiredPosition;
+
+    private float desiredTotalHeight;
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
 
@@ -99,17 +102,25 @@ public class Elevator extends SubsystemBase {
          //Code for inverse kinematics
         if(!ShooterPivot.isStraight) {
         float ang;
-        float h;
+
+        float l;
+
         ang = ShooterPivot.shooterPivotDesiredAngle * (360/25);
-        h = elevatorDesiredPosition;
+
+        l = Constants.armLength;
+
+        desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(ang);
+
 
         }
+        else{
+        desiredTotalHeight = elevatorDesiredPosition;  
+        }
 
-
-
+        System.out.println(desiredTotalHeight);
         
-        elevatorDesiredPosition = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+        desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
         
-        elevatorClosedLoopController.setReference(elevatorDesiredPosition, ControlType.kMAXMotionPositionControl);
+        //elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }
 }

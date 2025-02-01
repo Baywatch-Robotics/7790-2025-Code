@@ -83,7 +83,7 @@ public class ShooterArm extends SubsystemBase {
 
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
         
-        shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+        //shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kMAXMotionPositionControl);
 
     }
 }

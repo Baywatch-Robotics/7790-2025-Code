@@ -88,6 +88,6 @@ public class ShooterPivot extends SubsystemBase {
     
         shooterPivotDesiredAngle = (float)MathUtil.clamp(shooterPivotDesiredAngle, ShooterPivotConstants.min, ShooterPivotConstants.max);
         
-        shooterPivotController.setReference(shooterPivotDesiredAngle, ControlType.kMAXMotionPositionControl);
+        //shooterPivotController.setReference(shooterPivotDesiredAngle, ControlType.kMAXMotionPositionControl);
     }
 }
