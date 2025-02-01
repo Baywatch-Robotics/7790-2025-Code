@@ -35,14 +35,14 @@ public final class Constants
   public static final class AlgaeArmConstants{
     public static final int ID = 11;
 
-    public static final float leftAngleInitial = 0.0f;
-    public static final float rightAngleInitial = 0.0f;
-    public static final float centerAngle = 0;
+    public static final float stowedUpAngle = 0.0f;
+    public static final float straightOutAngle = 0.0f;
+    public static final float groundIntakeAngle = 0.0f;
 
     public static final float angleOffset = 0.0f;
 
-    public static final float maxAngle = 0.0f;
-    public static final float minAngle = 0.0f;
+    public static final float max = 0.0f;
+    public static final float min = 0.0f;
 
     public static final float manualMultiplier = 0.1f;
 
@@ -71,8 +71,18 @@ public final class Constants
   }
 
   public static final class ShooterArmConstants{
+    public static final int ID = 21;
 
+    public static final float angleOffset = 0;
 
+    public static final float manualMultiplier = 0.1f;
+
+    public static final float min = 0.0f;
+    public static final float max = 0.0f;
+
+    public static final float scoreAngle = 0.0f;
+    public static final float loadAngle = 0.0f;
+    public static final float L1Angle = 0.0f;
 
     public static final float P = 0.0f;
     public static final float I = 0.0f;
@@ -92,8 +102,8 @@ public final class Constants
 
     public static final float angleOffset = 0.0f;
 
-    public static final float maxAngle = 0.0f;
-    public static final float minAngle = 0.0f;
+    public static final float max = 0.0f;
+    public static final float min = 0.0f;
 
     public static final float manualMultiplier = 0.1f;
 
@@ -110,7 +120,11 @@ public final class Constants
   }
 
   public static final class ClimberConstants{
-    
+
+    public static final int ID = 20;
+
+    public static final float extendSpeed = 0.2f;
+    public static final float retractSpeed = -0.2f;
   }
   
   public static final class ElevatorConstants{

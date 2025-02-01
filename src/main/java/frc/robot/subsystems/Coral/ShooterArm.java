@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
@@ -13,9 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.AlgaeArmConstants;
 import frc.robot.Constants.ShooterArmConstants;
-import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterArm extends SubsystemBase {
 
@@ -38,11 +37,11 @@ public class ShooterArm extends SubsystemBase {
     private void setScore() {
         shooterArmDesiredAngle = ShooterArmConstants.scoreAngle + ShooterArmConstants.angleOffset;
     }
-    private void setRightInitial() {
-        shooterArmDesiredAngle = ShooterArmConstants. + ShooterArmConstants.angleOffset;
+    private void setLoad() {
+        shooterArmDesiredAngle = ShooterArmConstants.loadAngle + ShooterArmConstants.angleOffset;
     }
-    private void setCenter() {
-        shooterArmDesiredAngle = ShooterArmConstants. + ShooterArmConstants.angleOffset;
+    private void setScoreL1() {
+        shooterArmDesiredAngle = ShooterArmConstants.L1Angle + ShooterArmConstants.angleOffset;
     }
 
     public Command shooterArmScoreCommand()
@@ -51,15 +50,15 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
-    public Command shooterPivotRightInitalCommand()
+    public Command shooterArmLoadCommand()
     {
-        Command command = new InstantCommand(() -> this.setRightInitial());
+        Command command = new InstantCommand(() -> this.setLoad());
         return command;
     }
 
-    public Command shooterPivotCenterCommand()
+    public Command shooterArmScoreL1Command()
     {
-        Command command = new InstantCommand(() -> this.setCenter());
+        Command command = new InstantCommand(() -> this.setScoreL1());
         return command;
     }
 
@@ -72,7 +71,7 @@ public class ShooterArm extends SubsystemBase {
 
         float scale = ShooterArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.minAngle, ShooterArmConstants.maxAngle);
+        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.min, ShooterArmConstants.max);
 
         shooterArmDesiredAngle = f;
     }
@@ -81,5 +80,10 @@ public class ShooterArm extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
         SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
+
+        shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
+        
+        shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+
     }
 }

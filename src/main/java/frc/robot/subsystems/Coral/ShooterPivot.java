@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterPivot extends SubsystemBase {
@@ -33,9 +32,6 @@ public class ShooterPivot extends SubsystemBase {
 
         shooterPivotDesiredAngle = (float)shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset;
         }
-
-
-
 
     private void setLeftInitial() {
         shooterPivotDesiredAngle = ShooterPivotConstants.leftAngleInitial + ShooterPivotConstants.angleOffset;
@@ -73,7 +69,7 @@ public class ShooterPivot extends SubsystemBase {
 
         float scale = ShooterPivotConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(shooterPivotDesiredAngle + amount * scale, ShooterPivotConstants.minAngle, ShooterPivotConstants.maxAngle);
+        float f = (float) MathUtil.clamp(shooterPivotDesiredAngle + amount * scale, ShooterPivotConstants.min, ShooterPivotConstants.max);
 
         shooterPivotDesiredAngle = f;
     }

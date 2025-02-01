@@ -1,14 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,11 +27,11 @@ public class Climber extends SubsystemBase {
     }
 
     private void extend() {
-        climberMotor.set(ClimberConstants.extend);
+        climberMotor.set(ClimberConstants.extendSpeed);
     }
 
     private void retract() {
-        climberMotor.set(ClimberConstants.retract);
+        climberMotor.set(ClimberConstants.retractSpeed);
     }
 
     // Commands

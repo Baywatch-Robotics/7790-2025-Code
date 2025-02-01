@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
@@ -14,8 +15,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.AlgaeArmConstants;
-import frc.robot.Constants.ShooterArmConstants;
-import frc.robot.Constants.ShooterPivotConstants;
 
 public class AlgaeArm extends SubsystemBase {
 
@@ -29,59 +28,40 @@ public class AlgaeArm extends SubsystemBase {
 
     public AlgaeArm() {
 
-        algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        algaeArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        
-        algaeArmDesiredAngle = NormalizeAngle((float)(algaeArmEncoder.getPosition()*360));
+        algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
         }
 
 
-
-
-    public void setLeftInitial() {
-        algaeArmDesiredAngle = (AlgaeArmConstants.);
+    private void stowUp() {
+        algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle + AlgaeArmConstants.angleOffset;
     }
-    public void setRightInitial() {
-        algaeArmDesiredAngle = (AlgaeArmConstants.);
+    private void straightOut() {
+        algaeArmDesiredAngle = AlgaeArmConstants.straightOutAngle + AlgaeArmConstants.angleOffset;
     }
-    public void setCenter() {
-        algaeArmDesiredAngle = (AlgaeArmConstants.);
+    private void groundIntake() {
+        algaeArmDesiredAngle = AlgaeArmConstants.groundIntakeAngle + AlgaeArmConstants.angleOffset;
     }
 
-    public Command setLeftInitialCommand()
+    public Command algaeArmStowUpCommand()
     {
-        Command command = new InstantCommand(()-> this.setLeftInitial());
+        Command command = new InstantCommand(() -> stowUp());
         return command;
     }
 
-    public Command setRightInitalCommand()
+    public Command algaeArmStraightOutCommand()
     {
-        Command command = new InstantCommand(()-> this.setRightInitial());
+        Command command = new InstantCommand(() -> straightOut());
         return command;
     }
 
-    public Command setCenterCommand()
+    public Command algaeArmGroundIntakeCommand()
     {
-        Command command = new InstantCommand(()-> this.setCenter());
+        Command command = new InstantCommand(() -> groundIntake());
         return command;
     }
 
-
-
-
-
-    private float NormalizeAngle(float angle) {
-        float newAngle = angle - AlgaeArmConstants.angleOffset;
- 
-        while (newAngle > 180) {
-            newAngle -= 360;
-        }
-
-        while (newAngle < -180) {
-            newAngle += 360;
-        }
-        return newAngle;
-    }
 
     public void moveAmount(final float amount) {
 
@@ -91,7 +71,7 @@ public class AlgaeArm extends SubsystemBase {
 
         float scale = AlgaeArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.minAngle, AlgaeArmConstants.maxAngle);
+        float f = (float) MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.min, AlgaeArmConstants.max);
 
         algaeArmDesiredAngle = f;
     }
@@ -99,6 +79,11 @@ public class AlgaeArm extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
-        SmartDashboard.putNumber("Algae Arm Current Angle", NormalizeAngle((float)algaeArmEncoder.getPosition()*360));
+        SmartDashboard.putNumber("Algae Arm Current Angle", (float)algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
+
+        algaeArmDesiredAngle = (float)MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
+        
+        algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+
     }
 }
