@@ -27,7 +27,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.swervedrive.VisionOwn;
+import frc.robot.subsystems.swervedrive.AprilTagVision;
 
 import java.io.File;
 
@@ -62,7 +62,7 @@ public class RobotContainer
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
-  private final VisionOwn visionOwn = new VisionOwn();
+  private final AprilTagVision aprilTagVision = new AprilTagVision();
   private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
   private final Funnel funnel = new Funnel();
@@ -74,7 +74,7 @@ public class RobotContainer
   () -> driverXbox.getLeftX() * -1)
 .withControllerRotationAxis(driverXbox::getRightX)
 .deadband(Constants.DEADBAND)
-.scaleTranslation(0.8)
+.scaleTranslation(1)
 .allianceRelativeControl(true);
 
 /**
