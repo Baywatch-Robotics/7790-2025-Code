@@ -37,31 +37,31 @@ public class ShooterArm extends SubsystemBase {
 
 
 
-    public void setLeftInitial() {
+    private void setLeftInitial() {
         shooterArmDesiredAngle = (ShooterArmConstants.);
     }
-    public void setRightInitial() {
+    private void setRightInitial() {
         shooterArmDesiredAngle = (ShooterArmConstants.);
     }
-    public void setCenter() {
+    private void setCenter() {
         shooterArmDesiredAngle = (ShooterPivotConstants.);
     }
 
-    public Command setLeftInitialCommand()
+    public Command shooterPivotLeftInitialCommand()
     {
-        Command command = new InstantCommand(()-> this.setLeftInitial());
+        Command command = new InstantCommand(() -> this.setLeftInitial());
         return command;
     }
 
-    public Command setRightInitalCommand()
+    public Command shooterPivotRightInitalCommand()
     {
-        Command command = new InstantCommand(()-> this.setRightInitial());
+        Command command = new InstantCommand(() -> this.setRightInitial());
         return command;
     }
 
-    public Command setCenterCommand()
+    public Command shooterPivotCenterCommand()
     {
-        Command command = new InstantCommand(()-> this.setCenter());
+        Command command = new InstantCommand(() -> this.setCenter());
         return command;
     }
 
@@ -69,7 +69,7 @@ public class ShooterArm extends SubsystemBase {
 
 
 
-    public float NormalizeAngle(float angle) {
+    private float NormalizeAngle(float angle) {
         float newAngle = angle - ShooterArmConstants.angleOffset;
  
         while (newAngle > 180) {

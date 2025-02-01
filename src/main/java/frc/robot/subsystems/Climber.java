@@ -13,91 +13,44 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Configs.ShooterPivot;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
 
-    private double desiredPosition;
+    private SparkMax climberMotor = new SparkMax(ClimberConstants.ID, MotorType.kBrushless);
 
-    private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
-
-    private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
-
-    public Elevator() {
-
-        desiredPosition = 0;
-
-
-        // different positions for scoring below here
-
-        elevatorMotor.configure(
-                Configs.Elevator.elevatorConfig,
+    public Climber() {
+        climberMotor.configure(
+                Configs.Climber.climberConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
     }
 
-    public void setDesiredPosition(final float desiredPose) {
-
-        float newDesiredPose = (float) MathUtil.clamp(desiredPose, ElevatorConstants.Min, ElevatorConstants.Max);
-
-        desiredPosition = (newDesiredPose);
+    private void setZero() {
+        climberMotor.set(0);
     }
 
-    public void setFullRetract() {
-
-        desiredPosition = 0;
+    private void extend() {
+        climberMotor.set(ClimberConstants.extend);
     }
 
-    public void setL4() {
-        setDesiredPosition(ElevatorConstants.L4Pose);
-    }
-
-    public void setL3() {
-        setDesiredPosition(ElevatorConstants.L3Pose);
-    }
-
-    public void setL2() {
-        setDesiredPosition(ElevatorConstants.L2Pose);
-    }
-
-    public void setL1() {
-        setDesiredPosition(ElevatorConstants.L1Pose);
+    private void retract() {
+        climberMotor.set(ClimberConstants.retract);
     }
 
     // Commands
-    public Command fullRetractCommand() {
-        Command command = new InstantCommand(() -> setFullRetract());
+    public Command climberExtendCommand() {
+        Command command = new InstantCommand(() -> extend());
         return command;
     }
 
-    public Command setL4Command() {
-        Command command = new InstantCommand(() -> setL4());
+    public Command climberRetractCommand() {
+        Command command = new InstantCommand(() -> retract());
         return command;
     }
 
-    public Command setL3Command() {
-        Command command = new InstantCommand(() -> setL3());
+    public Command climberStopCommand() {
+        Command command = new InstantCommand(() -> setZero());
         return command;
-    }
-
-    public Command setL2Command() {
-        Command command = new InstantCommand(() -> setL2());
-        return command;
-    }
-
-    public Command setL1Command() {
-        Command command = new InstantCommand(() -> setL1());
-        return command;
-    }
-
-    private void moveToSetpoint() {
-        elevatorClosedLoopController.setReference(desiredPosition, ControlType.kMAXMotionPositionControl);
-    }
-
-    @Override
-    public void periodic() {
-
     }
 }

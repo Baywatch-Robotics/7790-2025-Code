@@ -70,7 +70,7 @@ public class AlgaeArm extends SubsystemBase {
 
 
 
-    public float NormalizeAngle(float angle) {
+    private float NormalizeAngle(float angle) {
         float newAngle = angle - AlgaeArmConstants.angleOffset;
  
         while (newAngle > 180) {

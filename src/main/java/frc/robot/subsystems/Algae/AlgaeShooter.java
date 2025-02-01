@@ -22,30 +22,30 @@ public class AlgaeShooter extends SubsystemBase {
                 PersistMode.kPersistParameters);
     }
                 
-    public void setZeroSpeed() {
+    private void setZeroSpeed() {
         algaeShooterMotor.set(0);
     }
 
-    public void setIntake() {
+    private void setIntake() {
         algaeShooterMotor.set(AlgaeShooterConstants.intake);
     }
 
-    public void setOutake() {
+    private void setOutake() {
         algaeShooterMotor.set(AlgaeShooterConstants.outake);
     }
 
     // Commands
-    public Command setZeroSpeedCommand() {
+    public Command algaeShooterZeroSpeedCommand() {
         Command command = new InstantCommand(() -> setZeroSpeed());
         return command;
     }
 
-    public Command setIntakeCommand() {
+    public Command algaeShooterIntakeCommand() {
         Command command = new InstantCommand(() -> setIntake());
         return command;
     }
 
-    public Command setOutakeCommand() {
+    public Command algaeShooterOutakeCommand() {
         Command command = new InstantCommand(() -> setOutake());
         return command;
     }

@@ -8,13 +8,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
-import frc.robot.Configs.ShooterPivot;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.ShooterPivotConstants;
 
 public class Elevator extends SubsystemBase {
 
@@ -26,10 +25,7 @@ public class Elevator extends SubsystemBase {
 
     public Elevator() {
 
-        desiredPosition = 0;
-
-
-        // different positions for scoring below here
+        elevatorDesiredPosition = 0;
 
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
@@ -39,7 +35,6 @@ public class Elevator extends SubsystemBase {
     }
 
     private void setFullRetract() {
-
         elevatorDesiredPosition = 0;
     }
 
@@ -60,33 +55,42 @@ public class Elevator extends SubsystemBase {
     }
 
     // Commands
-    public Command fullRetractCommand() {
+    public Command fullElevatorRetractCommand() {
         Command command = new InstantCommand(() -> setFullRetract());
         return command;
     }
 
-    public Command setL4Command() {
+    public Command setElevatorL4Command() {
         Command command = new InstantCommand(() -> setL4());
         return command;
     }
 
-    public Command setL3Command() {
+    public Command setElevatorL3Command() {
         Command command = new InstantCommand(() -> setL3());
         return command;
     }
 
-    public Command setL2Command() {
+    public Command setElevatorL2Command() {
         Command command = new InstantCommand(() -> setL2());
         return command;
     }
 
-    public Command setL1Command() {
+    public Command setElevatorL1Command() {
         Command command = new InstantCommand(() -> setL1());
         return command;
     }
 
-    private void moveToSetpoint() {
-        elevatorClosedLoopController.setReference(desiredPosition, ControlType.kMAXMotionPositionControl);
+        public void moveAmount(final float amount) {
+
+        if (Math.abs(amount) < 0.2) {
+            return;
+        }
+
+        float scale = ElevatorConstants.manualMultiplier;
+
+        float f = (float) MathUtil.clamp(elevatorDesiredPosition + amount * scale, ElevatorConstants.min, ElevatorConstants.max);
+
+        elevatorDesiredPosition = f;
     }
 
     @Override
@@ -94,11 +98,12 @@ public class Elevator extends SubsystemBase {
 
          //Code for inverse kinematics
 
-        desiredPosition = ShooterPivot;
+        //elevatorDesiredPosition = //ShooterPivot;
 
 
         
-        //moveToSetpoint();
+        elevatorDesiredPosition = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.Min, ElevatorConstants.Max);
         
+        elevatorClosedLoopController.setReference(elevatorDesiredPosition, ControlType.kMAXMotionPositionControl);
     }
 }

@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterPivot extends SubsystemBase {
@@ -29,19 +31,19 @@ public class ShooterPivot extends SubsystemBase {
 
         shooterPivotMotor.configure(Configs.ShooterPivot.shooterPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        shooterPivotDesiredAngle = NormalizeAngle((float)(shooterPivotEncoder.getPosition()*360));
+        shooterPivotDesiredAngle = NormalizeAngle((float)(shooterPivotEncoder.getPosition()));
         }
 
 
 
 
-    public void setLeftInitial() {
+    private void setLeftInitial() {
         shooterPivotDesiredAngle = (ShooterPivotConstants.leftAngleInitial);
     }
-    public void setRightInitial() {
+    private void setRightInitial() {
         shooterPivotDesiredAngle = (ShooterPivotConstants.rightAngleInitial);
     }
-    public void setCenter() {
+    private void setCenter() {
         shooterPivotDesiredAngle = (ShooterPivotConstants.centerAngle);
     }
 
@@ -67,7 +69,7 @@ public class ShooterPivot extends SubsystemBase {
 
 
 
-    public float NormalizeAngle(float angle) {
+    private float NormalizeAngle(float angle) {
         float newAngle = angle - ShooterPivotConstants.angleOffset;
 
         while (newAngle > 180) {
@@ -97,5 +99,9 @@ public class ShooterPivot extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);
         SmartDashboard.putNumber("Shooter Pivot Current Angle", NormalizeAngle((float)shooterPivotEncoder.getPosition()));
+    
+        shooterPivotDesiredAngle = (float)MathUtil.clamp(shooterPivotDesiredAngle, ShooterPivotConstants.min, ShooterPivotConstants.max);
+        
+        shooterPivotController.setReference(shooterPivotDesiredAngle/360, ControlType.kMAXMotionPositionControl);
     }
 }

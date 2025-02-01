@@ -31,33 +31,35 @@ public class Shooter extends SubsystemBase {
         coralLoaded = false;
         isLoading = false;
     }
-                
-    public void setZeroSpeed() {
+               
+    
+
+    private void setZeroSpeed() {
 
         shooterMotor.set(0);
     }
 
-    public void setIntake() {
+    private void setIntake() {
         isLoading = true;
         shooterMotor.set(ShooterConstants.intake);
     }
 
-    public void setOutake() {
+    private void setOutake() {
         shooterMotor.set(ShooterConstants.outake);
     }
 
     // Commands
-    public Command setZeroSpeedCommand() {
+    public Command shooterZeroSpeedCommand() {
         Command command = new InstantCommand(() -> setZeroSpeed());
         return command;
     }
 
-    public Command setIntakeCommand() {
+    public Command shooterIntakeCommand() {
         Command command = new InstantCommand(() -> setIntake());
         return command;
     }
 
-    public Command setOutakeCommand() {
+    public Command shooterOutakeCommand() {
         Command command = new InstantCommand(() -> setOutake());
         return command;
     }
@@ -67,8 +69,8 @@ public class Shooter extends SubsystemBase {
         coralLoaded = !coralSensor.get();
 
         if (coralLoaded){
-            if(isLoading) {
-            setZeroSpeedCommand();
+            if(!isLoading) {
+            shooterZeroSpeedCommand();
             }
         }
     }
