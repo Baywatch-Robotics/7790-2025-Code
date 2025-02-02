@@ -619,4 +619,8 @@ public class SwerveSubsystem extends SubsystemBase
   {
     return swerveDrive;
   }
+
+  public void addVisionMeasurement(){
+    swerveDrive.addVisionMeasurement(null, 0);
+  }
 }

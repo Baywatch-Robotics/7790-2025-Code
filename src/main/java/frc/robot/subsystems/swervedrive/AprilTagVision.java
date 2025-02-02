@@ -30,10 +30,11 @@ public class AprilTagVision extends SubsystemBase{
     
     AprilTagFieldLayout fieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
-    AprilTagVision(){
+    public AprilTagVision(){
 
-    PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCam, rightCamToRobot);
+   // PhotonPoseEstimator poseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCam, rightCamToRobot);
 
+        
 
 
         }
