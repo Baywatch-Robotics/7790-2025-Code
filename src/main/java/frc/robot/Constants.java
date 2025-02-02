@@ -26,8 +26,8 @@ public final class Constants
   public static final float WHEEL_LOCK_TIME = 10;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-  public static final float slowSpeedMultiplier = 0.15f;
-  public static final float mediumSpeedMultiplier = 0.3f;
+  public static final float slowSpeedClamp = 0.1f;
+  public static final float mediumSpeedClamp = 0.2f;
 
   public static final float DEADBAND = 0.1f;
 
@@ -194,7 +194,7 @@ public final class Constants
   public static final class AlignmentConstants{
 
     public static final float P = 0.1f;
-
+    public static final float maxSpeed = 0.1f;
     //Scoring Poses Below
 
   }

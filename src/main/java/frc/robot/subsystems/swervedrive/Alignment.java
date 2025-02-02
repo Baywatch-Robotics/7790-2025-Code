@@ -36,8 +36,8 @@ public class Alignment extends SubsystemBase {
         double errorXRobot = errorXField * cosHeading - errorYField * sinHeading;
         double errorYRobot = errorXField * sinHeading + errorYField * cosHeading;
 
-        double driveX = MathUtil.clamp(AlignmentConstants.P * errorXRobot, -1.0, 1.0);
-        double driveY = MathUtil.clamp(AlignmentConstants.P * errorYRobot, -1.0, 1.0);
+        double driveX = MathUtil.clamp(AlignmentConstants.P * errorXRobot, -AlignmentConstants.maxSpeed, AlignmentConstants.maxSpeed);
+        double driveY = MathUtil.clamp(AlignmentConstants.P * errorYRobot, -AlignmentConstants.maxSpeed, AlignmentConstants.maxSpeed);
 
         double targetHeading = targetPose.getRotation().getRadians();
         double headingX = Math.sin(targetHeading);

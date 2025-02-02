@@ -14,6 +14,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.swervedrive.Alignment.JoystickCommands;
 import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
 import java.util.Optional;
@@ -344,23 +348,31 @@ public class SwerveSubsystem extends SubsystemBase
     swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
     return run(() -> {
 
-
-      Translation2d scaledInputs = SwerveMath.scaleTranslation(new Translation2d(translationX.getAsDouble(),
-                                                                                 translationY.getAsDouble()), 1);
+      double translationXDouble = translationX.getAsDouble();
+      double translationYDouble = translationY.getAsDouble();
+      double headingXDouble = headingX.getAsDouble();
+      double headingYDouble = headingY.getAsDouble();
 
       if(isAlignment){
 
-        Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
+        JoystickCommands outputs = Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
 
         
+        translationXDouble = outputs.driveX;
+        translationYDouble = outputs.driveY;
+        headingXDouble = outputs.headingX;
+        headingYDouble = outputs.headingY;
       }
       
-
+      if(Elevator.isRaised){
+        translationXDouble = MathUtil.clamp(translationXDouble, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);
+        translationYDouble = MathUtil.clamp(translationYDouble, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);;
+      }
 
       // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(scaledInputs.getX(), scaledInputs.getY(),
-                                                                      headingX.getAsDouble(),
-                                                                      headingY.getAsDouble(),
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationXDouble, translationYDouble,
+                                                                      headingXDouble,
+                                                                      headingYDouble,
                                                                       swerveDrive.getOdometryHeading().getRadians(),
                                                                       swerveDrive.getMaximumChassisVelocity()));
     });
