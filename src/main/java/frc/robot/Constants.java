@@ -189,6 +189,14 @@ public final class Constants
     public static final float limelightRoll = 0.0f;
     public static final float limelightPitch = 0.0f;
     public static final float limelightYaw = 0.0f;
+  }
+
+  public static final class AlignmentConstants{
+
+    public static final float P = 0.1f;
+
+    //Scoring Poses Below
 
   }
+
 }
