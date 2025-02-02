@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -109,7 +110,7 @@ public class Elevator extends SubsystemBase {
 
         l = Constants.armLength;
 
-        desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(ang);
+        desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(Units.degreesToRadians(ang));
 
 
         }

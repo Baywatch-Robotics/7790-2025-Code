@@ -65,10 +65,6 @@ public final class Constants
     public static final float intake = -0.1f;
     public static final float outake = 0.1f;
   }
-
-  public static final class ScopeConstants{
-    
-  }
   public static final class ShooterConstants{
     public static final int ID = 9;
     public static final float intake = 0.15f;
@@ -163,5 +159,36 @@ public final class Constants
 
   public static final class LEDConstants{
     
+  }
+  public static final class ScopeConstants{
+    
+  }
+  public static final class AprilTagVisionConstants{
+
+    public static final float rightCamXOffset = 0.0f;
+    public static final float rightCamYOffset = 0.0f;
+    public static final float rightCamZOffset = 0.0f;
+
+    public static final float rightCamRoll = 0.0f;
+    public static final float rightCamPitch = 0.0f;
+    public static final float rightCamYaw = 0.0f;
+
+    
+    public static final float leftCamXOffset = 0.0f;
+    public static final float leftCamYOffset = 0.0f;
+    public static final float leftCamZOffset = 0.0f;
+
+    public static final float leftCamRoll = 0.0f;
+    public static final float leftCamPitch = 0.0f;
+    public static final float leftCamYaw = 0.0f;
+
+    public static final float limelightXOffset = 0.0f;
+    public static final float limelightYOffset = 0.0f;
+    public static final float limelightZOffset = 0.0f;
+
+    public static final float limelightRoll = 0.0f;
+    public static final float limelightPitch = 0.0f;
+    public static final float limelightYaw = 0.0f;
+
   }
 }
