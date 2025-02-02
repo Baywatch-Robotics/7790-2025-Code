@@ -15,6 +15,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -32,6 +34,9 @@ import java.io.File;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -71,6 +76,8 @@ public class SwerveSubsystem extends SubsystemBase
    * PhotonVision class to keep an accurate odometry.
    */
   private Vision vision;
+
+  public boolean isClose = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -143,7 +150,11 @@ public class SwerveSubsystem extends SubsystemBase
       vision.updatePoseEstimation(swerveDrive);
     }
 
-    
+    if(!isClose){
+      addVisionMeasurementInitial();
+    }
+//ADddvisionmeasurment
+
   }
 
   @Override
@@ -622,7 +633,41 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
-  public void addVisionMeasurement(){
-    swerveDrive.addVisionMeasurement(null, 0);
+  public void addVisionMeasurement() {
+    Pose2d robotPose = swerveDrive.getPose();
+
+    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
+
+    if (estimatedPose3d.isPresent()) {
+        Pose2d newPose = estimatedPose3d.get().toPose2d();
+        
+        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
+
+        if (distance <= 1.0) {
+            swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+          }
+         }
+        }
+        public void addVisionMeasurementInitial(){
+
+          Pose2d robotPose = swerveDrive.getPose();
+
+          Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
+      
+          if (estimatedPose3d.isPresent()) {
+              Pose2d newPose = estimatedPose3d.get().toPose2d();
+              
+              double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
+
+          // Only add the measurement if it's within 1 meter of the current pose
+          if (distance >= .5) {
+              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+          }
+          else{
+            isClose = true;
+          }
+
+      }
+
   }
 }

@@ -19,7 +19,7 @@ import frc.robot.subsystems.Coral.ShooterPivot;
 
 public class Elevator extends SubsystemBase {
 
-    public float elevatorDesiredPosition;
+    public float elevatorDesiredPosition = 0;
 
     private float desiredTotalHeight;
 
@@ -27,9 +27,9 @@ public class Elevator extends SubsystemBase {
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
 
-    public Elevator() {
+    public static boolean isRaised = false;
 
-        elevatorDesiredPosition = 0;
+    public Elevator() {
 
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
@@ -40,22 +40,27 @@ public class Elevator extends SubsystemBase {
 
     private void setFullRetract() {
         elevatorDesiredPosition = 0;
+        isRaised = false;
     }
 
     private void setL4() {
         elevatorDesiredPosition = ElevatorConstants.L4Pose;
+        isRaised = true;
     }
 
     private void setL3() {
         elevatorDesiredPosition = ElevatorConstants.L3Pose;
+        isRaised = true;
     }
 
     private void setL2() {
         elevatorDesiredPosition = ElevatorConstants.L2Pose;
+        isRaised = true;
     }
 
     private void setL1() {
         elevatorDesiredPosition = ElevatorConstants.L1Pose;
+        isRaised = true;
     }
 
     // Commands
