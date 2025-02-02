@@ -29,13 +29,13 @@ public class Alignment extends SubsystemBase {
         // Check if both cameras have targets
         if (leftResult.hasTargets() && rightResult.hasTargets()) {
 
-            double leftSideDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double leftNormalDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double leftHeading = PhotonUtils.getYawToPose();
+            double leftSideDistance = PhotonUtils.estimateFieldToRobotAprilTag(P, null) ;
+            double leftNormalDistance = PhotonUtils.getDistanceToPose;
+            double leftHeading = ;
 
-            double rightSideDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double rightNormalDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double rightHeading = PhotonUtils.calculateAngleToTargetDegrees();
+            double rightSideDistance = ;
+            double rightNormalDistance = ;
+            double rightHeading = ;
 
             // Average the values from both cameras
             averageSideDistance = (leftSideDistance + rightSideDistance) / 2;
@@ -44,9 +44,9 @@ public class Alignment extends SubsystemBase {
 
         } else if (leftResult.hasTargets()) {
             // If only left camera has targets, use left camera values
-            double leftSideDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double leftNormalDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double leftHeading = PhotonUtils.calculateAngleToTargetDegrees();
+            double leftSideDistance = ;
+            double leftNormalDistance = ;
+            double leftHeading = ;
 
             // Use left camera results
             averageSideDistance = leftSideDistance;
@@ -55,16 +55,14 @@ public class Alignment extends SubsystemBase {
 
         } else if (rightResult.hasTargets()) {
             // If only right camera has targets, use right camera values
-            double rightSideDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double rightNormalDistance = PhotonUtils.calculateDistanceToTargetMeters();
-            double rightHeading = PhotonUtils.calculateDistanceToTargetMeters();
+            double rightSideDistance = ;
+            double rightNormalDistance = ;
+            double rightHeading = ;
 
             // Use right camera results
             averageSideDistance = rightSideDistance;
             averageNormalDistance = rightNormalDistance;
             averageHeading = rightHeading;
-
-            
         }
         }
     }
