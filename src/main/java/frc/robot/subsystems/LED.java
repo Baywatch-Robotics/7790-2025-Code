@@ -29,7 +29,15 @@ public class LED extends SubsystemBase {
     @Override
     public void periodic() {
       // Periodically send the latest LED color data to the LED strip for it to display
-      m_led.setData(m_buffer);
+     // Create an LED pattern that sets the entire strip to solid red
+LEDPattern red = LEDPattern.solid(Color.kOrange);
+
+// Apply the LED pattern to the data buffer
+red.applyTo(m_buffer);
+
+// Write the data to the LED strip
+m_led.setData(m_buffer);
+
     }
   
     /**
