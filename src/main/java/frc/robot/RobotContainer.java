@@ -43,7 +43,7 @@ public class RobotContainer
 {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  final         CommandXboxController driverXbox = new CommandXboxController(0);
+  final CommandXboxController driverXbox = new CommandXboxController(0);
 
   final CommandGenericHID buttonBox1 = new CommandGenericHID(1);
   final CommandGenericHID buttonBox2 = new CommandGenericHID(2);

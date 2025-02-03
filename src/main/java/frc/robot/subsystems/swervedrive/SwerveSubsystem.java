@@ -352,7 +352,7 @@ public class SwerveSubsystem extends SubsystemBase
       double translationYDouble = translationY.getAsDouble();
       double headingXDouble = headingX.getAsDouble();
       double headingYDouble = headingY.getAsDouble();
-
+/* 
       if(isAlignment){
 
         JoystickCommands outputs = Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
@@ -363,6 +363,7 @@ public class SwerveSubsystem extends SubsystemBase
         headingXDouble = outputs.headingX;
         headingYDouble = outputs.headingY;
       }
+        */
       
       if(Elevator.isRaised){
         translationXDouble = MathUtil.clamp(translationXDouble, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);

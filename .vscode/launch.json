@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "frc.robot.Main",
+      "projectName": "7790-2025-Code"
+    },
+    {
+      "type": "java",
       "name": "CoralCommandMemoryCell",
       "request": "launch",
       "mainClass": "frc.robot.subsystems.CoralCommandMemoryCell",
