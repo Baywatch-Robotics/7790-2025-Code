@@ -69,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean             visionDriveTest     = false; 
   {
     if (Robot.isSimulation()) {
-      visionDriveTest = true;
+      visionDriveTest = false;
     }
   }
 
@@ -362,7 +362,7 @@ public class SwerveSubsystem extends SubsystemBase
         //JoystickCommands outputs = Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
         //For test
         Rotation2d testRot = new Rotation2d(Units.degreesToRadians(100));
-        Pose2d testPose = new Pose2d(1.0, 1.0, testRot);
+        Pose2d testPose = new Pose2d(3, 4, testRot);
 
         JoystickCommands outputs = Alignment.driveToPose(getPose(), testPose);
         

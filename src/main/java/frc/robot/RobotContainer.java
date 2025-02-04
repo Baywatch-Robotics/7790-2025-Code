@@ -31,6 +31,7 @@ import frc.robot.subsystems.swervedrive.Alignment;
 import frc.robot.subsystems.swervedrive.AprilTagVision;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
 
@@ -69,7 +70,11 @@ public class RobotContainer
   private final Elevator elevator = new Elevator();
   private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
-  
+
+  DoubleSupplier driveX = () -> driverXbox.getLeftX();
+  DoubleSupplier driveY = () -> driverXbox.getLeftY();
+  DoubleSupplier headingX = () -> driverXbox.getRightX();
+  DoubleSupplier headingY = () -> driverXbox.getRightY();
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driverXbox.getLeftY() * -1,
@@ -116,7 +121,6 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
                                                 (Math.PI *
                                                  2))
                  .headingWhile(true);
-
 /**
 * The container for the robot. Contains subsystems, OI devices, and commands.
 */
@@ -143,6 +147,13 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     //Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+
+
+
+
+    Command driveFieldOriented = drivebase.driveCommand(driveX, driveY, headingX, headingY);
+
+
    // Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
@@ -150,7 +161,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
 
     if (RobotBase.isSimulation())
     {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+      drivebase.setDefaultCommand(driveFieldOriented);
     } else
     {
       drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
