@@ -38,7 +38,7 @@ public final class Constants
 
   
   public static final class AlgaeArmConstants{
-    public static final int ID = 11;
+    public static final int ID = 22;
 
     public static final float stowedUpAngle = 0.0f;
     public static final float straightOutAngle = 0.0f;

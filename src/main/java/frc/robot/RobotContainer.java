@@ -27,6 +27,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.swervedrive.Alignment;
 import frc.robot.subsystems.swervedrive.AprilTagVision;
 
 import java.io.File;
@@ -63,6 +64,7 @@ public class RobotContainer
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
   private final AprilTagVision aprilTagVision = new AprilTagVision();
+  private final Alignment alignment = new Alignment();
   private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
   private final Funnel funnel = new Funnel();
@@ -178,6 +180,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
       driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
       driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
+      
     }
 
   }

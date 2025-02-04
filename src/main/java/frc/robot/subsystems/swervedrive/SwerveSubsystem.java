@@ -157,7 +157,10 @@ public class SwerveSubsystem extends SubsystemBase
     if(!isClose){
       addVisionMeasurementInitial();
     }
-//ADddvisionmeasurment
+    else{
+      addVisionMeasurement();
+    }
+    
 
   }
 
@@ -273,6 +276,7 @@ public class SwerveSubsystem extends SubsystemBase
     return new PathPlannerAuto(pathName);
   }
 
+
   /**
    * Use PathPlanner Path finding to go to a point on the field.
    *
@@ -294,7 +298,6 @@ public class SwerveSubsystem extends SubsystemBase
         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
                                      );
   }
-
   
 
 
@@ -352,18 +355,23 @@ public class SwerveSubsystem extends SubsystemBase
       double translationYDouble = translationY.getAsDouble();
       double headingXDouble = headingX.getAsDouble();
       double headingYDouble = headingY.getAsDouble();
-/* 
-      if(isAlignment){
 
-        JoystickCommands outputs = Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
+      
+      //if(isAlignment){
 
+        //JoystickCommands outputs = Alignment.driveToPose(getPose(), Alignment.getTargetPose(requestedPose));
+        //For test
+        Rotation2d testRot = new Rotation2d(Units.degreesToRadians(100));
+        Pose2d testPose = new Pose2d(1.0, 1.0, testRot);
+
+        JoystickCommands outputs = Alignment.driveToPose(getPose(), testPose);
         
         translationXDouble = outputs.driveX;
         translationYDouble = outputs.driveY;
         headingXDouble = outputs.headingX;
         headingYDouble = outputs.headingY;
-      }
-        */
+     // }
+        
       
       if(Elevator.isRaised){
         translationXDouble = MathUtil.clamp(translationXDouble, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);
