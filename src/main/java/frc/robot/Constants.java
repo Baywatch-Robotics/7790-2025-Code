@@ -159,6 +159,10 @@ public final class Constants
 
   public static final class LEDConstants{
     
+    public static final int port = 0;
+
+    public static final int length = 25;
+
   }
   public static final class ScopeConstants{
     
