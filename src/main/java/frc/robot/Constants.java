@@ -197,8 +197,8 @@ public final class Constants
 
   public static final class AlignmentConstants{
 
-    public static final float P = 0.1f;
-    public static final float maxSpeed = 0.1f;
+    public static final float P = 0.5f;
+    public static final float maxSpeed = 0.5f;
     //Scoring Poses Below
 
   }

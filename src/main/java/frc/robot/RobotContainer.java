@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -148,23 +149,18 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     //    driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
-
-
-
-    Command driveFieldOriented = drivebase.driveCommand(driveX, driveY, headingX, headingY);
-
-
+    Command driveFieldOrentedToPose = drivebase.driveCommand();
    // Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
-
+    
 
     if (RobotBase.isSimulation())
     {
-      drivebase.setDefaultCommand(driveFieldOriented);
+      drivebase.setDefaultCommand(driveFieldOrentedToPose);
     } else
     {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     }
 
     if (Robot.isSimulation())
@@ -175,8 +171,6 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     }
     if (DriverStation.isTest())
     {
-      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity); // Overrides drive command above!
-
       driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
       driverXbox.leftBumper().onTrue(Commands.none());
@@ -191,7 +185,10 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
       driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
       driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
-      
+
+      driverXbox.axisGreaterThan(0, 0.1).or(driverXbox.axisGreaterThan(1, .1)).or(driverXbox.axisGreaterThan(2, .1)).or(driverXbox.axisGreaterThan(3, .1)).onTrue(driveFieldOrientedDirectAngle);
+
+      driverXbox.rightBumper().onTrue(driveFieldOrentedToPose);
     }
 
   }

@@ -124,7 +124,7 @@ public class Elevator extends SubsystemBase {
         desiredTotalHeight = elevatorDesiredPosition;  
         }
 
-        System.out.println(desiredTotalHeight);
+        //System.out.println(desiredTotalHeight);
         
         desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
         
