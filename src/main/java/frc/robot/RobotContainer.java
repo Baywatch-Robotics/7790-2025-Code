@@ -186,7 +186,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
       driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
 
-      driverXbox.axisGreaterThan(0, 0.1).or(driverXbox.axisGreaterThan(1, .1)).or(driverXbox.axisGreaterThan(2, .1)).or(driverXbox.axisGreaterThan(3, .1)).onTrue(driveFieldOrientedDirectAngle);
+      driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
       driverXbox.rightBumper().onTrue(driveFieldOrentedToPose);
     }
