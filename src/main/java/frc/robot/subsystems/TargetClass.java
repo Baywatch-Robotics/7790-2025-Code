@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class TargetClass {
 
     // Field width based on blue alliance origin. Update this value as required.
-    private static final double FIELD_WIDTH = ;
+    private static final double FIELD_WIDTH = 17.55;
 
     private double x;
     private double y;
