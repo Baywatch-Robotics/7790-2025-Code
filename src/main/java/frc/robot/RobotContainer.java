@@ -9,13 +9,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
@@ -48,9 +51,10 @@ public class RobotContainer
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
 
-  final CommandGenericHID buttonBox1 = new CommandGenericHID(1);
-  final CommandGenericHID buttonBox2 = new CommandGenericHID(2);
+  private final CommandJoystick buttonBox1 = new CommandJoystick(1);
+  private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
+
 
 
   // The robot's subsystems and commands are defined here...
@@ -71,6 +75,7 @@ public class RobotContainer
   private final Elevator elevator = new Elevator();
   private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
+  private final ButtonBox buttonBox = new ButtonBox();
 
   DoubleSupplier driveX = () -> driverXbox.getLeftX();
   DoubleSupplier driveY = () -> driverXbox.getLeftY();
@@ -148,8 +153,6 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     //Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngle);
     Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-
-    Command driveFieldOrentedToPose = drivebase.driveCommand();
    // Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
@@ -157,7 +160,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
 
     if (RobotBase.isSimulation())
     {
-      drivebase.setDefaultCommand(driveFieldOrentedToPose);
+      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     } else
     {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
@@ -188,9 +191,44 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
 
       driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
-      driverXbox.rightBumper().onTrue(driveFieldOrentedToPose);
+      buttonBox1.button(1).and(buttonBox1.button(2))
+      .onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
+
+    buttonBox2.button(9)
+      .onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
+
+      //temp
+
+      driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
+
+    
+    buttonBox2.button(1)
+      .onTrue(new InstantCommand(() -> buttonBox.getNextTarget()));
     }
 
+    // Create a command that continuously follows the queue (if present) unless overridden.
+    Command followQueueCommand = Commands.run(() -> {
+        // If a driver override is active, do nothing.
+        if (Math.abs(driverXbox.getLeftX()) > 0.1 ||
+            Math.abs(driverXbox.getLeftY()) > 0.1) {
+            return;
+        }
+        // Otherwise, if the queue is non-empty, align to the next target.
+        if (buttonBox.hasQueue()) { // You can add a helper in ButtonBox to check if there is any target.
+            buttonBox.alignNextTarget(drivebase, drivebase.getPose());
+        }
+    }, drivebase, buttonBox);
+
+    // Set followQueueCommand as the default command for the drivebase, or schedule it as needed.
+    drivebase.setDefaultCommand(followQueueCommand);
+
+    // Now override this behavior by binding the resume action to the right bumper.
+    driverXbox.rightBumper().onTrue(
+        new InstantCommand(() -> {
+          // On resume, simply schedule the followQueueCommand.
+          followQueueCommand.schedule();
+        }, drivebase, buttonBox)
+    );
   }
 
   /**

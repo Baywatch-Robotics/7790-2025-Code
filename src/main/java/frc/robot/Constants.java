@@ -197,10 +197,9 @@ public final class Constants
 
   public static final class AlignmentConstants{
 
-    public static final float P = 0.05f;
-    public static final float maxSpeed = 0.5f;
-    //Scoring Poses Below
-
+    public static final double driveP = 0.0;
+  
+    public static final double maxSpeed = .25; // or whichever maximum speed is appropriate
   }
 
 }

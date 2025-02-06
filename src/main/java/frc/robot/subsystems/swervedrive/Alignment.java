@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AlignmentConstants;
+import swervelib.SwerveDrive;
+import swervelib.SwerveInputStream;
 
 public class Alignment extends SubsystemBase {
 
@@ -22,7 +24,9 @@ public class Alignment extends SubsystemBase {
         }
     }
 
-    public static JoystickCommands driveToPose(Pose2d currentPose, Pose2d targetPose) {
+    public static SwerveInputStream driveToPose(Pose2d currentPose,
+                                                Pose2d targetPose,
+                                                SwerveDrive drive) {
         Translation2d currentTranslation = currentPose.getTranslation();
         Translation2d targetTranslation = targetPose.getTranslation();
 
@@ -36,13 +40,18 @@ public class Alignment extends SubsystemBase {
         double errorXRobot = errorXField * cosHeading - errorYField * sinHeading;
         double errorYRobot = errorXField * sinHeading + errorYField * cosHeading;
 
-        double driveX = MathUtil.clamp(AlignmentConstants.P * errorXRobot, -AlignmentConstants.maxSpeed, AlignmentConstants.maxSpeed);
-        double driveY = MathUtil.clamp(AlignmentConstants.P * errorYRobot, -AlignmentConstants.maxSpeed, AlignmentConstants.maxSpeed);
+        // Apply drive-only PID constants defined in AlignmentConstants for translation
+        double driveX = MathUtil.clamp(AlignmentConstants.driveP * errorXRobot,
+                                       -AlignmentConstants.maxSpeed,
+                                       AlignmentConstants.maxSpeed);
+        double driveY = MathUtil.clamp(AlignmentConstants.driveP * errorYRobot,
+                                       -AlignmentConstants.maxSpeed,
+                                       AlignmentConstants.maxSpeed);
 
         double targetHeading = targetPose.getRotation().getRadians();
-        double headingX = Math.sin(targetHeading);
-        double headingY = Math.cos(targetHeading);
-
-        return new JoystickCommands(driveX, driveY, headingX, headingY);
+        
+        return SwerveInputStream.of(drive, () -> driveX, () -> driveY)
+                .withControllerHeadingAxis(() -> Math.sin(targetHeading),
+                                           () -> Math.cos(targetHeading));
     }
 }

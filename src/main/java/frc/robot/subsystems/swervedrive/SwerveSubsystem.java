@@ -283,7 +283,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param pose Target {@link Pose2d} to go to.
    * @return PathFinding command
    */
-  public Command driveToPose(Pose2d pose)
+/*  public Command driveToPose(Pose2d pose)
   {
 // Create the constraints to use while pathfinding
     PathConstraints constraints = new PathConstraints(
@@ -298,9 +298,7 @@ public class SwerveSubsystem extends SubsystemBase
         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
                                      );
   }
-  
-
-
+*/
 
 
 
@@ -332,38 +330,6 @@ public class SwerveSubsystem extends SubsystemBase
             new Config(),
             this, swerveDrive),
         3.0, 5.0, 3.0);
-  }
-
-  public Command driveCommand()
-  {
-    swerveDrive.setHeadingCorrection(true); // Normally you would want heading correction for this kind of control.
-    return run(() -> {
-      
-        Rotation2d testRot = new Rotation2d(Units.degreesToRadians(100));
-        Pose2d testPose = new Pose2d(3, 4, testRot);
-
-        JoystickCommands outputs = Alignment.driveToPose(getPose(), testPose);
-        
-        System.out.println("Drive to pose enabled");
-        
-        double translationX = outputs.driveX;
-        double translationY = outputs.driveY;
-        double headingX = outputs.headingX;
-        double headingY = outputs.headingY;
-        
-      
-      if(Elevator.isRaised){
-        translationX = MathUtil.clamp(translationX, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);
-        translationY = MathUtil.clamp(translationY, -Constants.slowSpeedClamp, Constants.slowSpeedClamp);;
-      }
-
-      // Make the robot move
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(translationX, translationY,
-                                                                      headingX,
-                                                                      headingY,
-                                                                      swerveDrive.getOdometryHeading().getRadians(),
-                                                                      swerveDrive.getMaximumChassisVelocity()));
-    });
   }
 
   /**
