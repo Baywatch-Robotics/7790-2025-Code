@@ -201,5 +201,7 @@ public final class Constants
   
     public static final double maxSpeed = .25; // or whichever maximum speed is appropriate
   }
-
+  public static final class ButtonBoxConstants{
+    public static final double allowableError = 0.02;
+}
 }

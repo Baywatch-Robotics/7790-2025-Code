@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Queue;
 import java.util.LinkedList;
-
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants.AlignmentConstants;
+import frc.robot.Constants.ButtonBoxConstants;
 // Import the alignment and swerve subsystem packages:
 import frc.robot.subsystems.swervedrive.Alignment;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -64,17 +66,38 @@ public class ButtonBox extends SubsystemBase {
      * driveFieldOriented on the SwerveSubsystem.
      *
      * @param swerveSubsystem The swerve drive subsystem.
-     * @param currentPose     The current robot pose.
+     * @param ignoredInitialPose     The current robot pose.
      */
-    public void alignNextTarget(SwerveSubsystem swerveSubsystem, Pose2d currentPose) {
+    public void alignNextTarget(SwerveSubsystem swerveSubsystem, Pose2d ignoredInitialPose) {
         TargetClass target = getNextTarget();
         if (target != null) {
             // Convert target information into a target pose.
             Pose2d targetPose = target.toPose2d();
-            // Calculate the SwerveInputStream using Alignment's driveToPose.
-            SwerveInputStream inputStream = Alignment.driveToPose(currentPose, targetPose, swerveSubsystem.getSwerveDrive());
-            // Command the drive with the calculated input stream.
-            swerveSubsystem.driveFieldOriented(inputStream);
+
+            new Thread(() -> {
+                while (true) {
+                    Pose2d currentPose = swerveSubsystem.getPose();
+                    double distance = currentPose.getTranslation().getDistance(
+                        targetPose.getTranslation());
+                    
+                    if (distance < ButtonBoxConstants.allowableError) {
+                        // Stop the robot
+                        SwerveInputStream stopStream = SwerveInputStream.of(
+                            swerveSubsystem.getSwerveDrive(), () -> 0.0, () -> 0.0)
+                            .withControllerHeadingAxis(() -> 0.0, () -> 0.0);
+                        swerveSubsystem.driveFieldOriented(stopStream);
+                        break;
+                    }
+                    
+                    // Drive toward the target
+                    SwerveInputStream inputStream = Alignment.driveToPose(
+                        currentPose, targetPose, swerveSubsystem.getSwerveDrive());
+                    swerveSubsystem.driveFieldOriented(inputStream);
+                    
+                    // Delay to avoid hogging CPU cycles
+                    Timer.delay(0.02);
+                }
+            }).start();
         }
     }
 
