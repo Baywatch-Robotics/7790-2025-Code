@@ -25,7 +25,6 @@ import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Algae.AlgaeShooter;
-import frc.robot.subsystems.Coral.CoralCommandMemoryCell;
 import frc.robot.subsystems.Coral.Scope;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
@@ -177,8 +176,8 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
       driverXbox.leftBumper().onTrue(Commands.none());
       driverXbox.rightBumper().onTrue(Commands.none());
-    } else
-    {
+    } //else
+    //{
       //Maincontrols here
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
