@@ -62,20 +62,19 @@ public class RobotContainer
                                                                                 "swerve/neo"));
   
   
-  private final AlgaeArm algaeArm = new AlgaeArm();
-  private final AlgaeShooter algaeShooter = new AlgaeShooter();
-  private final CoralCommandMemoryCell coralCommandMemoryCell = new CoralCommandMemoryCell();
-  private final Scope scope = new Scope();
-  private final Shooter shooter = new Shooter();
-  private final ShooterArm shooterArm = new ShooterArm();
-  private final ShooterPivot shooterPivot = new ShooterPivot();
-  private final AprilTagVision aprilTagVision = new AprilTagVision();
-  private final Alignment alignment = new Alignment();
-  private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
-  private final Funnel funnel = new Funnel();
+  //private final AlgaeArm algaeArm = new AlgaeArm();
+  //private final AlgaeShooter algaeShooter = new AlgaeShooter();
+  //private final Scope scope = new Scope();
+  //private final Shooter shooter = new Shooter();
+  //private final ShooterArm shooterArm = new ShooterArm();
+  //private final ShooterPivot shooterPivot = new ShooterPivot();
+  //private final AprilTagVision aprilTagVision = new AprilTagVision();
+  //private final Alignment alignment = new Alignment();
+  //private final Climber climber = new Climber();
+  //private final Elevator elevator = new Elevator();
+  //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
-  private final ButtonBox buttonBox = new ButtonBox();
+  //private final ButtonBox buttonBox = new ButtonBox();
 
   DoubleSupplier driveX = () -> driverXbox.getLeftX();
   DoubleSupplier driveY = () -> driverXbox.getLeftY();
@@ -163,7 +162,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     } else
     {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+      drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     }
 
     if (Robot.isSimulation())
@@ -181,32 +180,35 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     } else
     {
       //Maincontrols here
-      this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
+     // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      driverXbox.a().onTrue(Commands.run(shooter::shooterIntakeCommand));
-      driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
-      driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
-      driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
+    //  driverXbox.a().onTrue(Commands.run(shooter::shooterIntakeCommand));
+    //  driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
+    //  driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
+    //  driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
 
-      driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
+     // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
-      buttonBox1.button(1).and(buttonBox1.button(2))
-      .onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
+    //  buttonBox1.button(1).and(buttonBox1.button(2))
+     // .onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
-    buttonBox2.button(9)
-      .onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
+   // buttonBox2.button(9)
+    //  .onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
 
       //temp
 
-      driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
+    //  driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
     
-    buttonBox2.button(1)
-      .onTrue(new InstantCommand(() -> buttonBox.getNextTarget()));
+    //buttonBox2.button(1)
+    //  .onTrue(new InstantCommand(() -> buttonBox.getNextTarget()));
     }
 
     // Create a command that continuously follows the queue (if present) unless overridden.
+
+    /*
+
     Command followQueueCommand = Commands.run(() -> {
         // If a driver override is active, do nothing.
         if (Math.abs(driverXbox.getLeftX()) > 0.1 ||
@@ -230,6 +232,10 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
         }, drivebase, buttonBox)
     );
   }
+
+   */
+
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
