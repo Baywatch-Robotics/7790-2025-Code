@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -77,7 +78,6 @@ public class RobotContainer
   //private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
 
-  elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
   //private final ButtonBox buttonBox = new ButtonBox();
@@ -149,6 +149,11 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
   private void configureBindings()
   {
 
+    buttonBox1.button(1).onTrue(elevator.setElevatorL1Command());
+    buttonBox1.button(2).onTrue(elevator.setElevatorL2Command());
+    buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
+    buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
+
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     //Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
@@ -159,6 +164,8 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));;
+
 
     if (RobotBase.isSimulation())
     {

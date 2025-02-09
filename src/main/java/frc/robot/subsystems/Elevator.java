@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -30,12 +31,20 @@ public class Elevator extends SubsystemBase {
 
     public static boolean isRaised = false;
 
+    private RelativeEncoder m_encoder;
+    
     public Elevator() {
 
+        m_encoder = elevatorMotor.getEncoder();
+        m_encoder.setPosition(0);
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+
+      
+        
+        System.out.println("Elevator Initialized " + m_encoder.getPosition());
 
     }
 
@@ -90,7 +99,7 @@ public class Elevator extends SubsystemBase {
         return command;
     }
 
-        public void moveAmount(final float amount) {
+        public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
             return;
@@ -101,6 +110,8 @@ public class Elevator extends SubsystemBase {
         float f = (float) MathUtil.clamp(elevatorDesiredPosition + amount * scale, ElevatorConstants.min, ElevatorConstants.max);
 
         elevatorDesiredPosition = f;
+
+        System.out.println("Elevator Desired Position: " + elevatorDesiredPosition);
     }
 
     @Override
@@ -129,6 +140,6 @@ public class Elevator extends SubsystemBase {
         desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
         
         SmartDashboard.putString("StringTest", "tester");
-        //elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
+        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }
 }

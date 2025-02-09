@@ -131,25 +131,23 @@ public final class Constants
   public static final class ElevatorConstants{
 
     public static final int ID = 13;
-
-    public static final float maxSpeed = 0.1f;
     
-    public static final float manualMultiplier = 0.1f;
+    public static final float manualMultiplier = 1f;
 
-    public static final float min = 0.0f;
+    public static final float min = -270.0f;
     public static final float max = 0.0f;
 
-    public static final float L4Pose = 0.0f;
-    public static final float L3Pose = 0.0f;
-    public static final float L2Pose = 0.0f;
+    public static final float L4Pose = -265.0f;
+    public static final float L3Pose = -225.0f;
+    public static final float L2Pose = -155.0f;
     public static final float L1Pose = 0.0f;
 
 
-    public static final float P = 0.0f;
+    public static final float P = .1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 2100;
-    public static final float maxAcceleration = 3000;
+    public static final float maxVelocity = 5200;
+    public static final float maxAcceleration = 6000;
     public static final float allowedClosedLoopError = .5f;
   }
 
