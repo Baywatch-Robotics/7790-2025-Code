@@ -54,7 +54,12 @@ public class RobotContainer
   private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
 
+  DoubleSupplier driveX = () -> driverXbox.getLeftX();
+  DoubleSupplier driveY = () -> driverXbox.getLeftY();
+  DoubleSupplier headingX = () -> driverXbox.getRightX();
+  DoubleSupplier headingY = () -> driverXbox.getRightY();
 
+  DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -70,15 +75,14 @@ public class RobotContainer
   //private final AprilTagVision aprilTagVision = new AprilTagVision();
   //private final Alignment alignment = new Alignment();
   //private final Climber climber = new Climber();
-  //private final Elevator elevator = new Elevator();
+  private final Elevator elevator = new Elevator();
+
+  elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
   //private final ButtonBox buttonBox = new ButtonBox();
 
-  DoubleSupplier driveX = () -> driverXbox.getLeftX();
-  DoubleSupplier driveY = () -> driverXbox.getLeftY();
-  DoubleSupplier headingX = () -> driverXbox.getRightX();
-  DoubleSupplier headingY = () -> driverXbox.getRightY();
+  
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driverXbox.getLeftY() * -1,
