@@ -28,12 +28,12 @@ public class AlgaeArm extends SubsystemBase {
 
     public AlgaeArm() {
 
-        algaeArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
         }
 
-
+    // Define desired positions for the arm
     private void stowUp() {
         algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle + AlgaeArmConstants.angleOffset;
     }
@@ -44,6 +44,7 @@ public class AlgaeArm extends SubsystemBase {
         algaeArmDesiredAngle = AlgaeArmConstants.groundIntakeAngle + AlgaeArmConstants.angleOffset;
     }
 
+    // Commands to move the arm to the desired positions
     public Command algaeArmStowUpCommand()
     {
         Command command = new InstantCommand(() -> stowUp());
@@ -62,8 +63,7 @@ public class AlgaeArm extends SubsystemBase {
         return command;
     }
 
-
-    public void moveAmount(final float amount) {
+    public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
             return;
@@ -83,7 +83,7 @@ public class AlgaeArm extends SubsystemBase {
 
         algaeArmDesiredAngle = (float)MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
         
-        //algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+        algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
 
     }
 }

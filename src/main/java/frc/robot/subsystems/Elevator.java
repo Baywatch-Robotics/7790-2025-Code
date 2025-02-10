@@ -99,7 +99,7 @@ public class Elevator extends SubsystemBase {
         return command;
     }
 
-        public void moveAmount(final double amount) {
+    public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
             return;

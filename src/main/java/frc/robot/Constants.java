@@ -38,7 +38,7 @@ public final class Constants
 
   
   public static final class AlgaeArmConstants{
-    public static final int ID = 22;
+    public static final int ID = 14;
 
     public static final float stowedUpAngle = 0.0f;
     public static final float straightOutAngle = 0.0f;
@@ -46,17 +46,17 @@ public final class Constants
 
     public static final float angleOffset = 0.0f;
 
-    public static final float max = 0.0f;
-    public static final float min = 0.0f;
+    public static final float max = 1000.0f;
+    public static final float min = -1000.0f;
 
-    public static final float manualMultiplier = 0.1f;
+    public static final float manualMultiplier = 0.01f;
 
 
-    public static final float P = 0.0f;
+    public static final float P = 0.01f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 2100;
-    public static final float maxAcceleration = 3000;
+    public static final float maxVelocity = 400;
+    public static final float maxAcceleration = 300;
     public static final float allowedClosedLoopError = .5f;
   }
 
@@ -139,7 +139,7 @@ public final class Constants
 
     public static final float L4Pose = -265.0f;
     public static final float L3Pose = -225.0f;
-    public static final float L2Pose = -155.0f;
+    public static final float L2Pose = -154.0f;
     public static final float L1Pose = 0.0f;
 
 

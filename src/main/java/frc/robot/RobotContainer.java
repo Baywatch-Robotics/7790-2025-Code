@@ -61,13 +61,14 @@ public class RobotContainer
   DoubleSupplier headingY = () -> driverXbox.getRightY();
 
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
-
+  DoubleSupplier algaeArmUpDown = () -> opXbox.getLeftY();
+  
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
   
   
-  //private final AlgaeArm algaeArm = new AlgaeArm();
+  private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   //private final Shooter shooter = new Shooter();
@@ -76,7 +77,7 @@ public class RobotContainer
   //private final AprilTagVision aprilTagVision = new AprilTagVision();
   //private final Alignment alignment = new Alignment();
   //private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
+ // private final Elevator elevator = new Elevator();
 
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
@@ -149,10 +150,10 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
   private void configureBindings()
   {
 
-    buttonBox1.button(1).onTrue(elevator.setElevatorL1Command());
-    buttonBox1.button(2).onTrue(elevator.setElevatorL2Command());
-    buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
-    buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
+    //buttonBox1.button(1).onTrue(elevator.setElevatorL1Command());
+   // buttonBox1.button(2).onTrue(elevator.setElevatorL2Command());
+   // buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
+    //buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
 
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
@@ -164,8 +165,8 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));;
-
+    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));;
+    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));;
 
     if (RobotBase.isSimulation())
     {
