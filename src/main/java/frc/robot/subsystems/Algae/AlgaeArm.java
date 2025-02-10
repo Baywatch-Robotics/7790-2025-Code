@@ -18,7 +18,7 @@ import frc.robot.Constants.AlgaeArmConstants;
 
 public class AlgaeArm extends SubsystemBase {
 
-    public float algaeArmDesiredAngle;
+    public double algaeArmDesiredAngle;
 
     private SparkMax algaeArmMotor = new SparkMax(AlgaeArmConstants.ID, MotorType.kBrushless);
 
@@ -69,19 +69,25 @@ public class AlgaeArm extends SubsystemBase {
             return;
         }
 
-        float scale = AlgaeArmConstants.manualMultiplier;
+        double scale = AlgaeArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.min, AlgaeArmConstants.max);
+        double f = MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.min, AlgaeArmConstants.max);
 
         algaeArmDesiredAngle = f;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
-        SmartDashboard.putNumber("Algae Arm Current Angle", (float)algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
 
-        algaeArmDesiredAngle = (float)MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
+        algaeArmDesiredAngle =MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
+
+        
+        SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
+        SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
+        SmartDashboard.putNumber("Algae Arm 2 Current Angle", algaeArmMotor.getEncoder().getPosition() + AlgaeArmConstants.angleOffset);
+      
+
+       
         
         algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kMAXMotionPositionControl);
 

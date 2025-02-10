@@ -52,11 +52,11 @@ public final class Constants
     public static final float manualMultiplier = 0.01f;
 
 
-    public static final float P = 0.01f;
+    public static final float P = 0.1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 400;
-    public static final float maxAcceleration = 300;
+    public static final float maxVelocity = 1000;
+    public static final float maxAcceleration = 1000;
     public static final float allowedClosedLoopError = .5f;
   }
 
