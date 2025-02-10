@@ -49,7 +49,7 @@ public final class Constants
     public static final float max = 1000.0f;
     public static final float min = -1000.0f;
 
-    public static final float manualMultiplier = 0.001f;
+    public static final float manualMultiplier = 0.005f;
 
 
     public static final float P = 0.1f;
@@ -143,7 +143,7 @@ public final class Constants
     public static final float L1Pose = 0.0f;
 
 
-    public static final float P = .1f;
+    public static final float P = 0.1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 5200;
