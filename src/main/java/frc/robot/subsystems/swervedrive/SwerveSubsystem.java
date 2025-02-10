@@ -155,7 +155,7 @@ public class SwerveSubsystem extends SubsystemBase
     }
 
     if(!isClose){
-      addVisionMeasurementInitial();
+      //addVisionMeasurementInitial();
     }
     else{
       addVisionMeasurement();
@@ -607,7 +607,7 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public void addVisionMeasurement() {
-    Pose2d robotPose = swerveDrive.getPose();
+    /*Pose2d robotPose = swerveDrive.getPose();
 
     Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
 
@@ -640,7 +640,7 @@ public class SwerveSubsystem extends SubsystemBase
             isClose = true;
           }
 
-      }
+      }*/
 
   }
 }
