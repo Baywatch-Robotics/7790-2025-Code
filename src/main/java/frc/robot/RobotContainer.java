@@ -155,6 +155,9 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
    // buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
     //buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
 
+    buttonBox1.button(6).onTrue(algaeArm.algaeArmStowUpCommand());
+    buttonBox1.button(5).onTrue(algaeArm.algaeArmGroundIntakeCommand());
+
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     //Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
