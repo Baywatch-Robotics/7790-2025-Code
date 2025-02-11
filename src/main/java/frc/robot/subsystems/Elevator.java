@@ -118,22 +118,23 @@ public class Elevator extends SubsystemBase {
     public void periodic() {
 
          //Code for inverse kinematics
-        if(!ShooterPivot.isStraight) {
-        float ang;
+        //if(!ShooterPivot.isStraight) {
+        //float ang;
 
-        float l;
+        //float l;
 
-        ang = ShooterPivot.shooterPivotDesiredAngle * (360/25);
+        //ang = ShooterPivot.shooterPivotDesiredAngle * (360/25);
 
-        l = Constants.armLength;
+        //l = Constants.armLength;
 
-        desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(Units.degreesToRadians(ang));
+        //desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(Units.degreesToRadians(ang));
 
 
-        }
-        else{
-        desiredTotalHeight = elevatorDesiredPosition;  
-        }
+        //}
+        //else{
+        //desiredTotalHeight = elevatorDesiredPosition;  
+        //}
+        desiredTotalHeight = elevatorDesiredPosition; 
 
         //System.out.println(desiredTotalHeight);
         

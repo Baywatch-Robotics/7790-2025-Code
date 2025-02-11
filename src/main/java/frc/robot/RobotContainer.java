@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -61,23 +60,25 @@ public class RobotContainer
   DoubleSupplier headingY = () -> driverXbox.getRightY();
 
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
-  DoubleSupplier algaeArmUpDown = () -> opXbox.getLeftY();
+  DoubleSupplier algaeArmUpDown = () -> opXbox.getRightX();
+  DoubleSupplier shooterArmUpDown = () -> opXbox.getLeftY();
+  DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); //Questionable Name Practices... Shooter Pivot UP DOWN not Left Right??
   
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
   
   
-  private final AlgaeArm algaeArm = new AlgaeArm();
+  //private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
-  //private final Shooter shooter = new Shooter();
+  private final Shooter shooter = new Shooter();
   //private final ShooterArm shooterArm = new ShooterArm();
   //private final ShooterPivot shooterPivot = new ShooterPivot();
   //private final AprilTagVision aprilTagVision = new AprilTagVision();
   //private final Alignment alignment = new Alignment();
   //private final Climber climber = new Climber();
- // private final Elevator elevator = new Elevator();
+  //private final Elevator elevator = new Elevator();
 
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
@@ -155,8 +156,8 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
    // buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
     //buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
 
-    buttonBox1.button(6).onTrue(algaeArm.algaeArmStowUpCommand());
-    buttonBox1.button(5).onTrue(algaeArm.algaeArmGroundIntakeCommand());
+    //buttonBox1.button(6).onTrue(algaeArm.algaeArmStowUpCommand());
+    //buttonBox1.button(5).onTrue(algaeArm.algaeArmGroundIntakeCommand());
 
     Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
@@ -169,7 +170,9 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
     //    driveDirectAngleKeyboard);
     
     //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));;
-    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));;
+    //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));;
+    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));;
+    //shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));;
 
     if (RobotBase.isSimulation())
     {

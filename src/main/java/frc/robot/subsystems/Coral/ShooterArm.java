@@ -63,7 +63,7 @@ public class ShooterArm extends SubsystemBase {
     }
 
 
-    public void moveAmount(final float amount) {
+    public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
             return;
@@ -78,12 +78,13 @@ public class ShooterArm extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
-        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
 
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
+
+        SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
+        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
         
-        //shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kMAXMotionPositionControl);
+        shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kPosition);
 
     }
 }

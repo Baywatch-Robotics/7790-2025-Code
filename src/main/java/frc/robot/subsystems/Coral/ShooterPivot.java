@@ -18,7 +18,7 @@ import frc.robot.Constants.ShooterPivotConstants;
 
 public class ShooterPivot extends SubsystemBase {
 
-    public static float shooterPivotDesiredAngle;
+    public float shooterPivotDesiredAngle;
 
     public static boolean isStraight;
 
@@ -68,7 +68,7 @@ public class ShooterPivot extends SubsystemBase {
         return command;
     }
 
-    public void moveAmount(final float amount) {
+    public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
             return;
@@ -83,11 +83,12 @@ public class ShooterPivot extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);
-        SmartDashboard.putNumber("Shooter Pivot Current Angle", shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset);
-    
+
         shooterPivotDesiredAngle = (float)MathUtil.clamp(shooterPivotDesiredAngle, ShooterPivotConstants.min, ShooterPivotConstants.max);
         
-        //shooterPivotController.setReference(shooterPivotDesiredAngle, ControlType.kMAXMotionPositionControl);
+        SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);
+        SmartDashboard.putNumber("Shooter Pivot Current Angle", shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset);
+        
+        shooterPivotController.setReference(shooterPivotDesiredAngle, ControlType.kPosition);
     }
 }
