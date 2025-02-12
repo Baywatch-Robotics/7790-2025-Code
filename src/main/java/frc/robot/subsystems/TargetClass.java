@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TargetClass {
@@ -110,7 +111,7 @@ public class TargetClass {
             case "C0000":
                 target.setX(5.795);
                 target.setY(4);
-                target.setZ(0);
+                target.setZ(-180);
                 target.setLeft(true);
                 target.setLevel(0);
                 target.setFace(0);

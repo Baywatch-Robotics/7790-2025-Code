@@ -15,6 +15,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -22,12 +23,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import java.io.File;
+import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -227,7 +230,7 @@ public class SwerveSubsystem extends SubsystemBase
    *
    * @param pose Target {@link Pose2d} to go to.
    * @return PathFinding command
-   */
+   
   public Command driveToPose(Pose2d pose)
   {
 // Create the constraints to use while pathfinding
@@ -244,7 +247,7 @@ public class SwerveSubsystem extends SubsystemBase
                                      );
   }
 
-
+*/
 
 
 
@@ -451,7 +454,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param headingX X joystick which controls the angle of the robot.
    * @param headingY Y joystick which controls the angle of the robot.
    * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
-   */
+   
   public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, double headingX, double headingY)
   {
     Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
@@ -463,7 +466,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         Constants.MAX_SPEED);
   }
 
-  /**
+  
    * Get the chassis speeds based on controller input of 1 joystick and one angle. Control the robot at an offset of
    * 90deg.
    *
@@ -471,8 +474,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param yInput Y joystick input for the robot to move in the Y direction.
    * @param angle  The angle in as a {@link Rotation2d}.
    * @return {@link ChassisSpeeds} which can be sent to the Swerve Drive.
-   */
-  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
+    public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
   {
     Translation2d scaledInputs = SwerveMath.cubeTranslation(new Translation2d(xInput, yInput));
 
@@ -482,7 +484,7 @@ public class SwerveSubsystem extends SubsystemBase
                                                         getHeading().getRadians(),
                                                         Constants.MAX_SPEED);
   }
-
+*/
   /**
    * Gets the current field-relative velocity (x, y and omega) of the robot
    *
@@ -552,7 +554,7 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public void addVisionMeasurement() {
-    /*Pose2d robotPose = swerveDrive.getPose();
+    Pose2d robotPose = swerveDrive.getPose();
 
     Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
 
@@ -584,8 +586,6 @@ public class SwerveSubsystem extends SubsystemBase
           else{
             isClose = true;
           }
-
-      }*/
-
+      }
   }
 }
