@@ -108,8 +108,8 @@ public class TargetClass {
                 target.setSource(true);
                 break;
             case "C0000":
-                target.setX(2);
-                target.setY(2);
+                target.setX(5.795);
+                target.setY(4);
                 target.setZ(0);
                 target.setLeft(true);
                 target.setLevel(0);

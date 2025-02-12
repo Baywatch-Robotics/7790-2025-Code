@@ -197,7 +197,7 @@ public final class Constants
 
   public static final class AlignmentConstants{
 
-    public static final double driveP = 0.0;
+    public static final double driveP = 0.2;
   
     public static final double maxSpeed = .25; // or whichever maximum speed is appropriate
   }

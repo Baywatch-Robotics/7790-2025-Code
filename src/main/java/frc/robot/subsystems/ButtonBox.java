@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Queue;
@@ -8,8 +9,6 @@ import java.util.LinkedList;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.AlignmentConstants;
 import frc.robot.Constants.ButtonBoxConstants;
-// Import the alignment and swerve subsystem packages:
-import frc.robot.subsystems.swervedrive.Alignment;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import swervelib.SwerveInputStream;
 
@@ -74,30 +73,9 @@ public class ButtonBox extends SubsystemBase {
             // Convert target information into a target pose.
             Pose2d targetPose = target.toPose2d();
 
-            new Thread(() -> {
-                while (true) {
-                    Pose2d currentPose = swerveSubsystem.getPose();
-                    double distance = currentPose.getTranslation().getDistance(
-                        targetPose.getTranslation());
-                    
-                    if (distance < ButtonBoxConstants.allowableError) {
-                        // Stop the robot
-                        SwerveInputStream stopStream = SwerveInputStream.of(
-                            swerveSubsystem.getSwerveDrive(), () -> 0.0, () -> 0.0)
-                            .withControllerHeadingAxis(() -> 0.0, () -> 0.0);
-                        swerveSubsystem.driveFieldOriented(stopStream);
-                        break;
-                    }
-                    
-                    // Drive toward the target
-                    SwerveInputStream inputStream = Alignment.driveToPose(
-                        currentPose, targetPose, swerveSubsystem.getSwerveDrive());
-                    swerveSubsystem.driveFieldOriented(inputStream);
-                    
-                    // Delay to avoid hogging CPU cycles
-                    Timer.delay(0.02);
-                }
-            }).start();
+            // Create and schedule the pathplanner drive-to-pose command.
+            Command driveCommand = swerveSubsystem.driveToPose(targetPose);
+            driveCommand.schedule();
         }
     }
 
