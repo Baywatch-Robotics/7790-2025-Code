@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
@@ -27,7 +28,14 @@ public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter
     }
 
     public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
-        Command command = algaeArm.
+        Command command = algaeArm.algaeArmClearancePositionCommand()
+        .alongWith(shooterArm.shooterArmScoreL1Command()
+        .alongWith(elevator.elevatorScoreL1Command()
+        .andThen(new WaitCommand(1))
+        .andThen(shooter.shooterOutakeCommand()
+        .andThen(new WaitCommand(.5))
+        .andThen(shooter.shooterStopCommand()
+        .andThen("Stow Command");
 
         command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
 

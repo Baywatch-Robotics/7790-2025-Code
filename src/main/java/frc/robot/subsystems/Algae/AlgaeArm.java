@@ -43,6 +43,9 @@ public class AlgaeArm extends SubsystemBase {
     private void groundIntake() {
         algaeArmDesiredAngle = AlgaeArmConstants.groundIntakeAngle + AlgaeArmConstants.angleOffset;
     }
+    private void clearancePosition() {
+        algaeArmDesiredAngle = AlgaeArmConstants.clearanceAngle + AlgaeArmConstants.angleOffset;
+    }
 
     // Commands to move the arm to the desired positions
     public Command algaeArmStowUpCommand()
@@ -62,7 +65,12 @@ public class AlgaeArm extends SubsystemBase {
         Command command = new InstantCommand(() -> groundIntake());
         return command;
     }
-
+    public Command algaeArmClearancePositionCommand()
+    {
+        Command command = new InstantCommand(() -> clearancePosition());
+        return command;
+    }
+    
     public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
