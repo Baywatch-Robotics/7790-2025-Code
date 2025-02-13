@@ -28,17 +28,34 @@ public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter
     }
 
     public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
-        Command command = algaeArm.algaeArmClearancePositionCommand()
-        .alongWith(shooterArm.shooterArmScoreL1Command()
-        .alongWith(elevator.elevatorScoreL1Command()
-        .andThen(new WaitCommand(1))
-        .andThen(shooter.shooterOutakeCommand()
-        .andThen(new WaitCommand(.5))
-        .andThen(shooter.shooterStopCommand()
-        .andThen("Stow Command");
+
 
         command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
 
+        return command;
+    }
+
+    public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+
+        //These will be predefined locations. The other commands will take info from queue to determine which face to go to
+        //For left source
+        //pathfind to face
+        //run placement command
+        //retract and drive to station
+        //Coninue list of commands
+        
+
+        return command;
+    }
+    public static Command rightAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+
+        //These will be predefined locations. The other commands will take info from queue to determine which face to go to
+        //For right source
+        //pathfind to face
+        //run placement command
+        //retract and drive to station
+        //Coninue list of commands
+        
         return command;
     }
 }
