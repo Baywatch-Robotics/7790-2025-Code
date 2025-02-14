@@ -45,6 +45,7 @@ public final class Constants
     public static final float groundIntakeAngle = 0.5f; //Tenative could move arm up and then angle farther down
     public static final float upperCrashLimit = 0.75f; // This is absolute max, there are two sub sstates where the max is either equal to this or slightly less due to the placement mechanism being in the way
     public static final float lowerCrashLimit = 0.45f; // Slightly ahead of actually limit for safety
+    public static final float clearanceAngle = 0.5f;
 
     public static final float angleOffset = 0.0f;
 
@@ -197,11 +198,52 @@ public final class Constants
 
   public static final class AlignmentConstants{
 
-    public static final double driveP = 0.0;
+    public static final double driveP = 0.2;
   
     public static final double maxSpeed = .25; // or whichever maximum speed is appropriate
   }
   public static final class ButtonBoxConstants{
-    public static final double allowableError = 0.02;
+    public static final double allowableError = 0.05;
+    public static final boolean invertX = true;
+    public static final boolean invertY = true;
+
+
+
+
+    public static final float xValueC0XX = 0.0f;
+    public static final float yValueC0XX = 0.0f;
+    public static final float zValueC0XX = 0.0f;
+    
+    public static final float xValueC1XX = 0.0f;
+    public static final float yValueC1XX = 0.0f;
+    public static final float zValueC1XX = 0.0f;
+
+    public static final float xValueC2XX = 0.0f;
+    public static final float yValueC2XX = 0.0f;
+    public static final float zValueC2XX = 0.0f;
+
+    public static final float xValueC3XX = 0.0f;
+    public static final float yValueC3XX = 0.0f;
+    public static final float zValueC3XX = 0.0f;
+
+    public static final float xValueC4XX = 0.0f;
+    public static final float yValueC4XX = 0.0f;
+    public static final float zValueC4XX = 0.0f;
+
+    public static final float xValueC5XX = 0.0f;
+    public static final float yValueC5XX = 0.0f;
+    public static final float zValueC5XX = 0.0f;
+
+    public static final float xValueC6XX = 0.0f;
+    public static final float yValueC6XX = 0.0f;
+    public static final float zValueC6XX = 0.0f;
+
+    public static final int heightCX0X = 0;
+    public static final int heightCX1X = 1;
+    public static final int heightCX2X = 2;
+    public static final int heightCX3X = 3;
+
+    public static final boolean setLeftCXX0 = true;
+    public static final boolean setLeftCXX1 = false;
 }
 }
