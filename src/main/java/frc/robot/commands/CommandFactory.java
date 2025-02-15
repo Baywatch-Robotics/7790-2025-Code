@@ -11,7 +11,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class CommandFactory {
 
-public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
         Command command = drivebase.followPath("Right to 0");
         //.andThen(pivot.setAmpScoreCommand())
         //.andThen(new WaitCommand(1.5))
@@ -22,20 +22,20 @@ public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter
        // .andThen(shooter.stopShooterCommand())
        // .andThen(shooter.indexStopCommand());
 
-        command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
+        command.addRequirements(drivebase);
 
         return command;
     }
 
-    public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+   // public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
 
 
-        command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
+       // command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
 
-        return command;
-    }
+    //    return command;
+   // }
 
-    public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+   // public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
 
         //These will be predefined locations. The other commands will take info from queue to determine which face to go to
         //For left source
@@ -45,9 +45,9 @@ public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter
         //Coninue list of commands
         
 
-        return command;
-    }
-    public static Command rightAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+      //  return command;
+  //  }
+  //  public static Command rightAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
 
         //These will be predefined locations. The other commands will take info from queue to determine which face to go to
         //For right source
@@ -56,8 +56,8 @@ public static Command scoreL1AutomaticCommand(AlgaeArm algaeArm, Shooter shooter
         //retract and drive to station
         //Coninue list of commands
         
-        return command;
-    }
+   //     return command;
+  //  }
 }
 
 

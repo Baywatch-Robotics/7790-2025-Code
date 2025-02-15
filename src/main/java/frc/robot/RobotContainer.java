@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
@@ -33,6 +35,11 @@ import frc.robot.subsystems.swervedrive.AprilTagVision;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import swervelib.SwerveInputStream;
 
@@ -145,6 +152,10 @@ SwerveInputStream driveButtonBoxInput =
     // Optionally, if you want to drive with a heading-control mode:
     .headingWhile(true);
 
+
+
+
+    
 /**
 * The container for the robot. Contains subsystems, OI devices, and commands.
 */
@@ -218,6 +229,8 @@ SwerveInputStream driveButtonBoxInput =
       //temp
     driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
+    driverXbox.y().onTrue(new InstantCommand(() -> CommandFactory.scoreL1AutomaticCommand(drivebase)));
+
     
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
@@ -233,9 +246,6 @@ SwerveInputStream driveButtonBoxInput =
           drivebase.setDefaultCommand(driveButtonBoxInputCommand);
         }, drivebase));
   }
-
-   
-
 
 
   /**
