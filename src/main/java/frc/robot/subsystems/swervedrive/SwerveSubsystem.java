@@ -50,6 +50,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   private final SwerveDrive         swerveDrive;
   public boolean isClose = false;
+  private int visionMeasurementCounter = 0; // counter
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -87,7 +88,7 @@ public class SwerveSubsystem extends SubsystemBase
    * Construct the swerve drive.
    *
    * @param driveCfg      SwerveDriveConfiguration for the swerve.
-   * @param controllerCfg Swerve Controller.
+   * @param controllerCfdrig Swerve Controller.
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
   {
@@ -563,8 +564,22 @@ public class SwerveSubsystem extends SubsystemBase
         if (distance <= 1.0) {
             swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
           }
+          else{
+
+            visionMeasurementCounter++;
+
+            if(visionMeasurementCounter >= 3){
+
+              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+              visionMeasurementCounter = 0;
+              //backup incase it gets too far off
+            }
+
+          }
          }
         }
+
+
         public void addVisionMeasurementInitial(){
 
           Pose2d robotPose = swerveDrive.getPose();

@@ -229,7 +229,7 @@ SwerveInputStream driveButtonBoxInput =
       //temp
     driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
-    driverXbox.y().onTrue(new InstantCommand(() -> CommandFactory.scoreL1AutomaticCommand(drivebase)));
+    driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
     
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
