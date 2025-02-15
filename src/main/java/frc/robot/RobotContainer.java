@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -74,13 +75,13 @@ public class RobotContainer
                                                                                 "swerve/neo"));
   
   
-  //private final AlgaeArm algaeArm = new AlgaeArm();
+  private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   //private final Shooter shooter = new Shooter();
   //private final ShooterArm shooterArm = new ShooterArm();
   //private final ShooterPivot shooterPivot = new ShooterPivot();
-  private final AprilTagVision aprilTagVision = new AprilTagVision();
+  //private final AprilTagVision aprilTagVision = new AprilTagVision();
   //private final Climber climber = new Climber();
   //private final Elevator elevator = new Elevator();
 
@@ -196,10 +197,10 @@ SwerveInputStream driveButtonBoxInput =
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
-    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));;
-    //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));;
-    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));;
-    //shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));;
+    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
+    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+    //shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
     /*if (Robot.isSimulation())
     {
@@ -220,6 +221,7 @@ SwerveInputStream driveButtonBoxInput =
     //  driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
     //  driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
 
+
       buttonBox1.button(1).and(buttonBox1.button(2))
       .onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
@@ -229,22 +231,22 @@ SwerveInputStream driveButtonBoxInput =
       //temp
     driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
-    driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
+    //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
     
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
-    driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
+   // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
     
 
     // Create a command that continuously follows the queue (if present) unless overridden.
 
     // Now override this behavior by binding the resume action to the right bumper.
-    driverXbox.b().onTrue(
-        new InstantCommand(() -> {
+  //  driverXbox.b().onTrue(
+     //   new InstantCommand(() -> {
           // On resume, simply schedule the followQueueCommand.
-          drivebase.setDefaultCommand(driveButtonBoxInputCommand);
-        }, drivebase));
+    //      drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+    //    }, drivebase));
   }
 
 

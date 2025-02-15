@@ -87,11 +87,10 @@ public class AlgaeArm extends SubsystemBase {
     @Override
     public void periodic() {
 
-        algaeArmDesiredAngle =MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
+        algaeArmDesiredAngle = MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
 
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
         SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
-        SmartDashboard.putNumber("Algae Arm 2 Current Angle", algaeArmMotor.getEncoder().getPosition() + AlgaeArmConstants.angleOffset);
 
         algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kPosition);
 

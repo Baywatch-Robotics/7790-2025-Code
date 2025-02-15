@@ -124,18 +124,24 @@ public final class Configs {
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
+      algaeArmConfig.absoluteEncoder.zeroOffset(.89);
+
       algaeArmConfig
-          .inverted(false)
+      
+          .inverted(true)
+          
           .closedLoop
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
           .pid(AlgaeArmConstants.P, AlgaeArmConstants.I, AlgaeArmConstants.D)
           .outputRange(-1, 1)
+          
           .maxMotion
           // Set MAXMotion parameters for position control
           .maxVelocity(AlgaeArmConstants.maxVelocity)
           .maxAcceleration(AlgaeArmConstants.maxAcceleration)
-          .allowedClosedLoopError(AlgaeArmConstants.allowedClosedLoopError);      
+          .allowedClosedLoopError(AlgaeArmConstants.allowedClosedLoopError);
+                
     }
   }
   public static final class AlgaeShooter {
