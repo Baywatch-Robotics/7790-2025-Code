@@ -45,10 +45,6 @@ public class Elevator extends SubsystemBase {
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-      
-        
-        System.out.println("Elevator Initialized " + m_encoder.getPosition());
-
     }
 
     private void setFullRetract() {
@@ -124,7 +120,7 @@ public class Elevator extends SubsystemBase {
 
     public Trigger isClearToIntake() {
 
-        boolean isClearToIntake = m_encoder.getPosition() <= ElevatorConstants.pickupPose - 20 && m_encoder.getPosition() >= ElevatorConstants.pickupPose + 20;
+        boolean isClearToIntake = m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 && m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20;
 
         return new Trigger(() -> isClearToIntake);
     }

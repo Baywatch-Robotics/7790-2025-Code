@@ -20,7 +20,9 @@ public class ShooterPivot extends SubsystemBase {
 
     public float shooterPivotDesiredAngle;
 
-    public static boolean isStraight;
+    public boolean isInitialized;
+
+    public boolean isStraight;
 
     private SparkMax shooterPivotMotor = new SparkMax(ShooterPivotConstants.ID, MotorType.kBrushless);
 
@@ -84,6 +86,11 @@ public class ShooterPivot extends SubsystemBase {
     @Override
     public void periodic() {
 
+        if (!isInitialized) {
+            shooterPivotDesiredAngle = (float)(shooterPivotEncoder.getPosition());
+            isInitialized = true;
+        }
+        
         shooterPivotDesiredAngle = (float)MathUtil.clamp(shooterPivotDesiredAngle, ShooterPivotConstants.min, ShooterPivotConstants.max);
         
         SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);

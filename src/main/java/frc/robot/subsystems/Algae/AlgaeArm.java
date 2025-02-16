@@ -20,6 +20,8 @@ public class AlgaeArm extends SubsystemBase {
 
     public double algaeArmDesiredAngle;
 
+    private boolean isInitialized = false;
+
     private SparkMax algaeArmMotor = new SparkMax(AlgaeArmConstants.ID, MotorType.kBrushless);
 
     private SparkClosedLoopController algaeArmController = algaeArmMotor.getClosedLoopController();
@@ -87,6 +89,11 @@ public class AlgaeArm extends SubsystemBase {
     @Override
     public void periodic() {
 
+        if (!isInitialized) {
+            algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition());
+            isInitialized = true;
+        }
+        
         algaeArmDesiredAngle = MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
 
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);

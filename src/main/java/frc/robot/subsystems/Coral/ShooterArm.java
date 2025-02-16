@@ -19,6 +19,8 @@ import frc.robot.Constants.ShooterArmConstants;
 public class ShooterArm extends SubsystemBase {
 
     public float shooterArmDesiredAngle;
+    
+    public boolean isInitialized = false;
 
     private SparkMax shooterArmMotor = new SparkMax(ShooterArmConstants.ID, MotorType.kBrushless);
 
@@ -78,7 +80,12 @@ public class ShooterArm extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        
+        if (!isInitialized) {
+            shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
+            isInitialized = true;
+        }
+        
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
 
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
