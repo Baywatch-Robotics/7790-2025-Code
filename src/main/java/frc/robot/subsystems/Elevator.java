@@ -173,6 +173,9 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
 
+        isClearToIntake();
+        isAtHome();
+
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }
 }
