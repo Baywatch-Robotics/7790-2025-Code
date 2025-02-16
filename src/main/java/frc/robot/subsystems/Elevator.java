@@ -26,6 +26,8 @@ public class Elevator extends SubsystemBase {
 
     public float elevatorDesiredPosition = 0;
 
+    public boolean isInitialized = false;
+
     private float desiredTotalHeight;
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
@@ -143,6 +145,10 @@ public class Elevator extends SubsystemBase {
     @Override
     public void periodic() {
 
+        if (!isInitialized) {
+            elevatorDesiredPosition = 0;
+            isInitialized = true;
+        }
          //Code for inverse kinematics
         //if(!ShooterPivot.isStraight) {
         //float ang;
