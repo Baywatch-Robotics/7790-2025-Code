@@ -12,7 +12,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 public class CommandFactory {
 
 public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
-        Command command = drivebase.followPath("Right to 0");
+        Command command = drivebase.pathfindThenFollowPath("Right to 0");
         //.andThen(pivot.setAmpScoreCommand())
         //.andThen(new WaitCommand(1.5))
         //.andThen(shooter.startAmpShooterCommand())
