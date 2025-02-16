@@ -30,21 +30,21 @@ public class AlgaeArm extends SubsystemBase {
 
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
+        algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition());
         }
 
     // Define desired positions for the arm
     private void stowUp() {
-        algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle + AlgaeArmConstants.angleOffset;
+        algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle;
     }
     private void straightOut() {
-        algaeArmDesiredAngle = AlgaeArmConstants.straightOutAngle + AlgaeArmConstants.angleOffset;
+        algaeArmDesiredAngle = AlgaeArmConstants.straightOutAngle;
     }
     private void groundIntake() {
-        algaeArmDesiredAngle = AlgaeArmConstants.groundIntakeAngle + AlgaeArmConstants.angleOffset;
+        algaeArmDesiredAngle = AlgaeArmConstants.groundIntakeAngle;
     }
     private void clearancePosition() {
-        algaeArmDesiredAngle = AlgaeArmConstants.clearanceAngle + AlgaeArmConstants.angleOffset;
+        algaeArmDesiredAngle = AlgaeArmConstants.clearanceAngle;
     }
 
     // Commands to move the arm to the desired positions
@@ -90,7 +90,7 @@ public class AlgaeArm extends SubsystemBase {
         algaeArmDesiredAngle = MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
 
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
-        SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition() + AlgaeArmConstants.angleOffset);
+        SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition());
 
         algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kPosition);
 

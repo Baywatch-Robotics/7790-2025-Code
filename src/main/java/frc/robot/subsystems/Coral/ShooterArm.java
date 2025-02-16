@@ -30,18 +30,18 @@ public class ShooterArm extends SubsystemBase {
 
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
+        shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
         }
 
 
     private void setScore() {
-        shooterArmDesiredAngle = ShooterArmConstants.scoreAngle + ShooterArmConstants.angleOffset;
+        shooterArmDesiredAngle = ShooterArmConstants.scoreAngle;
     }
     private void setLoad() {
-        shooterArmDesiredAngle = ShooterArmConstants.loadAngle + ShooterArmConstants.angleOffset;
+        shooterArmDesiredAngle = ShooterArmConstants.loadAngle;
     }
     private void setScoreL1() {
-        shooterArmDesiredAngle = ShooterArmConstants.L1Angle + ShooterArmConstants.angleOffset;
+        shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
     }
 
     public Command shooterArmScoreCommand()
@@ -82,7 +82,7 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
 
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
-        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition() + ShooterArmConstants.angleOffset);
+        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition());
         
         shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kPosition);
 

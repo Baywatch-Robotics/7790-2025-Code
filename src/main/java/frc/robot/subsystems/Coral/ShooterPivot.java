@@ -34,19 +34,19 @@ public class ShooterPivot extends SubsystemBase {
 
         isStraight = true;
 
-        shooterPivotDesiredAngle = (float)shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset;
+        shooterPivotDesiredAngle = (float)shooterPivotEncoder.getPosition();
         }
 
     private void setLeftInitial() {
-        shooterPivotDesiredAngle = ShooterPivotConstants.leftAngleInitial + ShooterPivotConstants.angleOffset;
+        shooterPivotDesiredAngle = ShooterPivotConstants.leftAngleInitial;
         isStraight = false;
     }
     private void setRightInitial() {
-        shooterPivotDesiredAngle = ShooterPivotConstants.rightAngleInitial + ShooterPivotConstants.angleOffset;
+        shooterPivotDesiredAngle = ShooterPivotConstants.rightAngleInitial;
         isStraight = false;
     }
     private void setCenter() {
-        shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle + ShooterPivotConstants.angleOffset;
+        shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle;
         isStraight = true;
     }
 
@@ -87,7 +87,7 @@ public class ShooterPivot extends SubsystemBase {
         shooterPivotDesiredAngle = (float)MathUtil.clamp(shooterPivotDesiredAngle, ShooterPivotConstants.min, ShooterPivotConstants.max);
         
         SmartDashboard.putNumber("Shooter Pivot Desired Angle", shooterPivotDesiredAngle);
-        SmartDashboard.putNumber("Shooter Pivot Current Angle", shooterPivotEncoder.getPosition() + ShooterPivotConstants.angleOffset);
+        SmartDashboard.putNumber("Shooter Pivot Current Angle", shooterPivotEncoder.getPosition());
         
         shooterPivotController.setReference(shooterPivotDesiredAngle, ControlType.kPosition);
     }

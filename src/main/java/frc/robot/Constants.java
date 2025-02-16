@@ -43,7 +43,7 @@ public final class Constants
     public static final float stowedUpAngle = 0.74f;
     public static final float straightOutAngle = 0.5f;
     public static final float groundIntakeAngle = 0.5f; //Tenative could move arm up and then angle farther down
-    public static final float upperCrashLimit = 0.75f; // This is absolute max, there are two sub sstates where the max is either equal to this or slightly less due to the placement mechanism being in the way
+    public static final float upperCrashLimit = 0.75f; // This is absolute max, there are two sub states where the max is either equal to this or slightly less due to the placement mechanism being in the way
     public static final float lowerCrashLimit = 0.45f; // Slightly ahead of actually limit for safety
     public static final float clearanceAngle = 0.5f;
 

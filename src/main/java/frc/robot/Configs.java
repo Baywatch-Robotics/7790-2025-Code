@@ -72,6 +72,8 @@ public final class Configs {
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
+      shooterArmConfig.absoluteEncoder.zeroOffset(ShooterArmConstants.angleOffset);
+
       shooterArmConfig
           .inverted(false)
           .closedLoop
@@ -96,6 +98,8 @@ public final class Configs {
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
+      shooterPivotConfig.absoluteEncoder.zeroOffset(ShooterPivotConstants.angleOffset);
+
       shooterPivotConfig
       .inverted(false)
           .closedLoop
@@ -124,10 +128,10 @@ public final class Configs {
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
        */
-      algaeArmConfig.absoluteEncoder.zeroOffset(.89);
+      algaeArmConfig.absoluteEncoder.zeroOffset(AlgaeArmConstants.angleOffset);
 
       algaeArmConfig
-      
+          
           .inverted(true)
           
           .closedLoop
