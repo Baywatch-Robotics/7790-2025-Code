@@ -78,7 +78,7 @@ public class RobotContainer
   //private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
-  //private final Shooter shooter = new Shooter();
+  private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
   //private final AprilTagVision aprilTagVision = new AprilTagVision();
@@ -92,8 +92,8 @@ public class RobotContainer
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * -1,
-  () -> driverXbox.getLeftX() * -1)
+  () -> driverXbox.getLeftY() * -.5,
+  () -> driverXbox.getLeftX() * -.5)
 .withControllerRotationAxis(driverXbox::getRightX)
 .deadband(Constants.DEADBAND)
 .scaleTranslation(1)
@@ -216,10 +216,13 @@ SwerveInputStream driveButtonBoxInput =
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-    //  driverXbox.a().onTrue(Commands.run(shooter::shooterIntakeCommand));
-    //  driverXbox.a().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
-    //  driverXbox.b().onTrue(Commands.run(shooter::shooterOutakeCommand));
-    //  driverXbox.b().onFalse(Commands.run(shooter::shooterZeroSpeedCommand));
+      opXbox.a().onTrue(shooter.shooterIntakeCommand());
+      opXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
+      opXbox.b().onTrue(shooter.shooterOutakeCommand());
+      opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+
+      opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
+      opXbox.y().onTrue(elevator.setElevatorPickupCommand());
 
 
       buttonBox1.button(1).and(buttonBox1.button(2))

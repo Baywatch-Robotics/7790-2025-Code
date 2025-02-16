@@ -66,12 +66,12 @@ public class Shooter extends SubsystemBase {
     
     @Override
     public void periodic(){
-        coralLoaded = !coralSensor.get();
+       // coralLoaded = !coralSensor.get();
 
-        if (coralLoaded){
-            if(!isLoading) {
-            shooterZeroSpeedCommand();
-            }
-        }
+      //  if (coralLoaded){
+      //      if(!isLoading) {
+      //      shooterZeroSpeedCommand();
+      //      }
+      //  }
     }
 }

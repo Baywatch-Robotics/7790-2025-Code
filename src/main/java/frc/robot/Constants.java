@@ -69,9 +69,9 @@ public final class Constants
     public static final float outake = 0.1f;
   }
   public static final class ShooterConstants{
-    public static final int ID = 9;
+    public static final int ID = 19;
     public static final float intake = 0.15f;
-    public static final float outake = -0.15f;
+    public static final float outake = -1f;
   }
 
   public static final class ShooterArmConstants{
@@ -81,11 +81,12 @@ public final class Constants
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float min = 0.4f;
+    public static final float min = 0.253f;
     public static final float max = 0.698f;
 
-    public static final float scoreAngle = 0.8f;
-    public static final float loadAngle = 0.0f;
+    public static final float scoreAngleLOW = 0.726f;
+    public static final float scoreAngleHIGH = 0.698f;
+    public static final float loadAngle = 0.253f;
     public static final float L1Angle = 0.5f;
 
     public static final float P = 1f;
@@ -137,16 +138,16 @@ public final class Constants
     
     public static final float manualMultiplier = 1f;
 
-    public static final float min = -270.0f;
+    public static final float min = -272.0f;
     public static final float max = 0.0f;
 
-    public static final float L4Pose = -265.0f;
-    public static final float L3Pose = -225.0f;
-    public static final float L2Pose = -154.0f;
+    public static final float L4Pose = -272.0f;
+    public static final float L3Pose = -143.5f;
+    public static final float L2Pose = -36.0f;
     public static final float L1Pose = 0.0f;
+    public static final float pickupPose = -119.5f;
 
-
-    public static final float P = 0.1f;
+    public static final float P = 0.2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 5200;

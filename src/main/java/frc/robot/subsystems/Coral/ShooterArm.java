@@ -34,8 +34,8 @@ public class ShooterArm extends SubsystemBase {
         }
 
 
-    private void setScore() {
-        shooterArmDesiredAngle = ShooterArmConstants.scoreAngle;
+    private void setScoreLOW() {
+        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleLOW;
     }
     private void setLoad() {
         shooterArmDesiredAngle = ShooterArmConstants.loadAngle;
@@ -44,9 +44,9 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
     }
 
-    public Command shooterArmScoreCommand()
+    public Command shooterArmScoreLOWCommand()
     {
-        Command command = new InstantCommand(() -> setScore());
+        Command command = new InstantCommand(() -> setScoreLOW());
         return command;
     }
 

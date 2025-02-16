@@ -72,6 +72,10 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.L1Pose;
         isRaised = true;
     }
+    public void setPickup() {
+        elevatorDesiredPosition = ElevatorConstants.pickupPose;
+        isRaised = false;
+    }
 
     // Commands
     public Command fullElevatorRetractCommand() {
@@ -96,6 +100,10 @@ public class Elevator extends SubsystemBase {
 
     public Command setElevatorL1Command() {
         Command command = new InstantCommand(() -> setL1());
+        return command;
+    }
+    public Command setElevatorPickupCommand() {
+        Command command = new InstantCommand(() -> setPickup());
         return command;
     }
 
@@ -140,7 +148,9 @@ public class Elevator extends SubsystemBase {
         
         desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
         
-        SmartDashboard.putString("StringTest", "tester");
+        SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
+        SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
+
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }
 }

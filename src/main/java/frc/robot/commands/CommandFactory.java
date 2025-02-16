@@ -35,6 +35,14 @@ public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
     //    return command;
    // }
 
+      //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+
+       // Command command = algaeArm.algaeArmStraightOutCommand()
+
+      //  command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+      //  return command;
+      
    // public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
 
         //These will be predefined locations. The other commands will take info from queue to determine which face to go to

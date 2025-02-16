@@ -59,7 +59,7 @@ public final class Configs {
       shooterConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
 
       shooterConfig
-      .inverted(false);
+      .inverted(true);
     }
   }
   public static final class ShooterArm {
