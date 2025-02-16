@@ -114,17 +114,12 @@ public class Elevator extends SubsystemBase {
     }
 
     public Trigger isAtHome() {
-
-        boolean isAtHome = m_encoder.getPosition() >= -1;
-
-        return new Trigger(() -> isAtHome);
+        return new Trigger(() -> m_encoder.getPosition() >= -1);
     }
 
     public Trigger isClearToIntake() {
-
-        boolean isClearToIntake = m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 && m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20;
-
-        return new Trigger(() -> isClearToIntake);
+        return new Trigger(() -> m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 &&
+                             m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20);
     }
 
     public void moveAmount(final double amount) {

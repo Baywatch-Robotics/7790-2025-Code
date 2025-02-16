@@ -30,9 +30,11 @@ public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
     }
 
     public static Command setIntakeCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
-      SequentialCommandGroup command = elevator.setElevatorPickupCommand()
+      
+      Command command  = elevator.setElevatorPickupCommand()
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
+      .alongWith(shooterPivot.setCenterCommand())
       .andThen(shooter.shooterIntakeCommand());
 
 
