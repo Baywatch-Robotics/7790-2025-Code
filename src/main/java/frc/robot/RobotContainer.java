@@ -59,6 +59,8 @@ public class RobotContainer
   private final CommandJoystick buttonBox1 = new CommandJoystick(1);
   private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
+  
+  DoubleSupplier headingXAng = () -> -driverXbox.getRightX();
 
   DoubleSupplier driveX = () -> driverXbox.getLeftX();
   DoubleSupplier driveY = () -> driverXbox.getLeftY();
@@ -75,7 +77,7 @@ public class RobotContainer
                                                                                 "swerve/neo"));
   
   
-  //private final AlgaeArm algaeArm = new AlgaeArm();
+  private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
@@ -92,9 +94,9 @@ public class RobotContainer
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * -.5,
-  () -> driverXbox.getLeftX() * -.5)
-.withControllerRotationAxis(driverXbox::getRightX)
+  () -> driverXbox.getLeftY() * -.2,
+  () -> driverXbox.getLeftX() * -.2)
+.withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
 .scaleTranslation(1)
 .allianceRelativeControl(true);
@@ -102,8 +104,8 @@ public class RobotContainer
 /**
 * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
 */
-SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(driverXbox::getRightX,
-                               driverXbox::getRightY).headingWhile(true);
+SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(headingX,
+                               headingY).headingWhile(true);
 
 /**
 * Clone's the angular velocity input stream and converts it to a robotRelative input stream.
@@ -198,7 +200,7 @@ SwerveInputStream driveButtonBoxInput =
     //    driveDirectAngleKeyboard);
     
     elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
+    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
@@ -220,10 +222,11 @@ SwerveInputStream driveButtonBoxInput =
       opXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
       opXbox.b().onTrue(shooter.shooterOutakeCommand());
       opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+      opXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
+      //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
 
-      opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
-      opXbox.y().onTrue(elevator.setElevatorPickupCommand());
-
+      
 
       buttonBox1.button(1).and(buttonBox1.button(2))
       .onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
@@ -237,16 +240,16 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
 
-
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
    // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
    
-   driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
-       new InstantCommand(() -> {
+  // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
+    //   new InstantCommand(() -> {
          // On resume, simply schedule the followQueueCommand.
-         drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-       }, drivebase));
+     //    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+     //  }, drivebase));
 
     // Create a command that continuously follows the queue (if present) unless overridden.
 

@@ -1,7 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
@@ -27,7 +29,19 @@ public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
         return command;
     }
 
-   // public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+    public static Command setIntakeCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
+      SequentialCommandGroup command = elevator.setElevatorPickupCommand()
+      .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+      .andThen(shooterArm.shooterArmLoadCommand())
+      .andThen(shooter.shooterIntakeCommand());
+
+
+      command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+      return command;
+  }
+
+   // public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
 
        // command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
@@ -35,15 +49,28 @@ public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
     //    return command;
    // }
 
-      //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+      //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
        // Command command = algaeArm.algaeArmStraightOutCommand()
 
       //  command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
 
       //  return command;
+
+      public static Command setIntakeStateCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
+          
+          SequentialCommandGroup command = elevator.setElevatorPickupCommand()
+          .onlyIf(elevator.isClearToIntake())
+          .andThen(shooterArm.shooterArmLoadCommand())
+          .andThen(shooter.shooterIntakeCommand());
+
+  
+          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+  
+          return command;
+      }
       
-   // public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
+   // public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, , Elevator elevator){
 
         //These will be predefined locations. The other commands will take info from queue to determine which face to go to
         //For left source

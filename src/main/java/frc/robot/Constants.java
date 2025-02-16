@@ -103,7 +103,7 @@ public final class Constants
 
     public static final float leftAngleInitial = 0.0f;
     public static final float rightAngleInitial = 0.0f;
-    public static final float centerAngle = 0;
+    public static final float centerAngle = .48f;
 
     public static final float angleOffset = 0.48f;
 
@@ -126,10 +126,10 @@ public final class Constants
 
   public static final class ClimberConstants{
 
-    public static final int ID = 20;
+    public static final int ID = 18;
 
-    public static final float extendSpeed = 0.2f;
-    public static final float retractSpeed = -0.2f;
+    public static final float extendSpeed = 1f;
+    public static final float retractSpeed = -1f;
   }
   
   public static final class ElevatorConstants{

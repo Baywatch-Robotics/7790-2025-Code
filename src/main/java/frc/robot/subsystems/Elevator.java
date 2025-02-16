@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -102,9 +105,28 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> setL1());
         return command;
     }
+    
     public Command setElevatorPickupCommand() {
+
         Command command = new InstantCommand(() -> setPickup());
+
+        isClearToIntake();
+
         return command;
+    }
+
+    public Trigger isAtHome() {
+
+        boolean isAtHome = m_encoder.getPosition() >= -1;
+
+        return new Trigger(() -> isAtHome);
+    }
+
+    public Trigger isClearToIntake() {
+
+        boolean isClearToIntake = m_encoder.getPosition() <= ElevatorConstants.pickupPose - 20 && m_encoder.getPosition() >= ElevatorConstants.pickupPose + 20;
+
+        return new Trigger(() -> isClearToIntake);
     }
 
     public void moveAmount(final double amount) {
