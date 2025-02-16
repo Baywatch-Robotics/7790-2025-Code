@@ -111,7 +111,7 @@ public final class Configs {
           // Set MAXMotion parameters for position control
           .maxVelocity(ShooterPivotConstants.maxVelocity)
           .maxAcceleration(ShooterPivotConstants.maxAcceleration)
-          .allowedClosedLoopError(ShooterPivotConstants.allowedClosedLoopError);      
+          .allowedClosedLoopError(ShooterPivotConstants.allowedClosedLoopError);
     }
   }
 

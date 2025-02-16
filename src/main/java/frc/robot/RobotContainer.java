@@ -75,15 +75,15 @@ public class RobotContainer
                                                                                 "swerve/neo"));
   
   
-  private final AlgaeArm algaeArm = new AlgaeArm();
+  //private final AlgaeArm algaeArm = new AlgaeArm();
   //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   //private final Shooter shooter = new Shooter();
-  //private final ShooterArm shooterArm = new ShooterArm();
-  //private final ShooterPivot shooterPivot = new ShooterPivot();
+  private final ShooterArm shooterArm = new ShooterArm();
+  private final ShooterPivot shooterPivot = new ShooterPivot();
   //private final AprilTagVision aprilTagVision = new AprilTagVision();
   //private final Climber climber = new Climber();
-  //private final Elevator elevator = new Elevator();
+  private final Elevator elevator = new Elevator();
 
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
@@ -197,10 +197,10 @@ SwerveInputStream driveButtonBoxInput =
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
-    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
-    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
-    //shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
+    shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+    shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
     /*if (Robot.isSimulation())
     {
@@ -233,11 +233,17 @@ SwerveInputStream driveButtonBoxInput =
 
     //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
-    
+
+
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
    // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
-    
+   
+   driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
+       new InstantCommand(() -> {
+         // On resume, simply schedule the followQueueCommand.
+         drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+       }, drivebase));
 
     // Create a command that continuously follows the queue (if present) unless overridden.
 

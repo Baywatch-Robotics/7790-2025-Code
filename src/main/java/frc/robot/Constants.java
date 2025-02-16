@@ -47,7 +47,7 @@ public final class Constants
     public static final float lowerCrashLimit = 0.45f; // Slightly ahead of actually limit for safety
     public static final float clearanceAngle = 0.5f;
 
-    public static final float angleOffset = 0.0f;
+    public static final float angleOffset = 0.39f;
 
     public static final float max = 0.74f;
     public static final float min = 0.3f;
@@ -77,45 +77,45 @@ public final class Constants
   public static final class ShooterArmConstants{
     public static final int ID = 15;
 
-    public static final float angleOffset = 0;
+    public static final float angleOffset = .5f;
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float min = 0.25f;
-    public static final float max = 0.75f;
+    public static final float min = 0.4f;
+    public static final float max = 0.698f;
 
     public static final float scoreAngle = 0.8f;
     public static final float loadAngle = 0.0f;
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 0.75f;
+    public static final float P = 1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 2000;
-    public static final float maxAcceleration = 2000;
+    public static final float maxVelocity = 1000;
+    public static final float maxAcceleration = 1000;
     public static final float allowedClosedLoopError = .05f;
   }
 
   public static final class ShooterPivotConstants{
 
-    public static final int ID = 15;
+    public static final int ID = 17;
 
     public static final float leftAngleInitial = 0.0f;
     public static final float rightAngleInitial = 0.0f;
     public static final float centerAngle = 0;
 
-    public static final float angleOffset = 0.0f;
+    public static final float angleOffset = 0.48f;
 
-    public static final float max = 0.75f;
-    public static final float min = 0.25f;
+    public static final float max = 0.73f;
+    public static final float min = 0.255f;
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float P = 0.75f;
+    public static final float P = 1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 2000;
-    public static final float maxAcceleration = 2000;
+    public static final float maxVelocity = 1000;
+    public static final float maxAcceleration = 1000;
     public static final float allowedClosedLoopError = .05f;
   }
 
