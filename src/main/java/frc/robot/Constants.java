@@ -213,30 +213,32 @@ public final class Constants
     public static final float xValueC0XX = 0.0f;
     public static final float yValueC0XX = 0.0f;
     public static final float zValueC0XX = 0.0f;
+    public static final int faceValueC0XX = 0;
     
     public static final float xValueC1XX = 0.0f;
     public static final float yValueC1XX = 0.0f;
     public static final float zValueC1XX = 0.0f;
+    public static final int faceValueC1XX = 1;
 
     public static final float xValueC2XX = 0.0f;
     public static final float yValueC2XX = 0.0f;
     public static final float zValueC2XX = 0.0f;
+    public static final int faceValueC2XX = 2;
 
     public static final float xValueC3XX = 0.0f;
     public static final float yValueC3XX = 0.0f;
     public static final float zValueC3XX = 0.0f;
+    public static final int faceValueC3XX = 3;
 
     public static final float xValueC4XX = 0.0f;
     public static final float yValueC4XX = 0.0f;
     public static final float zValueC4XX = 0.0f;
+    public static final int faceValueC4XX = 4;
 
     public static final float xValueC5XX = 0.0f;
     public static final float yValueC5XX = 0.0f;
     public static final float zValueC5XX = 0.0f;
-
-    public static final float xValueC6XX = 0.0f;
-    public static final float yValueC6XX = 0.0f;
-    public static final float zValueC6XX = 0.0f;
+    public static final int faceValueC5XX = 5;
 
     public static final int heightCX0X = 0;
     public static final int heightCX1X = 1;

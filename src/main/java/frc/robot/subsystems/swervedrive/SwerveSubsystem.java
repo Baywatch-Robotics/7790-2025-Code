@@ -229,7 +229,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   
 
-  public Command followPath(String pathName) {
+  public Command pathfindThenFollowPath(String pathName) {
     try{
         // Load the path you want to follow using its name in the GUI
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);

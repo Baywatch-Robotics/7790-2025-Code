@@ -15,6 +15,7 @@ public class TargetClass {
     private double z;
     private boolean isLeft;
     private int level;
+    private int face;
     private boolean isSource;
     private String name;
 
@@ -76,7 +77,12 @@ public class TargetClass {
     public void setName(String name) {
         this.name = name;
     }
-
+    public int getFace() {
+        return face;
+    }
+    public void setFace(int face) {
+        this.face = face;
+    }
     public static TargetClass GetTargetByName(String name) {
         TargetClass target = new TargetClass(name);
         // Set properties based on the name.
@@ -102,6 +108,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -110,6 +117,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -118,6 +126,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -126,6 +135,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -134,6 +144,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -142,6 +153,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -150,6 +162,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -158,6 +171,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC0XX);
                 target.setY(ButtonBoxConstants.yValueC0XX);
                 target.setZ(ButtonBoxConstants.zValueC0XX);
+                target.setFace(ButtonBoxConstants.faceValueC0XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -166,6 +180,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -174,6 +189,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -182,6 +198,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -190,6 +207,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -198,6 +216,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -206,6 +225,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -214,6 +234,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -222,6 +243,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC1XX);
                 target.setY(ButtonBoxConstants.yValueC1XX);
                 target.setZ(ButtonBoxConstants.zValueC1XX);
+                target.setFace(ButtonBoxConstants.faceValueC1XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -230,6 +252,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -238,6 +261,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -246,6 +270,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -254,6 +279,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -262,6 +288,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -270,6 +297,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -278,6 +306,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -286,6 +315,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC2XX);
                 target.setY(ButtonBoxConstants.yValueC2XX);
                 target.setZ(ButtonBoxConstants.zValueC2XX);
+                target.setFace(ButtonBoxConstants.faceValueC2XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -294,6 +324,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -302,6 +333,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -310,6 +342,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -318,6 +351,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -326,6 +360,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -334,6 +369,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -342,6 +378,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -350,6 +387,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC3XX);
                 target.setY(ButtonBoxConstants.yValueC3XX);
                 target.setZ(ButtonBoxConstants.zValueC3XX);
+                target.setFace(ButtonBoxConstants.faceValueC3XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -358,6 +396,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -366,6 +405,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -374,6 +414,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -382,6 +423,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -390,6 +432,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -398,6 +441,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -406,6 +450,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -414,6 +459,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC4XX);
                 target.setY(ButtonBoxConstants.yValueC4XX);
                 target.setZ(ButtonBoxConstants.zValueC4XX);
+                target.setFace(ButtonBoxConstants.faceValueC4XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -422,6 +468,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -430,6 +477,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX0X);
                 target.setSource(false);
@@ -438,6 +486,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -446,6 +495,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX1X);
                 target.setSource(false);
@@ -454,6 +504,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -462,6 +513,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX2X);
                 target.setSource(false);
@@ -470,6 +522,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX0);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
@@ -478,70 +531,7 @@ public class TargetClass {
                 target.setX(ButtonBoxConstants.xValueC5XX);
                 target.setY(ButtonBoxConstants.yValueC5XX);
                 target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
-                target.setSource(false);
-                break;
-            case "C600":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
-                target.setSource(false);
-                break;
-            case "C601":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
-                target.setSource(false);
-                break;
-            case "C610":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
-                target.setSource(false);
-                break;
-            case "C611":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
-                target.setSource(false);
-                break;
-            case "C620":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
-                target.setSource(false);
-                break;
-            case "C621":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
-                target.setSource(false);
-                break;
-            case "C630":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
-                target.setSource(false);
-                break;
-            case "C631":
-                target.setX(ButtonBoxConstants.xValueC6XX);
-                target.setY(ButtonBoxConstants.yValueC6XX);
-                target.setZ(ButtonBoxConstants.zValueC6XX);
+                target.setFace(ButtonBoxConstants.faceValueC5XX);
                 target.setLeft(ButtonBoxConstants.setLeftCXX1);
                 target.setLevel(ButtonBoxConstants.heightCX3X);
                 target.setSource(false);
