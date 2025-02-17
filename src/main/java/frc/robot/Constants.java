@@ -64,9 +64,9 @@ public final class Constants
   }
 
   public static final class AlgaeShooterConstants{
-    public static final int ID = 10;
-    public static final float intake = -0.1f;
-    public static final float outake = 0.1f;
+    public static final int ID = 16;
+    public static final float intake = -0.3f;
+    public static final float outake = 0.3f;
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
@@ -84,7 +84,7 @@ public final class Constants
     public static final float min = 0.253f;
     public static final float max = 0.698f;
 
-    public static final float scoreAngleLOW = 0.726f;
+    public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.698f;
     public static final float loadAngle = 0.253f;
     public static final float L1Angle = 0.5f;
@@ -103,7 +103,7 @@ public final class Constants
 
     public static final float leftAngleInitial = 0.0f;
     public static final float rightAngleInitial = 0.0f;
-    public static final float centerAngle = .48f;
+    public static final float centerAngle = .49f;
 
     public static final float angleOffset = 0.48f;
 

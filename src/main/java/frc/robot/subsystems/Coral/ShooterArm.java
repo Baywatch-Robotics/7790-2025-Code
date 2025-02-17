@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterArmConstants;
 
@@ -64,6 +65,9 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
+    public Trigger isClearToElevate() {
+        return new Trigger(() -> shooterArmEncoder.getPosition() >= 0.5);
+    }
 
     public void moveAmount(final double amount) {
 
@@ -85,6 +89,8 @@ public class ShooterArm extends SubsystemBase {
             shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
             isInitialized = true;
         }
+        
+        isClearToElevate();
         
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
 

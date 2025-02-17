@@ -78,7 +78,7 @@ public class RobotContainer
   
   
   private final AlgaeArm algaeArm = new AlgaeArm();
-  //private final AlgaeShooter algaeShooter = new AlgaeShooter();
+  private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
@@ -218,11 +218,16 @@ SwerveInputStream driveButtonBoxInput =
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      opXbox.a().onTrue(shooter.shooterIntakeCommand());
-      opXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
-      opXbox.b().onTrue(shooter.shooterOutakeCommand());
-      opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+      opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
+      opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
+      opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      
       opXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      opXbox.x().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      opXbox.leftBumper().onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      opXbox.rightBumper().onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
 

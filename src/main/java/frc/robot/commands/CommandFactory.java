@@ -13,22 +13,6 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class CommandFactory {
 
-public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
-        Command command = drivebase.pathfindThenFollowPath("Right to 0");
-        //.andThen(pivot.setAmpScoreCommand())
-        //.andThen(new WaitCommand(1.5))
-        //.andThen(shooter.startAmpShooterCommand())
-       // .andThen(new WaitCommand(1))
-       // .andThen(shooter.shootCommand())
-       // .andThen(new WaitCommand(1))
-       // .andThen(shooter.stopShooterCommand())
-       // .andThen(shooter.indexStopCommand());
-
-        command.addRequirements(drivebase);
-
-        return command;
-    }
-
     public static Command setIntakeCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
       
       Command command  = elevator.setElevatorPickupCommand()
@@ -43,14 +27,41 @@ public static Command scoreL1AutomaticCommand(SwerveSubsystem drivebase){
       return command;
   }
 
-   // public static Command scoreL1Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
+  public static Command setElevatorZero(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
+      
+    Command command  = elevator.setfullElevatorRetractCommand();
 
 
-       // command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
 
-    //    return command;
-   // }
+    return command;
+}
 
+    public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
+
+      Command command  = shooterArm.shooterArmScoreLOWCommand()
+      .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+      .andThen(elevator.setElevatorL2Command())
+      .alongWith(shooterPivot.setLeftInitialCommand());
+
+        command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+        return command;
+    }
+
+    public static Command scoreL3Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
+        
+        Command command  = shooterArm.shooterArmScoreLOWCommand()
+        .alongWith(elevator.setElevatorL3Command())
+        .alongWith(shooterPivot.setLeftInitialCommand());
+  
+          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+  
+          return command;
+
+    }
+
+    
       //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
        // Command command = algaeArm.algaeArmStraightOutCommand()

@@ -79,7 +79,7 @@ public class Elevator extends SubsystemBase {
     }
 
     // Commands
-    public Command fullElevatorRetractCommand() {
+    public Command setfullElevatorRetractCommand() {
         Command command = new InstantCommand(() -> setFullRetract());
         return command;
     }
