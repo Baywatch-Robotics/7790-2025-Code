@@ -71,6 +71,7 @@ public class RobotContainer
   DoubleSupplier algaeArmUpDown = () -> opXbox.getRightX();
   DoubleSupplier shooterArmUpDown = () -> opXbox.getLeftY();
   DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); //Questionable Name Practices... Shooter Pivot UP DOWN not Left Right??
+  //DoubleSupplier climberUpDown = () -> opXbox.getLeftY();
   
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -94,8 +95,8 @@ public class RobotContainer
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * -.2,
-  () -> driverXbox.getLeftX() * -.2)
+  () -> driverXbox.getLeftY() * .4,
+  () -> driverXbox.getLeftX() * .4)
 .withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
 .scaleTranslation(1)
@@ -204,6 +205,8 @@ SwerveInputStream driveButtonBoxInput =
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
+    //climber.setDefaultCommand(new RunCommand(() -> climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
+
     /*if (Robot.isSimulation())
     {
       driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
@@ -218,11 +221,11 @@ SwerveInputStream driveButtonBoxInput =
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
-      opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-      opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-      opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-      
+      opXbox.a().onTrue(shooter.shooterIntakeCommand());
+      opXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
+      opXbox.b().onTrue(shooter.shooterOutakeCommand());
+      opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+
       opXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.x().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.leftBumper().onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));

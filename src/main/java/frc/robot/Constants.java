@@ -49,8 +49,8 @@ public final class Constants
 
     public static final float angleOffset = 0.39f;
 
-    public static final float max = 0.74f;
-    public static final float min = 0.3f;
+    public static final float max = 0.5f;
+    public static final float min = 0.31f;
 
     public static final float manualMultiplier = 0.005f;
 
