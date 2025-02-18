@@ -226,6 +226,11 @@ SwerveInputStream driveButtonBoxInput =
       opXbox.b().onTrue(shooter.shooterOutakeCommand());
       opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
 
+      //opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
+      //opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      //opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
+      //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+
       opXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.x().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.leftBumper().onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
