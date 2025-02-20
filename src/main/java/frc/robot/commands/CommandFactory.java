@@ -61,7 +61,16 @@ public class CommandFactory {
 
     }
 
-    
+    public static Command scoreL4Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
+        
+        Command command  = shooterArm.shooterArmScoreHIGHCommand()
+        .alongWith(elevator.setElevatorL4Command())
+        .alongWith(shooterPivot.setLeftInitialCommand());
+  
+          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+  
+          return command;
+    }
       //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
        // Command command = algaeArm.algaeArmStraightOutCommand()

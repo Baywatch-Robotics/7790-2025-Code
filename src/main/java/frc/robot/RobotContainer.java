@@ -221,20 +221,21 @@ SwerveInputStream driveButtonBoxInput =
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      opXbox.a().onTrue(shooter.shooterIntakeCommand());
-      opXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
-      opXbox.b().onTrue(shooter.shooterOutakeCommand());
-      opXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.a().onTrue(shooter.shooterIntakeCommand());
+      driverXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.b().onTrue(shooter.shooterOutakeCommand());
+      driverXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
 
       //opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
       //opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       //opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-      //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());\[]
+      
 
-      opXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.x().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       opXbox.leftBumper().onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      opXbox.rightBumper().onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      opXbox.rightBumper().onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
@@ -248,7 +249,7 @@ SwerveInputStream driveButtonBoxInput =
       .onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
 
       //temp
-    driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
+   // driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
     //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 

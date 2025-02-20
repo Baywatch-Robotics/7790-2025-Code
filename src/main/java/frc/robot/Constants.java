@@ -47,7 +47,7 @@ public final class Constants
     public static final float lowerCrashLimit = 0.45f; // Slightly ahead of actually limit for safety
     public static final float clearanceAngle = 0.5f;
 
-    public static final float angleOffset = 0.39f;
+    public static final float angleOffset = 0.56f;
 
     public static final float max = 0.5f;
     public static final float min = 0.31f;
@@ -65,8 +65,8 @@ public final class Constants
 
   public static final class AlgaeShooterConstants{
     public static final int ID = 16;
-    public static final float intake = -0.3f;
-    public static final float outake = 0.3f;
+    public static final float intake = -0.6f;
+    public static final float outake = 0.6f;
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
@@ -81,19 +81,19 @@ public final class Constants
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float min = 0.253f;
+    public static final float min = 0.225f;
     public static final float max = 0.698f;
 
     public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.698f;
-    public static final float loadAngle = 0.253f;
+    public static final float scoreAngleHIGH = 0.68f;
+    public static final float loadAngle = 0.225f;
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 1f;
+    public static final float P = 2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 1000;
+    public static final float maxAcceleration = 250;
     public static final float allowedClosedLoopError = .05f;
   }
 
@@ -101,8 +101,8 @@ public final class Constants
 
     public static final int ID = 17;
 
-    public static final float leftAngleInitial = 0.0f;
-    public static final float rightAngleInitial = 0.0f;
+    public static final float leftAngleInitial = 0.32f;
+    public static final float rightAngleInitial = 0.6f;
     public static final float centerAngle = .49f;
 
     public static final float angleOffset = 0.48f;
@@ -112,11 +112,11 @@ public final class Constants
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float P = 1f;
+    public static final float P = 2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 1000;
+    public static final float maxAcceleration = 250;
     public static final float allowedClosedLoopError = .05f;
   }
 
@@ -136,16 +136,17 @@ public final class Constants
 
     public static final int ID = 13;
     
-    public static final float manualMultiplier = 1f;
+    public static final float manualMultiplier = 2f;
 
     public static final float min = -272.0f;
     public static final float max = 0.0f;
 
     public static final float L4Pose = -272.0f;
-    public static final float L3Pose = -143.5f;
-    public static final float L2Pose = -36.0f;
+    public static final float L3Pose = -161f;
+    public static final float L2Pose = -69.0f;
     public static final float L1Pose = 0.0f;
-    public static final float pickupPose = -119.5f;
+
+    public static final float pickupPose = -125f;
 
     public static final float P = 0.2f;
     public static final float I = 0.0f;

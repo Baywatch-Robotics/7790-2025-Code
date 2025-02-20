@@ -19,11 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 public class AprilTagVision extends SubsystemBase {
     
-        private final static PhotonCamera rightCam = new PhotonCamera("RightCam");
-        private final static PhotonCamera leftCam = new PhotonCamera("LeftCam");
-        private final static PhotonCamera limelight = new PhotonCamera("Limelight");
+      /* private final static PhotonCamera rightCam = new PhotonCamera("rightCam");
+        private final static PhotonCamera leftCam = new PhotonCamera("leftCam");
+        private final static PhotonCamera limelight = new PhotonCamera("limelight");
     
         private final Transform3d rightCamToRobot = new Transform3d(
                 new Translation3d(AprilTagVisionConstants.rightCamXOffset, AprilTagVisionConstants.rightCamYOffset, AprilTagVisionConstants.rightCamZOffset),
@@ -72,9 +73,6 @@ public class AprilTagVision extends SubsystemBase {
 }
 
 
- /**
-     * Gets the best possible estimated pose by averaging valid camera poses.
-     */
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
@@ -89,9 +87,7 @@ public class AprilTagVision extends SubsystemBase {
         return Optional.of(averagePoses(validPoses));
     }
 
-    /**
-     * Averages multiple Pose3d estimates.
-     */
+
     private static Pose3d averagePoses(List<Pose3d> poses) {
         double x = 0, y = 0, z = 0;
         double roll = 0, pitch = 0, yaw = 0;
@@ -111,4 +107,5 @@ public class AprilTagVision extends SubsystemBase {
             new Rotation3d(roll / count, pitch / count, yaw / count)
         );
     }
+        */
 }

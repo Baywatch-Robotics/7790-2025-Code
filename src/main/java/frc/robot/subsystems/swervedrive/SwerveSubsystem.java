@@ -104,10 +104,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
 
     if(!isClose){
-      //addVisionMeasurementInitial();
+     // addVisionMeasurementInitial();
     }
     else{
-      addVisionMeasurement();
+    //  addVisionMeasurement();
     }
     
 
@@ -551,6 +551,7 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
+  /*
   public void addVisionMeasurement() {
     Pose2d robotPose = swerveDrive.getPose();
 
@@ -598,6 +599,7 @@ public class SwerveSubsystem extends SubsystemBase
           else{
             isClose = true;
           }
+            
       }
+          */
   }
-}
