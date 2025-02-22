@@ -103,6 +103,27 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> setL1());
         return command;
     }
+    public Command setElevatorBasedOnQueueCommand(TargetClass target){
+        Command command;
+        switch(target.getLevel()){
+            case 1:
+                command = setElevatorL1Command();
+                break;
+            case 2:
+                command = setElevatorL2Command();
+                break;
+            case 3:
+                command = setElevatorL3Command();
+                break;
+            case 4:
+                command = setElevatorL4Command();
+                break;
+            default:
+                command = setfullElevatorRetractCommand();
+                break;
+        }
+        return command;
+    }
     
     public Command setElevatorPickupCommand() {
 

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
@@ -72,17 +73,10 @@ public class CommandFactory {
   
           return command;
     }
-      //public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
-
-       // Command command = algaeArm.algaeArmStraightOutCommand()
-
-      //  command.addRequirements(drivebase, algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-      //  return command;
 
       public static Command setIntakeStateCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
           
-          SequentialCommandGroup command = elevator.setElevatorPickupCommand()
+        Command command = elevator.setElevatorPickupCommand()
           .onlyIf(elevator.isClearToIntake())
           .andThen(shooterArm.shooterArmLoadCommand())
           .andThen(shooter.shooterIntakeCommand());
@@ -92,38 +86,13 @@ public class CommandFactory {
   
           return command;
       }
-      
-   // public static Command leftAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, , Elevator elevator){
 
-        //These will be predefined locations. The other commands will take info from queue to determine which face to go to
-        //For left source
-        //pathfind to face
-        //run placement command
-        //retract and drive to station
-        //Coninue list of commands
-        
-
-      //  return command;
-  //  }
-  //  public static Command rightAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, SwerveSubsystem drivebase, Elevator elevator){
-
-        //These will be predefined locations. The other commands will take info from queue to determine which face to go to
-        //For right source
-        //pathfind to face
-        //run placement command
-        //retract and drive to station
-        //Coninue list of commands
-        
-   //     return command;
-  //  }
-}
-
-
-
-
-
-
-
-
-
-//}
+      public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, TargetClass targetClass){
+          
+          Command command = elevator.setElevatorBasedOnQueueCommand(targetClass);
+  
+          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+  
+          return command;
+      }
+    }

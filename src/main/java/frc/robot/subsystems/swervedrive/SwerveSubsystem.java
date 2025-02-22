@@ -561,7 +561,8 @@ public class SwerveSubsystem extends SubsystemBase
         
         double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
 
-        if (distance <= 2.0) {
+        if (distance <= 1.0) {
+          
             swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
           }
           else{

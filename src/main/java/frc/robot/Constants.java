@@ -33,7 +33,7 @@ public final class Constants
 
   public static final float armLength = (float)Units.inchesToMeters(0);
 
-
+  
 
 
   
@@ -198,12 +198,6 @@ public final class Constants
     public static final float limelightYaw = (float)Units.degreesToRadians(180);
   }
 
-  public static final class AlignmentConstants{
-
-    public static final double driveP = 0.2;
-  
-    public static final double maxSpeed = .25; // or whichever maximum speed is appropriate
-  }
   public static final class ButtonBoxConstants{
     public static final double allowableError = 0.05;
     public static final boolean invertX = true;
