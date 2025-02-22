@@ -93,15 +93,15 @@ public class TargetClass {
 
         switch(name) {
             case "SL":
-                target.setX(0);
-                target.setY(0);
-                target.setZ(0);
+                target.setX(1.245f);
+                target.setY(7.021f);
+                target.setZ(126.142f);
                 target.setSource(true);
                 break;
             case "SR":
-                target.setX(0);
-                target.setY(0);
-                target.setZ(0);
+                target.setX(1.204f);
+                target.setY(1.072f);
+                target.setZ(-126.142f);
                 target.setSource(true);
                 break;
             case "C000":

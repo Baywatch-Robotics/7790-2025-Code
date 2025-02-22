@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterPivotConstants;
+import frc.robot.subsystems.TargetClass;
 
 public class ShooterPivot extends SubsystemBase {
 
@@ -70,6 +71,17 @@ public class ShooterPivot extends SubsystemBase {
         return command;
     }
 
+    public Command setShooterPivotBasedOnQueueCommand(TargetClass target){
+        Command command;
+        if (target.isLeft()){
+            command = setLeftInitialCommand();
+        } else if (!target.isLeft()){
+            command = setRightInitalCommand();
+        } else {
+            command = setCenterCommand();
+        }
+        return command;
+    }
     public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {

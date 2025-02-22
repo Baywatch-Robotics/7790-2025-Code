@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -13,6 +15,7 @@ import java.util.function.DoubleSupplier;
 public class ButtonBox extends SubsystemBase {
 
     private final SwerveSubsystem drivebase;
+    
 
     public ButtonBox(SwerveSubsystem drivebase) {
         this.drivebase = drivebase;
@@ -52,6 +55,17 @@ public class ButtonBox extends SubsystemBase {
         return target;
     }
 
+    public TargetClass peekNextTarget() {
+        return targetQueue.peek();
+    }
+
+    public Command getNextTargetCommand() {
+        return new InstantCommand(() -> getNextTarget());
+    }
+    public Command peekNextTargetCommand() {
+        return new InstantCommand(() -> peekNextTarget());
+    }
+
     public String[] getQueueString() {
         String[] arr = new String[targetQueue.size()];
         int i = 0;
@@ -68,7 +82,7 @@ public class ButtonBox extends SubsystemBase {
     public boolean hasQueue() {
         return !targetQueue.isEmpty();
     }
-
+    
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
@@ -124,7 +138,7 @@ public class ButtonBox extends SubsystemBase {
         
         if (distance <= ButtonBoxConstants.allowableError) {
             // Remove the target if close enough.
-            getNextTarget();
+            
             return new JoystickSuppliers(() -> 0.0, () -> 0.0, () -> 0.0, () -> 0.0);
         }
         
@@ -133,8 +147,8 @@ public class ButtonBox extends SubsystemBase {
         boolean invertX = ButtonBoxConstants.invertX;
         boolean invertY = ButtonBoxConstants.invertY;
 
-        DoubleSupplier xInput = () -> MathUtil.clamp((invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), -1.0, 1.0);
-        DoubleSupplier yInput = () -> MathUtil.clamp((invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), -1.0, 1.0);
+        DoubleSupplier xInput = () -> MathUtil.clamp((invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), -.2, .2);
+        DoubleSupplier yInput = () -> MathUtil.clamp((invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), -.2, .2);
 
         DoubleSupplier rotationX = () -> {
             double currentRad = currentPose.getRotation().getRadians();

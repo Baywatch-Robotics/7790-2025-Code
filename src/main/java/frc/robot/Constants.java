@@ -72,6 +72,7 @@ public final class Constants
     public static final int ID = 19;
     public static final float intake = 0.15f;
     public static final float outake = -1f;
+    public static final float currentThreshold = 5;
   }
 
   public static final class ShooterArmConstants{
@@ -172,6 +173,8 @@ public final class Constants
   }
   public static final class AprilTagVisionConstants{
 
+    public static final double ambiguityThreshold = 0.1;
+
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.021);
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
@@ -206,33 +209,33 @@ public final class Constants
 
 
 
-    public static final float xValueC0XX = 0.0f;
-    public static final float yValueC0XX = 0.0f;
-    public static final float zValueC0XX = 0.0f;
+    public static final float xValueC0XX = 5.795f;
+    public static final float yValueC0XX = 4.0f;
+    public static final float zValueC0XX = 180.0f;
     public static final int faceValueC0XX = 0;
     
-    public static final float xValueC1XX = 0.0f;
-    public static final float yValueC1XX = 0.0f;
-    public static final float zValueC1XX = 0.0f;
+    public static final float xValueC1XX = 5.141f;
+    public static final float yValueC1XX = 2.893f;
+    public static final float zValueC1XX = 120.0f;
     public static final int faceValueC1XX = 1;
 
-    public static final float xValueC2XX = 0.0f;
-    public static final float yValueC2XX = 0.0f;
-    public static final float zValueC2XX = 0.0f;
+    public static final float xValueC2XX = 3.832f;
+    public static final float yValueC2XX = 2.892f;
+    public static final float zValueC2XX = 60.0f;
     public static final int faceValueC2XX = 2;
 
-    public static final float xValueC3XX = 0.0f;
-    public static final float yValueC3XX = 0.0f;
+    public static final float xValueC3XX = 3.185f;
+    public static final float yValueC3XX = 4.0f;
     public static final float zValueC3XX = 0.0f;
     public static final int faceValueC3XX = 3;
 
-    public static final float xValueC4XX = 0.0f;
-    public static final float yValueC4XX = 0.0f;
-    public static final float zValueC4XX = 0.0f;
+    public static final float xValueC4XX = 3.839f;
+    public static final float yValueC4XX = 5.156f;
+    public static final float zValueC4XX = -60.0f;
     public static final int faceValueC4XX = 4;
 
-    public static final float xValueC5XX = 0.0f;
-    public static final float yValueC5XX = 0.0f;
+    public static final float xValueC5XX = 5.134f;
+    public static final float yValueC5XX = 5.160f;
     public static final float zValueC5XX = 0.0f;
     public static final int faceValueC5XX = 5;
 

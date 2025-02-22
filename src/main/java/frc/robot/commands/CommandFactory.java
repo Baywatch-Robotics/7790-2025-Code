@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
@@ -11,6 +11,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import swervelib.SwerveInputStream;
 
 public class CommandFactory {
 
@@ -77,7 +78,7 @@ public class CommandFactory {
       public static Command setIntakeStateCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
           
         Command command = elevator.setElevatorPickupCommand()
-          .onlyIf(elevator.isClearToIntake())
+        .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
           .andThen(shooterArm.shooterArmLoadCommand())
           .andThen(shooter.shooterIntakeCommand());
 
@@ -87,12 +88,23 @@ public class CommandFactory {
           return command;
       }
 
-      public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, TargetClass targetClass){
+      public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
           
-          Command command = elevator.setElevatorBasedOnQueueCommand(targetClass);
+        TargetClass target = buttonBox.peekNextTarget();
+
+        
+
+          Command command = shooterArm.setShooterArmBasedOnQueueCommand(target)
+          .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+          .andThen(elevator.setElevatorBasedOnQueueCommand(target))
+          .alongWith(shooterPivot.setShooterPivotBasedOnQueueCommand(target))
+          .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+          .andThen(buttonBox.getNextTargetCommand());
+
   
+
           command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
   
           return command;
       }
-    }
+}

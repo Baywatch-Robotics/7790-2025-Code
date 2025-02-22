@@ -44,6 +44,8 @@ public class AprilTagVision extends SubsystemBase {
     private static PhotonPoseEstimator leftPoseEstimator;
     private static PhotonPoseEstimator limelightPoseEstimator;
 
+
+
     static {
         rightPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCamToRobot);
         leftPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, leftCamToRobot);
@@ -72,12 +74,32 @@ public class AprilTagVision extends SubsystemBase {
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
-        getRightCamPose(prevEstimatedPose).ifPresent(estimate -> validPoses.add(estimate.estimatedPose));
-        getLeftCamPose(prevEstimatedPose).ifPresent(estimate -> validPoses.add(estimate.estimatedPose));
-        getLimelightPose(prevEstimatedPose).ifPresent(estimate -> validPoses.add(estimate.estimatedPose));
+        Optional<EstimatedRobotPose> rightCamEstimate = getRightCamPose(prevEstimatedPose);
+        if (rightCamEstimate.isPresent()) {
+            EstimatedRobotPose estimate = rightCamEstimate.get();
+            if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
+                validPoses.add(estimate.estimatedPose);
+            }
+        }
+
+        Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
+        if (leftCamEstimate.isPresent()) {
+            EstimatedRobotPose estimate = leftCamEstimate.get();
+            if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
+                validPoses.add(estimate.estimatedPose);
+            }
+        }
+
+        Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
+        if (limelightEstimate.isPresent()) {
+            EstimatedRobotPose estimate = limelightEstimate.get();
+            if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
+                validPoses.add(estimate.estimatedPose);
+            }
+        }
 
         if (validPoses.isEmpty()) {
-            return Optional.empty(); // No valid poses
+            return Optional.empty(); // No valid poses found
         }
 
         return Optional.of(averagePoses(validPoses));
