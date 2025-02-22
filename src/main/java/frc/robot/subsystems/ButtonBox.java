@@ -4,18 +4,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Queue;
 import java.util.LinkedList;
 import frc.robot.Constants.ButtonBoxConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
 
 public class ButtonBox extends SubsystemBase {
 
     private final SwerveSubsystem drivebase;
     
+    private double distance;
 
     public ButtonBox(SwerveSubsystem drivebase) {
         this.drivebase = drivebase;
@@ -36,6 +41,10 @@ public class ButtonBox extends SubsystemBase {
         targetQueue.clear();
         updateDashboard();
     }
+
+    public IntSupplier currentLevelSupplier = () -> targetQueue.peek().getLevel();
+    public IntSupplier currentFaceSupplier = () -> targetQueue.peek().getFace();
+    public BooleanSupplier currentisLeftSupplier = () -> targetQueue.peek().isLeft();
 
     public void deleteLastTarget() {
         if (targetQueue instanceof LinkedList) {
@@ -65,6 +74,9 @@ public class ButtonBox extends SubsystemBase {
     public Command peekNextTargetCommand() {
         return new InstantCommand(() -> peekNextTarget());
     }
+    public Trigger isClose(){
+        return new Trigger(() -> distance <= ButtonBoxConstants.allowableError * 6);
+    }
 
     public String[] getQueueString() {
         String[] arr = new String[targetQueue.size()];
@@ -85,7 +97,7 @@ public class ButtonBox extends SubsystemBase {
     
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        isClose();
     }
 
     @Override
@@ -111,7 +123,7 @@ public class ButtonBox extends SubsystemBase {
             this.rotationY = rotationY;
         }
     }
-
+    
     /**
      * Returns JoystickSuppliers for field-oriented drive inputs.
      * 
@@ -134,35 +146,25 @@ public class ButtonBox extends SubsystemBase {
         Pose2d candidatePose = candidate.toPose2d();
         double dx = candidatePose.getX() - currentPose.getX();
         double dy = candidatePose.getY() - currentPose.getY();
-        double distance = Math.hypot(dx, dy);
+        distance = Math.hypot(dx, dy);
         
         if (distance <= ButtonBoxConstants.allowableError) {
             // Remove the target if close enough.
-            
             return new JoystickSuppliers(() -> 0.0, () -> 0.0, () -> 0.0, () -> 0.0);
         }
         
-        double targetRotationDegrees = candidate.getZ();
+        double targetRad = candidate.getZ();
         // Inversion flags assumed to be defined in ButtonBoxConstants
         boolean invertX = ButtonBoxConstants.invertX;
         boolean invertY = ButtonBoxConstants.invertY;
 
-        DoubleSupplier xInput = () -> MathUtil.clamp((invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), -.2, .2);
-        DoubleSupplier yInput = () -> MathUtil.clamp((invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), -.2, .2);
+        DoubleSupplier xInput = () -> MathUtil.clamp(2.5 * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), -.2, .2);
+        DoubleSupplier yInput = () -> MathUtil.clamp(2.5 * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), -.2, .2);
 
-        DoubleSupplier rotationX = () -> {
-            double currentRad = currentPose.getRotation().getRadians();
-            double targetRad = Math.toRadians(targetRotationDegrees);
-            double diffX = Math.cos(targetRad) - Math.cos(currentRad);
-            return MathUtil.clamp(diffX, -1.0, 1.0);
-        };
 
-        DoubleSupplier rotationY = () -> {
-            double currentRad = currentPose.getRotation().getRadians();
-            double targetRad = Math.toRadians(targetRotationDegrees);
-            double diffY = Math.sin(targetRad) - Math.sin(currentRad);
-            return MathUtil.clamp(diffY, -1.0, 1.0);
-        };
+        // Adjusted rotation calculation by subtracting 90° (i.e. Math.PI/2 radians)
+        DoubleSupplier rotationX = () -> MathUtil.clamp(Math.cos(targetRad + Math.PI / 2), -1.0, 1.0);
+        DoubleSupplier rotationY = () -> MathUtil.clamp(Math.sin(targetRad + Math.PI / 2), -1.0, 1.0);
 
         return new JoystickSuppliers(xInput, yInput, rotationX, rotationY);
     }

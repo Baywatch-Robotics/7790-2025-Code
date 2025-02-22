@@ -1,6 +1,9 @@
 package frc.robot.subsystems.Coral;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import java.util.function.IntSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -16,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterArmConstants;
+import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 
 public class ShooterArm extends SubsystemBase {
@@ -73,28 +77,7 @@ public class ShooterArm extends SubsystemBase {
         Command command = new InstantCommand(() -> this.setScoreL1());
         return command;
     }
-    public Command setShooterArmBasedOnQueueCommand(TargetClass target){
-        Command command;
-        switch(target.getLevel()){
-            case 1:
-                command = shooterArmScoreL1Command();
-                break;
-            case 2:
-                command = shooterArmScoreLOWCommand();
-                break;
-            case 3:
-                command = shooterArmScoreLOWCommand();
-                break;
-            case 4:
-                command = shooterArmScoreHIGHCommand();
-                break;
-            default:
-                command = shooterArmScoreLOWCommand();
-                break;
-        }
-        return command;
-    }
-    
+
     public Trigger isClearToElevate() {
         return new Trigger(() -> shooterArmEncoder.getPosition() >= 0.5);
     }

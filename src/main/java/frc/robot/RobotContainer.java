@@ -65,8 +65,8 @@ public class RobotContainer
 
   DoubleSupplier driveX = () -> driverXbox.getLeftX();
   DoubleSupplier driveY = () -> driverXbox.getLeftY();
-  DoubleSupplier headingX = () -> driverXbox.getRightX();
-  DoubleSupplier headingY = () -> driverXbox.getRightY();
+  DoubleSupplier headingX = () -> -driverXbox.getRightX();
+  DoubleSupplier headingY = () -> -driverXbox.getRightY();
 
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
   DoubleSupplier algaeArmUpDown = () -> opXbox.getRightX();
@@ -228,13 +228,13 @@ SwerveInputStream driveButtonBoxInput =
       //opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
       //opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       //opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-      //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());\[]
+      //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       
 
       driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      opXbox.x().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      opXbox.leftBumper().onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      opXbox.rightBumper().onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
@@ -299,10 +299,14 @@ SwerveInputStream driveButtonBoxInput =
 
     //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
-    //driverXbox.rightBumper().onTrue(new InstantCommand(() -> drivebase.setDefaultCommand(driveButtonBoxInputCommand)).alongWith(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
+    //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    
+    //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    buttonBox1.button(1).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+
+      //drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);    
   }
 
 /**

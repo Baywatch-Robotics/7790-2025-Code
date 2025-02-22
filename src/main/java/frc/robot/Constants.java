@@ -102,8 +102,8 @@ public final class Constants
 
     public static final int ID = 17;
 
-    public static final float leftAngleInitial = 0.32f;
-    public static final float rightAngleInitial = 0.6f;
+    public static final float leftAngleInitial = 0.35f;
+    public static final float rightAngleInitial = 0.67f;
     public static final float centerAngle = .49f;
 
     public static final float angleOffset = 0.48f;
@@ -180,8 +180,8 @@ public final class Constants
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
 
     public static final float rightCamRoll = (float)Units.degreesToRadians(0.0);
-    public static final float rightCamPitch = (float)Units.degreesToRadians(15.0f);
-    public static final float rightCamYaw = (float)Units.degreesToRadians(15.0f);
+    public static final float rightCamPitch = (float)Units.degreesToRadians(15.0);
+    public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
 
     
     public static final float leftCamXOffset = (float)Units.inchesToMeters(3.432);
@@ -202,7 +202,7 @@ public final class Constants
   }
 
   public static final class ButtonBoxConstants{
-    public static final double allowableError = 0.05;
+    public static final double allowableError = 0.005;
     public static final boolean invertX = true;
     public static final boolean invertY = true;
 
@@ -211,32 +211,32 @@ public final class Constants
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;
-    public static final float zValueC0XX = 180.0f;
+    public static final float zValueC0XX = (float)Units.degreesToRadians(180.0f);
     public static final int faceValueC0XX = 0;
     
     public static final float xValueC1XX = 5.141f;
     public static final float yValueC1XX = 2.893f;
-    public static final float zValueC1XX = 120.0f;
+    public static final float zValueC1XX = (float)Units.degreesToRadians(120.0f);
     public static final int faceValueC1XX = 1;
 
     public static final float xValueC2XX = 3.832f;
     public static final float yValueC2XX = 2.892f;
-    public static final float zValueC2XX = 60.0f;
+    public static final float zValueC2XX = (float)Units.degreesToRadians(60.0f);
     public static final int faceValueC2XX = 2;
 
     public static final float xValueC3XX = 3.185f;
     public static final float yValueC3XX = 4.0f;
-    public static final float zValueC3XX = 0.0f;
+    public static final float zValueC3XX = (float)Units.degreesToRadians(0.0f);;
     public static final int faceValueC3XX = 3;
 
     public static final float xValueC4XX = 3.839f;
     public static final float yValueC4XX = 5.156f;
-    public static final float zValueC4XX = -60.0f;
+    public static final float zValueC4XX = (float)Units.degreesToRadians(-60.0f);
     public static final int faceValueC4XX = 4;
 
     public static final float xValueC5XX = 5.134f;
     public static final float yValueC5XX = 5.160f;
-    public static final float zValueC5XX = 0.0f;
+    public static final float zValueC5XX = (float)Units.degreesToRadians(-120.0f);
     public static final int faceValueC5XX = 5;
 
     public static final int heightCX0X = 0;

@@ -9,12 +9,14 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterPivotConstants;
+import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 
 public class ShooterPivot extends SubsystemBase {
@@ -71,17 +73,6 @@ public class ShooterPivot extends SubsystemBase {
         return command;
     }
 
-    public Command setShooterPivotBasedOnQueueCommand(TargetClass target){
-        Command command;
-        if (target.isLeft()){
-            command = setLeftInitialCommand();
-        } else if (!target.isLeft()){
-            command = setRightInitalCommand();
-        } else {
-            command = setCenterCommand();
-        }
-        return command;
-    }
     public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
