@@ -301,7 +301,7 @@ SwerveInputStream driveButtonBoxInput =
 
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> drivebase.setDefaultCommand(driveButtonBoxInputCommand)).alongWith(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
-    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
   }
 
