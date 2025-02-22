@@ -104,10 +104,10 @@ public class SwerveSubsystem extends SubsystemBase
   {
 
     if(!isClose){
-     // addVisionMeasurementInitial();
+      addVisionMeasurementInitial();
     }
     else{
-    //  addVisionMeasurement();
+      addVisionMeasurement();
     }
     
 
@@ -551,7 +551,6 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
-  /*
   public void addVisionMeasurement() {
     Pose2d robotPose = swerveDrive.getPose();
 
@@ -562,7 +561,7 @@ public class SwerveSubsystem extends SubsystemBase
         
         double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
 
-        if (distance <= 1.0) {
+        if (distance <= 2.0) {
             swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
           }
           else{
@@ -594,12 +593,12 @@ public class SwerveSubsystem extends SubsystemBase
 
           // Only add the measurement if it's within 1 meter of the current pose
           if (distance >= .5) {
-              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+              swerveDrive.resetOdometry(newPose);
           }
           else{
             isClose = true;
           }
             
       }
-          */
-  }
+    }
+}

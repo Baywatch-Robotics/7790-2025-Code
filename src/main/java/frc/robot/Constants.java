@@ -172,30 +172,30 @@ public final class Constants
   }
   public static final class AprilTagVisionConstants{
 
-    public static final float rightCamXOffset = 0.0f;
-    public static final float rightCamYOffset = 0.0f;
-    public static final float rightCamZOffset = 0.0f;
+    public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
+    public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.021);
+    public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
 
-    public static final float rightCamRoll = 0.0f;
-    public static final float rightCamPitch = 0.0f;
-    public static final float rightCamYaw = 0.0f;
+    public static final float rightCamRoll = (float)Units.degreesToRadians(0.0);
+    public static final float rightCamPitch = (float)Units.degreesToRadians(15.0f);
+    public static final float rightCamYaw = (float)Units.degreesToRadians(15.0f);
 
     
-    public static final float leftCamXOffset = 0.0f;
-    public static final float leftCamYOffset = 0.0f;
-    public static final float leftCamZOffset = 0.0f;
+    public static final float leftCamXOffset = (float)Units.inchesToMeters(3.432);
+    public static final float leftCamYOffset = (float)Units.inchesToMeters(9.562);
+    public static final float leftCamZOffset = (float)Units.inchesToMeters(23.941);
 
-    public static final float leftCamRoll = 0.0f;
-    public static final float leftCamPitch = 0.0f;
-    public static final float leftCamYaw = 0.0f;
+    public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
+    public static final float leftCamPitch = (float)Units.degreesToRadians(20.0);
+    public static final float leftCamYaw = (float)Units.degreesToRadians(-20.0);
 
-    public static final float limelightXOffset = 0.0f;
-    public static final float limelightYOffset = 0.0f;
-    public static final float limelightZOffset = 0.0f;
+    public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
+    public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
+    public static final float limelightZOffset = (float)Units.inchesToMeters(36.273);
 
-    public static final float limelightRoll = 0.0f;
-    public static final float limelightPitch = 0.0f;
-    public static final float limelightYaw = 0.0f;
+    public static final float limelightRoll = (float)Units.degreesToRadians(0.0);
+    public static final float limelightPitch = (float)Units.degreesToRadians(-30.0);
+    public static final float limelightYaw = (float)Units.degreesToRadians(180);
   }
 
   public static final class AlignmentConstants{

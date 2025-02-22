@@ -95,8 +95,8 @@ public class RobotContainer
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * .4,
-  () -> driverXbox.getLeftX() * .4)
+  () -> driverXbox.getLeftY() * -.4,
+  () -> driverXbox.getLeftX() * -.4)
 .withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
 .scaleTranslation(1)
@@ -254,7 +254,7 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
 
 
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     //driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngle);
 
    // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);

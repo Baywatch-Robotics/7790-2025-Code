@@ -29,7 +29,8 @@ public class CommandFactory {
 
   public static Command setElevatorZero(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
       
-    Command command  = elevator.setfullElevatorRetractCommand();
+    Command command  = shooterArm.shooterArmScoreLOWCommand()
+      .andThen(elevator.setfullElevatorRetractCommand());
 
 
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
