@@ -301,16 +301,37 @@ SwerveInputStream driveButtonBoxInput =
 
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
     driverXbox.a().onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
       //drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+      
+    drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+    
+    
+    driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).whileTrue(driveFieldOrientedAnglularVelocity);
+    driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(new InstantCommand(() -> drivebase.removeDefaultCommand()));
+   // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
+   
+  // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
+    //   new InstantCommand(() -> {
+         // On resume, simply schedule the followQueueCommand.
+     //    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+     //  }, drivebase));
 
     //driverXbox.b().onTrue(new InstantCommand(() -> (drivebase.setDefaultCommand(driveButtonBoxInput))));
 
-    drivebase.setDefaultCommand(driveButtonBoxInputCommand);
     
     //drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+
+    // Now override this behavior by binding the resume action to the right bumper.
+    driverXbox.x().onTrue(
+       new InstantCommand(() -> {
+           //On resume, simply schedule the followQueueCommand.
+          drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+        }, drivebase));
   }
 
 /**
