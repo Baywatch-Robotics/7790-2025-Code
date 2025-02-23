@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.IntSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -108,6 +110,31 @@ public class Elevator extends SubsystemBase {
         return command;
     }
 
+    public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier != null) {
+                switch (currentLevelSupplier.getAsInt()) {
+                    case 0:
+                        setL1();
+                        break;
+                    case 1:
+                        setL2();
+                        break;
+                    case 2:
+                        setL3();
+                        break;
+                    case 3:
+                        setL4();
+                        break;
+                }
+            }
+        });
+        return command;
+    }
     public Trigger isAtHome() {
         return new Trigger(() -> m_encoder.getPosition() >= -1);
     }

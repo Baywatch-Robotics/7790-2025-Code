@@ -124,5 +124,4 @@ public class AprilTagVision extends SubsystemBase {
             new Rotation3d(roll / count, pitch / count, yaw / count)
         );
     }
-    
 }

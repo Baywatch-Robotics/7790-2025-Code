@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ public class ButtonBox extends SubsystemBase {
     
     private double distance;
 
+    
     public ButtonBox(SwerveSubsystem drivebase) {
         this.drivebase = drivebase;
     }
@@ -41,10 +43,19 @@ public class ButtonBox extends SubsystemBase {
         targetQueue.clear();
         updateDashboard();
     }
-
-    public IntSupplier currentLevelSupplier = () -> targetQueue.peek().getLevel();
-    public IntSupplier currentFaceSupplier = () -> targetQueue.peek().getFace();
-    public BooleanSupplier currentisLeftSupplier = () -> targetQueue.peek().isLeft();
+    
+    public IntSupplier currentLevelSupplier = () -> {
+        var target = targetQueue.peek();
+        return target != null ? target.getLevel() : 0;
+    };
+    public IntSupplier currentFaceSupplier = () -> {
+        var target = targetQueue.peek();
+        return target != null ? target.getFace() : 0;
+    };
+    public BooleanSupplier currentisLeftSupplier = () -> {
+        var target = targetQueue.peek();
+        return target != null && target.isLeft();
+    };
 
     public void deleteLastTarget() {
         if (targetQueue instanceof LinkedList) {
@@ -66,8 +77,9 @@ public class ButtonBox extends SubsystemBase {
 
     public TargetClass peekNextTarget() {
         return targetQueue.peek();
-    }
 
+    }
+    
     public Command getNextTargetCommand() {
         return new InstantCommand(() -> getNextTarget());
     }
@@ -75,7 +87,10 @@ public class ButtonBox extends SubsystemBase {
         return new InstantCommand(() -> peekNextTarget());
     }
     public Trigger isClose(){
-        return new Trigger(() -> distance <= ButtonBoxConstants.allowableError * 6);
+        return new Trigger(() -> distance <= ButtonBoxConstants.allowableError);
+    }
+    public Trigger isSlow(){
+        return new Trigger(() -> distance <= ButtonBoxConstants.fastMoveThreshold);
     }
 
     public String[] getQueueString() {
@@ -153,18 +168,34 @@ public class ButtonBox extends SubsystemBase {
             return new JoystickSuppliers(() -> 0.0, () -> 0.0, () -> 0.0, () -> 0.0);
         }
         
+        
         double targetRad = candidate.getZ();
         // Inversion flags assumed to be defined in ButtonBoxConstants
         boolean invertX = ButtonBoxConstants.invertX;
         boolean invertY = ButtonBoxConstants.invertY;
 
-        DoubleSupplier xInput = () -> MathUtil.clamp(2.5 * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), -.2, .2);
-        DoubleSupplier yInput = () -> MathUtil.clamp(2.5 * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), -.2, .2);
-
+        DoubleSupplier xInput;
+        DoubleSupplier yInput;
+        
+        if (distance >= ButtonBoxConstants.fastMoveThreshold) {
+            xInput = () -> MathUtil.clamp(ButtonBoxConstants.p * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClamp, ButtonBoxConstants.highClamp);
+            yInput = () -> MathUtil.clamp(ButtonBoxConstants.p * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClamp, ButtonBoxConstants.highClamp);
+        }
+        else {
+            xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSlow, ButtonBoxConstants.highClampSlow);
+            yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSlow, ButtonBoxConstants.highClampSlow);
+        }
 
         // Adjusted rotation calculation by subtracting 90° (i.e. Math.PI/2 radians)
         DoubleSupplier rotationX = () -> MathUtil.clamp(Math.cos(targetRad + Math.PI / 2), -1.0, 1.0);
         DoubleSupplier rotationY = () -> MathUtil.clamp(Math.sin(targetRad + Math.PI / 2), -1.0, 1.0);
+
+        SmartDashboard.putNumber("xInput", xInput.getAsDouble());
+        SmartDashboard.putNumber("yInput", yInput.getAsDouble());
+        SmartDashboard.putNumber("rotationX", rotationX.getAsDouble());
+        SmartDashboard.putNumber("rotationY", rotationY.getAsDouble());
+        SmartDashboard.putNumber("distance", distance);
+
 
         return new JoystickSuppliers(xInput, yInput, rotationX, rotationY);
     }

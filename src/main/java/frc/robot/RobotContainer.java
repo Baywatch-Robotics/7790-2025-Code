@@ -158,6 +158,14 @@ SwerveInputStream driveButtonBoxInput =
     .headingWhile(true);
 
 
+    public Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
+    public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+    //Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
+    //Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
+    //    driveDirectAngle);
+    public Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
+
+    public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveButtonBoxInput);
 
 /**
 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -187,14 +195,7 @@ SwerveInputStream driveButtonBoxInput =
     //buttonBox1.button(6).onTrue(algaeArm.algaeArmStowUpCommand());
     //buttonBox1.button(5).onTrue(algaeArm.algaeArmGroundIntakeCommand());
 
-    Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
-    Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    //Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
-    //Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(
-    //    driveDirectAngle);
-    Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
-
-    Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveButtonBoxInput);
+    
    // Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
@@ -231,7 +232,7 @@ SwerveInputStream driveButtonBoxInput =
       //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       
 
-      //driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
@@ -239,7 +240,9 @@ SwerveInputStream driveButtonBoxInput =
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
 
-      
+      buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
+      buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
+      buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
 
       buttonBox1.button(9).and(buttonBox2.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C000")));
       buttonBox1.button(9).and(buttonBox2.button(1)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C001")));
@@ -291,9 +294,10 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(8).and(buttonBox2.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
       
-      buttonBox2.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
-      buttonBox2.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
+      buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
+      buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
+      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, RobotContainer.this));
       //temp
    // driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
@@ -301,19 +305,14 @@ SwerveInputStream driveButtonBoxInput =
 
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.a().onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, RobotContainer.this));
+
+    driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+
+    //driverXbox.b().onTrue(CommandFactory.scoreTestSim(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
       //drivebase.setDefaultCommand(driveButtonBoxInputCommand);
-      
-    drivebase.setDefaultCommand(driveButtonBoxInputCommand);
-    
-    
-    driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).whileTrue(driveFieldOrientedAnglularVelocity);
-    driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(new InstantCommand(() -> drivebase.removeDefaultCommand()));
-   // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(driveFieldOrientedDirectAngleKeyboard);
    
   // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
     //   new InstantCommand(() -> {
@@ -324,16 +323,19 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.b().onTrue(new InstantCommand(() -> (drivebase.setDefaultCommand(driveButtonBoxInput))));
 
     
-    //drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     // Now override this behavior by binding the resume action to the right bumper.
-    driverXbox.x().onTrue(
-       new InstantCommand(() -> {
-           //On resume, simply schedule the followQueueCommand.
-          drivebase.setDefaultCommand(driveButtonBoxInputCommand);
-        }, drivebase));
+    driverXbox.x().onTrue(new InstantCommand(() -> drivebase.removeDefaultCommand()).andThen(new InstantCommand(() -> drivebase.setDefaultCommand(driveButtonBoxInputCommand))));
+
+    driverXbox.x().onFalse(new InstantCommand(() -> drivebase.removeDefaultCommand()).andThen(new InstantCommand(() -> drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity))));
   }
 
+  public Command stopButtonBoxFollowCommand()
+  {
+    return new InstantCommand(() -> new InstantCommand(() -> drivebase.removeDefaultCommand()).andThen(new InstantCommand(() -> drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity))));
+  }
+  
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

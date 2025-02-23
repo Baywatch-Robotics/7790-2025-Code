@@ -72,7 +72,7 @@ public final class Constants
     public static final int ID = 19;
     public static final float intake = 0.15f;
     public static final float outake = -1f;
-    public static final float currentThreshold = 5;
+    public static final float currentThreshold = 2;
   }
 
   public static final class ShooterArmConstants{
@@ -113,7 +113,7 @@ public final class Constants
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float P = 2f;
+    public static final float P = 2.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
@@ -139,20 +139,20 @@ public final class Constants
     
     public static final float manualMultiplier = 2f;
 
-    public static final float min = -272.0f;
+    public static final float min = -163.2f;
     public static final float max = 0.0f;
 
-    public static final float L4Pose = -272.0f;
-    public static final float L3Pose = -161f;
-    public static final float L2Pose = -69.0f;
+    public static final float L4Pose = -163.2f;
+    public static final float L3Pose = -96.6f;
+    public static final float L2Pose = -41.4f;
     public static final float L1Pose = 0.0f;
 
-    public static final float pickupPose = -125f;
+    public static final float pickupPose = -75f;
 
     public static final float P = 0.2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 5200;
+    public static final float maxVelocity = 4000;
     public static final float maxAcceleration = 6000;
     public static final float allowedClosedLoopError = .5f;
   }
@@ -202,41 +202,52 @@ public final class Constants
   }
 
   public static final class ButtonBoxConstants{
-    public static final double allowableError = 0.005;
+    public static final double allowableError = 0.03;
     public static final boolean invertX = true;
     public static final boolean invertY = true;
 
+    //public static final double fastMoveThreshold = 1.75; 
+    public static final double fastMoveThreshold = 2.5; //For Testing
 
+    public static final double lowClamp = -.3;
+    public static final double highClamp = .3;
+    public static final double lowClampSlow = -.2;
+    public static final double highClampSlow = .2;
 
+    public static final double p = 1;
+    //public static final double pSlow = 3;
+    public static final double pSlow = 3.75; //For Testing
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;
     public static final float zValueC0XX = (float)Units.degreesToRadians(180.0f);
     public static final int faceValueC0XX = 0;
     
-    public static final float xValueC1XX = 5.141f;
-    public static final float yValueC1XX = 2.893f;
-    public static final float zValueC1XX = (float)Units.degreesToRadians(120.0f);
+    public static final float xValueC1XX = 5.144f;
+    public static final float yValueC1XX = 5.160f;
+    public static final float zValueC1XX = (float)Units.degreesToRadians(-120.0f);
     public static final int faceValueC1XX = 1;
 
     public static final float xValueC2XX = 3.832f;
-    public static final float yValueC2XX = 2.892f;
-    public static final float zValueC2XX = (float)Units.degreesToRadians(60.0f);
+    public static final float yValueC2XX = 5.156f;
+    public static final float zValueC2XX = (float)Units.degreesToRadians(-60.0f);
     public static final int faceValueC2XX = 2;
 
-    public static final float xValueC3XX = 3.185f;
-    public static final float yValueC3XX = 4.0f;
+    public static final float xValueC3XX = 3.185f; //USE
+
+    //public static final float xValueC3XX = 2.750f;
+    public static final float yValueC3XX = 4.03f;
     public static final float zValueC3XX = (float)Units.degreesToRadians(0.0f);;
     public static final int faceValueC3XX = 3;
 
-    public static final float xValueC4XX = 3.839f;
-    public static final float yValueC4XX = 5.156f;
-    public static final float zValueC4XX = (float)Units.degreesToRadians(-60.0f);
+    public static final float xValueC4XX = 3.832f;
+    public static final float yValueC4XX = 2.892f;
+    public static final float zValueC4XX = (float)Units.degreesToRadians(60.0f);
     public static final int faceValueC4XX = 4;
 
     public static final float xValueC5XX = 5.134f;
-    public static final float yValueC5XX = 5.160f;
-    public static final float zValueC5XX = (float)Units.degreesToRadians(-120.0f);
+    public static final float yValueC5XX = 2.893f;
+    public static final float zValueC5XX = (float)Units.degreesToRadians(120.0f);
     public static final int faceValueC5XX = 5;
 
     public static final int heightCX0X = 0;

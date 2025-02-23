@@ -1,6 +1,9 @@
 package frc.robot.commands;
 
+import java.lang.annotation.Target;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -33,7 +36,9 @@ public class CommandFactory {
 
   public static Command setElevatorZero(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
       
-    Command command  = shooterArm.shooterArmScoreLOWCommand()
+    Command command  = shooterArm.shooterArmScoreLOWCommand() //Will make this straight up at some point
+    .alongWith(shooterPivot.setCenterCommand())
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
       .andThen(elevator.setfullElevatorRetractCommand());
 
 
@@ -76,29 +81,17 @@ public class CommandFactory {
   
           return command;
     }
-      
-      public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
-        Command command = shooterArm.shooterArmScoreLOWCommand()
-            .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-            .andThen(elevator.setElevatorL2Command())
-            .alongWith(shooterPivot.setLeftInitialCommand())
-            .andThen(new WaitUntilCommand(elevator.isAtSetpoint()));
-
-        command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-        return command;
-      }
         public static Command scoreTest(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
           Command command = shooterArm.shooterArmScoreLOWCommand()
-            .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-            .andThen(elevator.setElevatorL2Command())
-            .alongWith(shooterPivot.setRightInitalCommand())
-            .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
             .andThen(new InstantCommand (() -> buttonBox.addTarget("C310")))
+            .andThen(new WaitUntilCommand(buttonBox.isSlow()))
+            .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+            .andThen(elevator.setElevatorL3Command())
+            .andThen(shooterPivot.setRightInitalCommand())
+            .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
             .andThen(new WaitUntilCommand(buttonBox.isClose()))
-            .andThen(new WaitCommand(.5))
             .andThen(shooter.shooterOutakeCommand())
             .andThen(new WaitCommand(.5))
             .andThen(shooter.shooterZeroSpeedCommand())
@@ -108,7 +101,29 @@ public class CommandFactory {
 
         return command; 
     } 
-    public static Command sourceDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
+
+    public static Command scoreTestL4(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
+
+      Command command = shooterArm.shooterArmScoreHIGHCommand()
+        .andThen(new InstantCommand (() -> buttonBox.addTarget("C310")))
+        .andThen(new WaitUntilCommand(buttonBox.isSlow()))
+        .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+        .andThen(elevator.setElevatorL4Command())
+        .andThen(shooterPivot.setRightInitalCommand())
+        .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+        .andThen(new WaitUntilCommand(buttonBox.isClose()))
+        .andThen(shooter.shooterOutakeCommand())
+        .andThen(new WaitCommand(.5))
+        .andThen(shooter.shooterZeroSpeedCommand())
+        .andThen(buttonBox.getNextTargetCommand());
+
+        command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+    return command; 
+} 
+
+ 
+    public static Command sourceRightDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
       Command command = setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator)
         .andThen(new InstantCommand (() -> buttonBox.addTarget("SR")))
@@ -119,4 +134,54 @@ public class CommandFactory {
 
     return command; 
 } 
+public static Command sourceLeftDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator)
+    .andThen(new InstantCommand (() -> buttonBox.addTarget("SL")))
+    .andThen(new WaitUntilCommand(buttonBox.isClose()))
+    .andThen(shooter.shooterZeroSpeedCommand());
+
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+return command; 
+}
+
+
+
+public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+
+  Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
+.andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
+    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
+    //.andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    //.andThen(new WaitUntilCommand(buttonBox.isClose()))
+    //.andThen(shooter.shooterOutakeCommand())
+    //.andThen(new WaitCommand(.5))
+    //.andThen(shooter.shooterZeroSpeedCommand())
+    //.andThen(robotContainer.stopButtonBoxFollowCommand())
+    .andThen(buttonBox.getNextTargetCommand());
+    
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    return command; 
+}
+public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+
+  Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
+.andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
+    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
+    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    .andThen(new WaitUntilCommand(buttonBox.isClose()))
+    .andThen(shooter.shooterOutakeCommand())
+    .andThen(new WaitCommand(.5))
+    .andThen(shooter.shooterZeroSpeedCommand())
+    .andThen(robotContainer.stopButtonBoxFollowCommand())
+    .andThen(buttonBox.getNextTargetCommand());
+    
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    return command; 
+}
 }

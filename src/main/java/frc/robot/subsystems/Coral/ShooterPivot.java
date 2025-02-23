@@ -1,6 +1,10 @@
 package frc.robot.subsystems.Coral;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -72,6 +76,24 @@ public class ShooterPivot extends SubsystemBase {
         Command command = new InstantCommand(()-> this.setCenter());
         return command;
     }
+
+    public Command shooterPivotBasedOnQueueCommand(ButtonBox buttonBox) {
+
+        BooleanSupplier currentLeftSupplier = buttonBox.currentisLeftSupplier;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLeftSupplier != null) {
+                if (currentLeftSupplier.getAsBoolean()) {
+                    setLeftInitial();
+                } else {
+                    setRightInitial();
+                }
+            }
+        });
+        return command;
+    }
+
 
     public void moveAmount(final double amount) {
 
