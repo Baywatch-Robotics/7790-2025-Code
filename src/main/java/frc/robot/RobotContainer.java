@@ -231,7 +231,7 @@ SwerveInputStream driveButtonBoxInput =
       //opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       
 
-      driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      //driverXbox.y().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
@@ -302,11 +302,15 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    buttonBox1.button(1).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    driverXbox.a().onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
       //drivebase.setDefaultCommand(driveButtonBoxInputCommand);
 
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);    
+    //driverXbox.b().onTrue(new InstantCommand(() -> (drivebase.setDefaultCommand(driveButtonBoxInput))));
+
+    drivebase.setDefaultCommand(driveButtonBoxInputCommand);
+    
+    //drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
   }
 
 /**
