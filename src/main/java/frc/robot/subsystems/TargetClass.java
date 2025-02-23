@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.ButtonBoxConstants;
 
@@ -93,15 +94,15 @@ public class TargetClass {
 
         switch(name) {
             case "SL":
-                target.setX(1.245f);
+                target.setX(1.204f);
                 target.setY(7.021f);
-                target.setZ(126.142f);
+                target.setZ(Units.degreesToRadians(-60));
                 target.setSource(true);
                 break;
             case "SR":
                 target.setX(1.204f);
-                target.setY(1.072f);
-                target.setZ(-126.142f);
+                target.setY(1.045f);
+                target.setZ(Units.degreesToRadians(48));
                 target.setSource(true);
                 break;
             case "C000":

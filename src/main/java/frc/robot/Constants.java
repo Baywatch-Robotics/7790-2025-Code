@@ -65,14 +65,14 @@ public final class Constants
 
   public static final class AlgaeShooterConstants{
     public static final int ID = 16;
-    public static final float intake = -0.6f;
-    public static final float outake = 0.6f;
+    public static final float intake = -0.3f;
+    public static final float outake = 0.3f;
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
     public static final float intake = 0.15f;
     public static final float outake = -1f;
-    public static final float currentThreshold = 2;
+    public static final float currentThreshold = 15;
   }
 
   public static final class ShooterArmConstants{
@@ -143,7 +143,7 @@ public final class Constants
     public static final float max = 0.0f;
 
     public static final float L4Pose = -163.2f;
-    public static final float L3Pose = -96.6f;
+    public static final float L3Pose = -94.6625f;
     public static final float L2Pose = -41.4f;
     public static final float L1Pose = 0.0f;
 
@@ -216,7 +216,7 @@ public final class Constants
 
     public static final double p = 1;
     //public static final double pSlow = 3;
-    public static final double pSlow = 3.75; //For Testing
+    public static final double pSlow = 3.25; //For Testing
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;
