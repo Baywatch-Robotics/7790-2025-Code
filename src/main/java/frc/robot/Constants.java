@@ -102,8 +102,8 @@ public final class Constants
 
     public static final int ID = 17;
 
-    public static final float leftAngleInitial = 0.35f;
-    public static final float rightAngleInitial = 0.67f;
+    public static final float leftAngleInitial = 0.382339f;
+    public static final float rightAngleInitial = 0.622852f;
     public static final float centerAngle = .49f;
 
     public static final float angleOffset = 0.48f;
@@ -138,7 +138,10 @@ public final class Constants
     public static final int ID = 13;
     
     public static final float manualMultiplier = 2f;
+    //public static final float manualMultiplier = .2f; //For Testing
 
+    //Old with Orange Spools
+    /*
     public static final float min = -163.2f;
     public static final float max = 0.0f;
 
@@ -146,13 +149,22 @@ public final class Constants
     public static final float L3Pose = -94.6625f;
     public static final float L2Pose = -41.4f;
     public static final float L1Pose = 0.0f;
-
     public static final float pickupPose = -75f;
+    */
+    //Gray Spools
+    public static final float min = -237f;
+    public static final float max = 0.0f;
 
+    public static final float L4Pose = -237f;
+    public static final float L3Pose = -116.152504f;
+    public static final float L2Pose = -31.551039f;
+    public static final float L1Pose = -41f;
+    public static final float pickupPose = -95f;
+    
     public static final float P = 0.2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 4000;
+    public static final float maxVelocity = 4500;
     public static final float maxAcceleration = 6000;
     public static final float allowedClosedLoopError = .5f;
   }
@@ -203,8 +215,6 @@ public final class Constants
 
   public static final class ButtonBoxConstants{
     public static final double allowableError = 0.03;
-    public static final boolean invertX = true;
-    public static final boolean invertY = true;
 
     //public static final double fastMoveThreshold = 1.75; 
     public static final double fastMoveThreshold = 2.5; //For Testing
@@ -214,9 +224,12 @@ public final class Constants
     public static final double lowClampSlow = -.2;
     public static final double highClampSlow = .2;
 
+
     public static final double p = 1;
     //public static final double pSlow = 3;
     public static final double pSlow = 3.25; //For Testing
+
+    public static final double pSuperSlow = .4f;
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;

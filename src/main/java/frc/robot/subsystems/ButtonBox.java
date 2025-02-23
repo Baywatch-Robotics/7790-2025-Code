@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -171,8 +172,11 @@ public class ButtonBox extends SubsystemBase {
         
         double targetRad = candidate.getZ();
         // Inversion flags assumed to be defined in ButtonBoxConstants
-        boolean invertX = ButtonBoxConstants.invertX;
-        boolean invertY = ButtonBoxConstants.invertY;
+        
+        var alliance = DriverStation.getAlliance();
+        
+        final boolean invertX = alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+        final boolean invertY = alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
 
         DoubleSupplier xInput;
         DoubleSupplier yInput;

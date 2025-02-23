@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -221,15 +222,15 @@ SwerveInputStream driveButtonBoxInput =
      // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
 
       //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      //driverXbox.a().onTrue(shooter.shooterIntakeCommand());
-      //driverXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
-      //driverXbox.b().onTrue(shooter.shooterOutakeCommand());
-      //driverXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.a().onTrue(shooter.shooterIntakeCommand());
+      driverXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.b().onTrue(shooter.shooterOutakeCommand());
+      driverXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
 
-      driverXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
-      driverXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-      driverXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-      driverXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      //driverXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
+      //driverXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+      //driverXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
+      //driverXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
       
 
       
@@ -339,8 +340,13 @@ SwerveInputStream driveButtonBoxInput =
    */
   public Command getAutonomousCommand()
   {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+
+    try (SendableChooser<String> chooser = new SendableChooser<>()) {
+      chooser.setDefaultOption("Right", "Right");
+      chooser.addOption("Left", "Left");
+      // An example command will be run in autonomous
+      return drivebase.getAutonomousCommand(chooser.getSelected());
+    }
   }
 
   public void setMotorBrake(boolean brake)
