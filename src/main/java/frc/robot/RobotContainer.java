@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -167,7 +168,13 @@ SwerveInputStream driveButtonBoxInput =
     public Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
     public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveButtonBoxInput);
+    
+    public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
+    public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
 
+    SendableChooser<Command> chooser = new SendableChooser<>();
+
+    
 /**
 * The container for the robot. Contains subsystems, OI devices, and commands.
 */
@@ -237,7 +244,7 @@ SwerveInputStream driveButtonBoxInput =
       driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, RobotContainer.this));
+      driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
@@ -299,7 +306,7 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, RobotContainer.this));
+      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
       //temp
    // driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
 
@@ -308,7 +315,7 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, RobotContainer.this));
+    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
     driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
@@ -331,6 +338,11 @@ SwerveInputStream driveButtonBoxInput =
 
     driverXbox.x().whileTrue(driveButtonBoxInputCommand);
     driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
+
+    
+    chooser.setDefaultOption("Right", rightAuto);
+    chooser.addOption("Left", leftAuto);
+    SmartDashboard.putData(chooser);
   }
   
 /**
@@ -340,22 +352,9 @@ SwerveInputStream driveButtonBoxInput =
    */
   public Command getAutonomousCommand()
   {
-
-    try (SendableChooser<String> chooser = new SendableChooser<>()) {
-      chooser.setDefaultOption("Right", "Right");
-      chooser.addOption("Left", "Left");
       // An example command will be run in autonomous
-      
-      if ("Left".equals(chooser.getSelected()))
-      {
-        return CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
-      }
-      else ("Right".equals(chooser.getSelected()))
-      {
-        return CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
-      }
+      return chooser.getSelected();
     }
-  }
 
   public void setMotorBrake(boolean brake)
   {

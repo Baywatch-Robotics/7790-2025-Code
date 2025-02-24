@@ -207,14 +207,42 @@ public static Command scoreBasedOnQueueCommandDriveTest(AlgaeArm algaeArm, Shoot
 }
 public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase){
 
-    Command command = drivebase.pathfindThenFollowPath("Left Auton Start");
+    Command command = drivebase.pathfindThenFollowPath("Left Auton Start")
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("530")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C430")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C431")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
     
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }
 public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase){
 
-    Command command = drivebase.pathfindThenFollowPath("Right Auton Start");
+    Command command = drivebase.pathfindThenFollowPath("Right Auton Start")
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("130")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(drivebase.pathfindThenFollowPath("Right to 2"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C231")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(drivebase.pathfindThenFollowPath("Right to 2"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C230")))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
+    .andThen(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
     
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
