@@ -328,12 +328,12 @@ SwerveInputStream driveButtonBoxInput =
   
   public Command driveButtonBoxInputAuto()
   {
-    return new RepeatCommand(driveButtonBoxInputCommand);
+    return new InstantCommand(() -> driveButtonBoxInputCommand.repeatedly());
   }
 
   public Command stopDriveButtonBoxInputAuto()
   {
-    return new InstantCommand(() -> driveButtonBoxInputAuto().cancel());
+    return new InstantCommand(() -> driveButtonBoxInputCommand.cancel());
   }
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
