@@ -4,46 +4,27 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.Funnel;
-import frc.robot.subsystems.LED;
-import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
-import frc.robot.subsystems.Algae.AlgaeShooter;
-import frc.robot.subsystems.Coral.Scope;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.swervedrive.AprilTagVision;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
 
 import swervelib.SwerveInputStream;
 
@@ -82,16 +63,16 @@ public class RobotContainer
   
   
   private final AlgaeArm algaeArm = new AlgaeArm();
-  private final AlgaeShooter algaeShooter = new AlgaeShooter();
+  //private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
-  private final Climber climber = new Climber();
+  //private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
 
   //private final Funnel funnel = new Funnel();
-  private final LED LED = new LED();
+  //private final LED LED = new LED();
   private final ButtonBox buttonBox = new ButtonBox(drivebase, elevator);
 
   
@@ -169,8 +150,8 @@ SwerveInputStream driveButtonBoxInput =
 
     public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveButtonBoxInput);
     
-    public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
-    public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
+    public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
+    public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
 
     SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -244,7 +225,7 @@ SwerveInputStream driveButtonBoxInput =
       driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+      driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
@@ -315,7 +296,7 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this));
 
     driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
@@ -336,8 +317,8 @@ SwerveInputStream driveButtonBoxInput =
     // Now override this behavior by binding the resume action to the right bumper.
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    driverXbox.x().whileTrue(driveButtonBoxInputCommand);
-    driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
+    //driverXbox.x().whileTrue(driveButtonBoxInputCommand);
+    //driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
 
     
     chooser.setDefaultOption("Right", rightAuto);
@@ -345,6 +326,15 @@ SwerveInputStream driveButtonBoxInput =
     SmartDashboard.putData(chooser);
   }
   
+  public Command driveButtonBoxInputAuto()
+  {
+    return new RepeatCommand(driveButtonBoxInputCommand);
+  }
+
+  public Command stopDriveButtonBoxInputAuto()
+  {
+    return new InstantCommand(() -> driveButtonBoxInputAuto().cancel());
+  }
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

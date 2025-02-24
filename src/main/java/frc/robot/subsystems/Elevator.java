@@ -66,7 +66,9 @@ public class Elevator extends SubsystemBase {
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
     }
-
+    public void setClimbPose() {
+        elevatorDesiredPosition = ElevatorConstants.climbPose;
+    }
     // Commands
     public Command setfullElevatorRetractCommand() {
         Command command = new InstantCommand(() -> setFullRetract());
@@ -101,7 +103,10 @@ public class Elevator extends SubsystemBase {
 
         return command;
     }
-
+    public Command setElevatorClimbPoseCommand() {
+        Command command = new InstantCommand(() -> setClimbPose());
+        return command;
+    }
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -140,10 +145,16 @@ public class Elevator extends SubsystemBase {
         return new Trigger(() -> m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
                              m_encoder.getPosition() <= elevatorDesiredPosition + 5);
     }
+    public Trigger isClearToClimbAngle() {
+        return new Trigger(() -> m_encoder.getPosition() >= ElevatorConstants.climbPose - 5 &&
+                             m_encoder.getPosition() <= ElevatorConstants.climbPose + 5);
+    }
+
     public Boolean isAtSetpointBoolean() {
         return m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
                m_encoder.getPosition() <= elevatorDesiredPosition + 5;
     }
+
 
     public void moveAmount(final double amount) {
 
@@ -197,6 +208,7 @@ public class Elevator extends SubsystemBase {
         isAtHome();
         isAtSetpoint();
         isAtSetpointBoolean();
+        isClearToClimbAngle();
 
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }

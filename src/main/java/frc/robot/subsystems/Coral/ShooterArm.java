@@ -12,7 +12,6 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterArmConstants;
 import frc.robot.subsystems.ButtonBox;
-import frc.robot.subsystems.TargetClass;
 
 public class ShooterArm extends SubsystemBase {
 
@@ -55,6 +53,9 @@ public class ShooterArm extends SubsystemBase {
     private void setScoreL1() {
         shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
     }
+    private void setClimbAngle() {
+        shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
+    }
 
     public Command shooterArmScoreLOWCommand()
     {
@@ -78,7 +79,11 @@ public class ShooterArm extends SubsystemBase {
         Command command = new InstantCommand(() -> this.setScoreL1());
         return command;
     }
-
+    public Command shooterArmClimbCommand()
+    {
+        Command command = new InstantCommand(() -> this.setClimbAngle());
+        return command;
+    }
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;

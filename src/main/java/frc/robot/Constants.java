@@ -84,6 +84,8 @@ public final class Constants
 
     public static final float min = 0.225f;
     public static final float max = 0.698f;
+    
+    public static final float climbAngle = 0.698f; //Larger than this in reality
 
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.68f;
@@ -156,6 +158,7 @@ public final class Constants
     public static final float L2Pose = -31.551039f;
     public static final float L1Pose = -41f;
     public static final float pickupPose = -95f;
+    public static final float climbPose = -116;
     
     public static final float P = 0.2f;
     public static final float I = 0.0f;
@@ -212,8 +215,8 @@ public final class Constants
   public static final class ButtonBoxConstants{
     public static final double allowableError = 0.03;
 
-    //public static final double fastMoveThreshold = 1.75; 
-    public static final double fastMoveThreshold = 2.5; //For Testing
+    public static final double fastMoveThreshold = 1.5; 
+    //public static final double fastMoveThreshold = 2.5; //For Testing
 
     public static final double lowClamp = -.3;
     public static final double highClamp = .3;
