@@ -91,7 +91,7 @@ public class RobotContainer
 
   //private final Funnel funnel = new Funnel();
   private final LED LED = new LED();
-  private final ButtonBox buttonBox = new ButtonBox(drivebase);
+  private final ButtonBox buttonBox = new ButtonBox(drivebase, elevator);
 
   
 
@@ -345,7 +345,15 @@ SwerveInputStream driveButtonBoxInput =
       chooser.setDefaultOption("Right", "Right");
       chooser.addOption("Left", "Left");
       // An example command will be run in autonomous
-      return drivebase.getAutonomousCommand(chooser.getSelected());
+      
+      if ("Left".equals(chooser.getSelected()))
+      {
+        return CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
+      }
+      else ("Right".equals(chooser.getSelected()))
+      {
+        return CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase);
+      }
     }
   }
 

@@ -121,10 +121,6 @@ public final class Constants
     public static final float allowedClosedLoopError = .05f;
   }
 
-  public static final class AimingConstants{
-
-  }
-
   public static final class ClimberConstants{
 
     public static final int ID = 18;
@@ -221,15 +217,23 @@ public final class Constants
 
     public static final double lowClamp = -.3;
     public static final double highClamp = .3;
-    public static final double lowClampSlow = -.2;
-    public static final double highClampSlow = .2;
+
+    public static final double lowClampSuperSlowX = -.15;
+    public static final double highClampSuperSlowX = .15;
+    public static final double lowClampSuperSlowY = -.15;
+    public static final double highClampSuperSlowY = .15;
+    
+    public static final double lowClampSlowX = -.2;
+    public static final double highClampSlowX = .2;
+    public static final double lowClampSlowY = -.3;
+    public static final double highClampSlowY = .3;
 
 
     public static final double p = 1;
     //public static final double pSlow = 3;
     public static final double pSlow = 3.25; //For Testing
 
-    public static final double pSuperSlow = .4f;
+    public static final double pSuperSlow = 2f;
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;

@@ -31,8 +31,6 @@ public class Elevator extends SubsystemBase {
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
 
-    public static boolean isRaised = false;
-
     private RelativeEncoder m_encoder;
     
     public Elevator() {
@@ -48,31 +46,25 @@ public class Elevator extends SubsystemBase {
 
     private void setFullRetract() {
         elevatorDesiredPosition = 0;
-        isRaised = false;
     }
 
     private void setL4() {
         elevatorDesiredPosition = ElevatorConstants.L4Pose;
-        isRaised = true;
     }
 
     private void setL3() {
         elevatorDesiredPosition = ElevatorConstants.L3Pose;
-        isRaised = true;
     }
 
     private void setL2() {
         elevatorDesiredPosition = ElevatorConstants.L2Pose;
-        isRaised = true;
     }
 
     private void setL1() {
         elevatorDesiredPosition = ElevatorConstants.L1Pose;
-        isRaised = true;
     }
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
-        isRaised = false;
     }
 
     // Commands
@@ -148,6 +140,11 @@ public class Elevator extends SubsystemBase {
         return new Trigger(() -> m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
                              m_encoder.getPosition() <= elevatorDesiredPosition + 5);
     }
+    public Boolean isAtSetpointBoolean() {
+        return m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
+               m_encoder.getPosition() <= elevatorDesiredPosition + 5;
+    }
+
     public void moveAmount(final double amount) {
 
         if (Math.abs(amount) < 0.2) {
@@ -199,6 +196,7 @@ public class Elevator extends SubsystemBase {
         isClearToIntake();
         isAtHome();
         isAtSetpoint();
+        isAtSetpointBoolean();
 
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }

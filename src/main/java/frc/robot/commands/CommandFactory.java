@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
@@ -139,7 +138,7 @@ public class CommandFactory {
     return command; 
 } 
 
-public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
   Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
 .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
@@ -157,7 +156,7 @@ public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shoote
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }
-public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
   Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
     .andThen(shooter.shooterIntakeCommand())
@@ -177,7 +176,7 @@ public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter s
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }
-public static Command sourceDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+public static Command sourceDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
   Command command = setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator)
     .andThen(new WaitUntilCommand(buttonBox.isClose()))
@@ -188,5 +187,36 @@ public static Command sourceDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
 
 return command; 
+}
+public static Command scoreBasedOnQueueCommandDriveTest(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = shooter.shooterIntakeCommand()
+    .andThen(new InstantCommand (() -> buttonBox.addTarget("C310")))
+    .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
+    .andThen(shooter.shooterZeroSpeedCommand())
+    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
+    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
+    .andThen(new WaitUntilCommand(buttonBox.isClose()))
+    .andThen(shooter.shooterOutakeCommand())
+    .andThen(new WaitCommand(.5))
+    .andThen(shooter.shooterZeroSpeedCommand())
+    .andThen(buttonBox.getNextTargetCommand());
+    
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    return command; 
+}
+public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase){
+
+    Command command = drivebase.pathfindThenFollowPath("Left Auton Start");
+    
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    return command; 
+}
+public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase){
+
+    Command command = drivebase.pathfindThenFollowPath("Right Auton Start");
+    
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+    return command; 
 }
 }

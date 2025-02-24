@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import java.util.Queue;
 import java.util.LinkedList;
@@ -21,12 +20,14 @@ import java.util.function.IntSupplier;
 public class ButtonBox extends SubsystemBase {
 
     private final SwerveSubsystem drivebase;
-    
+    private final Elevator elevator;
+
     private double distance;
 
     
-    public ButtonBox(SwerveSubsystem drivebase) {
+    public ButtonBox(SwerveSubsystem drivebase, Elevator elevator) {
         this.drivebase = drivebase;
+        this.elevator = elevator;
     }
 
     private Queue<TargetClass> targetQueue = new LinkedList<>();
@@ -185,9 +186,13 @@ public class ButtonBox extends SubsystemBase {
             xInput = () -> MathUtil.clamp(ButtonBoxConstants.p * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClamp, ButtonBoxConstants.highClamp);
             yInput = () -> MathUtil.clamp(ButtonBoxConstants.p * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClamp, ButtonBoxConstants.highClamp);
         }
+        else if (!elevator.isAtSetpointBoolean()) {
+            xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSuperSlowX, ButtonBoxConstants.highClampSuperSlowX);
+            yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSuperSlowY, ButtonBoxConstants.highClampSuperSlowY);
+        }
         else {
-            xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSlow, ButtonBoxConstants.highClampSlow);
-            yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSlow, ButtonBoxConstants.highClampSlow);
+            xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSlowX, ButtonBoxConstants.highClampSlowX);
+            yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSlowY, ButtonBoxConstants.highClampSlowY);
         }
 
         // Adjusted rotation calculation by subtracting 90° (i.e. Math.PI/2 radians)
