@@ -233,10 +233,14 @@ public class SwerveSubsystem extends SubsystemBase
         // Load the path you want to follow using its name in the GUI
         PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
 
+        /*
         PathConstraints constraints = new PathConstraints(
         swerveDrive.getMaximumChassisVelocity(), 4.0,
         swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
         
+        */
+
+        PathConstraints constraints = new PathConstraints(1.0, 1.0, Units.degreesToRadians(120), Units.degreesToRadians(120)); //For testing
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         return AutoBuilder.pathfindThenFollowPath(path, constraints);
     } catch (Exception e) {
