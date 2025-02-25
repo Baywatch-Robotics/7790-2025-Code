@@ -9,13 +9,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
@@ -55,8 +55,10 @@ public class RobotContainer
   DoubleSupplier algaeArmUpDown = () -> opXbox.getRightX();
   DoubleSupplier shooterArmUpDown = () -> opXbox.getLeftY();
   DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); //Questionable Name Practices... Shooter Pivot UP DOWN not Left Right??
+
   DoubleSupplier climberUpDown = () -> opXbox.getRightX();
   
+
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
@@ -68,7 +70,7 @@ public class RobotContainer
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
-  //private final Climber climber = new Climber();
+  private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator();
 
   //private final Funnel funnel = new Funnel();

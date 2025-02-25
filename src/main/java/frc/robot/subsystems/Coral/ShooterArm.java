@@ -122,7 +122,7 @@ public class ShooterArm extends SubsystemBase {
 
         float scale = ShooterArmConstants.manualMultiplier;
 
-        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.min, ShooterArmConstants.max);
+        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.min, ShooterArmConstants.maxManual);
 
         shooterArmDesiredAngle = f;
     }

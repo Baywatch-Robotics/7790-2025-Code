@@ -119,9 +119,6 @@ public class AprilTagVision extends SubsystemBase {
             yaw += pose.getRotation().getZ();
         }
 
-        return new Pose3d(
-            x / count, y / count, z / count, 
-            new Rotation3d(roll / count, pitch / count, yaw / count)
-        );
+        return new Pose3d(x / count, y / count, z / count, new Rotation3d(roll / count, pitch / count, yaw / count));
     }
 }

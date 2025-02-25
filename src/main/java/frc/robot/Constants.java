@@ -83,7 +83,11 @@ public final class Constants
     public static final float manualMultiplier = 0.005f;
 
     public static final float min = 0.225f;
+    //public static final float max = .9f;
     public static final float max = 0.698f;
+
+    public static final float maxManual = 0.698f;
+    //public static final float maxManual = .9f;
     
     public static final float climbAngle = 0.698f; //Larger than this in reality
 
