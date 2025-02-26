@@ -190,10 +190,10 @@ public class ButtonBox extends SubsystemBase {
             yInput = () -> MathUtil.clamp(ButtonBoxConstants.p * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClamp, ButtonBoxConstants.highClamp);
         }
         else if (!elevator.isAtSetpointBoolean()) {
-            xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSuperSlowX, ButtonBoxConstants.highClampSuperSlowX);
-            yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSuperSlowY, ButtonBoxConstants.highClampSuperSlowY);
-            //xInput = () -> 0.0;
-            //yInput = () -> 0.0;
+            //xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSuperSlowX, ButtonBoxConstants.highClampSuperSlowX);
+            //yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSuperSlowY, ButtonBoxConstants.highClampSuperSlowY);
+            xInput = () -> 0.0;
+            yInput = () -> 0.0;
         }
         else {
             xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSlowX, ButtonBoxConstants.highClampSlowX);

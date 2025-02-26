@@ -190,12 +190,12 @@ public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter s
 public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
 
   Command command = robotContainer.driveButtonBoxInputAuto()
-    .andThen(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator))
+    //.andThen(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator))
     .andThen(shooter.shooterIntakeCommand())
     .andThen(new ParallelRaceGroup(new WaitUntilCommand(shooter.coralLoadedTrigger), new WaitCommand(1)))
-
     .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
     .andThen(shooter.shooterZeroSpeedCommand())
+
 
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(new WaitUntilCommand(buttonBox.isSlow()))
