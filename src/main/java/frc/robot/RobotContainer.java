@@ -191,12 +191,12 @@ SwerveInputStream driveButtonBoxInput =
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
-    //climber.setDefaultCommand(new RunCommand(() -> climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
+    climber.setDefaultCommand(new RunCommand(() -> climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
 
     /*if (Robot.isSimulation())
     {
@@ -322,6 +322,12 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.x().whileTrue(driveButtonBoxInputCommand);
     //driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
 
+    driverXbox.x().onTrue(driveButtonBoxInputAuto());
+    driverXbox.x().onFalse(stopDriveButtonBoxInputAuto());
+
+    driverXbox.pov(270).onTrue(driveButtonBoxInputAuto());
+    driverXbox.pov(270).onFalse(stopDriveButtonBoxInputAuto());
+ 
     
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
@@ -330,12 +336,12 @@ SwerveInputStream driveButtonBoxInput =
   
   public Command driveButtonBoxInputAuto()
   {
-    return new InstantCommand(() -> driveButtonBoxInputCommand.repeatedly());
+    return new RunCommand(() -> driveButtonBoxInputCommand.schedule());
   }
 
   public Command stopDriveButtonBoxInputAuto()
   {
-    return new InstantCommand(() -> driveButtonBoxInputCommand.cancel());
+    return new RunCommand(() -> driveFieldOrientedAnglularVelocity.schedule());
   }
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

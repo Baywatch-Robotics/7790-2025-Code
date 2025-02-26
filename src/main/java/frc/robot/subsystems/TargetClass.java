@@ -10,6 +10,7 @@ public class TargetClass {
 
     // Field width based on blue alliance origin. Update this value as required.
     private static final double FIELD_WIDTH = 17.55;
+    private static final double FIELD_LENGTH = 8.05;
 
     private double x;
     private double y;
@@ -554,14 +555,15 @@ public class TargetClass {
      * Converts this target data into a Pose2d.
      * If on the red alliance, mirror the pose relative to the blue-origin field coordinate system.
      */
-    public Pose2d toPose2d() {
-        Pose2d pose = new Pose2d(x, y, new Rotation2d());
+    public Pose2d toPose2d(Pose2d currentPose) {
+
         if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
-            double mirroredX = FIELD_WIDTH - pose.getX();
-            double mirroredAngle = Math.PI - pose.getRotation().getRadians();
-            return new Pose2d(mirroredX, pose.getY(), new Rotation2d(mirroredAngle));
+            double mirroredX = FIELD_WIDTH - currentPose.getX();
+            double mirroredY = FIELD_LENGTH - currentPose.getY();
+            double mirroredAngle = Math.PI - currentPose.getRotation().getRadians();
+            return new Pose2d(mirroredX, mirroredY, new Rotation2d(mirroredAngle));
         }
-        return pose;
+        return currentPose;
     }
 
     @Override

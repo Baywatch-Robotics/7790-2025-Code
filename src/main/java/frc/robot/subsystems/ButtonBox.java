@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
 import java.util.LinkedList;
 import frc.robot.Constants.ButtonBoxConstants;
@@ -160,7 +161,9 @@ public class ButtonBox extends SubsystemBase {
             return new JoystickSuppliers(() -> 0.0, () -> 0.0, () -> 0.0, () -> 0.0);
         }
         
-        Pose2d candidatePose = candidate.toPose2d();
+        Pose2d targetPose = new Pose2d(candidate.getX(), candidate.getY(), new Rotation2d(candidate.getZ()));
+
+        Pose2d candidatePose = candidate.toPose2d(targetPose);
         double dx = candidatePose.getX() - currentPose.getX();
         double dy = candidatePose.getY() - currentPose.getY();
         distance = Math.hypot(dx, dy);
@@ -189,6 +192,8 @@ public class ButtonBox extends SubsystemBase {
         else if (!elevator.isAtSetpointBoolean()) {
             xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSuperSlowX, ButtonBoxConstants.highClampSuperSlowX);
             yInput = () -> MathUtil.clamp(ButtonBoxConstants.pSuperSlow * (invertY ? -1 : 1) * (candidatePose.getY() - currentPose.getY()), ButtonBoxConstants.lowClampSuperSlowY, ButtonBoxConstants.highClampSuperSlowY);
+            //xInput = () -> 0.0;
+            //yInput = () -> 0.0;
         }
         else {
             xInput = () -> MathUtil.clamp(ButtonBoxConstants.pSlow * (invertX ? -1 : 1) * (candidatePose.getX() - currentPose.getX()), ButtonBoxConstants.lowClampSlowX, ButtonBoxConstants.highClampSlowX);

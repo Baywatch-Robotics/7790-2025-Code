@@ -151,6 +151,10 @@ public class Elevator extends SubsystemBase {
     }
 
     public Boolean isAtSetpointBoolean() {
+
+        if(m_encoder.getPosition() <= 5){
+            return false;
+        }
         return m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
                m_encoder.getPosition() <= elevatorDesiredPosition + 5;
     }
