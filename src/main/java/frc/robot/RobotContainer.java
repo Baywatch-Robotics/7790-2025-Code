@@ -49,17 +49,15 @@ public class RobotContainer
   private final CommandJoystick buttonBox1 = new CommandJoystick(1);
   private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
-  
-  public boolean driveToPoseEnabled = false;
   public float driveSpeed = 0;
 
   private boolean isClose = false;
   private boolean isVeryClose = false;
   private boolean isApproaching = false;
 
-  public BooleanSupplier isCloseSupplier = () -> isClose;
-  public BooleanSupplier isVeryCloseSupplier = () -> isVeryClose;
-  public BooleanSupplier isApproachingSupplier = () -> isApproaching;
+  public BooleanSupplier isCloseSupplier = () -> false;
+  public BooleanSupplier isVeryCloseSupplier = () -> false;
+  public BooleanSupplier isApproachingSupplier = () -> false;
 
   // Track distance to target for proximity calculations
   private double distanceToTarget = Double.POSITIVE_INFINITY;
@@ -69,26 +67,11 @@ public class RobotContainer
    * 
    * @return A Trigger that activates when robot is within error allowance of target
    */
-  public Trigger isCloseToPose(ButtonBox buttonBox) {
-    TargetClass target = buttonBox.peekNextTarget();
-    
-    Pose2d pose;
-    if (target == null) {
-        pose = null;
-    }
-    else{
-        pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
-                             Rotation2d.fromDegrees(target.getZ()));
-    }
-
-    return new Trigger(() -> drivebase.getPose().getTranslation().getDistance(pose.getTranslation()) 
-                           < Constants.closeToPoseErrorAllowance);
-  }
 
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX();
 
-  DoubleSupplier driveX = () -> driveSpeed * driverXbox.getLeftX();
-  DoubleSupplier driveY = () -> driveSpeed * driverXbox.getLeftY();
+  DoubleSupplier driveX;
+  DoubleSupplier driveY;
   DoubleSupplier headingX = () -> -driverXbox.getRightX();
   DoubleSupplier headingY = () -> -driverXbox.getRightY();
 
@@ -419,7 +402,7 @@ SwerveInputStream driveButtonBoxInput =
     
     // Adjust speed based on proximity to target if there's a valid target
     TargetClass currentTarget = buttonBox.peekNextTarget();
-    if (currentTarget != null && driveToPoseEnabled) {
+    if (currentTarget != null) {
       // Get current robot position and target position
       Pose2d robotPose = drivebase.getPose();
       Pose2d targetPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), 
@@ -463,9 +446,31 @@ SwerveInputStream driveButtonBoxInput =
     
     SmartDashboard.putNumber("Drive Speed", driveSpeed);
     
+    isApproachingSupplier = () -> isApproaching;
+    isVeryCloseSupplier = () -> isVeryClose;
+    isCloseSupplier = () -> isClose;
+
+    driveX = () -> -driverXbox.getLeftX() * driveSpeed;
+    driveY = () -> -driverXbox.getLeftY() * driveSpeed;
+
+    
     isCloseToPose(buttonBox);
   }
-  
+
+  public Trigger isCloseToPose(ButtonBox buttonBox) {
+    TargetClass target = buttonBox.peekNextTarget();
+    
+    Pose2d pose;
+    if (target == null) {
+        pose = null;
+    }
+    else{
+        pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
+                             Rotation2d.fromDegrees(target.getZ()));
+    }
+
+    return new Trigger(() -> drivebase.getPose().getTranslation().getDistance(pose.getTranslation()) <= Constants.closeToPoseErrorAllowance);
+  }
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

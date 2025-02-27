@@ -184,7 +184,7 @@ public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter s
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
 
     .andThen(new WaitUntilCommand(robotContainer.isApproachingSupplier))
-    
+
 
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
