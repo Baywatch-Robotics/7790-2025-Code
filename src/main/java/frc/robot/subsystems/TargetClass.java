@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants.ButtonBoxConstants;
+import frc.robot.Constants.TargetClassConstants;
 
 public class TargetClass {
 
@@ -85,6 +87,8 @@ public class TargetClass {
     public void setFace(int face) {
         this.face = face;
     }
+
+
     public static TargetClass GetTargetByName(String name) {
         TargetClass target = new TargetClass(name);
         // Set properties based on the name.
@@ -107,435 +111,435 @@ public class TargetClass {
                 target.setSource(true);
                 break;
             case "C000":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C001":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C010":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C011":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C020":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C021":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C030":    
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C031":
-                target.setX(ButtonBoxConstants.xValueC0XX);
-                target.setY(ButtonBoxConstants.yValueC0XX);
-                target.setZ(ButtonBoxConstants.zValueC0XX);
-                target.setFace(ButtonBoxConstants.faceValueC0XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC0XX);
+                target.setY(TargetClassConstants.yValueC0XX);
+                target.setZ(TargetClassConstants.zValueC0XX);
+                target.setFace(TargetClassConstants.faceValueC0XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C100":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C101":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C110":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C111":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C120":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C121":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C130":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C131":
-                target.setX(ButtonBoxConstants.xValueC1XX);
-                target.setY(ButtonBoxConstants.yValueC1XX);
-                target.setZ(ButtonBoxConstants.zValueC1XX);
-                target.setFace(ButtonBoxConstants.faceValueC1XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC1XX);
+                target.setY(TargetClassConstants.yValueC1XX);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C200":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C201":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C210":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C211":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C220":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C221":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C230":
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C231":        
-                target.setX(ButtonBoxConstants.xValueC2XX);
-                target.setY(ButtonBoxConstants.yValueC2XX);
-                target.setZ(ButtonBoxConstants.zValueC2XX);
-                target.setFace(ButtonBoxConstants.faceValueC2XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC2XX);
+                target.setY(TargetClassConstants.yValueC2XX);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C300":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C301":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C310":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C311":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C320":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C321":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C330":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C331":
-                target.setX(ButtonBoxConstants.xValueC3XX);
-                target.setY(ButtonBoxConstants.yValueC3XX);
-                target.setZ(ButtonBoxConstants.zValueC3XX);
-                target.setFace(ButtonBoxConstants.faceValueC3XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC3XX);
+                target.setY(TargetClassConstants.yValueC3XX);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C400":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C401":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C410":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C411":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C420":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C421":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C430":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C431":
-                target.setX(ButtonBoxConstants.xValueC4XX);
-                target.setY(ButtonBoxConstants.yValueC4XX);
-                target.setZ(ButtonBoxConstants.zValueC4XX);
-                target.setFace(ButtonBoxConstants.faceValueC4XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC4XX);
+                target.setY(TargetClassConstants.yValueC4XX);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C500":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C501":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX0X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
             case "C510":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C511":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX1X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
             case "C520":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C521":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX2X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
             case "C530":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX0);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             case "C531":
-                target.setX(ButtonBoxConstants.xValueC5XX);
-                target.setY(ButtonBoxConstants.yValueC5XX);
-                target.setZ(ButtonBoxConstants.zValueC5XX);
-                target.setFace(ButtonBoxConstants.faceValueC5XX);
-                target.setLeft(ButtonBoxConstants.setLeftCXX1);
-                target.setLevel(ButtonBoxConstants.heightCX3X);
+                target.setX(TargetClassConstants.xValueC5XX);
+                target.setY(TargetClassConstants.yValueC5XX);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
             // Add more cases as needed.
@@ -555,7 +559,7 @@ public class TargetClass {
      * Converts this target data into a Pose2d.
      * If on the red alliance, mirror the pose relative to the blue-origin field coordinate system.
      */
-    public Pose2d toPose2d(Pose2d currentPose) {
+    public static Pose2d toPose2d(Pose2d currentPose) {
 
         if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
             double mirroredX = FIELD_WIDTH - currentPose.getX();
@@ -566,6 +570,15 @@ public class TargetClass {
         return currentPose;
     }
 
+    public static Supplier<Pose2d> toPose2dSupplier(ButtonBox buttonBox) {
+
+        TargetClass currentTarget = buttonBox.peekNextTarget();
+        
+        Pose2d currentPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), new Rotation2d(currentTarget.getZ()));
+        
+        return () -> toPose2d(currentPose);
+    }
+    
     @Override
     public String toString() {
         return name;

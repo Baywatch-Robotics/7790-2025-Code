@@ -1,9 +1,11 @@
 // Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Open Source Software; you can modify and/or share it under the terms of the
+// WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,10 +15,12 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
@@ -24,6 +28,7 @@ import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.io.File;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
@@ -44,6 +49,17 @@ public class RobotContainer
   private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
   
+  public boolean driveToPoseEnabled = false;
+  public float driveSpeed = 1.0f;
+
+  // Track distance to target for proximity calculations
+  private double distanceToTarget = Double.POSITIVE_INFINITY;
+  
+  // Proximity state indicators as suppliers
+  public final BooleanSupplier isVeryClose = () -> distanceToTarget < 0.5;
+  public final BooleanSupplier isClose = () -> distanceToTarget < 1.0;
+  public final BooleanSupplier isApproaching = () -> distanceToTarget < 1.5;
+
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX();
 
   DoubleSupplier driveX = () -> driverXbox.getLeftX();
@@ -71,20 +87,20 @@ public class RobotContainer
   private final ShooterArm shooterArm = new ShooterArm();
   private final ShooterPivot shooterPivot = new ShooterPivot();
   private final Climber climber = new Climber();
-  private final Elevator elevator = new Elevator();
+  private final Elevator elevator = new Elevator(this);
 
   //private final Funnel funnel = new Funnel();
   //private final LED LED = new LED();
-  private final ButtonBox buttonBox = new ButtonBox(drivebase, elevator);
+  private final ButtonBox buttonBox = new ButtonBox();
 
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * -.4,
-  () -> driverXbox.getLeftX() * -.4)
+  () -> driverXbox.getLeftY() * -1,
+  () -> driverXbox.getLeftX() * -1)
 .withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
-.scaleTranslation(1)
+.scaleTranslation(driveSpeed)
 .allianceRelativeControl(true);
 
 /**
@@ -125,7 +141,7 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
                                                  2))
                  .headingWhile(true);
 
-
+/*
 // Create an input stream using values provided by the ButtonBox.
 SwerveInputStream driveButtonBoxInput =
     SwerveInputStream.of(drivebase.getSwerveDrive(),
@@ -141,8 +157,12 @@ SwerveInputStream driveButtonBoxInput =
     .allianceRelativeControl(true)
     // Optionally, if you want to drive with a heading-control mode:
     .headingWhile(true);
+  */
+  
+  SwerveInputStream driveAngularVelocityDriveToPose = driveAngularVelocity.copy()
 
-
+  .driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID).driveToPoseEnabled(driveToPoseEnabled);
+  
     public Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
     //Command driveRobotOrientedAngularVelocity  = drivebase.driveFieldOriented(driveRobotOriented);
@@ -150,10 +170,11 @@ SwerveInputStream driveButtonBoxInput =
     //    driveDirectAngle);
     public Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
-    public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveButtonBoxInput);
+    public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveAngularVelocityDriveToPose);
     
     public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
     public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
+    public Command TESTONLYAuto = CommandFactory.TESTONLYAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
 
     SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -224,9 +245,9 @@ SwerveInputStream driveButtonBoxInput =
       
 
       
-      driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      //driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      //driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      //driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
@@ -298,7 +319,7 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this));
+    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
 
     driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
@@ -322,27 +343,79 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.x().whileTrue(driveButtonBoxInputCommand);
     //driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
 
-    driverXbox.x().onTrue(driveButtonBoxInputAuto());
-    driverXbox.x().onFalse(stopDriveButtonBoxInputAuto());
+    driverXbox.x().onTrue(startDriveToPose());
+    driverXbox.x().onFalse(cancelDriveToPose());
 
-    driverXbox.pov(270).onTrue(driveButtonBoxInputAuto());
-    driverXbox.pov(270).onFalse(stopDriveButtonBoxInputAuto());
+    driverXbox.pov(270).onTrue(startDriveToPose());
+    driverXbox.pov(270).onFalse(cancelDriveToPose());
  
     
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
+    chooser.addOption("TESTONLY", TESTONLYAuto);
     SmartDashboard.putData(chooser);
   }
   
-  public Command driveButtonBoxInputAuto()
+  public Command startDriveToPose()
   {
-    return new RunCommand(() -> driveButtonBoxInputCommand.schedule());
+    return new InstantCommand(() -> driveToPoseEnabled = true);
   }
 
-  public Command stopDriveButtonBoxInputAuto()
+  public Command cancelDriveToPose()
   {
-    return new RunCommand(() -> driveFieldOrientedAnglularVelocity.schedule());
+    return new InstantCommand(() -> driveToPoseEnabled = false);
   }
+
+  public Command changeDriveSpeedCommand(float speed)
+  {
+    return new InstantCommand(() -> driveSpeed = speed);
+  }
+
+  public void setDriveSpeedBasedOnElevatorAndCloseness()
+  {    
+    // Base speed determined by elevator position
+    float baseSpeed = elevator.isRaised() ? 0.3f : 1.0f;
+    
+    // Reset distance to a large value by default
+    distanceToTarget = Double.POSITIVE_INFINITY;
+    
+    // Adjust speed based on proximity to target if there's a valid target
+    TargetClass currentTarget = buttonBox.peekNextTarget();
+    if (currentTarget != null && driveToPoseEnabled) {
+      // Get current robot position and target position
+      Pose2d robotPose = drivebase.getPose();
+      Pose2d targetPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), 
+                                    new Rotation2d(currentTarget.getZ()));
+      
+      // Calculate and store distance to target
+      distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
+      
+      // Graduated speed reduction based on distance
+      if (isVeryClose.getAsBoolean()) {
+        driveSpeed = Math.min(baseSpeed, 0.2f);
+      } else if (isClose.getAsBoolean()) {
+        //driveSpeed = Math.min(baseSpeed, 0.4f);
+        driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
+      } else if (isApproaching.getAsBoolean()) {
+        //driveSpeed = Math.min(baseSpeed, 0.6f);
+        driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
+      } else {
+        driveSpeed = baseSpeed; // Use the base speed from elevator status
+      }
+      
+      // For debugging
+      SmartDashboard.putNumber("Distance to Target", distanceToTarget);
+    } else {
+      // No target or not in drive-to-pose mode, just use elevator-based speed
+      driveSpeed = baseSpeed;
+    }
+    
+    SmartDashboard.putNumber("Drive Speed", driveSpeed);
+    SmartDashboard.putBoolean("Very Close to Target", isVeryClose.getAsBoolean());
+    SmartDashboard.putBoolean("Close to Target", isClose.getAsBoolean());
+    SmartDashboard.putBoolean("Approaching Target", isApproaching.getAsBoolean());
+  }
+  
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

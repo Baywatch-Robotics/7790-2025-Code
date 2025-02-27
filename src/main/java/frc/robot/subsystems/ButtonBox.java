@@ -1,35 +1,16 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
 import java.util.LinkedList;
-import frc.robot.Constants.ButtonBoxConstants;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 
 public class ButtonBox extends SubsystemBase {
-
-    private final SwerveSubsystem drivebase;
-    private final Elevator elevator;
-
-    private double distance;
-
-    
-    public ButtonBox(SwerveSubsystem drivebase, Elevator elevator) {
-        this.drivebase = drivebase;
-        this.elevator = elevator;
-    }
 
     private Queue<TargetClass> targetQueue = new LinkedList<>();
 
@@ -89,12 +70,6 @@ public class ButtonBox extends SubsystemBase {
     public Command peekNextTargetCommand() {
         return new InstantCommand(() -> peekNextTarget());
     }
-    public Trigger isClose(){
-        return new Trigger(() -> distance <= ButtonBoxConstants.allowableError);
-    }
-    public Trigger isSlow(){
-        return new Trigger(() -> distance <= ButtonBoxConstants.fastMoveThreshold);
-    }
 
     public String[] getQueueString() {
         String[] arr = new String[targetQueue.size()];
@@ -112,21 +87,7 @@ public class ButtonBox extends SubsystemBase {
     public boolean hasQueue() {
         return !targetQueue.isEmpty();
     }
-    
-    @Override
-    public void periodic() {
-        isClose();
-    }
-
-    @Override
-    public void simulationPeriodic() {
-        // This method will be called once per scheduler run during simulation
-    }
-
-    /**
-     * Container for joystick input suppliers.
-     * Now includes two axes for rotation (simulating an Xbox right stick).
-     */
+    /*
     public static class JoystickSuppliers {
         public final DoubleSupplier x;
         public final DoubleSupplier y;
@@ -142,18 +103,7 @@ public class ButtonBox extends SubsystemBase {
         }
     }
     
-    /**
-     * Returns JoystickSuppliers for field-oriented drive inputs.
-     * 
-     * While the target is far (distance > TARGET_PROXIMITY_THRESHOLD), the suppliers
-     * output joystick values based on the error between the target position/rotation and
-     * the current robot pose.
-     * 
-     * When the target becomes close (distance <= TARGET_PROXIMITY_THRESHOLD), the target
-     * is polled (removed from the queue) and zero inputs are returned (disabling control).
-     *
-     * @return JoystickSuppliers for x, y, rotationX, and rotationY.
-     */
+
     public JoystickSuppliers getFieldOrientedSuppliers() {
         Pose2d currentPose = drivebase.getPose();
         TargetClass candidate = targetQueue.peek();
@@ -213,4 +163,5 @@ public class ButtonBox extends SubsystemBase {
 
         return new JoystickSuppliers(xInput, yInput, rotationX, rotationY);
     }
+        */
 }

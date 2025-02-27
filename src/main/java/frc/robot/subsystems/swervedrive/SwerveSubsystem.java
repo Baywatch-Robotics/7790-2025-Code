@@ -27,8 +27,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.subsystems.ButtonBox;
+import frc.robot.subsystems.TargetClass;
 
 import java.io.File;
 import java.util.Optional;
@@ -51,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase
   private final SwerveDrive         swerveDrive;
   public boolean isClose = false;
   private int visionMeasurementCounter = 0; // counter
+  private ButtonBox buttonBox = new ButtonBox();
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -110,7 +114,7 @@ public class SwerveSubsystem extends SubsystemBase
       addVisionMeasurement();
     }
     
-
+    isCloseToPose(buttonBox);
   }
 
   @Override
@@ -249,8 +253,16 @@ public class SwerveSubsystem extends SubsystemBase
     }
   }
 
+  
+  public Trigger isCloseToPose(ButtonBox buttonBox) {
+    
+    TargetClass target = buttonBox.peekNextTarget();
+    
+    Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromDegrees(target.getZ()));
 
-
+    return new Trigger(() -> getPose().getTranslation().getDistance(pose.getTranslation()) < Constants.closeToPoseErrorAllowance);
+  }
+  
 
   
   /**

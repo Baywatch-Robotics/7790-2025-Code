@@ -46,8 +46,9 @@ public class Shooter extends SubsystemBase {
         }
     }
     
-    public Trigger coralLoadedTrigger = new Trigger(this::checkCoralLoaded);
-
+    public Trigger coralLoadedTrigger(){ 
+    return new Trigger(this::checkCoralLoaded);
+    }
     private void setZeroSpeed() {
         isLoading = false;
         shooterMotor.set(0);
@@ -82,7 +83,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic(){
         checkCoralLoaded();
-
+        coralLoadedTrigger();
+        
         if(coralLoaded && isLoading){
             shooterZeroSpeedCommand();
         }

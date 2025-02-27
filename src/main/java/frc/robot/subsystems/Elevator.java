@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.RobotContainer;
 
 public class Elevator extends SubsystemBase {
 
@@ -33,15 +34,17 @@ public class Elevator extends SubsystemBase {
 
     private RelativeEncoder m_encoder;
     
-    public Elevator() {
-
+    private RobotContainer robotContainer;
+    
+    public Elevator(RobotContainer robotContainer) {
+        this.robotContainer = robotContainer;
+        
         m_encoder = elevatorMotor.getEncoder();
         m_encoder.setPosition(0);
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-
     }
 
     private void setFullRetract() {
@@ -135,6 +138,12 @@ public class Elevator extends SubsystemBase {
     public Trigger isAtHome() {
         return new Trigger(() -> m_encoder.getPosition() >= -1);
     }
+    public Trigger isRaisedTrigger() {
+        return new Trigger(() -> m_encoder.getPosition() <= -1);
+    }
+    public Boolean isRaised() {
+         return m_encoder.getPosition() <= -1;
+    }
 
     public Trigger isClearToIntake() {
         return new Trigger(() -> m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 &&
@@ -213,6 +222,11 @@ public class Elevator extends SubsystemBase {
         isAtSetpoint();
         isAtSetpointBoolean();
         isClearToClimbAngle();
+        isRaised();
+        isRaisedTrigger();
+
+        // Update drive speed based on elevator position
+        robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
     }

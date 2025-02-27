@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -33,6 +35,7 @@ public final class Constants
 
   public static final float armLength = (float)Units.inchesToMeters(0);
 
+  public static final float closeToPoseErrorAllowance = 0.03f;
   
 
 
@@ -216,48 +219,7 @@ public final class Constants
     public static final float limelightYaw = (float)Units.degreesToRadians(180);
   }
 
-  public static final class ButtonBoxConstants{
-    public static final double allowableError = 0.03;
-
-    public static final double fastMoveThreshold = 1.5; 
-    //public static final double fastMoveThreshold = 2.5; //For Testing
-
-    //public static final double lowClamp = -.3;
-    //public static final double highClamp = .3;
-
-    public static final double lowClamp = -.15; //For Testing
-    public static final double highClamp = .15; //For Testing
-
-    //public static final double lowClampSuperSlowX = -.15;
-    //public static final double highClampSuperSlowX = .15;
-    //public static final double lowClampSuperSlowY = -.15;
-    //public static final double highClampSuperSlowY = .15;
-
-    public static final double lowClampSuperSlowX = 0; //For Testing
-    public static final double highClampSuperSlowX = 0; //For Testing
-    public static final double lowClampSuperSlowY = 0; //For Testing
-    public static final double highClampSuperSlowY = 0; //For Testing
-    
-    
-    //public static final double lowClampSlowX = -.2;
-    //public static final double highClampSlowX = .2;
-    
-    public static final double lowClampSlowX = -.15; //For Testing
-    public static final double highClampSlowX = .15; //For Testing
-
-
-    //public static final double lowClampSlowY = -.3;
-    //public static final double highClampSlowY = .3;
-
-    public static final double lowClampSlowY = -.15; //For Testing
-    public static final double highClampSlowY = .15; //For Testing
-
-
-    public static final double p = 1;
-    //public static final double pSlow = 3;
-    public static final double pSlow = 3.25; //For Testing
-
-    public static final double pSuperSlow = 1.5f;
+  public static final class TargetClassConstants{
 
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;
@@ -299,5 +261,14 @@ public final class Constants
 
     public static final boolean setLeftCXX0 = true;
     public static final boolean setLeftCXX1 = false;
+}
+
+public static final class DriveToPoseConstants{
+
+    public static final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(1, 1);
+    public static final ProfiledPIDController xProfiledPID = new ProfiledPIDController(.5, 0, 0, xConstraints);
+
+    public static final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(1, 1);
+    public static final ProfiledPIDController yProfiledPID = new ProfiledPIDController(.5, 0, 0, yConstraints);
 }
 }
