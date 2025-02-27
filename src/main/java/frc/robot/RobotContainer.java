@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,7 +28,6 @@ import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.io.File;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
@@ -54,10 +52,8 @@ public class RobotContainer
   private boolean isClose = false;
   private boolean isVeryClose = false;
   private boolean isApproaching = false;
+  private boolean isLinedUp = false;
 
-  public BooleanSupplier isCloseSupplier = () -> false;
-  public BooleanSupplier isVeryCloseSupplier = () -> false;
-  public BooleanSupplier isApproachingSupplier = () -> false;
 
   // Track distance to target for proximity calculations
   private double distanceToTarget = Double.POSITIVE_INFINITY;
@@ -416,6 +412,8 @@ SwerveInputStream driveButtonBoxInput =
       isVeryClose = distanceToTarget < 0.5;
       isClose = distanceToTarget < 1.0;
       isApproaching = distanceToTarget < 1.5;
+      isLinedUp = distanceToTarget < 0.08;
+      
       
       // Graduated speed reduction based on distance
       if (isVeryClose) {
@@ -447,27 +445,33 @@ SwerveInputStream driveButtonBoxInput =
     
     SmartDashboard.putNumber("Drive Speed", driveSpeed);
     
-    isApproachingSupplier = () -> isApproaching;
-    isVeryCloseSupplier = () -> isVeryClose;
-    isCloseSupplier = () -> isClose;
+    //isApproachingSupplier = () -> isApproaching;
+    //isVeryCloseSupplier = () -> isVeryClose;
+    //isCloseSupplier = () -> isClose;
+    //isLinedUpSupplier = () -> isLinedUp;
 
     driveX = () -> -driverXbox.getLeftX() * driveSpeed;
     driveY = () -> -driverXbox.getLeftY() * driveSpeed;
 
-    
-    isCloseToPose(buttonBox);
+    isApproachingTrigger();
+    isCloseTrigger();
+    isVeryCloseTrigger();
+    isLinedUpTrigger();
   }
   
   public Trigger isApproachingTrigger(){
-    return new Trigger(() -> isApproachingSupplier.getAsBoolean());
+    return new Trigger(() -> isApproaching);
   }
 
   public Trigger isCloseTrigger(){
-    return new Trigger(() -> isCloseSupplier.getAsBoolean());
+    return new Trigger(() -> isClose);
   }
 
   public Trigger isVeryCloseTrigger(){
-    return new Trigger(()
+    return new Trigger(() -> isVeryClose);
+  }
+  public Trigger isLinedUpTrigger(){
+    return new Trigger(() -> isLinedUp);
   }
 
 /**

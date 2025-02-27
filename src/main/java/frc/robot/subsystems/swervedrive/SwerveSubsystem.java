@@ -251,37 +251,54 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   
-  public Command driveToPose(ButtonBox buttonBox)
-  {
-    // Instead of immediately getting the target, create a command that will get the target when executed
-    return Commands.runOnce(() -> {
-      // Get the target at execution time
-      TargetClass target = buttonBox.currentTargetClassSupplier.get();
-      
-      // Check if target is null before proceeding
-      if (target == null) {
-        return;
-      }
-      
-      // Get the pose from the target
-      Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromRadians(target.getZ()));
-      pose = TargetClass.toPose2d(pose);
+public Command driveToPose(ButtonBox buttonBox)
+{
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        1, 1,
+        Units.degreesToRadians(120), Units.degreesToRadians(120));
     
-      // Create the constraints to use while pathfinding
-      PathConstraints constraints = new PathConstraints(
-          1, 1,
-          Units.degreesToRadians(120), Units.degreesToRadians(120));
-          
-      // Create and schedule the pathfinding command
-      AutoBuilder.pathfindToPose(
-          pose,
-          constraints,
-          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+    // Create a command that will evaluate the supplier when executed and then call pathfindToPose
+    return Commands.runOnce(() -> {
+        // Get the target at execution time
+        TargetClass target = buttonBox.currentTargetClassSupplier.get();
+        
+        // Get the pose from the target
+        Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromRadians(target.getZ()));
+        Pose2d finalPose = TargetClass.toPose2d(pose);
+        
+        // Create and schedule the pathfinding command with the evaluated pose
+        AutoBuilder.pathfindToPose(
+            finalPose,
+            constraints,
+            edu.wpi.first.units.Units.MetersPerSecond.of(0)
+        ).schedule();
     });
-  }
+}
+
+// A more general solution that works with any pose supplier
+public Command driveToDynamicPose(Supplier<Pose2d> poseSupplier) {
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        1, 1,
+        Units.degreesToRadians(120), Units.degreesToRadians(120));
+    
+    // Create a command that will evaluate the supplier when executed and then call pathfindToPose
+    return Commands.runOnce(() -> {
+        // Get the current target pose at execution time
+        Pose2d targetPose = poseSupplier.get();
+        
+        // Create and schedule the pathfinding command with the evaluated pose
+        AutoBuilder.pathfindToPose(
+            targetPose,
+            constraints,
+            edu.wpi.first.units.Units.MetersPerSecond.of(0)
+        ).schedule();
+    });
+}
 
   public Command driveToPoseTEST(){
-    Pose2d pose = new Pose2d(new Translation2d(5.0, 5.0), Rotation2d.fromDegrees(0));
+    Pose2d pose = new Pose2d(new Translation2d(15, 5.0), Rotation2d.fromDegrees(0));
     
 
     // Create the constraints to use while pathfinding
