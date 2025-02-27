@@ -544,12 +544,7 @@ public class TargetClass {
                 break;
             // Add more cases as needed.
             default:
-                target.setX(0);
-                target.setY(0);
-                target.setZ(0);
-                target.setLeft(false);
-                target.setLevel(0);
-                target.setSource(false);
+                target = null;
                 break;
         }
         return target;
@@ -571,11 +566,15 @@ public class TargetClass {
     }
 
     public static Supplier<Pose2d> toPose2dSupplier(ButtonBox buttonBox) {
-
         TargetClass currentTarget = buttonBox.peekNextTarget();
         
-        Pose2d currentPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), new Rotation2d(currentTarget.getZ()));
         
+        if (currentTarget == null) {
+            
+            return () -> new Pose2d();
+        }
+        
+        Pose2d currentPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), new Rotation2d(currentTarget.getZ()));
         return () -> toPose2d(currentPose);
     }
     

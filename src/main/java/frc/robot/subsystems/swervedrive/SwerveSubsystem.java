@@ -258,6 +258,11 @@ public class SwerveSubsystem extends SubsystemBase
     
     TargetClass target = buttonBox.peekNextTarget();
     
+
+    if (target == null) {
+        return new Trigger(() -> false);
+    }
+    
     Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromDegrees(target.getZ()));
 
     return new Trigger(() -> getPose().getTranslation().getDistance(pose.getTranslation()) < Constants.closeToPoseErrorAllowance);

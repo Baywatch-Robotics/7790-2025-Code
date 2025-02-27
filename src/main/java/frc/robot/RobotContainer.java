@@ -160,8 +160,11 @@ SwerveInputStream driveButtonBoxInput =
   */
   
   SwerveInputStream driveAngularVelocityDriveToPose = driveAngularVelocity.copy()
+  .driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID)
+  .driveToPoseEnabled(driveToPoseEnabled);
+  
 
-  .driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID).driveToPoseEnabled(driveToPoseEnabled);
+
   
     public Command driveFieldOrientedDirectAngle      = drivebase.driveFieldOriented(driveDirectAngle);
     public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);

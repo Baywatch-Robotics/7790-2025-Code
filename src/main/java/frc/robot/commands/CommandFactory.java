@@ -1,11 +1,8 @@
 package frc.robot.commands;
 
-import java.time.Instant;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
@@ -301,7 +298,7 @@ public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoot
 
   Command command = drivebase.pathfindThenFollowPath("Left Auton Start")
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C530")))
-  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooter.shooterOutakeCommand())
   .andThen(new WaitCommand(.5))
@@ -318,7 +315,7 @@ public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoot
 
   .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C430")))
-  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooter.shooterOutakeCommand())
   .andThen(new WaitCommand(.5))
@@ -334,7 +331,7 @@ public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoot
 
   .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C431")))
-  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+  .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooter.shooterOutakeCommand())
   .andThen(new WaitCommand(.5))
@@ -356,7 +353,7 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
     
     Command command = drivebase.pathfindThenFollowPath("Right Auton Start")
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C130")))
-    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooter.shooterOutakeCommand())
     .andThen(new WaitCommand(.5))
@@ -416,7 +413,7 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
         
     .andThen(drivebase.pathfindThenFollowPath("Right to 3"))
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C331")))
-    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooter.shooterOutakeCommand())
     .andThen(new WaitCommand(.5))
@@ -433,7 +430,7 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
 
     .andThen(drivebase.pathfindThenFollowPath("Right to 3"))
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C330")))
-    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer), new WaitCommand(10)))
+    .andThen(new ParallelRaceGroup(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer), new WaitCommand(10)))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooter.shooterOutakeCommand())
     .andThen(new WaitCommand(.5))
@@ -450,6 +447,7 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }
+
 public static Command TESTONLYAutonCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
     
