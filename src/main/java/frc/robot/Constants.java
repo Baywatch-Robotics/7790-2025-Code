@@ -216,6 +216,15 @@ public final class Constants
 
   public static final class TargetClassConstants{
 
+    public static final float SLPositionX = 1.204f;
+    public static final float SLPositionY = 7.021f;
+    public static final float SLPositionZ = (float)Units.degreesToRadians(0);
+
+    public static final float SRPositionX = 1.204f;
+    public static final float SRPositionY = 1.045f;
+    public static final float SRPositionZ = (float)Units.degreesToRadians(0);
+
+
     public static final float xValueC0XX = 5.795f;
     public static final float yValueC0XX = 4.0f;
     public static final float zValueC0XX = (float)Units.degreesToRadians(180.0f);
@@ -232,9 +241,7 @@ public final class Constants
     public static final int faceValueC2XX = 2;
 
 
-    public static final float xValueC3XX = 3.185f; //USE
-
-    //public static final float xValueC3XX = 2.750f;
+    public static final float xValueC3XX = 3.185f;
     public static final float yValueC3XX = 4.03f;
     public static final float zValueC3XX = (float)Units.degreesToRadians(0.0f);;
     public static final int faceValueC3XX = 3;

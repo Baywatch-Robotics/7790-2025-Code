@@ -559,7 +559,7 @@ public class TargetClass {
         if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
             double mirroredX = FIELD_WIDTH - currentPose.getX();
             double mirroredY = FIELD_LENGTH - currentPose.getY();
-            double mirroredAngle = Math.PI - currentPose.getRotation().getRadians();
+            double mirroredAngle = currentPose.getRotation().getRadians() - Math.PI;
             return new Pose2d(mirroredX, mirroredY, new Rotation2d(mirroredAngle));
         }
         return currentPose;

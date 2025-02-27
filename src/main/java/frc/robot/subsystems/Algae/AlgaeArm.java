@@ -29,10 +29,7 @@ public class AlgaeArm extends SubsystemBase {
     private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
 
     public AlgaeArm() {
-
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition());
         }
 
     // Define desired positions for the arm
@@ -82,7 +79,7 @@ public class AlgaeArm extends SubsystemBase {
     public void periodic() {
 
         if (!isInitialized) {
-            algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition());
+            algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle;
             isInitialized = true;
         }
         

@@ -267,13 +267,14 @@ public Command driveToPose(ButtonBox buttonBox) {
             // Get the pose from the target
             Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
                                     Rotation2d.fromRadians(target.getZ()));
+
             Pose2d finalPose = TargetClass.toPose2d(pose);
             
             // Create the pathfinding command with the evaluated pose
             pathCommand = AutoBuilder.pathfindToPose(
                 finalPose,
                 constraints,
-                edu.wpi.first.units.Units.MetersPerSecond.of(0)
+                edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
             );
             
             // Schedule the path command
