@@ -4,9 +4,7 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
 
@@ -258,14 +256,5 @@ public final class Constants
 
     public static final boolean setLeftCXX0 = true;
     public static final boolean setLeftCXX1 = false;
-}
-
-public static final class DriveToPoseConstants{
-
-    public static final TrapezoidProfile.Constraints xConstraints = new TrapezoidProfile.Constraints(1, 1);
-    public static final ProfiledPIDController xProfiledPID = new ProfiledPIDController(.5, 0, 0, xConstraints);
-
-    public static final TrapezoidProfile.Constraints yConstraints = new TrapezoidProfile.Constraints(1, 1);
-    public static final ProfiledPIDController yProfiledPID = new ProfiledPIDController(.5, 0, 0, yConstraints);
 }
 }

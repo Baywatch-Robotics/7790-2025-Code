@@ -35,7 +35,6 @@ import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 
 import java.io.File;
-import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.SwerveController;
@@ -273,7 +272,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   public Command driveToPose(ButtonBox buttonBox)
   {
-    return new InstantCommand(() -> {
+    return Commands.runOnce(() -> {
 
       TargetClass target = buttonBox.currentTargetClassSupplier.get();
       
@@ -295,7 +294,7 @@ public class SwerveSubsystem extends SubsystemBase
             edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
         ).schedule();
       }
-    });
+    }).andThen(Commands.waitUntil(() -> isCloseToPose(buttonBox).getAsBoolean()));
   }
 
   

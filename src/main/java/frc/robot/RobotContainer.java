@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Climber;
@@ -63,8 +62,8 @@ public class RobotContainer
 
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX();
 
-  DoubleSupplier driveX = () -> driverXbox.getLeftX();
-  DoubleSupplier driveY = () -> driverXbox.getLeftY();
+  DoubleSupplier driveX = () -> driveSpeed * driverXbox.getLeftX();
+  DoubleSupplier driveY = () -> driveSpeed * driverXbox.getLeftY();
   DoubleSupplier headingX = () -> -driverXbox.getRightX();
   DoubleSupplier headingY = () -> -driverXbox.getRightY();
 
@@ -159,8 +158,7 @@ SwerveInputStream driveButtonBoxInput =
     // Optionally, if you want to drive with a heading-control mode:
     .headingWhile(true);
   */
-  
-  SwerveInputStream driveAngularVelocityDriveToPose = SwerveInputStream.of(drivebase.getSwerveDrive(),
+  /*  SwerveInputStream driveAngularVelocityDriveToPose = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driverXbox.getLeftY() * -1,
   () -> driverXbox.getLeftX() * -1)
 .withControllerRotationAxis(headingXAng)
@@ -169,7 +167,7 @@ SwerveInputStream driveButtonBoxInput =
 .allianceRelativeControl(true)
 .driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID)
 .driveToPoseEnabled(driveToPoseEnabled);
-  
+  */
 
 
   
