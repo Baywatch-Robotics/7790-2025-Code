@@ -43,22 +43,19 @@ public final class Constants
   public static final class AlgaeArmConstants{
     public static final int ID = 14;
 
-    public static final float stowedUpAngle = 0.74f;
+    public static final float stowedUpAngle = 0.3f;
     public static final float straightOutAngle = 0.5f;
-    public static final float groundIntakeAngle = 0.5f; //Tenative could move arm up and then angle farther down
-    public static final float upperCrashLimit = 0.75f; // This is absolute max, there are two sub states where the max is either equal to this or slightly less due to the placement mechanism being in the way
-    public static final float lowerCrashLimit = 0.45f; // Slightly ahead of actually limit for safety
-    public static final float clearanceAngle = 0.5f;
+    public static final float groundIntakeAngle = 0.5f;
 
-    public static final float angleOffset = 0.56f;
+    public static final float angleOffset = 0.44f;
 
     public static final float max = 0.5f;
-    public static final float min = 0.31f;
+    public static final float min = 0.28f;
 
-    public static final float manualMultiplier = 0.005f;
+    public static final float manualMultiplier = 0.05f;
 
 
-    public static final float P = 0.5f;
+    public static final float P = 1f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
@@ -66,7 +63,7 @@ public final class Constants
     public static final float allowedClosedLoopError = .05f;
   }
 
-  public static final class AlgaeShooterConstants{
+    public static final class AlgaeShooterConstants{
     public static final int ID = 16;
     public static final float intake = -0.3f;
     public static final float outake = 0.3f;
@@ -83,7 +80,7 @@ public final class Constants
 
     public static final float angleOffset = .5f;
 
-    public static final float manualMultiplier = 0.005f;
+    public static final float manualMultiplier = -0.005f;
 
     public static final float min = 0.225f;
     //public static final float max = .9f;
@@ -134,8 +131,8 @@ public final class Constants
 
     public static final int ID = 18;
 
-    public static final float extendSpeed = 1f;
-    public static final float retractSpeed = -1f;
+    public static final float extendSpeed = .2f;
+    public static final float retractSpeed = -.2f;
   }
   
   public static final class ElevatorConstants{

@@ -22,6 +22,7 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
+import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
@@ -50,7 +51,7 @@ public class RobotContainer
   final CommandXboxController opXbox = new CommandXboxController(3);
   
   public boolean driveToPoseEnabled = false;
-  public float driveSpeed = 1.0f;
+  public float driveSpeed = 0;
 
   // Track distance to target for proximity calculations
   private double distanceToTarget = Double.POSITIVE_INFINITY;
@@ -81,7 +82,7 @@ public class RobotContainer
   
   
   private final AlgaeArm algaeArm = new AlgaeArm();
-  //private final AlgaeShooter algaeShooter = new AlgaeShooter();
+  private final AlgaeShooter algaeShooter = new AlgaeShooter();
   //private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
@@ -100,7 +101,7 @@ public class RobotContainer
   () -> driverXbox.getLeftX() * -1)
 .withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
-.scaleTranslation(driveSpeed)
+.scaleTranslation(1)
 .allianceRelativeControl(true);
 
 /**
@@ -159,9 +160,15 @@ SwerveInputStream driveButtonBoxInput =
     .headingWhile(true);
   */
   
-  SwerveInputStream driveAngularVelocityDriveToPose = driveAngularVelocity.copy()
-  .driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID)
-  .driveToPoseEnabled(driveToPoseEnabled);
+  SwerveInputStream driveAngularVelocityDriveToPose = SwerveInputStream.of(drivebase.getSwerveDrive(),
+  () -> driverXbox.getLeftY() * -1,
+  () -> driverXbox.getLeftX() * -1)
+.withControllerRotationAxis(headingXAng)
+.deadband(Constants.DEADBAND)
+.scaleTranslation(driveSpeed)
+.allianceRelativeControl(true)
+.driveToPose(TargetClass.toPose2dSupplier(buttonBox), DriveToPoseConstants.xProfiledPID, DriveToPoseConstants.yProfiledPID)
+.driveToPoseEnabled(driveToPoseEnabled);
   
 
 
@@ -173,7 +180,7 @@ SwerveInputStream driveButtonBoxInput =
     //    driveDirectAngle);
     public Command driveFieldOrientedDirectAngleKeyboard      = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
-    public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveAngularVelocityDriveToPose);
+    //public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveAngularVelocityDriveToPose);
     
     public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
     public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
@@ -215,8 +222,8 @@ SwerveInputStream driveButtonBoxInput =
    // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
     //    driveDirectAngleKeyboard);
     
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
+    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
@@ -322,11 +329,25 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
 
     //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
+    //driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
 
     driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeManualCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+
+    opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
+    opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+
+    opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
+    opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
+    
+    opXbox.x().onTrue(climber.climberExtendCommand());
+    opXbox.x().onFalse(climber.climberStopCommand());
+
+    opXbox.y().onTrue(climber.climberRetractCommand());
+    opXbox.y().onFalse(climber.climberStopCommand());
+
+    driverXbox.x().onTrue(drivebase.driveToPose(buttonBox));
 
     //driverXbox.b().onTrue(CommandFactory.scoreTestSim(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
 
@@ -346,11 +367,11 @@ SwerveInputStream driveButtonBoxInput =
     //driverXbox.x().whileTrue(driveButtonBoxInputCommand);
     //driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
 
-    driverXbox.x().onTrue(startDriveToPose());
-    driverXbox.x().onFalse(cancelDriveToPose());
+    //driverXbox.x().onTrue(startDriveToPose());
+    //driverXbox.x().onFalse(cancelDriveToPose());
 
-    driverXbox.pov(270).onTrue(startDriveToPose());
-    driverXbox.pov(270).onFalse(cancelDriveToPose());
+    //driverXbox.pov(270).onTrue(startDriveToPose());
+    //driverXbox.pov(270).onFalse(cancelDriveToPose());
  
     
     chooser.setDefaultOption("Right", rightAuto);
@@ -358,16 +379,7 @@ SwerveInputStream driveButtonBoxInput =
     chooser.addOption("TESTONLY", TESTONLYAuto);
     SmartDashboard.putData(chooser);
   }
-  
-  public Command startDriveToPose()
-  {
-    return new InstantCommand(() -> driveToPoseEnabled = true);
-  }
 
-  public Command cancelDriveToPose()
-  {
-    return new InstantCommand(() -> driveToPoseEnabled = false);
-  }
 
   public Command changeDriveSpeedCommand(float speed)
   {

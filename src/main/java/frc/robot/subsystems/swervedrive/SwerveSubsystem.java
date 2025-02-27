@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
@@ -34,6 +35,7 @@ import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 
 import java.io.File;
+import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.SwerveController;
@@ -268,6 +270,33 @@ public class SwerveSubsystem extends SubsystemBase
     return new Trigger(() -> getPose().getTranslation().getDistance(pose.getTranslation()) < Constants.closeToPoseErrorAllowance);
   }
   
+
+  public Command driveToPose(ButtonBox buttonBox)
+  {
+    return new InstantCommand(() -> {
+
+      TargetClass target = buttonBox.currentTargetClassSupplier.get();
+      
+      if (target != null) {
+
+        Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromDegrees(target.getZ()));
+        
+        pose = TargetClass.toPose2d(pose);
+
+        // Create the constraints to use while pathfinding
+        PathConstraints constraints = new PathConstraints(
+            1, 1,
+            Units.degreesToRadians(120), Units.degreesToRadians(120));
+            
+        // Schedule the pathfinding command
+        AutoBuilder.pathfindToPose(
+            pose,
+            constraints,
+            edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+        ).schedule();
+      }
+    });
+  }
 
   
   /**

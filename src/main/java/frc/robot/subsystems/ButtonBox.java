@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 
 public class ButtonBox extends SubsystemBase {
 
@@ -40,7 +41,9 @@ public class ButtonBox extends SubsystemBase {
         var target = targetQueue.peek();
         return target != null && target.isLeft();
     };
-
+    
+    public Supplier<TargetClass> currentTargetClassSupplier = () -> targetQueue.peek();
+    
     public void deleteLastTarget() {
         if (targetQueue instanceof LinkedList) {
             ((LinkedList<TargetClass>) targetQueue).removeLast();
