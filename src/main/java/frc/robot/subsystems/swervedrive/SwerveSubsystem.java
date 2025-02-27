@@ -26,9 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.subsystems.ButtonBox;
@@ -53,9 +51,8 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   private final SwerveDrive         swerveDrive;
-  public boolean isClose = false;
+  private boolean isClose = false;
   private int visionMeasurementCounter = 0; // counter
-  private ButtonBox buttonBox = new ButtonBox();
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -115,7 +112,6 @@ public class SwerveSubsystem extends SubsystemBase
       addVisionMeasurement();
     }
     
-    isCloseToPose(buttonBox);
   }
 
   @Override
@@ -255,49 +251,51 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   
-  public Trigger isCloseToPose(ButtonBox buttonBox) {
-    
-    TargetClass target = buttonBox.peekNextTarget();
-    
-
-    if (target == null) {
-        return new Trigger(() -> false);
-    }
-    
-    Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromDegrees(target.getZ()));
-
-    return new Trigger(() -> getPose().getTranslation().getDistance(pose.getTranslation()) < Constants.closeToPoseErrorAllowance);
-  }
-  
-
   public Command driveToPose(ButtonBox buttonBox)
   {
+    // Instead of immediately getting the target, create a command that will get the target when executed
     return Commands.runOnce(() -> {
-
+      // Get the target at execution time
       TargetClass target = buttonBox.currentTargetClassSupplier.get();
       
-      if (target != null) {
-
-        Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromDegrees(target.getZ()));
-        
-        pose = TargetClass.toPose2d(pose);
-
-        // Create the constraints to use while pathfinding
-        PathConstraints constraints = new PathConstraints(
-            1, 1,
-            Units.degreesToRadians(120), Units.degreesToRadians(120));
-            
-        // Schedule the pathfinding command
-        AutoBuilder.pathfindToPose(
-            pose,
-            constraints,
-            edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
-        ).schedule();
+      // Check if target is null before proceeding
+      if (target == null) {
+        return;
       }
-    }).andThen(Commands.waitUntil(() -> isCloseToPose(buttonBox).getAsBoolean()));
+      
+      // Get the pose from the target
+      Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), Rotation2d.fromRadians(target.getZ()));
+      pose = TargetClass.toPose2d(pose);
+    
+      // Create the constraints to use while pathfinding
+      PathConstraints constraints = new PathConstraints(
+          1, 1,
+          Units.degreesToRadians(120), Units.degreesToRadians(120));
+          
+      // Create and schedule the pathfinding command
+      AutoBuilder.pathfindToPose(
+          pose,
+          constraints,
+          edu.wpi.first.units.Units.MetersPerSecond.of(0)).schedule();
+    });
   }
 
-  
+  public Command driveToPoseTEST(){
+    Pose2d pose = new Pose2d(new Translation2d(5.0, 5.0), Rotation2d.fromDegrees(0));
+    
+
+    // Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+            1, 1,
+            Units.degreesToRadians(120), Units.degreesToRadians(120));
+
+// Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+                                     );
+  }
   /**
    * Command to characterize the robot drive motors using SysId
    *

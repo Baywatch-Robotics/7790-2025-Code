@@ -183,13 +183,14 @@ public static Command scoreBasedOnQueueCommandDrive(AlgaeArm algaeArm, Shooter s
 
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
 
-    .andThen(new WaitUntilCommand(robotContainer.isApproaching))
+    .andThen(new WaitUntilCommand(robotContainer.isApproachingSupplier))
+    
 
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
 
-    .andThen(new WaitUntilCommand(drivebase.isCloseToPose(buttonBox)))
+    .andThen(new WaitUntilCommand(robotContainer.isCloseToPose(buttonBox)))
 
     .andThen(shooter.shooterOutakeCommand())
 
@@ -207,7 +208,7 @@ public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shoot
     .andThen(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator))
     .andThen(shooter.shooterIntakeCommand())
 
-    .andThen(new ParallelRaceGroup(new WaitUntilCommand(shooter.coralLoadedTrigger()), new WaitCommand(1)))
+    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
 
     .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
 
@@ -216,14 +217,14 @@ public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shoot
 
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
 
-    .andThen(new WaitUntilCommand(robotContainer.isApproaching))
+    .andThen(new WaitUntilCommand(robotContainer.isApproachingSupplier))
 
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
 
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
 
-    .andThen(new WaitUntilCommand(drivebase.isCloseToPose(buttonBox)))
+    .andThen(new WaitUntilCommand(robotContainer.isCloseToPose(buttonBox)))
     
     .andThen(shooter.shooterOutakeCommand())
     .andThen(new WaitCommand(.5))
@@ -237,8 +238,8 @@ public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shoot
 public static Command sourceDrive(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
 
   Command command = setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator)
-    .andThen(new WaitUntilCommand(robotContainer.isVeryClose))
-    .andThen(new ParallelRaceGroup(new WaitUntilCommand(shooter.coralLoadedTrigger()), new WaitCommand(3)))
+    .andThen(new WaitUntilCommand(robotContainer.isVeryCloseSupplier))
+    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
     .andThen(shooter.shooterZeroSpeedCommand());
 
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
@@ -248,10 +249,10 @@ return command;
 
 public static Command sourceDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
-  Command command = new ParallelRaceGroup(drivebase.driveToPose(buttonBox), new WaitCommand(5))
+  Command command = drivebase.driveToPose(buttonBox)
   .andThen(setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator))
-  .andThen(new WaitUntilCommand(robotContainer.isVeryClose))
-  .andThen(new ParallelRaceGroup(new WaitUntilCommand(shooter.coralLoadedTrigger()), new WaitCommand(3)))
+  .andThen(new WaitUntilCommand(robotContainer.isVeryCloseSupplier))
+  .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
   .andThen(shooter.shooterZeroSpeedCommand());
 
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
@@ -395,7 +396,12 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
         Command command = drivebase.pathfindThenFollowPath("test")
         .andThen(new InstantCommand(() -> buttonBox.addTarget("C331")))
         .andThen(drivebase.driveToPose(buttonBox))
+
+        
+        .andThen(new WaitUntilCommand(robotContainer.isVeryCloseSupplier))
+        .andThen(drivebase.driveToPoseTEST());
         //.andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer))
+        /*
         .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
         .andThen(shooter.shooterOutakeCommand())
         .andThen(new WaitCommand(.5))
@@ -424,13 +430,13 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
     .andThen(shooterPivot.setCenterCommand())
     .andThen(elevator.setElevatorPickupCommand())
     .andThen(new WaitCommand(5))
-//*/
+
     .andThen(drivebase.pathfindThenFollowPath("Right to Source"))
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
     .andThen(drivebase.driveToPose(buttonBox))
     //.andThen(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer, drivebase))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
-    
+    */
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }

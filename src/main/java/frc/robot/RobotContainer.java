@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,13 +53,37 @@ public class RobotContainer
   public boolean driveToPoseEnabled = false;
   public float driveSpeed = 0;
 
+  private boolean isClose = false;
+  private boolean isVeryClose = false;
+  private boolean isApproaching = false;
+
+  public BooleanSupplier isCloseSupplier = () -> isClose;
+  public BooleanSupplier isVeryCloseSupplier = () -> isVeryClose;
+  public BooleanSupplier isApproachingSupplier = () -> isApproaching;
+
   // Track distance to target for proximity calculations
   private double distanceToTarget = Double.POSITIVE_INFINITY;
   
-  // Proximity state indicators as suppliers
-  public final BooleanSupplier isVeryClose = () -> distanceToTarget < 0.5;
-  public final BooleanSupplier isClose = () -> distanceToTarget < 1.0;
-  public final BooleanSupplier isApproaching = () -> distanceToTarget < 1.5;
+  /**
+   * Check if the robot is close to the target pose from the ButtonBox
+   * 
+   * @return A Trigger that activates when robot is within error allowance of target
+   */
+  public Trigger isCloseToPose(ButtonBox buttonBox) {
+    TargetClass target = buttonBox.peekNextTarget();
+    
+    Pose2d pose;
+    if (target == null) {
+        pose = null;
+    }
+    else{
+        pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
+                             Rotation2d.fromDegrees(target.getZ()));
+    }
+
+    return new Trigger(() -> drivebase.getPose().getTranslation().getDistance(pose.getTranslation()) 
+                           < Constants.closeToPoseErrorAllowance);
+  }
 
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX();
 
@@ -403,30 +428,42 @@ SwerveInputStream driveButtonBoxInput =
       // Calculate and store distance to target
       distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
       
+      // Define local proximity checks that always use current distance value
+      isVeryClose = distanceToTarget < 0.5;
+      isClose = distanceToTarget < 1.0;
+      isApproaching = distanceToTarget < 1.5;
+      
       // Graduated speed reduction based on distance
-      if (isVeryClose.getAsBoolean()) {
+      if (isVeryClose) {
         driveSpeed = Math.min(baseSpeed, 0.2f);
-      } else if (isClose.getAsBoolean()) {
-        //driveSpeed = Math.min(baseSpeed, 0.4f);
+      } else if (isClose) {
         driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
-      } else if (isApproaching.getAsBoolean()) {
-        //driveSpeed = Math.min(baseSpeed, 0.6f);
+      } else if (isApproaching) {
         driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
       } else {
         driveSpeed = baseSpeed; // Use the base speed from elevator status
       }
       
+      
       // For debugging
       SmartDashboard.putNumber("Distance to Target", distanceToTarget);
+      SmartDashboard.putBoolean("Very Close to Target", isVeryClose);
+      SmartDashboard.putBoolean("Close to Target", isClose);
+      SmartDashboard.putBoolean("Approaching Target", isApproaching);
     } else {
       // No target or not in drive-to-pose mode, just use elevator-based speed
       driveSpeed = baseSpeed;
+      
+      // Reset the dashboard indicators when not targeting
+      SmartDashboard.putNumber("Distance to Target", Double.POSITIVE_INFINITY);
+      SmartDashboard.putBoolean("Very Close to Target", false);
+      SmartDashboard.putBoolean("Close to Target", false);
+      SmartDashboard.putBoolean("Approaching Target", false);
     }
     
     SmartDashboard.putNumber("Drive Speed", driveSpeed);
-    SmartDashboard.putBoolean("Very Close to Target", isVeryClose.getAsBoolean());
-    SmartDashboard.putBoolean("Close to Target", isClose.getAsBoolean());
-    SmartDashboard.putBoolean("Approaching Target", isApproaching.getAsBoolean());
+    
+    isCloseToPose(buttonBox);
   }
   
 /**
