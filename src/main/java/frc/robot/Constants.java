@@ -216,45 +216,48 @@ public final class Constants
 
   public static final class TargetClassConstants{
 
-    public static final float SLPositionX = 1.204f;
-    public static final float SLPositionY = 7.021f;
-    public static final float SLPositionZ = (float)Units.degreesToRadians(0);
+    public static final float SLPositionX = (float)Units.inchesToMeters(44.09);
+    public static final float SLPositionY = (float)Units.inchesToMeters(276.64);
+    public static final float SLPositionZ = (float)Units.degreesToRadians(306);
 
-    public static final float SRPositionX = 1.204f;
-    public static final float SRPositionY = 1.045f;
-    public static final float SRPositionZ = (float)Units.degreesToRadians(0);
-
-
-    public static final float xValueC0XX = 5.795f;
-    public static final float yValueC0XX = 4.0f;
-    public static final float zValueC0XX = (float)Units.degreesToRadians(180.0f);
-    public static final int faceValueC0XX = 0;
+    public static final float SRPositionX = (float)Units.inchesToMeters(7.021);
+    public static final float SRPositionY = (float)Units.inchesToMeters(40.36);
+    public static final float SRPositionZ = (float)Units.degreesToRadians(54);
     
-    public static final float xValueC1XX = 5.144f;
-    public static final float yValueC1XX = 5.160f;
-    public static final float zValueC1XX = (float)Units.degreesToRadians(-120.0f);
+    public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
+    public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
+    public static final float ProcessorPositionZ = (float)Units.degreesToRadians(90);
+
+    public static final float xValueC1XX = (float)Units.inchesToMeters(126);
+    public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
+    public static final float zValueC1XX = (float)Units.degreesToRadians(180.0);
     public static final int faceValueC1XX = 1;
 
-    public static final float xValueC2XX = 3.832f;
-    public static final float yValueC2XX = 5.156f;
-    public static final float zValueC2XX = (float)Units.degreesToRadians(-60.0f);
+    public static final float xValueC2XX = (float)Units.inchesToMeters(151.39);
+    public static final float yValueC2XX = (float)Units.inchesToMeters(114.58);
+    public static final float zValueC2XX = (float)Units.degreesToRadians(240);
     public static final int faceValueC2XX = 2;
 
 
-    public static final float xValueC3XX = 3.185f;
-    public static final float yValueC3XX = 4.03f;
-    public static final float zValueC3XX = (float)Units.degreesToRadians(0.0f);;
+    public static final float xValueC3XX = (float)Units.inchesToMeters(202.1);
+    public static final float yValueC3XX = (float)Units.inchesToMeters(114.58);
+    public static final float zValueC3XX = (float)Units.degreesToRadians(300);
     public static final int faceValueC3XX = 3;
 
-    public static final float xValueC4XX = 3.832f;
-    public static final float yValueC4XX = 2.892f;
-    public static final float zValueC4XX = (float)Units.degreesToRadians(60.0f);
+    public static final float xValueC4XX = (float)Units.inchesToMeters(227.49);
+    public static final float yValueC4XX = (float)Units.inchesToMeters(158.5);
+    public static final float zValueC4XX = (float)Units.degreesToRadians(0);
     public static final int faceValueC4XX = 4;
 
-    public static final float xValueC5XX = 5.134f;
-    public static final float yValueC5XX = 2.893f;
-    public static final float zValueC5XX = (float)Units.degreesToRadians(120.0f);
+    public static final float xValueC5XX = (float)Units.inchesToMeters(202.1);
+    public static final float yValueC5XX = (float)Units.inchesToMeters(202.42);
+    public static final float zValueC5XX = (float)Units.degreesToRadians(60);
     public static final int faceValueC5XX = 5;
+
+    public static final float xValueC6XX = (float)Units.inchesToMeters(151.39);
+    public static final float yValueC6XX = (float)Units.inchesToMeters(202.42);
+    public static final float zValueC6XX = (float)Units.degreesToRadians(120);
+    public static final int faceValueC6XX = 6;
 
     public static final int heightCX0X = 0;
     public static final int heightCX1X = 1;

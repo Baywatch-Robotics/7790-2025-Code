@@ -278,8 +278,8 @@ public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoot
   .andThen(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer, drivebase))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
-  .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("C430")))
+  .andThen(drivebase.pathfindThenFollowPath("Left to 6"))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C630")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooter.shooterOutakeCommand())
@@ -294,8 +294,8 @@ public static Command LeftAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoot
   .andThen(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer, drivebase))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
-  .andThen(drivebase.pathfindThenFollowPath("Left to 4"))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("C431")))
+  .andThen(drivebase.pathfindThenFollowPath("Left to 6"))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C631")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooter.shooterOutakeCommand())
@@ -317,7 +317,7 @@ public static Command RightAutonCommand(AlgaeArm algaeArm, Shooter shooter, Shoo
 
     
     Command command = drivebase.pathfindThenFollowPath("Right Auton Start")
-    .andThen(new InstantCommand(() -> buttonBox.addTarget("C130")))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C330")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooter.shooterOutakeCommand())
