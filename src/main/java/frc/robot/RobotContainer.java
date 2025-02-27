@@ -405,9 +405,10 @@ SwerveInputStream driveButtonBoxInput =
     if (currentTarget != null) {
       // Get current robot position and target position
       Pose2d robotPose = drivebase.getPose();
-      Pose2d targetPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), 
+      Pose2d targetPoseNonCorrected = new Pose2d(currentTarget.getX(), currentTarget.getY(), 
                                     new Rotation2d(currentTarget.getZ()));
-      
+
+      Pose2d targetPose = TargetClass.toPose2d(targetPoseNonCorrected);
       // Calculate and store distance to target
       distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
       
@@ -456,21 +457,19 @@ SwerveInputStream driveButtonBoxInput =
     
     isCloseToPose(buttonBox);
   }
-
-  public Trigger isCloseToPose(ButtonBox buttonBox) {
-    TargetClass target = buttonBox.peekNextTarget();
-    
-    Pose2d pose;
-    if (target == null) {
-        pose = null;
-    }
-    else{
-        pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
-                             Rotation2d.fromDegrees(target.getZ()));
-    }
-
-    return new Trigger(() -> drivebase.getPose().getTranslation().getDistance(pose.getTranslation()) <= Constants.closeToPoseErrorAllowance);
+  
+  public Trigger isApproachingTrigger(){
+    return new Trigger(() -> isApproachingSupplier.getAsBoolean());
   }
+
+  public Trigger isCloseTrigger(){
+    return new Trigger(() -> isCloseSupplier.getAsBoolean());
+  }
+
+  public Trigger isVeryCloseTrigger(){
+    return new Trigger(()
+  }
+
 /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
