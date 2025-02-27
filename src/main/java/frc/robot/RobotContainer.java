@@ -186,7 +186,6 @@ SwerveInputStream driveButtonBoxInput =
     
     public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
     public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
-    public Command TESTONLYAuto = CommandFactory.TESTONLYAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
 
     SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -260,7 +259,7 @@ SwerveInputStream driveButtonBoxInput =
       //driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       //driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
       //driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(270).onTrue(CommandFactory.sourceDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this));
+      driverXbox.pov(270).onTrue(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this, drivebase));
 
       //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
       //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
@@ -366,19 +365,8 @@ SwerveInputStream driveButtonBoxInput =
     // Now override this behavior by binding the resume action to the right bumper.
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    //driverXbox.x().whileTrue(driveButtonBoxInputCommand);
-    //driverXbox.pov(270).whileTrue(driveButtonBoxInputCommand);
-
-    //driverXbox.x().onTrue(startDriveToPose());
-    //driverXbox.x().onFalse(cancelDriveToPose());
-
-    //driverXbox.pov(270).onTrue(startDriveToPose());
-    //driverXbox.pov(270).onFalse(cancelDriveToPose());
- 
-    
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
-    chooser.addOption("TESTONLY", TESTONLYAuto);
     SmartDashboard.putData(chooser);
   }
 

@@ -180,8 +180,6 @@ public class Elevator extends SubsystemBase {
         float f = (float) MathUtil.clamp(elevatorDesiredPosition + amount * scale, ElevatorConstants.min, ElevatorConstants.max);
 
         elevatorDesiredPosition = f;
-
-        System.out.println("Elevator Desired Position: " + elevatorDesiredPosition);
     }
 
     @Override
@@ -191,26 +189,6 @@ public class Elevator extends SubsystemBase {
             elevatorDesiredPosition = 0;
             isInitialized = true;
         }
-         //Code for inverse kinematics
-        //if(!ShooterPivot.isStraight) {
-        //float ang;
-
-        //float l;
-
-        //ang = ShooterPivot.shooterPivotDesiredAngle * (360/25);
-
-        //l = Constants.armLength;
-
-        //desiredTotalHeight = elevatorDesiredPosition + l * (float)Math.sin(Units.degreesToRadians(ang));
-
-
-        //}
-        //else{
-        //desiredTotalHeight = elevatorDesiredPosition;  
-        //}
-        desiredTotalHeight = elevatorDesiredPosition; 
-
-        //System.out.println(desiredTotalHeight);
         
         desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
         
