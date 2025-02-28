@@ -195,8 +195,8 @@ public class Elevator extends SubsystemBase {
 
     public Trigger isAtSetpoint() {
         return new Trigger(() -> {
-            boolean atSetpoint = m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
-                                 m_encoder.getPosition() <= elevatorDesiredPosition + 5;
+            boolean atSetpoint = m_encoder.getPosition() >= elevatorDesiredPosition - 10 &&
+                                 m_encoder.getPosition() <= elevatorDesiredPosition + 10;
             // Log the values to help debug
             SmartDashboard.putBoolean("Elevator At Setpoint", atSetpoint);
             SmartDashboard.putNumber("Elevator Position Difference", m_encoder.getPosition() - elevatorDesiredPosition);

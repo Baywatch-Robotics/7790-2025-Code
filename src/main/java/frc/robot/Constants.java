@@ -41,9 +41,9 @@ public final class Constants
   public static final class AlgaeArmConstants{
     public static final int ID = 14;
 
-    public static final float stowedUpAngle = 0.3f;
+    public static final float stowedUpAngle = 0.28f;
     public static final float straightOutAngle = 0.5f;
-    public static final float groundIntakeAngle = 0.5f;
+    public static final float groundIntakeAngle = 0.406f;
 
     public static final float angleOffset = 0.44f;
 
@@ -63,8 +63,8 @@ public final class Constants
 
     public static final class AlgaeShooterConstants{
     public static final int ID = 16;
-    public static final float intake = -0.3f;
-    public static final float outake = 0.3f;
+    public static final float intake = 0.3f;
+    public static final float outake = -0.3f;
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
@@ -109,7 +109,7 @@ public final class Constants
 
     public static final float leftAngleInitial = 0.382339f;
     public static final float rightAngleInitial = 0.622852f;
-    public static final float centerAngle = .49f;
+    public static final float centerAngle = .503f;
 
     //Pivot Set Positions
     public static final float leftL2Angle = 0.336f;
@@ -138,8 +138,8 @@ public final class Constants
 
     public static final int ID = 18;
 
-    public static final float extendSpeed = .2f;
-    public static final float retractSpeed = -.2f;
+    public static final float extendSpeed = .3f;
+    public static final float retractSpeed = -.3f;
   }
   
   public static final class ElevatorConstants{
@@ -171,7 +171,7 @@ public final class Constants
     public static final float L2RPose = -50f;
     public static final float L2LPose = -43f;
     public static final float L1Pose = -44f;
-    public static final float pickupPose = -90f;
+    public static final float pickupPose = -97f;
     public static final float climbPose = -122.333374f;
     
     public static final float P = 0.25f;
@@ -243,9 +243,9 @@ public final class Constants
     public static final float xValueC1XX = (float)Units.inchesToMeters(126);
     public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(139);
+    public static final float xValueC130 = (float)Units.inchesToMeters(121);
     public static final float yValueC130 = (float)Units.inchesToMeters(165.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(139);
+    public static final float xValueC131 = (float)Units.inchesToMeters(121);
     public static final float yValueC131 = (float)Units.inchesToMeters(151.5);
     public static final int faceValueC1XX = 1;
 
