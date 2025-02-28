@@ -156,7 +156,7 @@ public static Command setClimbPositionsCommand(AlgaeArm algaeArm, Shooter shoote
 public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
   Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
-.andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
+    .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))

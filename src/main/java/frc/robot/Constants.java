@@ -53,7 +53,7 @@ public final class Constants
     public static final float manualMultiplier = 0.05f;
 
 
-    public static final float P = 1f;
+    public static final float P = 1.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
@@ -99,11 +99,11 @@ public final class Constants
 
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 2f;
+    public static final float P = 3.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 250;
+    public static final float maxAcceleration = 200;
     public static final float allowedClosedLoopError = .05f;
   }
 
@@ -130,11 +130,11 @@ public final class Constants
 
     public static final float manualMultiplier = 0.005f;
 
-    public static final float P = 2.5f;
+    public static final float P = 5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 250;
+    public static final float maxVelocity = 250;
+    public static final float maxAcceleration = 100;
     public static final float allowedClosedLoopError = .05f;
   }
 
@@ -178,7 +178,7 @@ public final class Constants
     public static final float pickupPose = -92.3125f;
     public static final float climbPose = -122.333374f;
     
-    public static final float P = 0.2f;
+    public static final float P = 0.25f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 4500;
