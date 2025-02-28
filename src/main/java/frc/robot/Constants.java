@@ -33,7 +33,7 @@ public final class Constants
 
   public static final float armLength = (float)Units.inchesToMeters(0);
 
-  public static final float closeToPoseErrorAllowance = 0.03f;
+  public static final float closeToPoseErrorAllowance = 0.05f;
   
 
 
@@ -92,6 +92,11 @@ public final class Constants
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.68f;
     public static final float loadAngle = 0.225f;
+
+    // L4 Arm Angles
+    public static final float LeftL4Angle = .669f;
+    public static final float RightL4Angle = .689f;
+
     public static final float L1Angle = 0.5f;
 
     public static final float P = 2f;
@@ -109,6 +114,14 @@ public final class Constants
     public static final float leftAngleInitial = 0.382339f;
     public static final float rightAngleInitial = 0.622852f;
     public static final float centerAngle = .49f;
+
+    //Pivot Set Positions
+    public static final float leftL2Angle = 0.336f;
+    public static final float rightL2Angle = 0.65666f;
+    public static final float leftL3Angle = 0.336f;
+    public static final float rightL3Angle = 0.64f;
+    public static final float leftL4Angle = 0.392f;
+    public static final float rightL4Angle = 0.688f;
 
     public static final float angleOffset = 0.48f;
 
@@ -155,12 +168,15 @@ public final class Constants
     public static final float min = -237f;
     public static final float max = 0.0f;
 
+    // elevator set positions
     public static final float L4Pose = -237f;
-    public static final float L3Pose = -116.152504f;
-    public static final float L2Pose = -31.551039f;
+    public static final float L3LPose = -122.16f;
+    public static final float L3RPose = -121.8f;
+    public static final float L2RPose = -47.85f;
+    public static final float L2LPose = -40f;
     public static final float L1Pose = -41f;
-    public static final float pickupPose = -95f;
-    public static final float climbPose = -116;
+    public static final float pickupPose = -92.3125f;
+    public static final float climbPose = -122.333374f;
     
     public static final float P = 0.2f;
     public static final float I = 0.0f;
@@ -197,9 +213,9 @@ public final class Constants
     public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
 
     
-    public static final float leftCamXOffset = (float)Units.inchesToMeters(3.432);
-    public static final float leftCamYOffset = (float)Units.inchesToMeters(9.562);
-    public static final float leftCamZOffset = (float)Units.inchesToMeters(23.941);
+    public static final float leftCamXOffset = (float)Units.inchesToMeters(4.375);
+    public static final float leftCamYOffset = (float)Units.inchesToMeters(10.5);
+    public static final float leftCamZOffset = (float)Units.inchesToMeters(5);
 
     public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
     public static final float leftCamPitch = (float)Units.degreesToRadians(20.0);
@@ -220,7 +236,7 @@ public final class Constants
     public static final float SLPositionY = (float)Units.inchesToMeters(276.64);
     public static final float SLPositionZ = (float)Units.degreesToRadians(306-180);
 
-    public static final float SRPositionX = (float)Units.inchesToMeters(7.021);
+    public static final float SRPositionX = (float)Units.inchesToMeters(44.09);
     public static final float SRPositionY = (float)Units.inchesToMeters(40.36);
     public static final float SRPositionZ = (float)Units.degreesToRadians(54+180);
     

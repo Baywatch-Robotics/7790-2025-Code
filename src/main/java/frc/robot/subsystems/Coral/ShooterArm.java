@@ -2,6 +2,7 @@ package frc.robot.subsystems.Coral;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -56,6 +57,12 @@ public class ShooterArm extends SubsystemBase {
     private void setClimbAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
     }
+    private void setLeftL4() {
+        shooterArmDesiredAngle = ShooterArmConstants.LeftL4Angle;
+    }
+    private void setRightL4() {
+        shooterArmDesiredAngle = ShooterArmConstants.RightL4Angle;
+    }
 
     public Command shooterArmScoreLOWCommand()
     {
@@ -84,26 +91,38 @@ public class ShooterArm extends SubsystemBase {
         Command command = new InstantCommand(() -> this.setClimbAngle());
         return command;
     }
+    public Command shooterArmLeftL4Command()
+    {
+        Command command = new InstantCommand(() -> this.setLeftL4());
+        return command;
+    }
+    public Command shooterArmRightL4Command()
+    {
+        Command command = new InstantCommand(() -> this.setRightL4());
+        return command;
+    }
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
 
         Command command = new InstantCommand(() -> {
 
-            if (currentLevelSupplier != null) {
-                switch (currentLevelSupplier.getAsInt()) {
-                    case 0:
-                        setScoreL1();
-                        break;
-                    case 1:
-                        setScoreLOW();
-                        break;
-                    case 2:
-                        setScoreLOW();
-                        break;
-                    case 3:
-                        setScoreHIGH();
-                        break;
+            if (currentLevelSupplier != null && currentSideSupplier != null) {
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    setScoreL1();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    if (currentSideSupplier.getAsBoolean()) {
+                        // Left L4
+                        shooterArmDesiredAngle = ShooterArmConstants.LeftL4Angle;
+                    } else {
+                        // Right L4
+                        shooterArmDesiredAngle = ShooterArmConstants.RightL4Angle;
+                    }
                 }
             }
         });

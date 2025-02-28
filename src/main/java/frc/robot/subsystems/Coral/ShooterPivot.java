@@ -3,6 +3,7 @@ package frc.robot.subsystems.Coral;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -55,6 +56,30 @@ public class ShooterPivot extends SubsystemBase {
         shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle;
         isStraight = true;
     }
+    private void setLeftL2() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.leftL2Angle;
+        isStraight = false;
+    }
+    private void setRightL2() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.rightL2Angle;
+        isStraight = false;
+    }
+    private void setLeftL3() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.leftL3Angle;
+        isStraight = false;
+    }
+    private void setRightL3() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.rightL3Angle;
+        isStraight = false;
+    }
+    private void setLeftL4() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.leftL4Angle;
+        isStraight = false;
+    }
+    private void setRightL4() {
+        shooterPivotDesiredAngle = ShooterPivotConstants.rightL4Angle;
+        isStraight = false;
+    }
 
     public Command setLeftInitialCommand()
     {
@@ -74,23 +99,84 @@ public class ShooterPivot extends SubsystemBase {
         return command;
     }
 
+    public Command setLeftL2Command()
+    {
+        Command command = new InstantCommand(()-> this.setLeftL2());
+        return command;
+    }
+
+    public Command setRightL2Command()
+    {
+        Command command = new InstantCommand(()-> this.setRightL2());
+        return command;
+    }
+
+    public Command setLeftL3Command()
+    {
+        Command command = new InstantCommand(()-> this.setLeftL3());
+        return command;
+    }
+
+    public Command setRightL3Command()
+    {
+        Command command = new InstantCommand(()-> this.setRightL3());
+        return command;
+    }
+
+    public Command setLeftL4Command()
+    {
+        Command command = new InstantCommand(()-> this.setLeftL4());
+        return command;
+    }
+
+    public Command setRightL4Command()
+    {
+        Command command = new InstantCommand(()-> this.setRightL4());
+        return command;
+    }
+
     public Command shooterPivotBasedOnQueueCommand(ButtonBox buttonBox) {
 
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
         BooleanSupplier currentLeftSupplier = buttonBox.currentisLeftSupplier;
 
         Command command = new InstantCommand(() -> {
-
-            if (currentLeftSupplier != null) {
-                if (currentLeftSupplier.getAsBoolean()) {
-                    setLeftInitial();
-                } else {
-                    setRightInitial();
+            if (currentLevelSupplier != null && currentLeftSupplier != null) {
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    // L1 is always center
+                    setCenter();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    // L2
+                    if (currentLeftSupplier.getAsBoolean()) {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.leftL2Angle;
+                        isStraight = false;
+                    } else {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.rightL2Angle;
+                        isStraight = false;
+                    }
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    // L3
+                    if (currentLeftSupplier.getAsBoolean()) {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.leftL3Angle;
+                        isStraight = false;
+                    } else {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.rightL3Angle;
+                        isStraight = false;
+                    }
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    // L4
+                    if (currentLeftSupplier.getAsBoolean()) {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.leftL4Angle;
+                        isStraight = false;
+                    } else {
+                        shooterPivotDesiredAngle = ShooterPivotConstants.rightL4Angle;
+                        isStraight = false;
+                    }
                 }
             }
         });
         return command;
     }
-
 
     public void moveAmount(final double amount) {
 

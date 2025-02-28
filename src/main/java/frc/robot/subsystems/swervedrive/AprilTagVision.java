@@ -24,7 +24,7 @@ public class AprilTagVision extends SubsystemBase {
     
     private static final PhotonCamera rightCam = new PhotonCamera("rightcam");
     private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
-    private static final PhotonCamera limelight = new PhotonCamera("limelight");
+    //private static final PhotonCamera limelight = new PhotonCamera("limelight");
 
     private static final Transform3d rightCamToRobot = new Transform3d(
             new Translation3d(AprilTagVisionConstants.rightCamXOffset, AprilTagVisionConstants.rightCamYOffset, AprilTagVisionConstants.rightCamZOffset),
@@ -66,11 +66,12 @@ public class AprilTagVision extends SubsystemBase {
         return leftPoseEstimator.update(leftCam.getLatestResult());
     }
 
+    /*
     public static Optional<EstimatedRobotPose> getLimelightPose(Pose2d prevEstimatedPose) {
         limelightPoseEstimator.setReferencePose(prevEstimatedPose);
         return limelightPoseEstimator.update(limelight.getLatestResult());
     }
-
+    */
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
@@ -89,15 +90,15 @@ public class AprilTagVision extends SubsystemBase {
                 validPoses.add(estimate.estimatedPose);
             }
         }
-
-        Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
+        /*
+                Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
         if (limelightEstimate.isPresent()) {
             EstimatedRobotPose estimate = limelightEstimate.get();
             if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
                 validPoses.add(estimate.estimatedPose);
             }
         }
-
+        */
         if (validPoses.isEmpty()) {
             return Optional.empty(); // No valid poses found
         }

@@ -260,12 +260,24 @@ public Command driveToPose(ButtonBox buttonBox) {
             // Get the target at execution time
             TargetClass target = buttonBox.currentTargetClassSupplier.get();
             
-            PathConstraints constraints = new PathConstraints(
+            PathConstraints constraints;
+            Pose2d pose;
+
+            if (target == null) {
+               constraints = new PathConstraints(
+                0, 0,
+                Units.degreesToRadians(0), Units.degreesToRadians(0));
+
+              target = TargetClass.GetTargetByName("C100");
+            }
+            else {
+                constraints = new PathConstraints(
                 1, 1,
                 Units.degreesToRadians(120), Units.degreesToRadians(120));
+            }
             
             // Get the pose from the target
-            Pose2d pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
+            pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
                                     Rotation2d.fromRadians(target.getZ()));
 
             Pose2d finalPose = TargetClass.toPose2d(pose);

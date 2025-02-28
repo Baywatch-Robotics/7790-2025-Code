@@ -100,8 +100,8 @@ public class RobotContainer
   
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
-  () -> driverXbox.getLeftY() * -1,
-  () -> driverXbox.getLeftX() * -1)
+  () -> driveY.getAsDouble(),
+  () -> driveX.getAsDouble())
 .withControllerRotationAxis(headingXAng)
 .deadband(Constants.DEADBAND)
 .scaleTranslation(1)
@@ -209,60 +209,22 @@ SwerveInputStream driveButtonBoxInput =
 
   private void configureBindings()
   {
-
-    //buttonBox1.button(1).onTrue(elevator.setElevatorL1Command());
-   // buttonBox1.button(2).onTrue(elevator.setElevatorL2Command());
-   // buttonBox1.button(3).onTrue(elevator.setElevatorL3Command());
-    //buttonBox1.button(4).onTrue(elevator.setElevatorL4Command());
-
-    //buttonBox1.button(6).onTrue(algaeArm.algaeArmStowUpCommand());
-    //buttonBox1.button(5).onTrue(algaeArm.algaeArmGroundIntakeCommand());
-
     
-   // Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
-   // Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(
-    //    driveDirectAngleKeyboard);
-    
-    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
     //climber.setDefaultCommand(new RunCommand(() -> climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
 
-    /*if (Robot.isSimulation())
-    {
-      driverXbox.start().onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-      driverXbox.button(1).whileTrue(drivebase.sysIdDriveMotorCommand());
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+    
+    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    }
-    */
+      driverXbox.x().onTrue(shooter.shooterIntakeCommand());
+      driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+      driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
-    //driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      //Maincontrols here
-     // this.shooterPivot.setDefaultCommand(new InstantCommand(() -> shooterPivot.moveAmount((float) opXbox.getRightX()), shooterPivot));
-
-      //driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyroWithAlliance)));
-      driverXbox.a().onTrue(shooter.shooterIntakeCommand());
-      driverXbox.a().onFalse(shooter.shooterZeroSpeedCommand());
-      driverXbox.b().onTrue(shooter.shooterOutakeCommand());
-      driverXbox.b().onFalse(shooter.shooterZeroSpeedCommand());
-
-      //driverXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
-      //driverXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-      //driverXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-      //driverXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-      
-
-      
-      //driverXbox.pov(0).onTrue(CommandFactory.scoreL4Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      //driverXbox.pov(90).onTrue(CommandFactory.scoreL3Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      //driverXbox.pov(180).onTrue(CommandFactory.scoreL2Command(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-      driverXbox.pov(270).onTrue(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this, drivebase));
-
-      //opXbox.x().onTrue(shooterArm.shooterArmLoadCommand());
-      //opXbox.y().onTrue(elevator.setElevatorPickupCommand());
 
       buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
       buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -321,21 +283,9 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-      //temp
-   // driverXbox.a().onTrue(new InstantCommand(() -> buttonBox.addTarget("C0000")));
-
-    //driverXbox.y().onTrue(new InstantCommand(() -> drivebase.followPath("Right to 0")));
-
-    //driverXbox.rightBumper().onTrue(new InstantCommand(() -> (CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)));
-
-    //buttonBox1.button(1).onTrue(CommandFactory.scoreTest(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    //driverXbox.x().whileTrue(CommandFactory.scoreBasedOnQueueCommandDrive(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
-
-    driverXbox.y().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
+      driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeManualCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
     opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
 
@@ -348,22 +298,9 @@ SwerveInputStream driveButtonBoxInput =
     opXbox.y().onTrue(climber.climberRetractCommand());
     opXbox.y().onFalse(climber.climberStopCommand());
 
-    driverXbox.x().onTrue(drivebase.driveToPose(buttonBox));
+    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    driverXbox.b().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
-    //driverXbox.b().onTrue(CommandFactory.scoreTestSim(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-
-      //drivebase.setDefaultCommand(driveButtonBoxInputCommand);
-   
-  // driverXbox.axisMagnitudeGreaterThan(0, 0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).onTrue(
-    //   new InstantCommand(() -> {
-         // On resume, simply schedule the followQueueCommand.
-     //    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-     //  }, drivebase));
-
-    //driverXbox.b().onTrue(new InstantCommand(() -> (drivebase.setDefaultCommand(driveButtonBoxInput))));
-
-    // Now override this behavior by binding the resume action to the right bumper.
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
@@ -379,7 +316,7 @@ SwerveInputStream driveButtonBoxInput =
   public void setDriveSpeedBasedOnElevatorAndCloseness()
   {    
     // Base speed determined by elevator position
-    float baseSpeed = elevator.isRaised() ? 0.3f : 1.0f;
+    float baseSpeed = elevator.isRaised() ? 0.3f : 0.5f;
     
     // Reset distance to a large value by default
     distanceToTarget = Double.POSITIVE_INFINITY;
@@ -405,11 +342,11 @@ SwerveInputStream driveButtonBoxInput =
       
       // Graduated speed reduction based on distance
       if (isVeryClose) {
-        driveSpeed = Math.min(baseSpeed, 0.2f);
+        driveSpeed = Math.min(baseSpeed, 0.5f);
       } else if (isClose) {
-        driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
+        driveSpeed = Math.min(baseSpeed, 0.5f); //For testing
       } else if (isApproaching) {
-        driveSpeed = Math.min(baseSpeed, 0.2f); //For testing
+        driveSpeed = Math.min(baseSpeed, 0.5f); //For testing
       } else {
         driveSpeed = baseSpeed; // Use the base speed from elevator status
       }
@@ -425,21 +362,21 @@ SwerveInputStream driveButtonBoxInput =
       driveSpeed = baseSpeed;
       
       // Reset the dashboard indicators when not targeting
-      SmartDashboard.putNumber("Distance to Target", Double.POSITIVE_INFINITY);
+      SmartDashboard.putNumber("Distance to Target", distanceToTarget);
       SmartDashboard.putBoolean("Very Close to Target", false);
       SmartDashboard.putBoolean("Close to Target", false);
       SmartDashboard.putBoolean("Approaching Target", false);
     }
-    
-    SmartDashboard.putNumber("Drive Speed", driveSpeed);
+
+      SmartDashboard.putNumber("Drive Speed", driveSpeed);
     
     //isApproachingSupplier = () -> isApproaching;
     //isVeryCloseSupplier = () -> isVeryClose;
     //isCloseSupplier = () -> isClose;
     //isLinedUpSupplier = () -> isLinedUp;
 
-    driveX = () -> -driverXbox.getLeftX() * driveSpeed;
     driveY = () -> -driverXbox.getLeftY() * driveSpeed;
+    driveX = () -> -driverXbox.getLeftX() * driveSpeed;
 
     isApproachingTrigger();
     isCloseTrigger();

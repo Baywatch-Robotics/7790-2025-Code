@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
 import com.revrobotics.RelativeEncoder;
@@ -55,12 +56,18 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.L4Pose;
     }
 
-    private void setL3() {
-        elevatorDesiredPosition = ElevatorConstants.L3Pose;
+    private void setL3L() {
+        elevatorDesiredPosition = ElevatorConstants.L3LPose;
+    }
+    private void setL3R() {
+        elevatorDesiredPosition = ElevatorConstants.L3RPose;
     }
 
-    private void setL2() {
-        elevatorDesiredPosition = ElevatorConstants.L2Pose;
+    private void setL2L() {
+        elevatorDesiredPosition = ElevatorConstants.L2LPose;
+    }
+    private void setL2R() {
+        elevatorDesiredPosition = ElevatorConstants.L2RPose;
     }
 
     private void setL1() {
@@ -68,6 +75,9 @@ public class Elevator extends SubsystemBase {
     }
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
+    }
+    public void setPickupPlus() {
+        elevatorDesiredPosition = ElevatorConstants.pickupPose - 12;
     }
     public void setClimbPose() {
         elevatorDesiredPosition = ElevatorConstants.climbPose;
@@ -83,13 +93,21 @@ public class Elevator extends SubsystemBase {
         return command;
     }
 
-    public Command setElevatorL3Command() {
-        Command command = new InstantCommand(() -> setL3());
+    public Command setElevatorL3LCommand() {
+        Command command = new InstantCommand(() -> setL3L());
+        return command;
+    }
+    public Command setElevatorL3RCommand() {
+        Command command = new InstantCommand(() -> setL3R());
         return command;
     }
 
-    public Command setElevatorL2Command() {
-        Command command = new InstantCommand(() -> setL2());
+    public Command setElevatorL2LCommand() {
+        Command command = new InstantCommand(() -> setL2L());
+        return command;
+    }
+    public Command setElevatorL2RCommand() {
+        Command command = new InstantCommand(() -> setL2R());
         return command;
     }
 
@@ -106,6 +124,12 @@ public class Elevator extends SubsystemBase {
 
         return command;
     }
+    public Command setElevatorPickupPlusCommand() {
+
+        Command command = new InstantCommand(() -> setPickupPlus());
+
+        return command;
+    }
     public Command setElevatorClimbPoseCommand() {
         Command command = new InstantCommand(() -> setClimbPose());
         return command;
@@ -113,24 +137,24 @@ public class Elevator extends SubsystemBase {
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
 
         Command command = new InstantCommand(() -> {
 
-            if (currentLevelSupplier != null) {
-                switch (currentLevelSupplier.getAsInt()) {
-                    case 0:
-                        setL1();
-                        break;
-                    case 1:
-                        setL2();
-                        break;
-                    case 2:
-                        setL3();
-                        break;
-                    case 3:
-                        setL4();
-                        break;
-                }
+            if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
+                setL1();
+            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+                setL1();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
+                setL2L();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
+                setL2R();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
+                setL3L();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
+                setL3R();
+            } else if (currentLevelSupplier.getAsInt() == 3) {
+                setL4();
             }
         });
         return command;
@@ -174,10 +198,11 @@ public class Elevator extends SubsystemBase {
         if (Math.abs(amount) < 0.2) {
             return;
         }
-
+        
         float scale = ElevatorConstants.manualMultiplier;
 
         float f = (float) MathUtil.clamp(elevatorDesiredPosition + amount * scale, ElevatorConstants.min, ElevatorConstants.max);
+
 
         elevatorDesiredPosition = f;
     }
@@ -190,7 +215,7 @@ public class Elevator extends SubsystemBase {
             isInitialized = true;
         }
         
-        desiredTotalHeight = (float)MathUtil.clamp(desiredTotalHeight, ElevatorConstants.min, ElevatorConstants.max);
+        desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
         
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
