@@ -89,6 +89,16 @@ public class Elevator extends SubsystemBase {
     public void setClimbPose() {
         elevatorDesiredPosition = ElevatorConstants.climbPose;
     }
+    
+    // New methods for ball positions
+    public void setHighBall() {
+        elevatorDesiredPosition = ElevatorConstants.highBallPose;
+    }
+    
+    public void setLowBall() {
+        elevatorDesiredPosition = ElevatorConstants.lowBallPose;
+    }
+    
     // Commands
     public Command setfullElevatorRetractCommand() {
         Command command = new InstantCommand(() -> setFullRetract());
@@ -141,6 +151,18 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> setClimbPose());
         return command;
     }
+    
+    // New commands for ball positions
+    public Command setElevatorHighBallCommand() {
+        Command command = new InstantCommand(() -> setHighBall());
+        return command;
+    }
+    
+    public Command setElevatorLowBallCommand() {
+        Command command = new InstantCommand(() -> setLowBall());
+        return command;
+    }
+    
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -182,6 +204,10 @@ public class Elevator extends SubsystemBase {
     }
     public Boolean isRaised() {
          return m_encoder.getPosition() <= -1;
+    }
+
+    public Boolean isRaisedEnough() {
+        return m_encoder.getPosition() <= -100;
     }
 
     public Trigger isClearToIntake() {

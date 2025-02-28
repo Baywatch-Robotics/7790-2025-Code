@@ -48,6 +48,10 @@ public class RobotContainer
   private final CommandJoystick buttonBox2 = new CommandJoystick(2);
   final CommandXboxController opXbox = new CommandXboxController(3);
   public float driveSpeed = 0;
+  // Add variables for smooth speed transition
+  private float targetDriveSpeed = 0;
+  private float actualDriveSpeed = 0;
+  private float speedSmoothingFactor = 0.15f; // Controls how quickly speed changes (0.0-1.0)
 
   private boolean isClose = false;
   private boolean isVeryClose = false;
@@ -283,10 +287,12 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-      driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
-      driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
     driverXbox.pov(90).whileTrue(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this, drivebase));
+    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
     opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
@@ -318,7 +324,8 @@ SwerveInputStream driveButtonBoxInput =
   public void setDriveSpeedBasedOnElevatorAndCloseness()
   {    
     // Base speed determined by elevator position
-    float baseSpeed = elevator.isRaised() ? 0.3f : 0.5f;
+    float baseSpeed = elevator.isRaisedEnough() ? 0.3f : 0.5f;
+
     
     // Reset distance to a large value by default
     distanceToTarget = Double.POSITIVE_INFINITY;
@@ -344,13 +351,13 @@ SwerveInputStream driveButtonBoxInput =
       
       // Graduated speed reduction based on distance
       if (isVeryClose) {
-        driveSpeed = Math.min(baseSpeed, 0.5f);
+        targetDriveSpeed = Math.min(baseSpeed, 0.5f);
       } else if (isClose) {
-        driveSpeed = Math.min(baseSpeed, 0.5f); //For testing
+        targetDriveSpeed = Math.min(baseSpeed, 0.5f); //For testing
       } else if (isApproaching) {
-        driveSpeed = Math.min(baseSpeed, 0.5f); //For testing
+        targetDriveSpeed = Math.min(baseSpeed, 0.5f); //For testing
       } else {
-        driveSpeed = baseSpeed; // Use the base speed from elevator status
+        targetDriveSpeed = baseSpeed; // Use the base speed from elevator status
       }
       
       
@@ -361,7 +368,7 @@ SwerveInputStream driveButtonBoxInput =
       SmartDashboard.putBoolean("Approaching Target", isApproaching);
     } else {
       // No target or not in drive-to-pose mode, just use elevator-based speed
-      driveSpeed = baseSpeed;
+      targetDriveSpeed = baseSpeed;
       
       // Reset the dashboard indicators when not targeting
       SmartDashboard.putNumber("Distance to Target", distanceToTarget);
@@ -370,7 +377,12 @@ SwerveInputStream driveButtonBoxInput =
       SmartDashboard.putBoolean("Approaching Target", false);
     }
 
-      SmartDashboard.putNumber("Drive Speed", driveSpeed);
+    // Smooth the speed transition
+    smoothDriveSpeed();
+
+    SmartDashboard.putNumber("Target Drive Speed", targetDriveSpeed);
+    SmartDashboard.putNumber("Actual Drive Speed", actualDriveSpeed);
+    SmartDashboard.putNumber("Drive Speed", driveSpeed);
     
     //isApproachingSupplier = () -> isApproaching;
     //isVeryCloseSupplier = () -> isVeryClose;
@@ -399,6 +411,20 @@ SwerveInputStream driveButtonBoxInput =
   }
   public Trigger isLinedUpTrigger(){
     return new Trigger(() -> isLinedUp);
+  }
+  
+  /**
+   * Apply smooth interpolation to drive speed changes to prevent jerky movement
+   */
+  private void smoothDriveSpeed() {
+    // Calculate the difference between target and actual speed
+    float speedDifference = targetDriveSpeed - actualDriveSpeed;
+    
+    // Apply the smoothing factor to gradually adjust the actual speed
+    actualDriveSpeed += speedDifference * speedSmoothingFactor;
+    
+    // Set the drive speed to the smoothed value
+    driveSpeed = actualDriveSpeed;
   }
 
 /**

@@ -45,6 +45,11 @@ public final class Constants
     public static final float straightOutAngle = 0.5f;
     public static final float groundIntakeAngle = 0.406f;
 
+    public static final float holdAngle = 0.35f;
+
+    // Current threshold for detecting algae
+    public static final float currentThreshold = 15.0f;
+
     public static final float angleOffset = 0.44f;
 
     public static final float max = 0.5f;
@@ -53,7 +58,7 @@ public final class Constants
     public static final float manualMultiplier = 0.05f;
 
 
-    public static final float P = 1.5f;
+    public static final float P = 2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
@@ -64,7 +69,7 @@ public final class Constants
     public static final class AlgaeShooterConstants{
     public static final int ID = 16;
     public static final float intake = 0.3f;
-    public static final float outake = -0.3f;
+    public static final float outake = -0.4f;
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
@@ -92,6 +97,9 @@ public final class Constants
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.643f;
     public static final float loadAngle = 0.225f;
+    
+    // Ball position angle
+    public static final float ballAngle = 0.5f;
 
     public static final float L1Angle = 0.5f;
 
@@ -173,6 +181,10 @@ public final class Constants
     public static final float L1Pose = -44f;
     public static final float pickupPose = -97f;
     public static final float climbPose = -122.333374f;
+    
+    // Ball pickup positions
+    public static final float highBallPose = -150f;
+    public static final float lowBallPose = -75f;
     
     public static final float P = 0.25f;
     public static final float I = 0.0f;

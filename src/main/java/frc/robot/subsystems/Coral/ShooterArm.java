@@ -57,6 +57,11 @@ public class ShooterArm extends SubsystemBase {
     private void setClimbAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
     }
+    
+    // New method for ball position
+    private void setBallAngle() {
+        shooterArmDesiredAngle = ShooterArmConstants.ballAngle;
+    }
 
     public Command shooterArmScoreLOWCommand()
     {
@@ -83,6 +88,13 @@ public class ShooterArm extends SubsystemBase {
     public Command shooterArmClimbCommand()
     {
         Command command = new InstantCommand(() -> this.setClimbAngle());
+        return command;
+    }
+    
+    // New command for ball position
+    public Command shooterArmBallCommand()
+    {
+        Command command = new InstantCommand(() -> this.setBallAngle());
         return command;
     }
 
