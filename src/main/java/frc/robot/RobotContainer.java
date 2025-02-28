@@ -343,7 +343,9 @@ SwerveInputStream driveButtonBoxInput =
       distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
       
       // Define local proximity checks that always use current distance value
-      isVeryClose = distanceToTarget < 0.5;
+
+      
+      isVeryClose = distanceToTarget < 0.25;
       isClose = distanceToTarget < 1.0;
       isApproaching = distanceToTarget < 1.5;
       isLinedUp = distanceToTarget < 0.08;

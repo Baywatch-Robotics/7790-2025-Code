@@ -31,7 +31,7 @@ public final class Constants
 
   public static final float DEADBAND = 0.1f;
 
-  public static final float armLength = (float)Units.inchesToMeters(0);
+  //public static final float armLength = (float)Units.inchesToMeters(0);
 
   public static final float closeToPoseErrorAllowance = 0.05f;
   

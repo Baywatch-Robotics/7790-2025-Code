@@ -36,7 +36,7 @@ public class ShooterPivot extends SubsystemBase {
     private AbsoluteEncoder shooterPivotEncoder = shooterPivotMotor.getAbsoluteEncoder();
     
     // Add Scope reference
-    private Scope scope;
+    public Scope scope;
 
     public ShooterPivot() {
         shooterPivotMotor.configure(Configs.ShooterPivot.shooterPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -48,11 +48,23 @@ public class ShooterPivot extends SubsystemBase {
     public ShooterPivot(Scope scope) {
         this();
         this.scope = scope;
+        // Register this component with the scope system
+        if (scope != null) {
+            scope.setSubsystems(null); // Pass null for arm as it might not be initialized yet
+        }
     }
     
     // Set the scope reference separately (in case constructor injection isn't possible)
     public void setScope(Scope scope) {
         this.scope = scope;
+        // Update registration with scope system
+        if (scope != null) {
+            scope.setSubsystems(null);
+        }
+    }
+
+    public Scope getScope() {
+        return this.scope;
     }
 
     private void setLeftInitial() {

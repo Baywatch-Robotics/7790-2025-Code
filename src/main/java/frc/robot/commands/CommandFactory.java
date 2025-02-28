@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -189,12 +190,23 @@ public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shoote
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
-    //.andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    //.andThen(new WaitUntilCommand(buttonBox.isClose()))
-    //.andThen(shooter.shooterOutakeCommand())
-    //.andThen(new WaitCommand(.5))
-    //.andThen(shooter.shooterZeroSpeedCommand())
-    //.andThen(robotContainer.stopButtonBoxFollowCommand())
+    // Add vision fine-tuning if needed after mechanisms are positioned
+    .andThen(() -> {
+      // Get current level from button box
+      int level = buttonBox.currentLevelSupplier.getAsInt();
+      // Fine-tune elevator height using vision if scope is available
+      if (level >= 2 && elevator.getScope() != null && 
+          elevator.getScope().isVisionEnabled() && 
+          elevator.getScope().hasTarget()) {
+        elevator.autoTargetForLevelCommand(level, elevator.getScope()).schedule();
+      }
+      // Fine-tune pivot angle using vision if scope is available
+      if (shooterPivot.scope != null && 
+          shooterPivot.scope.isVisionEnabled() && 
+          shooterPivot.scope.hasTarget()) {
+        shooterPivot.moveAmount((float)shooterPivot.scope.calculatePivotAngleAdjustment());
+      }
+    })
     .andThen(buttonBox.getNextTargetCommand());
     
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
@@ -221,13 +233,33 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(AlgaeArm algaeArm
 
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(drivebase.driveToPose(buttonBox))
-    .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
-    
+    .andThen(new WaitUntilCommand(robotContainer.isVeryCloseTrigger())) // Wait until very close to target
+    // Enable continuous aiming when very close to target
+    .andThen(() -> {
+      int level = buttonBox.currentLevelSupplier.getAsInt();
+      if (shooterPivot.scope != null) {
+        shooterPivot.scope.enableContinuousAiming(level);
+        SmartDashboard.putString("Aiming Status", "Continuous Aiming Started");
+      }
+    })
+    // Wait for aiming to stabilize or timeout after 1 second
+    .andThen(new WaitUntilCommand(() -> 
+      (shooterPivot.scope != null && shooterPivot.scope.isAimingStable()) || 
+      !shooterPivot.scope.hasTarget()
+    ).withTimeout(1.0))
+    // Disable continuous aiming before completing
+    .andThen(() -> {
+      if (shooterPivot.scope != null) {
+        shooterPivot.scope.disableContinuousAiming();
+        SmartDashboard.putString("Aiming Status", "Aiming Complete");
+      }
+    })
     .andThen(buttonBox.getNextTargetCommand());
     
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
     return command; 
 }
+
 public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
@@ -249,11 +281,41 @@ public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shoot
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(drivebase.driveToPose(buttonBox))
     .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
-    
-    .andThen(new WaitCommand(.5))
+    // Add vision adjustments before shooting
+    .andThen(() -> {
+      // Apply vision adjustments if available
+      if (shooterPivot.scope != null && 
+          shooterPivot.scope.isVisionEnabled() && 
+          shooterPivot.scope.hasTarget()) {
+        // Apply fine adjustments for pivot
+        double adjustment = shooterPivot.scope.calculatePivotAngleAdjustment();
+        shooterPivot.moveAmount((float)adjustment);
+        SmartDashboard.putNumber("Final Pivot Adjustment", adjustment);
+      }
+      
+      // Apply vision adjustments to elevator if available
+      if (elevator.getScope() != null && 
+          elevator.getScope().isVisionEnabled() && 
+          elevator.getScope().hasTarget()) {
+        int level = buttonBox.currentLevelSupplier.getAsInt();
+        double[] heightAdjustments = elevator.getScope().calculateHeightForLevel(level);
+        if (heightAdjustments.length > 0) {
+          elevator.adjustForVision(heightAdjustments[0]);
+          SmartDashboard.putNumber("Final Elevator Adjustment", heightAdjustments[0]);
+        }
+      }
+    })
+    .andThen(new WaitCommand(0.5)) // Small pause to let adjustments settle
     .andThen(shooter.shooterOutakeCommand())
     .andThen(new WaitCommand(.5))
     .andThen(shooter.shooterZeroSpeedCommand())
+    // Disable continuous aiming after shooting
+    .andThen(() -> {
+      if (shooterPivot.scope != null) {
+        shooterPivot.scope.disableContinuousAiming();
+        SmartDashboard.putString("Aiming Status", "Aiming Complete");
+      }
+    })
     .andThen(buttonBox.getNextTargetCommand());
     
     command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);

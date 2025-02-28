@@ -64,6 +64,11 @@ public class Elevator extends SubsystemBase {
         this.scope = scope;
     }
 
+    // Add a getter for the Scope reference
+    public Scope getScope() {
+        return this.scope;
+    }
+
     private void setFullRetract() {
         elevatorDesiredPosition = 0;
     }
@@ -275,6 +280,59 @@ public class Elevator extends SubsystemBase {
 
 
         elevatorDesiredPosition = f;
+    }
+
+    // New method for vision-based height adjustment
+    public void adjustForVision(double adjustment) {
+        // Only apply adjustments if they're significant
+        if (Math.abs(adjustment) > 0.5) {
+            float newPosition = (float) MathUtil.clamp(
+                elevatorDesiredPosition + adjustment, 
+                ElevatorConstants.min, 
+                ElevatorConstants.max
+            );
+            
+            SmartDashboard.putNumber("Vision Elevator Adjustment", adjustment);
+            SmartDashboard.putNumber("Elevator Position Before Vision", elevatorDesiredPosition);
+            SmartDashboard.putNumber("Elevator Position After Vision", newPosition);
+            
+            elevatorDesiredPosition = newPosition;
+        }
+    }
+    
+    // Command to make vision-based adjustment
+    public Command visionAdjustCommand(Scope scope) {
+        return new InstantCommand(() -> {
+            if (scope != null && scope.isVisionEnabled() && scope.hasTarget()) {
+                // Get calculated elevator adjustment from scope
+                double[] adjustments = scope.calculateFullAutoAdjustment();
+                if (adjustments.length >= 3) {
+                    adjustForVision(adjustments[2]); // Index 2 contains elevator adjustment
+                }
+            }
+        });
+    }
+    
+    // Method for auto-targeting at a specific level
+    public Command autoTargetForLevelCommand(int level, Scope scope) {
+        return new InstantCommand(() -> {
+            // First set base position by level
+            switch (level) {
+                case 0: setL1(); break;
+                case 1: setL2L(); break;
+                case 2: setL3L(); break;
+                case 3: setL4(); break;
+                default: break;
+            }
+            
+            // Then apply vision adjustment if enabled and target detected
+            if (scope != null && scope.isVisionEnabled() && scope.hasTarget()) {
+                double[] adjustments = scope.calculateHeightForLevel(level);
+                if (adjustments.length >= 1) {
+                    adjustForVision(adjustments[0]);
+                }
+            }
+        });
     }
 
     @Override

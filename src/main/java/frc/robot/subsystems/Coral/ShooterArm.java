@@ -33,25 +33,13 @@ public class ShooterArm extends SubsystemBase {
     private SparkClosedLoopController shooterArmController = shooterArmMotor.getClosedLoopController();
 
     private AbsoluteEncoder shooterArmEncoder = shooterArmMotor.getAbsoluteEncoder();
-    
-    // Add Scope reference
-    private Scope scope;
 
+    
     public ShooterArm() {
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
     }
     
-    // New constructor with Scope parameter
-    public ShooterArm(Scope scope) {
-        this();
-        this.scope = scope;
-    }
-    
-    // Set the scope reference separately (in case constructor injection isn't possible)
-    public void setScope(Scope scope) {
-        this.scope = scope;
-    }
 
     private void setScoreLOW() {
         shooterArmDesiredAngle = ShooterArmConstants.scoreAngleLOW;
@@ -109,15 +97,7 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
-    // Apply vision adjustments if enabled and appropriate
-    private void applyVisionAdjustment(int level) {
-        // Only apply vision for L4 or when specifically requested
-        if (scope != null && scope.isVisionEnabled() && scope.hasTarget() && level == 3) {
-            float adjustment = (float) scope.calculateArmAngleAdjustment();
-            shooterArmDesiredAngle += adjustment;
-            SmartDashboard.putNumber("Vision Arm Adjustment", adjustment);
-        }
-    }
+    // Removed vision adjustment method
 
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
@@ -145,8 +125,7 @@ public class ShooterArm extends SubsystemBase {
                     }
                 }
                 
-                // Apply vision adjustment after setting base position
-                applyVisionAdjustment(level);
+                // Removed vision adjustment call
             }
         });
         return command;
@@ -168,6 +147,10 @@ public class ShooterArm extends SubsystemBase {
 
         shooterArmDesiredAngle = f;
     }
+    
+    // Removed moveAmountWithVision method
+    
+    // Removed visionTargetCommand method
 
     @Override
     public void periodic() {
