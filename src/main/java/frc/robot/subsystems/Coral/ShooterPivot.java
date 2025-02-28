@@ -34,15 +34,26 @@ public class ShooterPivot extends SubsystemBase {
     private SparkClosedLoopController shooterPivotController = shooterPivotMotor.getClosedLoopController();
 
     private AbsoluteEncoder shooterPivotEncoder = shooterPivotMotor.getAbsoluteEncoder();
+    
+    // Add Scope reference
+    private Scope scope;
 
     public ShooterPivot() {
-
         shooterPivotMotor.configure(Configs.ShooterPivot.shooterPivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         isStraight = true;
-
         shooterPivotDesiredAngle = (float)shooterPivotEncoder.getPosition();
-        }
+    }
+    
+    // New constructor with Scope parameter
+    public ShooterPivot(Scope scope) {
+        this();
+        this.scope = scope;
+    }
+    
+    // Set the scope reference separately (in case constructor injection isn't possible)
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
 
     private void setLeftInitial() {
         shooterPivotDesiredAngle = ShooterPivotConstants.leftAngleInitial;
@@ -135,6 +146,16 @@ public class ShooterPivot extends SubsystemBase {
         return command;
     }
 
+    // Apply vision adjustments if enabled and appropriate
+    private void applyVisionAdjustment(int level) {
+        // Only apply vision for levels 1-3 or when specifically requested
+        if (scope != null && scope.isVisionEnabled() && scope.hasTarget() && level >= 1) {
+            float adjustment = (float) scope.calculatePivotAngleAdjustment();
+            shooterPivotDesiredAngle += adjustment;
+            SmartDashboard.putNumber("Vision Pivot Adjustment", adjustment);
+        }
+    }
+
     public Command shooterPivotBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -142,10 +163,12 @@ public class ShooterPivot extends SubsystemBase {
 
         Command command = new InstantCommand(() -> {
             if (currentLevelSupplier != null && currentLeftSupplier != null) {
-                if (currentLevelSupplier.getAsInt() == 0) {
+                int level = currentLevelSupplier.getAsInt();
+                
+                if (level == 0) {
                     // L1 is always center
                     setCenter();
-                } else if (currentLevelSupplier.getAsInt() == 1) {
+                } else if (level == 1) {
                     // L2
                     if (currentLeftSupplier.getAsBoolean()) {
                         shooterPivotDesiredAngle = ShooterPivotConstants.leftL2Angle;
@@ -154,8 +177,8 @@ public class ShooterPivot extends SubsystemBase {
                         shooterPivotDesiredAngle = ShooterPivotConstants.rightL2Angle;
                         isStraight = false;
                     }
-                } else if (currentLevelSupplier.getAsInt() == 2) {
-                    // L3
+                } else if (level == 2) {
+                    // L3 - uses same targeting as L2
                     if (currentLeftSupplier.getAsBoolean()) {
                         shooterPivotDesiredAngle = ShooterPivotConstants.leftL3Angle;
                         isStraight = false;
@@ -163,11 +186,14 @@ public class ShooterPivot extends SubsystemBase {
                         shooterPivotDesiredAngle = ShooterPivotConstants.rightL3Angle;
                         isStraight = false;
                     }
-                } else if (currentLevelSupplier.getAsInt() == 3) {
-                    // L4
+                } else if (level == 3) {
+                    // L4 - special targeting
                     shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle;
                     isStraight = true;
                 }
+                
+                // Apply vision adjustment after setting base position
+                applyVisionAdjustment(level);
             }
         });
         return command;

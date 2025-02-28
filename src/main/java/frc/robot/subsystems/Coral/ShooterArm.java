@@ -33,14 +33,25 @@ public class ShooterArm extends SubsystemBase {
     private SparkClosedLoopController shooterArmController = shooterArmMotor.getClosedLoopController();
 
     private AbsoluteEncoder shooterArmEncoder = shooterArmMotor.getAbsoluteEncoder();
+    
+    // Add Scope reference
+    private Scope scope;
 
     public ShooterArm() {
-
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
         shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
-        }
-
+    }
+    
+    // New constructor with Scope parameter
+    public ShooterArm(Scope scope) {
+        this();
+        this.scope = scope;
+    }
+    
+    // Set the scope reference separately (in case constructor injection isn't possible)
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
 
     private void setScoreLOW() {
         shooterArmDesiredAngle = ShooterArmConstants.scoreAngleLOW;
@@ -98,6 +109,16 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
+    // Apply vision adjustments if enabled and appropriate
+    private void applyVisionAdjustment(int level) {
+        // Only apply vision for L4 or when specifically requested
+        if (scope != null && scope.isVisionEnabled() && scope.hasTarget() && level == 3) {
+            float adjustment = (float) scope.calculateArmAngleAdjustment();
+            shooterArmDesiredAngle += adjustment;
+            SmartDashboard.putNumber("Vision Arm Adjustment", adjustment);
+        }
+    }
+
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -106,13 +127,15 @@ public class ShooterArm extends SubsystemBase {
         Command command = new InstantCommand(() -> {
 
             if (currentLevelSupplier != null && currentSideSupplier != null) {
-                if (currentLevelSupplier.getAsInt() == 0) {
+                int level = currentLevelSupplier.getAsInt();
+                
+                if (level == 0) {
                     setScoreL1();
-                } else if (currentLevelSupplier.getAsInt() == 1) {
+                } else if (level == 1) {
                     setScoreLOW();
-                } else if (currentLevelSupplier.getAsInt() == 2) {
+                } else if (level == 2) {
                     setScoreLOW();
-                } else if (currentLevelSupplier.getAsInt() == 3) {
+                } else if (level == 3) {
                     if (currentSideSupplier.getAsBoolean()) {
                         // Left L4
                         shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
@@ -121,6 +144,9 @@ public class ShooterArm extends SubsystemBase {
                         shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
                     }
                 }
+                
+                // Apply vision adjustment after setting base position
+                applyVisionAdjustment(level);
             }
         });
         return command;

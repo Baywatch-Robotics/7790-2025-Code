@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.Coral.Scope;
 
 public class Elevator extends SubsystemBase {
 
@@ -43,6 +44,9 @@ public class Elevator extends SubsystemBase {
     private Trigger raisedTrigger;
     private Trigger clearToIntakeTrigger;
     private Trigger clearToClimbAngleTrigger;
+    
+    // Add Scope reference
+    private Scope scope;
 
     public Elevator(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
@@ -53,6 +57,11 @@ public class Elevator extends SubsystemBase {
                 Configs.Elevator.elevatorConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+    }
+    
+    // Set the scope reference
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     private void setFullRetract() {
@@ -169,6 +178,12 @@ public class Elevator extends SubsystemBase {
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
 
         Command command = new InstantCommand(() -> {
+            // Skip elevator movement for L4 when vision is enabled
+            if (scope != null && scope.isVisionEnabled() && currentLevelSupplier.getAsInt() == 3) {
+                // Don't move elevator for L4 when using vision
+                SmartDashboard.putString("Elevator Status", "L4 - Vision Mode (No Move)");
+                return;
+            }
 
             if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
                 setL1();
