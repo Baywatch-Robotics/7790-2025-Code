@@ -37,6 +37,13 @@ public class Elevator extends SubsystemBase {
     
     private RobotContainer robotContainer;
     
+    // Store triggers as instance variables
+    private Trigger atSetpointTrigger;
+    private Trigger atHomeTrigger;
+    private Trigger raisedTrigger;
+    private Trigger clearToIntakeTrigger;
+    private Trigger clearToClimbAngleTrigger;
+
     public Elevator(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
         
@@ -160,27 +167,49 @@ public class Elevator extends SubsystemBase {
         return command;
     }
     public Trigger isAtHome() {
-        return new Trigger(() -> m_encoder.getPosition() >= -1);
+        return new Trigger(() -> {
+            boolean atHome = m_encoder.getPosition() >= -1;
+            SmartDashboard.putBoolean("Elevator At Home", atHome);
+            return atHome;
+        });
     }
     public Trigger isRaisedTrigger() {
-        return new Trigger(() -> m_encoder.getPosition() <= -1);
+        return new Trigger(() -> {
+            boolean raised = m_encoder.getPosition() <= -1;
+            SmartDashboard.putBoolean("Elevator Is Raised", raised);
+            return raised;
+        });
     }
     public Boolean isRaised() {
          return m_encoder.getPosition() <= -1;
     }
 
     public Trigger isClearToIntake() {
-        return new Trigger(() -> m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 &&
-                             m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20);
+        return new Trigger(() -> {
+            boolean clearToIntake = m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 &&
+                                    m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20;
+            SmartDashboard.putBoolean("Elevator Clear To Intake", clearToIntake);
+            return clearToIntake;
+        });
     }
 
     public Trigger isAtSetpoint() {
-        return new Trigger(() -> m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
-                             m_encoder.getPosition() <= elevatorDesiredPosition + 5);
+        return new Trigger(() -> {
+            boolean atSetpoint = m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
+                                 m_encoder.getPosition() <= elevatorDesiredPosition + 5;
+            // Log the values to help debug
+            SmartDashboard.putBoolean("Elevator At Setpoint", atSetpoint);
+            SmartDashboard.putNumber("Elevator Position Difference", m_encoder.getPosition() - elevatorDesiredPosition);
+            return atSetpoint;
+        });
     }
     public Trigger isClearToClimbAngle() {
-        return new Trigger(() -> m_encoder.getPosition() >= ElevatorConstants.climbPose - 5 &&
-                             m_encoder.getPosition() <= ElevatorConstants.climbPose + 5);
+        return new Trigger(() -> {
+            boolean clearToClimb = m_encoder.getPosition() >= ElevatorConstants.climbPose - 5 &&
+                                   m_encoder.getPosition() <= ElevatorConstants.climbPose + 5;
+            SmartDashboard.putBoolean("Elevator Clear To Climb", clearToClimb);
+            return clearToClimb;
+        });
     }
 
     public Boolean isAtSetpointBoolean() {
@@ -220,17 +249,58 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
 
-        isClearToIntake();
-        isAtHome();
-        isAtSetpoint();
-        isAtSetpointBoolean();
-        isClearToClimbAngle();
-        isRaised();
-        isRaisedTrigger();
+        // Initialize triggers once
+        if (atSetpointTrigger == null) {
+            atSetpointTrigger = isAtSetpoint();
+        }
+        
+        if (atHomeTrigger == null) {
+            atHomeTrigger = isAtHome();
+        }
+        
+        if (raisedTrigger == null) {
+            raisedTrigger = isRaisedTrigger();
+        }
+        
+        if (clearToIntakeTrigger == null) {
+            clearToIntakeTrigger = isClearToIntake();
+        }
+        
+        if (clearToClimbAngleTrigger == null) {
+            clearToClimbAngleTrigger = isClearToClimbAngle();
+        }
+        
+        // Replace direct calls with stored triggers
+        clearToIntakeTrigger.getAsBoolean();  // This evaluates the trigger
+        atHomeTrigger.getAsBoolean();
+        atSetpointTrigger.getAsBoolean();
+        clearToClimbAngleTrigger.getAsBoolean();
+        raisedTrigger.getAsBoolean();
 
         // Update drive speed based on elevator position
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
+    }
+    
+    // Use these methods to access the stored trigger instances
+    public Trigger getIsAtHomeTrigger() {
+        return atHomeTrigger;
+    }
+    
+    public Trigger getIsRaisedTrigger() {
+        return raisedTrigger;
+    }
+    
+    public Trigger getIsClearToIntakeTrigger() {
+        return clearToIntakeTrigger;
+    }
+    
+    public Trigger getIsAtSetpointTrigger() {
+        return atSetpointTrigger;
+    }
+    
+    public Trigger getIsClearToClimbAngleTrigger() {
+        return clearToClimbAngleTrigger;
     }
 }

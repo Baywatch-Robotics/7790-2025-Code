@@ -165,13 +165,8 @@ public class ShooterPivot extends SubsystemBase {
                     }
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     // L4
-                    if (currentLeftSupplier.getAsBoolean()) {
-                        shooterPivotDesiredAngle = ShooterPivotConstants.leftL4Angle;
-                        isStraight = false;
-                    } else {
-                        shooterPivotDesiredAngle = ShooterPivotConstants.rightL4Angle;
-                        isStraight = false;
-                    }
+                    shooterPivotDesiredAngle = ShooterPivotConstants.centerAngle;
+                    isStraight = true;
                 }
             }
         });

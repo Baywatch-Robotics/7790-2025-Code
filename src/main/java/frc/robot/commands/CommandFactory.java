@@ -24,7 +24,7 @@ public class CommandFactory {
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(elevator.setElevatorPickupPlusCommand())
-      .andThen(new WaitCommand(.5))
+      .andThen(new WaitCommand(1))
       .andThen(shooter.shooterZeroSpeedCommand());
 
 
@@ -49,7 +49,36 @@ public class CommandFactory {
 
     return command;
 }
+  /*
+  public static Command pullOffHighBall(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
+      
+    Command command  = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.setElevatorHighBallCommand())
+    .andThen(shooterPivot.setCenterCommand())
+    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    .andThen(shooterArm.shooterArmBallCommand());
 
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+    return command;
+  }
+  
+  public static Command pullOffLowBall(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
+      
+    Command command  = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.setElevatorLowBallCommand())
+    .andThen(shooterPivot.setCenterCommand())
+    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    .andThen(shooterArm.shooterArmBallCommand());
+
+    command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
+
+    return command;
+  }
+
+  */
   public static Command setElevatorZero(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
       
     Command command  = shooterArm.shooterArmScoreLOWCommand() //Will make this straight up at some point

@@ -283,7 +283,7 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
+      driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
       driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());

@@ -57,12 +57,6 @@ public class ShooterArm extends SubsystemBase {
     private void setClimbAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
     }
-    private void setLeftL4() {
-        shooterArmDesiredAngle = ShooterArmConstants.LeftL4Angle;
-    }
-    private void setRightL4() {
-        shooterArmDesiredAngle = ShooterArmConstants.RightL4Angle;
-    }
 
     public Command shooterArmScoreLOWCommand()
     {
@@ -91,16 +85,7 @@ public class ShooterArm extends SubsystemBase {
         Command command = new InstantCommand(() -> this.setClimbAngle());
         return command;
     }
-    public Command shooterArmLeftL4Command()
-    {
-        Command command = new InstantCommand(() -> this.setLeftL4());
-        return command;
-    }
-    public Command shooterArmRightL4Command()
-    {
-        Command command = new InstantCommand(() -> this.setRightL4());
-        return command;
-    }
+
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -118,10 +103,10 @@ public class ShooterArm extends SubsystemBase {
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     if (currentSideSupplier.getAsBoolean()) {
                         // Left L4
-                        shooterArmDesiredAngle = ShooterArmConstants.LeftL4Angle;
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
                     } else {
                         // Right L4
-                        shooterArmDesiredAngle = ShooterArmConstants.RightL4Angle;
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
                     }
                 }
             }
