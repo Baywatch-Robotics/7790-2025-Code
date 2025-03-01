@@ -179,7 +179,7 @@ public final class Constants
     public static final float L2RPose = -50f;
     public static final float L2LPose = -43f;
     public static final float L1Pose = -44f;
-    public static final float pickupPose = -97f;
+    public static final float pickupPose = -89f;
     public static final float climbPose = -122.333374f;
     
     // Ball pickup positions

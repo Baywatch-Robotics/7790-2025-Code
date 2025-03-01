@@ -14,14 +14,17 @@ import java.util.function.Supplier;
 public class ButtonBox extends SubsystemBase {
 
     private Queue<TargetClass> targetQueue = new LinkedList<>();
+    private TargetClass lastAddedTarget = null; // Store the last target that was added
 
     public void addTarget(TargetClass target) {
         targetQueue.add(target);
+        lastAddedTarget = target; // Save reference to last added target
         updateDashboard();
     }
 
     public void addTarget(String targetName) {
-        addTarget(TargetClass.GetTargetByName(targetName));
+        TargetClass target = TargetClass.GetTargetByName(targetName);
+        addTarget(target); // Use the other method to ensure lastAddedTarget is set
     }
 
     public void clearTargets() {
@@ -67,6 +70,7 @@ public class ButtonBox extends SubsystemBase {
 
     }
     
+    
     public Command getNextTargetCommand() {
         return new InstantCommand(() -> getNextTarget());
     }
@@ -89,6 +93,21 @@ public class ButtonBox extends SubsystemBase {
 
     public boolean hasQueue() {
         return !targetQueue.isEmpty();
+    }
+
+    public void requeueLastTarget() {
+        if (lastAddedTarget != null) {
+            targetQueue.add(lastAddedTarget);
+            updateDashboard();
+        }
+    }
+    
+    public Command requeueLastTargetCommand() {
+        return new InstantCommand(() -> requeueLastTarget());
+    }
+
+    public boolean hasLastTarget() {
+        return lastAddedTarget != null;
     }
     /*
     public static class JoystickSuppliers {

@@ -230,9 +230,9 @@ SwerveInputStream driveButtonBoxInput =
       driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
 
-      buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
+      buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
       buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
-      buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
+      buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
 
       buttonBox1.button(9).and(buttonBox2.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C400")));
       buttonBox1.button(9).and(buttonBox2.button(1)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C401")));
@@ -284,13 +284,13 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(8).and(buttonBox2.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
       
-      buttonBox1.button(5).onTrue(new InstantCommand(() -> buttonBox.addTarget("SL")));
-      buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
+      buttonBox1.button(5).debounce(.5).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
+      //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+  
     
-    driverXbox.pov(90).whileTrue(CommandFactory.sourceDriveAuto(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, this, drivebase));
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 

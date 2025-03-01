@@ -184,8 +184,7 @@ public static Command setClimbPositionsCommand(AlgaeArm algaeArm, Shooter shoote
 
 public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+  Command command = new WaitUntilCommand(shooterArm.isClearToElevate())
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
     .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
@@ -203,24 +202,10 @@ public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shoote
 
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
-    .andThen(shooter.shooterIntakeCommand())
+  Command command = CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)
 
-    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+    .alongWith(drivebase.driveToPose(buttonBox))
 
-    .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
-
-    .andThen(shooter.shooterZeroSpeedCommand())
-
-
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-
-    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
-
-    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-
-    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
-    .andThen(drivebase.driveToPose(buttonBox))
     .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
     
     .andThen(buttonBox.getNextTargetCommand());
@@ -230,24 +215,12 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(AlgaeArm algaeArm
 }
 public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator)
-    .andThen(shooter.shooterIntakeCommand())
+  Command command = CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)
 
-    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+  .andThen(new WaitUntilCommand(elevator.isRaisedEnoughTrigger()))
 
-    .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
-
-    .andThen(shooter.shooterZeroSpeedCommand())
-
-
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-
-    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
-
-    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-
-    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
     .andThen(drivebase.driveToPose(buttonBox))
+
     .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
     
     .andThen(new WaitCommand(.5))

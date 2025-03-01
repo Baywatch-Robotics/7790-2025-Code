@@ -202,6 +202,13 @@ public class Elevator extends SubsystemBase {
             return raised;
         });
     }
+    public Trigger isRaisedEnoughTrigger() {
+        return new Trigger(() -> {
+            boolean raisedEnough = m_encoder.getPosition() <= -100;
+            SmartDashboard.putBoolean("Elevator Is Raised Enough", raisedEnough);
+            return raisedEnough;
+        });
+    }
     public Boolean isRaised() {
          return m_encoder.getPosition() <= -1;
     }
