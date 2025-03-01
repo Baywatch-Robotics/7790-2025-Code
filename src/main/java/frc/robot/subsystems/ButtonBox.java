@@ -97,7 +97,22 @@ public class ButtonBox extends SubsystemBase {
 
     public void requeueLastTarget() {
         if (lastAddedTarget != null) {
-            targetQueue.add(lastAddedTarget);
+            // Since we don't know if TargetClass has a clone method,
+            // let's use GetTargetByName to create a new instance with the same properties
+            String targetName = lastAddedTarget.toString();
+            TargetClass newTarget = TargetClass.GetTargetByName(targetName);
+            
+            // If GetTargetByName doesn't work with toString(), try this alternate approach:
+            // You'll need to implement appropriate getters in TargetClass
+            // TargetClass newTarget = new TargetClass(
+            //     lastAddedTarget.getName(), 
+            //     lastAddedTarget.getLevel(),
+            //     lastAddedTarget.getFace(),
+            //     lastAddedTarget.isLeft()
+            // );
+            
+            targetQueue.add(newTarget);
+            lastAddedTarget = newTarget; // Update lastAddedTarget reference
             updateDashboard();
         }
     }

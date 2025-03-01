@@ -171,9 +171,9 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> {
 
             if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
-                setL1();
+                setFullRetract();
             } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
-                setL1();
+                setFullRetract();
             } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
                 setL2L();
             } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {

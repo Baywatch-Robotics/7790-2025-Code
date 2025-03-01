@@ -76,7 +76,7 @@ public class RobotContainer
   DoubleSupplier headingY = () -> -driverXbox.getRightY();
 
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
-  DoubleSupplier algaeArmUpDown = () -> opXbox.getRightX();
+  DoubleSupplier algaeArmTrigger = () -> opXbox.getLeftTriggerAxis(); // Changed to use trigger axis
   DoubleSupplier shooterArmUpDown = () -> opXbox.getLeftY();
   DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); //Questionable Name Practices... Shooter Pivot UP DOWN not Left Right??
 
@@ -215,7 +215,7 @@ SwerveInputStream driveButtonBoxInput =
   {
     
     elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveAmount(algaeArmUpDown.getAsDouble()), algaeArm));
+    algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated to use moveTrigger
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
     shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
@@ -224,10 +224,7 @@ SwerveInputStream driveButtonBoxInput =
     
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-      driverXbox.x().onTrue(shooter.shooterIntakeCommand());
-      driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
-      driverXbox.y().onTrue(shooter.shooterOutakeCommand());
-      driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
+      
 
 
       buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
@@ -290,7 +287,12 @@ SwerveInputStream driveButtonBoxInput =
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
   
-    
+    driverXbox.x().onTrue(shooter.shooterIntakeCommand());
+      driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+      driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
+
+
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 

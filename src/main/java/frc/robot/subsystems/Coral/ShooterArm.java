@@ -107,7 +107,7 @@ public class ShooterArm extends SubsystemBase {
 
             if (currentLevelSupplier != null && currentSideSupplier != null) {
                 if (currentLevelSupplier.getAsInt() == 0) {
-                    setScoreL1();
+                    setScoreLOW();
                 } else if (currentLevelSupplier.getAsInt() == 1) {
                     setScoreLOW();
                 } else if (currentLevelSupplier.getAsInt() == 2) {
