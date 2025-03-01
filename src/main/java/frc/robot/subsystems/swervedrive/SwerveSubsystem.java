@@ -283,23 +283,11 @@ public Command driveToPose(ButtonBox buttonBox) {
             Pose2d finalPose = TargetClass.toPose2d(pose);
             
             // Create the pathfinding command with the evaluated pose
-            pathCommand = AutoBuilder.pathfindToPose(
-                finalPose,
-                constraints,
-                edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
-            );
+            pathCommand = AutoBuilder.pathfindToPose(finalPose,constraints,edu.wpi.first.units.Units.MetersPerSecond.of(0)); // Goal end velocity in meters/sec);
             
             // Schedule the path command
-            pathCommand.initialize();
-        }
-        
-        @Override
-        public void execute() {
-            if (pathCommand != null) {
-                pathCommand.execute();
-            }
-        }
-        
+            pathCommand.schedule();
+        }        
         @Override
         public boolean isFinished() {
             return pathCommand != null && pathCommand.isFinished();
