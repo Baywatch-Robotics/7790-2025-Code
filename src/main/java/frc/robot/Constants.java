@@ -146,8 +146,8 @@ public final class Constants
 
     public static final int ID = 18;
 
-    public static final float extendSpeed = .5f;
-    public static final float retractSpeed = -.5f;
+    public static final float extendSpeed = 1;
+    public static final float retractSpeed = -1f;
   }
   
   public static final class ElevatorConstants{

@@ -266,15 +266,9 @@ return command;
 public static Command sourceDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
   Command command = drivebase.driveToPose(buttonBox)
-    .andThen(new WaitUntilCommand(robotContainer.isVeryCloseTrigger()))
-    .andThen(elevator.setElevatorPickupCommand())
-    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-    .andThen(shooterArm.shooterArmLoadCommand())
-    .alongWith(shooterPivot.setCenterCommand())
-    .andThen(shooter.shooterIntakeCommand())
+    .alongWith(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator))
     .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
     .andThen(elevator.setElevatorPickupPlusCommand())
-    .andThen(new WaitCommand(1))
     .andThen(shooter.shooterZeroSpeedCommand())
     .andThen(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
