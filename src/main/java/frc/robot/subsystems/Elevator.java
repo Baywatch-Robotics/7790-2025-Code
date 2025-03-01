@@ -204,7 +204,7 @@ public class Elevator extends SubsystemBase {
     }
     public Trigger isRaisedEnoughTrigger() {
         return new Trigger(() -> {
-            boolean raisedEnough = m_encoder.getPosition() <= -100;
+            boolean raisedEnough = m_encoder.getPosition() <= -120;
             SmartDashboard.putBoolean("Elevator Is Raised Enough", raisedEnough);
             return raisedEnough;
         });
@@ -214,7 +214,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public Boolean isRaisedEnough() {
-        return m_encoder.getPosition() <= -100;
+        return m_encoder.getPosition() <= -120;
     }
 
     public Trigger isClearToIntake() {
