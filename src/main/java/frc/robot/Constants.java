@@ -226,8 +226,8 @@ public final class Constants
     public static final float leftCamZOffset = (float)Units.inchesToMeters(5);
 
     public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
-    public static final float leftCamPitch = (float)Units.degreesToRadians(20.0);
-    public static final float leftCamYaw = (float)Units.degreesToRadians(-20.0);
+    public static final float leftCamPitch = (float)Units.degreesToRadians(-20.0);
+    public static final float leftCamYaw = (float)Units.degreesToRadians(2.5);
 
     public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
