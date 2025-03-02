@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
@@ -53,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase
   private final SwerveDrive         swerveDrive;
   private boolean isClose = false;
   private int visionMeasurementCounter = 0; // counter
+  private Command activePathCommand = null; // Track the active path command
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -252,6 +254,10 @@ public class SwerveSubsystem extends SubsystemBase
 
   
 public Command driveToPose(ButtonBox buttonBox) {
+    return driveToPose(buttonBox, () -> false); // Default implementation - no cancellation
+}
+
+public Command driveToPose(ButtonBox buttonBox, Supplier<Boolean> cancelWhen) {
     return new Command() {
         private Command pathCommand;
         
@@ -285,18 +291,27 @@ public Command driveToPose(ButtonBox buttonBox) {
             // Create the pathfinding command with the evaluated pose
             pathCommand = AutoBuilder.pathfindToPose(finalPose,constraints,edu.wpi.first.units.Units.MetersPerSecond.of(0)); // Goal end velocity in meters/sec);
             
+            // Store reference to the active path command
+            activePathCommand = pathCommand;
+            
             // Schedule the path command
             pathCommand.schedule();
         }        
+        
         @Override
         public boolean isFinished() {
-            return pathCommand != null && pathCommand.isFinished();
+            // Return true if either the path command is finished OR the cancel condition is met
+            return (pathCommand != null && pathCommand.isFinished()) || cancelWhen.get();
         }
         
         @Override
         public void end(boolean interrupted) {
             if (pathCommand != null) {
                 pathCommand.end(interrupted);
+                // Clear the reference when command ends
+                if (activePathCommand == pathCommand) {
+                    activePathCommand = null;
+                }
             }
         }
     };
@@ -670,4 +685,18 @@ public Command driveToPose(ButtonBox buttonBox) {
             
       }
     }
+  
+  /**
+   * Cancels any active path command that might be running.
+   * 
+   * @return A command that cancels the active pathfinding/path-following command
+   */
+  public Command cancelPathCommand() {
+    return new InstantCommand(() -> {
+        if (activePathCommand != null && !activePathCommand.isFinished()) {
+            activePathCommand.cancel();
+            activePathCommand = null;
+        }
+    });
+  }
 }

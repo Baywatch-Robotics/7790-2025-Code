@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -13,6 +14,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
 
 public class CommandFactory {
 
@@ -108,6 +110,7 @@ public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, Shooter shooter, 
 
     return command;
 }
+
 
 /*
     public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
@@ -212,6 +215,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(AlgaeArm algaeArm
 public static Command scoreBasedOnQueueCommandDriveAuto(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox)
+    .andThen(new WaitCommand(1.5))
     .andThen(drivebase.driveToPose(buttonBox))
     .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
     
