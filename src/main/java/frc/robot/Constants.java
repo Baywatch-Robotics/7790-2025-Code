@@ -179,7 +179,7 @@ public final class Constants
     public static final float L2RPose = -50f;
     public static final float L2LPose = -43f;
     public static final float L1Pose = -44f;
-    public static final float pickupPose = -105.755165f;
+    public static final float pickupPose = -104;
     public static final float climbPose = -122.333374f;
     
     // Ball pickup positions
@@ -245,7 +245,7 @@ public final class Constants
 
     public static final float SRPositionX = (float)Units.inchesToMeters(43.5);
     public static final float SRPositionY = (float)Units.inchesToMeters(38.48);
-    public static final float SRPositionZ = (float)Units.degreesToRadians(234);
+    public static final float SRPositionZ = (float)Units.degreesToRadians(54);
     
     public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
@@ -293,8 +293,8 @@ public final class Constants
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
     public static final float xValueC330 = (float)Units.inchesToMeters(196.94);
     public static final float yValueC330 = (float)Units.inchesToMeters(107.52);
-    public static final float xValueC331 = (float)Units.inchesToMeters(208.13);
-    public static final float yValueC331 = (float)Units.inchesToMeters(115.13);
+    public static final float xValueC331 = (float)Units.inchesToMeters(210.66);
+    public static final float yValueC331 = (float)Units.inchesToMeters(113.55);
     /*
     public static final float xValueC3XX = (float)Units.inchesToMeters(202.1);
     public static final float yValueC3XX = (float)Units.inchesToMeters(114.58);

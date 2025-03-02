@@ -303,6 +303,7 @@ SwerveInputStream driveButtonBoxInput =
     driverXbox.axisMagnitudeGreaterThan(0,0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).or(driverXbox.axisMagnitudeGreaterThan(4,.1)).or(driverXbox.axisMagnitudeGreaterThan(5, .1)).onTrue(new InstantCommand(() -> drivebase.setCancel(true)));
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
     opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
@@ -316,10 +317,10 @@ SwerveInputStream driveButtonBoxInput =
     opXbox.y().onTrue(climber.climberRetractCommand());
     opXbox.y().onFalse(climber.climberStopCommand());
 
-    opXbox.rightBumper().onTrue(algaeArm.algaeArmStraightOutCommand());
+    opXbox.rightBumper().onTrue(algaeArm.algaeArmGroundIntakeCommand());
     opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());
 
-
+    opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
 
     chooser.setDefaultOption("Right", rightAuto);

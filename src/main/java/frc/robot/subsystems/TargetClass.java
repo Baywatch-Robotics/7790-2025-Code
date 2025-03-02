@@ -101,19 +101,19 @@ public class TargetClass {
             case "SL":
                 target.setX(TargetClassConstants.SLPositionX);
                 target.setY(TargetClassConstants.SLPositionY);
-                target.setZ(Units.degreesToRadians(TargetClassConstants.SLPositionZ));
+                target.setZ(TargetClassConstants.SLPositionZ);
                 target.setSource(true);
                 break;
             case "SR":
                 target.setX(TargetClassConstants.SRPositionX);
                 target.setY(TargetClassConstants.SRPositionY);
-                target.setZ(Units.degreesToRadians(TargetClassConstants.SRPositionZ));
+                target.setZ(TargetClassConstants.SRPositionZ);
                 target.setSource(true);
                 break;
             case "Processor":
                 target.setX(TargetClassConstants.ProcessorPositionX);
                 target.setY(TargetClassConstants.ProcessorPositionY);
-                target.setZ(Units.degreesToRadians(TargetClassConstants.ProcessorPositionZ));
+                target.setZ(TargetClassConstants.ProcessorPositionZ);
                 target.setSource(true);
                 break;
             case "C100":
