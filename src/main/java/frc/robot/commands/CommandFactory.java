@@ -51,6 +51,7 @@ public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, Shooter shooter, 
   return command;
 }  
 */
+//
 
   public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
