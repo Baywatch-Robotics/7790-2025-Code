@@ -289,21 +289,15 @@ SwerveInputStream driveButtonBoxInput =
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
   
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
-    driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
-    driverXbox.y().onTrue(shooter.shooterOutakeCommand());
-    driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+      driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+      driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
-    driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-
-
-    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.b().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+      driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
+      driverXbox.b().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
     driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-
-    //THISONE
-    driverXbox.axisMagnitudeGreaterThan(0, .1).and(driverXbox.axisMagnitudeGreaterThan(1, .1)).and(driverXbox.axisMagnitudeGreaterThan(4, .1)).and(driverXbox.axisMagnitudeGreaterThan(5, .1)).onTrue(drivebase.cancelPathCommand());
     
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, shooterPivot, elevator));
 
