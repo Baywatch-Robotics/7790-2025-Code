@@ -239,14 +239,6 @@ public final class Constants
 
   public static final class TargetClassConstants{
 
-    static float L4BackOffset = 5f;
-    static float L4LeftOffset = 7f;
-    static float L4RightOffset = 7f;
-    static float ReefCenterX = 176.745f;
-    static float ReefCenterY = 158.5f;
-    static float LowLevelRadius = 50.745f;
-    static float L4Radius = (float)LowLevelRadius+L4BackOffset;
-
     public static final float SLPositionX = (float)Units.inchesToMeters(44.09);
     public static final float SLPositionY = (float)Units.inchesToMeters(276.64);
     public static final float SLPositionZ = (float)Units.degreesToRadians(306-180);
@@ -259,17 +251,6 @@ public final class Constants
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
     public static final float ProcessorPositionZ = (float)Units.degreesToRadians(270);
 
-    static float Face1Angle = 180f;
-    static double L4MidpointX1 = ReefCenterX+L4Radius*Math.cos(Face1Angle);
-    static double L4MidpointY1 = ReefCenterY+L4Radius*Math.sin(Face1Angle);
-    public static final float xValueC1XX = (float)Units.inchesToMeters(126);
-    public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
-    public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(126-L4BackOffset);
-    public static final float yValueC130 = (float)Units.inchesToMeters(158.5+L4LeftOffset);
-    public static final float xValueC131 = (float)Units.inchesToMeters(126-L4BackOffset);
-    public static final float yValueC131 = (float)Units.inchesToMeters(158.5-L4RightOffset);
-    /*
     public static final float xValueC1XX = (float)Units.inchesToMeters(126);
     public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
@@ -277,19 +258,15 @@ public final class Constants
     public static final float yValueC130 = (float)Units.inchesToMeters(165.5);
     public static final float xValueC131 = (float)Units.inchesToMeters(121);
     public static final float yValueC131 = (float)Units.inchesToMeters(151.5);
-    */
     public static final int faceValueC1XX = 1;
 
-    static float Face2Angle = 240f;
-    static double L4MidpointX2 = ReefCenterX+L4Radius*Math.cos(Face2Angle);
-    static double L4MidpointY2 = ReefCenterY+L4Radius*Math.sin(Face2Angle);
-    public static final float xValueC2XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.cos(Face2Angle));
-    public static final float yValueC2XX = (float)Units.inchesToMeters(ReefCenterY+LowLevelRadius*Math.sin(Face2Angle));
+    public static final float xValueC2XX = (float)Units.inchesToMeters(151.37);
+    public static final float yValueC2XX = (float)Units.inchesToMeters(114.55);
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
-    public static final float xValueC230 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face2Angle)-L4LeftOffset*Math.sin(Face2Angle));
-    public static final float yValueC230 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face2Angle)+L4LeftOffset*Math.cos(Face2Angle));
-    public static final float xValueC231 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face2Angle)+L4RightOffset*Math.sin(Face2Angle));
-    public static final float yValueC231 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face2Angle)-L4RightOffset*Math.cos(Face2Angle));
+    public static final float xValueC230 = (float)Units.inchesToMeters(142.81);
+    public static final float yValueC230 = (float)Units.inchesToMeters(113.72);
+    public static final float xValueC231 = (float)Units.inchesToMeters(154.93);
+    public static final float yValueC231 = (float)Units.inchesToMeters(106.72);
     /*
     public static final float xValueC2XX = (float)Units.inchesToMeters(151.39);
     public static final float yValueC2XX = (float)Units.inchesToMeters(114.58);
@@ -302,16 +279,13 @@ public final class Constants
     public static final int faceValueC2XX = 2;
 
     
-    static float Face3Angle = 300f;
-    static double L4MidpointX3 = ReefCenterX+L4Radius*Math.cos(Face3Angle);
-    static double L4MidpointY3 = ReefCenterY+L4Radius*Math.sin(Face3Angle);
-    public static final float xValueC3XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.cos(Face3Angle));
-    public static final float yValueC3XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.sin(Face3Angle));
+    public static final float xValueC3XX = (float)Units.inchesToMeters(202.12);
+    public static final float yValueC3XX = (float)Units.inchesToMeters(114.55);
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
-    public static final float xValueC330 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face3Angle)-L4LeftOffset*Math.sin(Face3Angle));
-    public static final float yValueC330 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face3Angle)+L4LeftOffset*Math.cos(Face3Angle));
-    public static final float xValueC331 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face3Angle)+L4RightOffset*Math.sin(Face3Angle));
-    public static final float yValueC331 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face3Angle)-L4RightOffset*Math.cos(Face3Angle));
+    public static final float xValueC330 = (float)Units.inchesToMeters(198.56);
+    public static final float yValueC330 = (float)Units.inchesToMeters(106.72);
+    public static final float xValueC331 = (float)Units.inchesToMeters(210.68);
+    public static final float yValueC331 = (float)Units.inchesToMeters(113.72);
     /*
     public static final float xValueC3XX = (float)Units.inchesToMeters(202.1);
     public static final float yValueC3XX = (float)Units.inchesToMeters(114.58);
@@ -324,16 +298,13 @@ public final class Constants
     public static final int faceValueC3XX = 3;
 
     
-    static float Face4Angle = 0f;
-    static double L4MidpointX4 = ReefCenterX+L4Radius*Math.cos(Face4Angle);
-    static double L4MidpointY4 = ReefCenterY+L4Radius*Math.sin(Face4Angle);
-    public static final float xValueC4XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.cos(Face4Angle));
-    public static final float yValueC4XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.sin(Face4Angle));
+    public static final float xValueC4XX = (float)Units.inchesToMeters(227.5);
+    public static final float yValueC4XX = (float)Units.inchesToMeters(158.5);
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
-    public static final float xValueC430 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face4Angle)-L4LeftOffset*Math.sin(Face4Angle));
-    public static final float yValueC430 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face4Angle)+L4LeftOffset*Math.cos(Face4Angle));
-    public static final float xValueC431 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face4Angle)+L4RightOffset*Math.sin(Face4Angle));
-    public static final float yValueC431 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face4Angle)-L4RightOffset*Math.cos(Face4Angle));
+    public static final float xValueC430 = (float)Units.inchesToMeters(232.5);
+    public static final float yValueC430 = (float)Units.inchesToMeters(151.5);
+    public static final float xValueC431 = (float)Units.inchesToMeters(232.5);
+    public static final float yValueC431 = (float)Units.inchesToMeters(165.5);
     /*
     public static final float xValueC4XX = (float)Units.inchesToMeters(227.49);
     public static final float yValueC4XX = (float)Units.inchesToMeters(158.5);
@@ -347,16 +318,13 @@ public final class Constants
 
 
     
-    static float Face5Angle = 60f;
-    static double L4MidpointX5 = ReefCenterX+L4Radius*Math.cos(Face5Angle);
-    static double L4MidpointY5 = ReefCenterY+L4Radius*Math.sin(Face5Angle);
-    public static final float xValueC5XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.cos(Face5Angle));
-    public static final float yValueC5XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.sin(Face5Angle));
+    public static final float xValueC5XX = (float)Units.inchesToMeters(202.12);
+    public static final float yValueC5XX = (float)Units.inchesToMeters(202.45);
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
-    public static final float xValueC530 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face5Angle)-L4LeftOffset*Math.sin(Face5Angle));
-    public static final float yValueC530 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face5Angle)+L4LeftOffset*Math.cos(Face5Angle));
-    public static final float xValueC531 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face5Angle)+L4RightOffset*Math.sin(Face5Angle));
-    public static final float yValueC531 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face5Angle)-L4RightOffset*Math.cos(Face5Angle));
+    public static final float xValueC530 = (float)Units.inchesToMeters(210.68);
+    public static final float yValueC530 = (float)Units.inchesToMeters(203.28);
+    public static final float xValueC531 = (float)Units.inchesToMeters(198.56);
+    public static final float yValueC531 = (float)Units.inchesToMeters(210.28);
     /*
     public static final float xValueC5XX = (float)Units.inchesToMeters(202.1);
     public static final float yValueC5XX = (float)Units.inchesToMeters(202.42);
@@ -369,16 +337,13 @@ public final class Constants
     public static final int faceValueC5XX = 5;
 
     
-    static float Face6Angle = 120f;
-    static double L4MidpointX6 = ReefCenterX+L4Radius*Math.cos(Face6Angle);
-    static double L4MidpointY6 = ReefCenterY+L4Radius*Math.sin(Face6Angle);
-    public static final float xValueC6XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.cos(Face6Angle));
-    public static final float yValueC6XX = (float)Units.inchesToMeters(ReefCenterX+LowLevelRadius*Math.sin(Face6Angle));
+    public static final float xValueC6XX = (float)Units.inchesToMeters(151.37);
+    public static final float yValueC6XX = (float)Units.inchesToMeters(202.45);
     public static final float zValueC6XX = (float)Units.degreesToRadians(300);
-    public static final float xValueC630 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face5Angle)-L4LeftOffset*Math.sin(Face6Angle));
-    public static final float yValueC630 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face5Angle)+L4LeftOffset*Math.cos(Face6Angle));
-    public static final float xValueC631 = (float)Units.inchesToMeters(ReefCenterX+L4Radius*Math.cos(Face5Angle)+L4RightOffset*Math.sin(Face6Angle));
-    public static final float yValueC631 = (float)Units.inchesToMeters(ReefCenterY+L4Radius*Math.sin(Face5Angle)-L4RightOffset*Math.cos(Face6Angle));
+    public static final float xValueC630 = (float)Units.inchesToMeters(154.93);
+    public static final float yValueC630 = (float)Units.inchesToMeters(210.28);
+    public static final float xValueC631 = (float)Units.inchesToMeters(142.81);
+    public static final float yValueC631 = (float)Units.inchesToMeters(203.28);
     /*
     public static final float xValueC6XX = (float)Units.inchesToMeters(151.39);
     public static final float yValueC6XX = (float)Units.inchesToMeters(202.42);
