@@ -54,6 +54,8 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean isClose = false;
   private int visionMeasurementCounter = 0; // counter
 
+  private boolean pathCanceled = false;
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -250,6 +252,13 @@ public class SwerveSubsystem extends SubsystemBase
     }
   }
 
+  public void setCancel(boolean value) {
+    this.pathCanceled = value;
+  }
+  
+  public boolean getCancel() {
+    return this.pathCanceled;
+  }
   
 public Command driveToPose(ButtonBox buttonBox) {
     return new Command() {
@@ -257,6 +266,9 @@ public Command driveToPose(ButtonBox buttonBox) {
         
         @Override
         public void initialize() {
+            // Reset cancel flag at the start of a new path
+            setCancel(false);
+            
             // Get the target at execution time
             TargetClass target = buttonBox.currentTargetClassSupplier.get();
             
@@ -288,16 +300,29 @@ public Command driveToPose(ButtonBox buttonBox) {
             // Schedule the path command
             pathCommand.schedule();
         }        
+        
+        @Override
+        public void execute() {
+            // Check cancellation flag during each execution cycle
+            if (getCancel() && pathCommand != null && !pathCommand.isFinished()) {
+                // Force cancel the path command if cancel flag is set
+                pathCommand.cancel();
+            }
+        }
+        
         @Override
         public boolean isFinished() {
-            return pathCommand != null && pathCommand.isFinished();
+            // Return true if path is finished OR cancel has been requested
+            return (pathCommand != null && pathCommand.isFinished()) || getCancel();
         }
         
         @Override
         public void end(boolean interrupted) {
             if (pathCommand != null) {
-                pathCommand.end(interrupted);
+                pathCommand.cancel(); // Ensure the pathCommand is cancelled
             }
+            // Reset cancel flag when we're done
+            setCancel(false);
         }
     };
 }
