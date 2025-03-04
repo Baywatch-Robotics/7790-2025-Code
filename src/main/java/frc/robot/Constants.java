@@ -71,6 +71,11 @@ public final class Constants
     public static final float intake = 0.3f;
     public static final float outake = -0.4f;
     public static final float currentThreshold = 15.0f; // Current threshold for detecting algae
+    
+    // Trigger control constants
+    public static final float triggerThreshold = 0.1f;    // Minimum trigger value to activate
+    public static final float maxTriggerIntake = 0.5f;    // Maximum intake speed with trigger (left)
+    public static final float maxTriggerOutake = -0.6f;   // Maximum outake speed with trigger (right)
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
@@ -373,4 +378,53 @@ public final class Constants
     public static final boolean setLeftCXX0 = true;
     public static final boolean setLeftCXX1 = false;
 }
+
+  public static final class ZoneConstants {
+
+    public static final float reefCenterX = 8.27f; // Center of the reef in meters
+    public static final float reefCenterY = 4.11f; // Center of the reef in meters  
+    public static final float reefZoneRadius = 1.8f;    // Radius of the reef in meters
+    
+    // Coral stations (rectangular) - Blue alliance coordinates
+    // Left coral station
+    public static final float LCoralStationMinX = (float)Units.inchesToMeters(0);
+    public static final float LCoralStationMaxX = (float)Units.inchesToMeters(0);
+    public static final float LCoralStationMinY = (float)Units.inchesToMeters(0);
+    public static final float LCoralStationMaxY = (float)Units.inchesToMeters(0);
+    
+    // Right coral station
+    public static final float RCoralStationMinX = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationMaxX = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationMinY = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationMaxY = (float)Units.inchesToMeters(0);
+    
+    // Speed multipliers for each zone
+    public static final float reefSpeedMultiplier = 0.4f;
+    public static final float coralStationMultiplier = 0.6f;
+
+
+    public static final float speedSmoothingFactor = 0.05f; // Controls how quickly speed changes (0.0-1.0)
+  }
+
+  /**
+   * Speed control constants for the robot
+   */
+  public static final class SpeedConstants {
+    // Default speed when elevator is raised
+    public static final float elevatorRaisedSpeed = 0.3f;
+    
+    // Default speed when elevator is lowered
+    public static final float elevatorLoweredSpeed = 0.5f;
+    
+    // Speed reduction factors for various distances to target
+    public static final float veryCloseSpeedFactor = 0.5f;
+    public static final float closeSpeedFactor = 0.5f;
+    public static final float approachingSpeedFactor = 0.5f;
+    
+    // Distance thresholds for various proximity classifications
+    public static final float veryCloseDistance = 0.5f;
+    public static final float closeDistance = 1.0f;
+    public static final float approachingDistance = 1.5f;
+    public static final float linedUpDistance = 0.08f;
+  }
 }

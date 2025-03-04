@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AlgaeShooterConstants;
+import frc.robot.Constants.ZoneConstants;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Climber;
@@ -31,6 +33,7 @@ import java.io.File;
 import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
+import frc.robot.Constants.SpeedConstants;
 
 
 /**
@@ -51,13 +54,16 @@ public class RobotContainer
   // Add variables for smooth speed transition
   private float targetDriveSpeed = 0;
   private float actualDriveSpeed = 0;
-  private float speedSmoothingFactor = 0.15f; // Controls how quickly speed changes (0.0-1.0)
 
   private boolean isClose = false;
   private boolean isVeryClose = false;
   private boolean isApproaching = false;
   private boolean isLinedUp = false;
 
+  // Add zone status tracking
+  private boolean isInReefZone = false;
+  private boolean isInCoralStationLeftZone = false;  // Consistent naming
+  private boolean isInCoralStationRightZone = false; // Consistent naming
 
   // Track distance to target for proximity calculations
   private double distanceToTarget = Double.POSITIVE_INFINITY;
@@ -83,6 +89,9 @@ public class RobotContainer
 
   DoubleSupplier climberUpDown = () -> opXbox.getRightX();
   
+  // Add suppliers for algae shooter triggers
+  DoubleSupplier algaeShooterIntake = () -> driverXbox.getLeftTriggerAxis();
+  DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -189,8 +198,8 @@ SwerveInputStream driveButtonBoxInput =
 
     //public Command driveButtonBoxInputCommand = drivebase.driveFieldOriented(driveAngularVelocityDriveToPose);
     
-    public Command leftAuto = CommandFactory.LeftAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
-    public Command rightAuto = CommandFactory.RightAutonCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
+    public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
+    public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
 
     SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -225,8 +234,29 @@ SwerveInputStream driveButtonBoxInput =
     
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-      
-
+    // Updated default command for AlgaeShooter using suppliers
+    algaeShooter.setDefaultCommand(new RunCommand(() -> {
+        // Get trigger values from the suppliers
+        double leftTrigger = algaeShooterIntake.getAsDouble();
+        double rightTrigger = algaeShooterOutake.getAsDouble();
+        
+        // Control logic for the algae shooter based on triggers
+        if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
+            // Left trigger controls intake (forward) at variable speed
+            double speed = leftTrigger * AlgaeShooterConstants.maxTriggerIntake;
+            algaeShooter.setSpeed(speed);
+        } 
+        else if (rightTrigger > AlgaeShooterConstants.triggerThreshold) {
+            // Right trigger controls outake (reverse) at variable speed
+            double speed = rightTrigger * AlgaeShooterConstants.maxTriggerOutake;
+            algaeShooter.setSpeed(speed);
+        }
+        else {
+            // If both triggers are below threshold, stop the motor
+            algaeShooter.setSpeed(0);
+        }
+    }, algaeShooter));
+    
 
       buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
       buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -285,8 +315,8 @@ SwerveInputStream driveButtonBoxInput =
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
       //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, shooterPivot, elevator));
   
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
@@ -294,12 +324,15 @@ SwerveInputStream driveButtonBoxInput =
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
 
-    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(algaeArm, shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.b().onTrue(CommandFactory.setElevatorZero(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox));
+    driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, shooterPivot, elevator));
 
-    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
-    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, shooterPivot, elevator));
     
+    driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
+    driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
+
     driverXbox.axisMagnitudeGreaterThan(0,0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).or(driverXbox.axisMagnitudeGreaterThan(4,.1)).or(driverXbox.axisMagnitudeGreaterThan(5, .1)).onTrue(new InstantCommand(() -> drivebase.setCancel(true)));
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, shooterPivot, elevator));
@@ -329,6 +362,18 @@ SwerveInputStream driveButtonBoxInput =
   }
 
 
+  // Triggers for proximity detection
+  private final Trigger approachingTrigger = new Trigger(() -> isApproaching);
+  private final Trigger closeTrigger = new Trigger(() -> isClose);
+  private final Trigger veryCloseTrigger = new Trigger(() -> isVeryClose);
+  private final Trigger linedUpTrigger = new Trigger(() -> isLinedUp);
+  
+  // Triggers for zone detection
+  private final Trigger reefZoneTrigger = new Trigger(() -> isInReefZone);
+  private final Trigger coralStationLeftTrigger = new Trigger(() -> isInCoralStationLeftZone);
+  private final Trigger coralStationRightTrigger = new Trigger(() -> isInCoralStationRightZone);
+  private final Trigger anyZoneTrigger = new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
+
   public Command changeDriveSpeedCommand(float speed)
   {
     return new InstantCommand(() -> driveSpeed = speed);
@@ -336,9 +381,15 @@ SwerveInputStream driveButtonBoxInput =
 
   public void setDriveSpeedBasedOnElevatorAndCloseness()
   {    
-    // Base speed determined by elevator position
-    float baseSpeed = elevator.isRaisedEnough() ? 0.3f : 0.5f;
+    // Base speed determined by elevator position using constants
+    float baseSpeed = elevator.isRaisedEnough() ? 
+      SpeedConstants.elevatorRaisedSpeed : SpeedConstants.elevatorLoweredSpeed;
 
+    // Update zone statuses
+    Pose2d currentPose = drivebase.getPose();
+    isInReefZone = isInReefZone(currentPose);
+    isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
+    isInCoralStationRightZone = isInCoralStationRight(currentPose);
     
     // Reset distance to a large value by default
     distanceToTarget = Double.POSITIVE_INFINITY;
@@ -355,24 +406,22 @@ SwerveInputStream driveButtonBoxInput =
       // Calculate and store distance to target
       distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
       
-      // Define local proximity checks that always use current distance value
-      isVeryClose = distanceToTarget < 0.5;
-      isClose = distanceToTarget < 1.0;
-      isApproaching = distanceToTarget < 1.5;
-      isLinedUp = distanceToTarget < 0.08;
+      // Define local proximity checks that always use current distance value using constants
+      isVeryClose = distanceToTarget < SpeedConstants.veryCloseDistance;
+      isClose = distanceToTarget < SpeedConstants.closeDistance;
+      isApproaching = distanceToTarget < SpeedConstants.approachingDistance;
+      isLinedUp = distanceToTarget < SpeedConstants.linedUpDistance;
       
-      
-      // Graduated speed reduction based on distance
+      // Graduated speed reduction based on distance using constants
       if (isVeryClose) {
-        targetDriveSpeed = Math.min(baseSpeed, 0.5f);
+        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.veryCloseSpeedFactor);
       } else if (isClose) {
-        targetDriveSpeed = Math.min(baseSpeed, 0.5f); //For testing
+        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.closeSpeedFactor);
       } else if (isApproaching) {
-        targetDriveSpeed = Math.min(baseSpeed, 0.5f); //For testing
+        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.approachingSpeedFactor);
       } else {
         targetDriveSpeed = baseSpeed; // Use the base speed from elevator status
       }
-      
       
       // For debugging
       SmartDashboard.putNumber("Distance to Target", distanceToTarget);
@@ -390,42 +439,110 @@ SwerveInputStream driveButtonBoxInput =
       SmartDashboard.putBoolean("Approaching Target", false);
     }
 
+    // Apply zone-based speed modifier
+    float zoneModifier = getZoneSpeedMultiplier();
+    targetDriveSpeed *= zoneModifier;
+
     // Smooth the speed transition
     smoothDriveSpeed();
 
     SmartDashboard.putNumber("Target Drive Speed", targetDriveSpeed);
     SmartDashboard.putNumber("Actual Drive Speed", actualDriveSpeed);
     SmartDashboard.putNumber("Drive Speed", driveSpeed);
+    SmartDashboard.putNumber("Zone Modifier", zoneModifier);
     
-    //isApproachingSupplier = () -> isApproaching;
-    //isVeryCloseSupplier = () -> isVeryClose;
-    //isCloseSupplier = () -> isClose;
-    //isLinedUpSupplier = () -> isLinedUp;
+    // Update zone status on dashboard
+    SmartDashboard.putBoolean("In Reef Zone", isInReefZone);
+    SmartDashboard.putBoolean("In Coral Station Left", isInCoralStationLeftZone);  // Renamed
+    SmartDashboard.putBoolean("In Coral Station Right", isInCoralStationRightZone); // Renamed
 
     driveY = () -> -driverXbox.getLeftY() * driveSpeed;
     driveX = () -> -driverXbox.getLeftX() * driveSpeed;
-
-    isApproachingTrigger();
-    isCloseTrigger();
-    isVeryCloseTrigger();
-    isLinedUpTrigger();
-  }
-  
-  public Trigger isApproachingTrigger(){
-    return new Trigger(() -> isApproaching);
   }
 
-  public Trigger isCloseTrigger(){
-    return new Trigger(() -> isClose);
+  /**
+   * Check if robot is inside the reef zone (circle)
+   */
+  private boolean isInReefZone(Pose2d robotPose) {
+    // Get alliance-relative reef center
+    Pose2d reefCenter = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.reefCenterX, 
+        ZoneConstants.reefCenterY, 
+        new Rotation2d(0)));
+    
+    // Calculate distance from center of circle
+    double distance = Math.sqrt(
+        Math.pow(robotPose.getX() - reefCenter.getX(), 2) + 
+        Math.pow(robotPose.getY() - reefCenter.getY(), 2));
+    
+    // Inside if distance is less than radius
+    return distance < ZoneConstants.reefZoneRadius;
   }
 
-  public Trigger isVeryCloseTrigger(){
-    return new Trigger(() -> isVeryClose);
+  /**
+   * Check if robot is in left coral station
+   */
+  private boolean isInCoralStationLeft(Pose2d robotPose) {
+    // Get alliance-relative coordinates for coral station left
+    Pose2d minCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.LCoralStationMinX, 
+        ZoneConstants.LCoralStationMinY,
+        new Rotation2d(0)));
+    
+    Pose2d maxCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.LCoralStationMaxX, 
+        ZoneConstants.LCoralStationMaxY,
+        new Rotation2d(0)));
+    
+    return isInRectangularZone(robotPose, 
+        Math.min(minCorner.getX(), maxCorner.getX()),
+        Math.max(minCorner.getX(), maxCorner.getX()),
+        Math.min(minCorner.getY(), maxCorner.getY()),
+        Math.max(minCorner.getY(), maxCorner.getY()));
   }
-  public Trigger isLinedUpTrigger(){
-    return new Trigger(() -> isLinedUp);
+
+  /**
+   * Check if robot is in right coral station
+   */
+  private boolean isInCoralStationRight(Pose2d robotPose) {
+    // Get alliance-relative coordinates for coral station right
+    Pose2d minCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.RCoralStationMinX, 
+        ZoneConstants.RCoralStationMinY,
+        new Rotation2d(0)));
+    
+    Pose2d maxCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.RCoralStationMaxX, 
+        ZoneConstants.RCoralStationMaxY,
+        new Rotation2d(0)));
+    
+    return isInRectangularZone(robotPose, 
+        Math.min(minCorner.getX(), maxCorner.getX()),
+        Math.max(minCorner.getX(), maxCorner.getX()),
+        Math.min(minCorner.getY(), maxCorner.getY()),
+        Math.max(minCorner.getY(), maxCorner.getY()));
   }
-  
+
+  /**
+   * Helper method to check if a point is inside a rectangle
+   */
+  private boolean isInRectangularZone(Pose2d pose, double minX, double maxX, double minY, double maxY) {
+    return (pose.getX() >= minX && pose.getX() <= maxX && 
+            pose.getY() >= minY && pose.getY() <= maxY);
+  }
+
+  /**
+   * Get speed multiplier based on what zone the robot is in
+   */
+  private float getZoneSpeedMultiplier() {
+    if (isInReefZone) {
+      return ZoneConstants.reefSpeedMultiplier;
+    } else if (isInCoralStationLeftZone || isInCoralStationRightZone) {
+      return ZoneConstants.coralStationMultiplier;
+    }
+    return 1.0f; // No speed reduction if not in any special zone
+  }
+
   /**
    * Apply smooth interpolation to drive speed changes to prevent jerky movement
    */
@@ -434,7 +551,7 @@ SwerveInputStream driveButtonBoxInput =
     float speedDifference = targetDriveSpeed - actualDriveSpeed;
     
     // Apply the smoothing factor to gradually adjust the actual speed
-    actualDriveSpeed += speedDifference * speedSmoothingFactor;
+    actualDriveSpeed += speedDifference * ZoneConstants.speedSmoothingFactor;
     
     // Set the drive speed to the smoothed value
     driveSpeed = actualDriveSpeed;
@@ -454,5 +571,61 @@ SwerveInputStream driveButtonBoxInput =
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
+  }
+
+  /**
+   * Access the approaching trigger
+   */
+  public Trigger getApproachingTrigger() {
+    return approachingTrigger;
+  }
+
+  /**
+   * Access the close trigger
+   */
+  public Trigger getCloseTrigger() {
+    return closeTrigger;
+  }
+
+  /**
+   * Access the very close trigger
+   */
+  public Trigger getVeryCloseTrigger() {
+    return veryCloseTrigger;
+  }
+
+  /**
+   * Access the lined up trigger
+   */
+  public Trigger getLinedUpTrigger() {
+    return linedUpTrigger;
+  }
+
+  /**
+   * Access the reef zone trigger
+   */
+  public Trigger getReefZoneTrigger() {
+    return reefZoneTrigger;
+  }
+
+  /**
+   * Access the coral station left trigger
+   */
+  public Trigger getCoralStationLeftTrigger() {
+    return coralStationLeftTrigger;
+  }
+
+  /**
+   * Access the coral station right trigger
+   */
+  public Trigger getCoralStationRightTrigger() {
+    return coralStationRightTrigger;
+  }
+
+  /**
+   * Access the any zone trigger
+   */
+  public Trigger getAnyZoneTrigger() {
+    return anyZoneTrigger;
   }
 }
