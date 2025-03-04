@@ -91,6 +91,7 @@ public class Elevator extends SubsystemBase {
     }
     
     // New methods for ball positions
+    /*
     public void setHighBall() {
         elevatorDesiredPosition = ElevatorConstants.highBallPose;
     }
@@ -98,6 +99,7 @@ public class Elevator extends SubsystemBase {
     public void setLowBall() {
         elevatorDesiredPosition = ElevatorConstants.lowBallPose;
     }
+    */
     
     // Commands
     public Command setfullElevatorRetractCommand() {
@@ -153,6 +155,7 @@ public class Elevator extends SubsystemBase {
     }
     
     // New commands for ball positions
+    /*
     public Command setElevatorHighBallCommand() {
         Command command = new InstantCommand(() -> setHighBall());
         return command;
@@ -162,6 +165,7 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> setLowBall());
         return command;
     }
+    */
     
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
 

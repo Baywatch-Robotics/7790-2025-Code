@@ -85,7 +85,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
       
     Command command  = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-    .andThen(elevator.setElevatorHighBallCommand())
+    //.andThen(elevator.setElevatorHighBallCommand())
     .andThen(shooterPivot.setCenterCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
     .andThen(shooterArm.shooterArmBallCommand());
@@ -99,7 +99,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
       
     Command command  = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-    .andThen(elevator.setElevatorLowBallCommand())
+    //.andThen(elevator.setElevatorLowBallCommand())
     .andThen(shooterPivot.setCenterCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
     .andThen(shooterArm.shooterArmBallCommand());

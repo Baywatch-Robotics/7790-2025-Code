@@ -163,34 +163,23 @@ public final class Constants
     public static final float manualMultiplier = 2f;
     //public static final float manualMultiplier = .2f; //For Testing
 
-    //Old with Orange Spools
-    /*
-    public static final float min = -163.2f;
-    public static final float max = 0.0f;
-
-    public static final float L4Pose = -163.2f;
-    public static final float L3Pose = -94.6625f;
-    public static final float L2Pose = -41.4f;
-    public static final float L1Pose = 0.0f;
-    public static final float pickupPose = -75f;
-    */
     //Gray Spools
-    public static final float min = -237f;
+    public static final float min = -79f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -237f;
-    public static final float L3LPose = -133f;
-    public static final float L3RPose = -123f;
-    public static final float L2RPose = -50f;
-    public static final float L2LPose = -43f;
-    public static final float L1Pose = -44f;
-    public static final float pickupPose = -104;
-    public static final float climbPose = -122.333374f;
+    public static final float L4Pose = -79f;
+    public static final float L3LPose = -44.33f;
+    public static final float L3RPose = -41f;
+    public static final float L2RPose = -16.67f;
+    public static final float L2LPose = -14.33f;
+    public static final float L1Pose = -14.67f;
+    public static final float pickupPose = -34.67f;
+    public static final float climbPose = -40.777790f;
     
     // Ball pickup positions
-    public static final float highBallPose = -150f;
-    public static final float lowBallPose = -75f;
+    // public static final float highBallPose = -50f;
+    // public static final float lowBallPose = -25f;
     
     public static final float P = 0.25f;
     public static final float I = 0.0f;
