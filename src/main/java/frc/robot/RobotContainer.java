@@ -30,7 +30,6 @@ import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.io.File;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
