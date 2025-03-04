@@ -20,6 +20,7 @@ public class AlgaeShooter extends SubsystemBase {
 
     public static boolean algaeLoaded;
     private boolean isLoading;
+    private double currentSpeed = 0;
     
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
@@ -34,6 +35,21 @@ public class AlgaeShooter extends SubsystemBase {
 
         algaeLoaded = false;
         isLoading = false;
+    }
+    
+    /**
+     * Set the shooter motor to a specific speed
+     * @param speed The speed to set (-1.0 to 1.0)
+     */
+    public void setSpeed(double speed) {
+        // Update loading state based on direction
+        isLoading = speed > 0;
+        
+        // Only update if speed changed (reduces CAN traffic)
+        if (speed != currentSpeed) {
+            algaeShooterMotor.set(speed);
+            currentSpeed = speed;
+        }
     }
                 
     // Method to get the current draw from the motor
@@ -85,15 +101,18 @@ public class AlgaeShooter extends SubsystemBase {
     private void setZeroSpeed() {
         isLoading = false;
         algaeShooterMotor.set(0);
+        currentSpeed = 0;
     }
 
     private void setIntake() {
         isLoading = true;
         algaeShooterMotor.set(AlgaeShooterConstants.intake);
+        currentSpeed = AlgaeShooterConstants.intake;
     }
 
     private void setOutake() {
         algaeShooterMotor.set(AlgaeShooterConstants.outake);
+        currentSpeed = AlgaeShooterConstants.outake;
     }
 
     // Commands
@@ -120,5 +139,6 @@ public class AlgaeShooter extends SubsystemBase {
 
         SmartDashboard.putNumber("Algae Current Draw", getCurrentDraw());
         SmartDashboard.putBoolean("Algae Loaded", algaeLoaded);
+        SmartDashboard.putNumber("Algae Shooter Speed", currentSpeed);
     }
 }
