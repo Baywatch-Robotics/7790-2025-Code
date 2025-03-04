@@ -52,7 +52,7 @@ public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, AlgaeShooter alga
         .andThen(algaeShooter.algaeShooterIntakeCommand())
         .andThen(new WaitUntilCommand(algaeShooter.algaeLoadedTrigger()))
         .andThen(algaeArm.algaeArmHoldCommand())
-        .andThen(new WaitCommand(1))
+        .andThen(new WaitCommand(2))
         .andThen(algaeShooter.algaeShooterZeroSpeedCommand());
 
     command.addRequirements(algaeArm, algaeShooter);
@@ -117,7 +117,7 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
   Command command = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
-    .andThen(shooterPivot.shooterPivotBasedOnQueueCommand(buttonBox))
+    .andThen(shooterPivot.setCenterCommand())
     .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox));
     
     command.addRequirements(shooter, shooterArm, shooterPivot, elevator);
@@ -128,7 +128,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox)
   .andThen(drivebase.driveToPose(buttonBox))
-  .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
+  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger))
   .andThen(buttonBox.getNextTargetCommand());
     
     command.addRequirements(shooter, shooterArm, shooterPivot, elevator);
@@ -139,7 +139,7 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox)
     .andThen(new WaitCommand(1.5))
     .andThen(drivebase.driveToPose(buttonBox))
-    .andThen(new WaitUntilCommand(robotContainer.isLinedUpTrigger()))
+    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger))
     
     .andThen(shooter.shooterIntakeCommand())
     .andThen(new WaitCommand(.5))
@@ -156,7 +156,7 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
 public static Command sourceDrive(Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
 
   Command command = setIntakeCommand(shooter, shooterArm, shooterPivot, elevator)
-    .andThen(new WaitUntilCommand(robotContainer.isVeryCloseTrigger()))
+    .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger))
     .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
     .andThen(shooter.shooterZeroSpeedCommand());
 

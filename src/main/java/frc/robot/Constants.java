@@ -43,9 +43,9 @@ public final class Constants
 
     public static final float stowedUpAngle = 0.28f;
     public static final float straightOutAngle = 0.5f;
-    public static final float groundIntakeAngle = 0.406f;
+    public static final float groundIntakeAngle = 0.42f;
 
-    public static final float holdAngle = 0.35f;
+    public static final float holdAngle = 0.34f;
 
     // Current threshold for detecting algae
     public static final float currentThreshold = 15.0f;
@@ -68,9 +68,9 @@ public final class Constants
 
     public static final class AlgaeShooterConstants{
     public static final int ID = 16;
-    public static final float intake = 0.3f;
+    public static final float intake = 0.25f;
     public static final float outake = -0.4f;
-    public static final float currentThreshold = 15.0f; // Current threshold for detecting algae
+    public static final float currentThreshold = 10f; // Current threshold for detecting algae
     
     // Trigger control constants
     public static final float triggerThreshold = 0.1f;    // Minimum trigger value to activate

@@ -30,6 +30,7 @@ import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.io.File;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import swervelib.SwerveInputStream;
@@ -111,7 +112,17 @@ public class RobotContainer
   //private final LED LED = new LED();
   private final ButtonBox buttonBox = new ButtonBox();
 
+  // Triggers for proximity detection
+  public Trigger approachingTrigger = new Trigger(() -> isApproaching);
+  public Trigger closeTrigger = new Trigger(() -> isClose);
+  public Trigger veryCloseTrigger = new Trigger(() -> isVeryClose);
+  public Trigger linedUpTrigger = new Trigger(() -> isLinedUp);
   
+  // Triggers for zone detection
+  public Trigger reefZoneTrigger = new Trigger(() -> isInReefZone);
+  public Trigger coralStationLeftTrigger = new Trigger(() -> isInCoralStationLeftZone);
+  public Trigger coralStationRightTrigger = new Trigger(() -> isInCoralStationRightZone);
+  public Trigger anyZoneTrigger = new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driveY.getAsDouble(),
@@ -361,19 +372,6 @@ SwerveInputStream driveButtonBoxInput =
     SmartDashboard.putData(chooser);
   }
 
-
-  // Triggers for proximity detection
-  private final Trigger approachingTrigger = new Trigger(() -> isApproaching);
-  private final Trigger closeTrigger = new Trigger(() -> isClose);
-  private final Trigger veryCloseTrigger = new Trigger(() -> isVeryClose);
-  private final Trigger linedUpTrigger = new Trigger(() -> isLinedUp);
-  
-  // Triggers for zone detection
-  private final Trigger reefZoneTrigger = new Trigger(() -> isInReefZone);
-  private final Trigger coralStationLeftTrigger = new Trigger(() -> isInCoralStationLeftZone);
-  private final Trigger coralStationRightTrigger = new Trigger(() -> isInCoralStationRightZone);
-  private final Trigger anyZoneTrigger = new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
-
   public Command changeDriveSpeedCommand(float speed)
   {
     return new InstantCommand(() -> driveSpeed = speed);
@@ -571,61 +569,5 @@ SwerveInputStream driveButtonBoxInput =
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
-  }
-
-  /**
-   * Access the approaching trigger
-   */
-  public Trigger getApproachingTrigger() {
-    return approachingTrigger;
-  }
-
-  /**
-   * Access the close trigger
-   */
-  public Trigger getCloseTrigger() {
-    return closeTrigger;
-  }
-
-  /**
-   * Access the very close trigger
-   */
-  public Trigger getVeryCloseTrigger() {
-    return veryCloseTrigger;
-  }
-
-  /**
-   * Access the lined up trigger
-   */
-  public Trigger getLinedUpTrigger() {
-    return linedUpTrigger;
-  }
-
-  /**
-   * Access the reef zone trigger
-   */
-  public Trigger getReefZoneTrigger() {
-    return reefZoneTrigger;
-  }
-
-  /**
-   * Access the coral station left trigger
-   */
-  public Trigger getCoralStationLeftTrigger() {
-    return coralStationLeftTrigger;
-  }
-
-  /**
-   * Access the coral station right trigger
-   */
-  public Trigger getCoralStationRightTrigger() {
-    return coralStationRightTrigger;
-  }
-
-  /**
-   * Access the any zone trigger
-   */
-  public Trigger getAnyZoneTrigger() {
-    return anyZoneTrigger;
   }
 }
