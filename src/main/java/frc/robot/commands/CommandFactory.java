@@ -34,24 +34,17 @@ public class CommandFactory {
       return command;
   }
 
-/*
-public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, AlgaeShooter algaeShooter, ShooterPivot shooterPivot, Elevator elevator) {
-      
-  Command command  = algaeArm.algaeArmGroundIntakeCommand()
-  .andThen(algaeShooter.algaeShooterIntakeCommand())
-  
-  .andThen(new WaitUntilCommand(algaeShooter.))
-  .andThen(elevator.setElevatorPickupPlusCommand())
-  .andThen(new WaitCommand(1))
-  .andThen(shooter.shooterZeroSpeedCommand());
+public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, AlgaeShooter algaeShooter, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator) {
+    Command command = algaeArm.algaeArmGroundIntakeCommand()
+        .andThen(algaeShooter.algaeShooterIntakeCommand())
+        .andThen(new WaitUntilCommand(algaeShooter.algaeLoadedTrigger()))
+        .andThen(algaeArm.algaeArmHoldCommand())
+        .andThen(new WaitCommand(1))
+        .andThen(algaeShooter.algaeShooterZeroSpeedCommand());
 
-
-  command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-  return command;
-}  
-*/
-//
+    command.addRequirements(algaeArm, algaeShooter);
+    return command;
+}
 
   public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
 
@@ -108,84 +101,6 @@ public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, Shooter shooter, 
 
     return command;
 }
-
-/*
-    public static Command scoreL2Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
-
-      Command command  = shooterArm.shooterArmScoreLOWCommand()
-      .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-      .andThen(elevator.setElevatorL2Command())
-      .alongWith(shooterPivot.setLeftInitialCommand());
-
-        command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-        return command;
-    }
-
-    public static Command scoreL3Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
-        
-        Command command  = shooterArm.shooterArmScoreLOWCommand()
-        .alongWith(elevator.setElevatorL3Command())
-        .alongWith(shooterPivot.setLeftInitialCommand());
-  
-          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-  
-          return command;
-
-    }
-
-    public static Command scoreL4Command(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator){
-        
-        Command command  = shooterArm.shooterArmScoreHIGHCommand()
-        .alongWith(elevator.setElevatorL4Command())
-        .alongWith(shooterPivot.setLeftInitialCommand());
-  
-          command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-  
-          return command;
-    }
-    */
-/*
-        public static Command scoreTest(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
-
-          Command command = shooterArm.shooterArmScoreLOWCommand()
-            .andThen(new InstantCommand (() -> buttonBox.addTarget("C310")))
-            .andThen(new WaitUntilCommand(buttonBox.isSlow()))
-            .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-            .andThen(elevator.setElevatorL3Command())
-            .andThen(shooterPivot.setRightInitalCommand())
-            .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-            .andThen(new WaitUntilCommand(buttonBox.isClose()))
-            .andThen(shooter.shooterOutakeCommand())
-            .andThen(new WaitCommand(.5))
-            .andThen(shooter.shooterZeroSpeedCommand())
-            .andThen(buttonBox.getNextTargetCommand());
-
-            command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-        return command; 
-    } 
-
-    public static Command scoreTestL4(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
-
-      Command command = shooterArm.shooterArmScoreHIGHCommand()
-        .andThen(new InstantCommand (() -> buttonBox.addTarget("C310")))
-        .andThen(new WaitUntilCommand(buttonBox.isSlow()))
-        .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-        .andThen(elevator.setElevatorL4Command())
-        .andThen(shooterPivot.setRightInitalCommand())
-        .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-        .andThen(new WaitUntilCommand(buttonBox.isClose()))
-        .andThen(shooter.shooterOutakeCommand())
-        .andThen(new WaitCommand(.5))
-        .andThen(shooter.shooterZeroSpeedCommand())
-        .andThen(buttonBox.getNextTargetCommand());
-
-        command.addRequirements(algaeArm, shooter, shooterArm, shooterPivot, elevator);
-
-    return command; 
-} 
-*/
 
 public static Command scoreBasedOnQueueCommand(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, ShooterPivot shooterPivot, Elevator elevator, ButtonBox buttonBox){
 
