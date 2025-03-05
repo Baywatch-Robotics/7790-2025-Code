@@ -703,12 +703,4 @@ public Command driveToPose(ButtonBox buttonBox) {
     public void visualizeTargetPose(Pose2d targetPose) {
         swerveDrive.field.getObject("targetPose").setPose(targetPose);
     }
-    
-    /**
-     * Clear the target pose visualization from the field
-     */
-    public void clearTargetPose() {
-        // Remove the target pose visualization by setting it to null or far off the field
-        swerveDrive.field.getObject("targetPose").setPose(new Pose2d(-100, -100, new Rotation2d(0)));
-    }
 }
