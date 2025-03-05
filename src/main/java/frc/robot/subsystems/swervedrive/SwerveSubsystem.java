@@ -703,4 +703,16 @@ public Command driveToPose(ButtonBox buttonBox) {
     public void visualizeTargetPose(Pose2d targetPose) {
         swerveDrive.field.getObject("targetPose").setPose(targetPose);
     }
+    
+    /**
+     * Clear the target visualization from the field
+     * This removes the target marker without affecting the queue
+     */
+    public void clearTargetVisualization() {
+        // Set an invisible pose far away to effectively hide it
+        // Using a position outside the field boundary keeps it hidden
+        swerveDrive.field.getObject("targetPose").setPose(
+            new Pose2d(-100, -100, new Rotation2d(0))
+        );
+    }
 }

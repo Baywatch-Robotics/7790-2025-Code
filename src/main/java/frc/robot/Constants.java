@@ -475,5 +475,9 @@ public final class Constants
     // Target position and rotation tolerance
     public static final double POSITION_TOLERANCE = 0.02; // meters
     public static final double ROTATION_TOLERANCE = Units.degreesToRadians(2.0); // radians
+    
+    // Smoothing factor for constraint changes (0.0-1.0)
+    // Lower values = smoother/slower transitions, higher values = quicker transitions
+    public static final double CONSTRAINT_SMOOTHING_FACTOR = 0.2;
   }
 }
