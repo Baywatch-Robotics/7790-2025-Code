@@ -29,15 +29,10 @@ public final class Constants
   public static final float slowSpeedClamp = 0.1f;
   public static final float mediumSpeedClamp = 0.2f;
 
-  public static final float DEADBAND = 0.1f;
+  public static final float DEADBAND = 0.075f;
 
   public static final float armLength = (float)Units.inchesToMeters(0);
-
-  public static final float closeToPoseErrorAllowance = 0.05f;
-  
-
-
-  
+    
   public static final class AlgaeArmConstants{
     public static final int ID = 14;
 
@@ -370,29 +365,52 @@ public final class Constants
 
   public static final class ZoneConstants {
 
-    public static final float reefCenterX = 8.27f; // Center of the reef in meters
-    public static final float reefCenterY = 4.11f; // Center of the reef in meters  
-    public static final float reefZoneRadius = 1.8f;    // Radius of the reef in meters
+    public static final float reefCenterX = (float)Units.inchesToMeters(176.745);
+    public static final float reefCenterY = (float)Units.inchesToMeters(158.5);
+    public static final float reefZoneRadius = (float)Units.inchesToMeters(76);
     
+    /*
     // Coral stations (rectangular) - Blue alliance coordinates
-    // Left coral station
-    public static final float LCoralStationMinX = (float)Units.inchesToMeters(0);
-    public static final float LCoralStationMaxX = (float)Units.inchesToMeters(0);
-    public static final float LCoralStationMinY = (float)Units.inchesToMeters(0);
-    public static final float LCoralStationMaxY = (float)Units.inchesToMeters(0);
-    
     // Right coral station
+    public static final float RCoralStationLowerLeftCornerX = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationLowerRightCornerX = (float)Units.inchesToMeters(65.83);
+    public static final float RCoralStationUpperLeftCornerX = (float)Units.inchesToMeters(21.16);
+    public static final float RCoralStationUpperRightCornerX = (float)Units.inchesToMeters(86.99);
+
+    public static final float RCoralStationLowerLeftCornerY = (float)Units.inchesToMeters(47.83);
+    public static final float RCoralStationLowerRightCornerY = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationUpperLeftCornerY = (float)Units.inchesToMeters(76.95);
+    public static final float RCoralStationUpperRightCornerY = (float)Units.inchesToMeters(29.12);
+
+    // Left coral station
+    public static final float LCoralStationLowerLeftCornerX = (float)Units.inchesToMeters(0);
+    public static final float LCoralStationLowerRightCornerX = (float)Units.inchesToMeters(65.83);
+    public static final float LCoralStationUpperLeftCornerX = (float)Units.inchesToMeters(21.16);
+    public static final float LCoralStationUpperRightCornerX = (float)Units.inchesToMeters(86.99);
+
+    public static final float LCoralStationLowerLeftCornerY = (float)Units.inchesToMeters(265.08);
+    public static final float LCoralStationLowerRightCornerY = (float)Units.inchesToMeters(312.91);
+    public static final float LCoralStationUpperLeftCornerY = (float)Units.inchesToMeters(235.95);
+    public static final float LCoralStationUpperRightCornerY = (float)Units.inchesToMeters(283.78);
+    */
+    
+    // Adding convenience values for min/max coordinates to make boundary checks easier
     public static final float RCoralStationMinX = (float)Units.inchesToMeters(0);
-    public static final float RCoralStationMaxX = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationMaxX = (float)Units.inchesToMeters(86.99);
     public static final float RCoralStationMinY = (float)Units.inchesToMeters(0);
-    public static final float RCoralStationMaxY = (float)Units.inchesToMeters(0);
+    public static final float RCoralStationMaxY = (float)Units.inchesToMeters(76.95);
+    
+    public static final float LCoralStationMinX = (float)Units.inchesToMeters(0);
+    public static final float LCoralStationMaxX = (float)Units.inchesToMeters(86.99);
+    public static final float LCoralStationMinY = (float)Units.inchesToMeters(235.95);
+    public static final float LCoralStationMaxY = (float)Units.inchesToMeters(312.91);
     
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;
     public static final float coralStationMultiplier = 0.6f;
 
 
-    public static final float speedSmoothingFactor = 0.05f; // Controls how quickly speed changes (0.0-1.0)
+    public static final float speedSmoothingFactor = 0.2f; // Controls how quickly speed changes (0.0-1.0)
   }
 
   /**
@@ -403,17 +421,59 @@ public final class Constants
     public static final float elevatorRaisedSpeed = 0.3f;
     
     // Default speed when elevator is lowered
-    public static final float elevatorLoweredSpeed = 0.5f;
-    
-    // Speed reduction factors for various distances to target
-    public static final float veryCloseSpeedFactor = 0.5f;
-    public static final float closeSpeedFactor = 0.5f;
-    public static final float approachingSpeedFactor = 0.5f;
+    public static final float elevatorLoweredSpeed = 1.0f;
     
     // Distance thresholds for various proximity classifications
     public static final float veryCloseDistance = 0.5f;
     public static final float closeDistance = 1.0f;
     public static final float approachingDistance = 1.5f;
     public static final float linedUpDistance = 0.08f;
+  }
+
+  /**
+   * Constants for drive-to-pose behavior
+   */
+  public static final class DriveToPoseConstants {
+    // PID Values
+    public static final double TRANSLATION_P = 5.0;
+    public static final double TRANSLATION_I = 0.0;
+    public static final double TRANSLATION_D = 0.0;
+    
+    public static final double ROTATION_P = 5.0;
+    public static final double ROTATION_I = 0.0;
+    public static final double ROTATION_D = 0.0;
+    
+    // Speed constraints based on distance
+    public static final double FAR_DISTANCE = 3.0; // meters
+    public static final double MID_DISTANCE = 1.5; // meters
+    public static final double CLOSE_DISTANCE = 0.5; // meters
+    public static final double VERY_CLOSE_DISTANCE = 0.2; // meters
+    
+    // Maximum velocity constraints (m/s)
+    public static final double FAR_MAX_VEL = 3.0;
+    public static final double MID_MAX_VEL = 2.0;
+    public static final double CLOSE_MAX_VEL = 1.0;
+    public static final double VERY_CLOSE_MAX_VEL = 0.5;
+    
+    // Maximum acceleration constraints (m/s²)
+    public static final double FAR_MAX_ACCEL = 2.0;
+    public static final double MID_MAX_ACCEL = 1.5;
+    public static final double CLOSE_MAX_ACCEL = 0.8;
+    public static final double VERY_CLOSE_MAX_ACCEL = 0.4;
+    
+    // Rotation constraints (rad/s and rad/s²)
+    public static final double FAR_MAX_ROT_VEL = Units.degreesToRadians(360);
+    public static final double MID_MAX_ROT_VEL = Units.degreesToRadians(270);
+    public static final double CLOSE_MAX_ROT_VEL = Units.degreesToRadians(180);
+    public static final double VERY_CLOSE_MAX_ROT_VEL = Units.degreesToRadians(90);
+    
+    public static final double FAR_MAX_ROT_ACCEL = Units.degreesToRadians(360);
+    public static final double MID_MAX_ROT_ACCEL = Units.degreesToRadians(270);
+    public static final double CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(180);
+    public static final double VERY_CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(90);
+    
+    // Target position and rotation tolerance
+    public static final double POSITION_TOLERANCE = 0.02; // meters
+    public static final double ROTATION_TOLERANCE = Units.degreesToRadians(2.0); // radians
   }
 }

@@ -1,6 +1,6 @@
 // Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Open Source Software; you can modify and/or share it under the terms of the
+// WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.swervedrive;
 
@@ -43,7 +43,6 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
-
 public class SwerveSubsystem extends SubsystemBase
 {
 
@@ -694,5 +693,14 @@ public Command driveToPose(ButtonBox buttonBox) {
           }
             
       }
+    }
+
+    
+    /**
+     * Visualize the target pose on the field
+     * @param targetPose The pose to visualize
+     */
+    public void visualizeTargetPose(Pose2d targetPose) {
+        swerveDrive.field.getObject("targetPose").setPose(targetPose);
     }
 }
