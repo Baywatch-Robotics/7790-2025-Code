@@ -226,32 +226,31 @@ SwerveInputStream driveButtonBoxInput =
       if (currentXController == null || pidControllersNeedUpdate) {
           TargetClass target = buttonBox.peekNextTarget();
           
+          // Update distance to target for constraint calculation
+          Pose2d robotPose = drivebase.getPose();
+          distanceToTarget = Double.POSITIVE_INFINITY;
+          
           if (target != null) {
-              // Update distance to target for constraint calculation
-              Pose2d robotPose = drivebase.getPose();
               Pose2d targetPose = new Pose2d(target.getX(), target.getY(), new Rotation2d(target.getZ()));
               Pose2d allianceAdjustedPose = TargetClass.toPose2d(targetPose);
               distanceToTarget = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
               
-              // Create controller with current distance-based constraints
-              currentXController = new ProfiledPIDController(
-                  Constants.DriveToPoseConstants.TRANSLATION_P,
-                  Constants.DriveToPoseConstants.TRANSLATION_I,
-                  Constants.DriveToPoseConstants.TRANSLATION_D,
-                  getTranslationConstraintsForDistance(distanceToTarget)
-              );
-              currentXController.setTolerance(0.05);
+              SmartDashboard.putString("Target Name", target.getName());
+              SmartDashboard.putBoolean("Target Available", true);
           } else {
-              // When no target, set all PID values and constraints to zero
-              currentXController = new ProfiledPIDController(
-                  0, 0, 0,  // Zero PID values
-                  new Constraints(0, 0)  // Zero velocity and acceleration constraints
-              );
-              currentXController.setTolerance(0.05);
-              
-              // Log this condition
-              SmartDashboard.putBoolean("No Target - Zero PID", true);
+              SmartDashboard.putString("Target Name", "None");
+              SmartDashboard.putBoolean("Target Available", false);
           }
+
+          // Always create controller with proper PID values, never zero
+          currentXController = new ProfiledPIDController(
+              Constants.DriveToPoseConstants.TRANSLATION_P,
+              Constants.DriveToPoseConstants.TRANSLATION_I,
+              Constants.DriveToPoseConstants.TRANSLATION_D,
+              getTranslationConstraintsForDistance(distanceToTarget)
+          );
+          currentXController.setTolerance(0.05);
+          SmartDashboard.putNumber("X Controller P", Constants.DriveToPoseConstants.TRANSLATION_P);
       }
       return currentXController;
   };
@@ -261,9 +260,12 @@ SwerveInputStream driveButtonBoxInput =
       if (currentRotController == null || pidControllersNeedUpdate) {
           TargetClass target = buttonBox.peekNextTarget();
           
+          // Update distance to target for constraint calculation
+          Pose2d robotPose = drivebase.getPose();
+          distanceToTarget = Double.POSITIVE_INFINITY;
+          angleToTarget = 0;
+          
           if (target != null) {
-              // Update distance to target for constraint calculation
-              Pose2d robotPose = drivebase.getPose();
               Pose2d targetPose = new Pose2d(target.getX(), target.getY(), new Rotation2d(target.getZ()));
               Pose2d allianceAdjustedPose = TargetClass.toPose2d(targetPose);
               distanceToTarget = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
@@ -275,32 +277,22 @@ SwerveInputStream driveButtonBoxInput =
               ) - robotPose.getRotation().getRadians();
               // Normalize angle
               angleToTarget = Math.atan2(Math.sin(angleToTarget), Math.cos(angleToTarget));
-              
-              // Create controller with current distance-based constraints
-              currentRotController = new ProfiledPIDController(
-                  Constants.DriveToPoseConstants.ROTATION_P,
-                  Constants.DriveToPoseConstants.ROTATION_I,
-                  Constants.DriveToPoseConstants.ROTATION_D,
-                  getRotationConstraintsForDistance(distanceToTarget)
-              );
-              currentRotController.setTolerance(Units.degreesToRadians(2));
-              currentRotController.enableContinuousInput(-Math.PI, Math.PI);
-          } else {
-              // When no target, set all PID values and constraints to zero
-              currentRotController = new ProfiledPIDController(
-                  0, 0, 0,  // Zero PID values
-                  new Constraints(0, 0)  // Zero velocity and acceleration constraints
-              );
-              currentRotController.setTolerance(Units.degreesToRadians(2));
-              currentRotController.enableContinuousInput(-Math.PI, Math.PI);
-              
-              // Log this condition
-              SmartDashboard.putBoolean("No Target - Zero Rot PID", true);
           }
+
+          // Always create controller with proper PID values, never zero
+          currentRotController = new ProfiledPIDController(
+              Constants.DriveToPoseConstants.ROTATION_P,
+              Constants.DriveToPoseConstants.ROTATION_I,
+              Constants.DriveToPoseConstants.ROTATION_D,
+              getRotationConstraintsForDistance(distanceToTarget)
+          );
+          currentRotController.setTolerance(Units.degreesToRadians(2));
+          currentRotController.enableContinuousInput(-Math.PI, Math.PI);
+          SmartDashboard.putNumber("Rot Controller P", Constants.DriveToPoseConstants.ROTATION_P);
       }
       return currentRotController;
   };
-  
+
   // Create a stream that includes drive-to-pose capability with dynamic controllers
   SwerveInputStream driveToPoseStream = driveDirectAngle.copy().driveToPose(
       () -> {
@@ -560,10 +552,7 @@ SwerveInputStream driveButtonBoxInput =
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
 
-    driverXbox.axisMagnitudeGreaterThan(0,0.1).or(driverXbox.axisMagnitudeGreaterThan(1, .1)).or(driverXbox.axisMagnitudeGreaterThan(4,.1)).or(driverXbox.axisMagnitudeGreaterThan(5, .1)).onTrue(new InstantCommand(() -> {
-      drivebase.setCancel(true);
-      disableDriveToPoseCommand.schedule(); // Also disable drive-to-pose
-    }));
+
 
 
 
@@ -580,6 +569,7 @@ SwerveInputStream driveButtonBoxInput =
         )
     );
     
+
     // Cancel drive-to-pose when driver provides manual input
     driverXbox.axisMagnitudeGreaterThan(0, 0.1)
         .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
@@ -593,32 +583,13 @@ SwerveInputStream driveButtonBoxInput =
         }));
 
     driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-    
-    // Remove these lines:
-    // driverXbox.x().whileTrue(enableDriveToPoseCommand); //For Testing
-    // driverXbox.x().onFalse(disableDriveToPoseCommand); //For Testing
-    
-    // Remove or modify these lines:
-    // driverXbox.start().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-    // driverXbox.start().onTrue(
-    //   new InstantCommand(() -> {
-    //       if (driveToPoseEnabled) {
-    //           disableDriveToPoseCommand.schedule();
-    //       } else {
-    //           enableDriveToPoseCommand.schedule();
-    //       }
-    //   })
-    // );
-    // driverXbox.back().onTrue(enableDriveToPoseCommand)
-    //               .onFalse(disableDriveToPoseCommand);
-
-    // Example of using the atTargetTrigger - you can add your own commands here
-    atTargetTrigger.onTrue(Commands.runOnce(() -> {
-      SmartDashboard.putString("Drive Status", "Target Reached!");
-    }));
-
-
-
+    driverXbox.y().onTrue(
+        Commands.either(
+            Commands.runOnce(() -> tempDriveToPoseCommand.cancel()),
+            Commands.runOnce(() -> tempDriveToPoseCommand.schedule()),
+            () -> tempDriveToPoseCommand.isScheduled()
+        )
+    );
 
 
 
@@ -938,7 +909,14 @@ SwerveInputStream driveButtonBoxInput =
    * Get dynamic translation constraints based on distance to target
    */
   private Constraints getTranslationConstraintsForDistance(double distance) {
-    if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
+    // Use default "far" constraints if no target or infinite distance
+    if (Double.isInfinite(distance) || distance <= 0) {
+      // Use moderate default values that allow movement but not too fast
+      return new Constraints(
+          Constants.DriveToPoseConstants.FAR_MAX_VEL * 0.5,
+          Constants.DriveToPoseConstants.FAR_MAX_ACCEL * 0.5);
+    }
+    else if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
       return new Constraints(
           Constants.DriveToPoseConstants.VERY_CLOSE_MAX_VEL,
           Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
@@ -961,7 +939,14 @@ SwerveInputStream driveButtonBoxInput =
    * Get dynamic rotation constraints based on distance to target
    */
   private Constraints getRotationConstraintsForDistance(double distance) {
-    if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
+    // Use default "far" constraints if no target or infinite distance
+    if (Double.isInfinite(distance) || distance <= 0) {
+      // Use moderate default values that allow rotation but not too fast
+      return new Constraints(
+          Constants.DriveToPoseConstants.FAR_MAX_ROT_VEL * 0.5,
+          Constants.DriveToPoseConstants.FAR_MAX_ROT_ACCEL * 0.5);
+    }
+    else if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
       return new Constraints(
           Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ROT_VEL,
           Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ROT_ACCEL);
