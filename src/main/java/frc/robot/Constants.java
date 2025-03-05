@@ -437,7 +437,7 @@ public final class Constants
     // PID Values
     public static final double TRANSLATION_P = 5.0;
     public static final double TRANSLATION_I = 0.0;
-    public static final double TRANSLATION_D = 0.0;
+    public static final double TRANSLATION_D = 1.0;
     
     public static final double ROTATION_P = 5.0;
     public static final double ROTATION_I = 0.0;
@@ -446,13 +446,13 @@ public final class Constants
     // Speed constraints based on distance
     public static final double FAR_DISTANCE = 3.0; // meters
     public static final double MID_DISTANCE = 1.5; // meters
-    public static final double CLOSE_DISTANCE = 0.5; // meters
-    public static final double VERY_CLOSE_DISTANCE = 0.2; // meters
+    public static final double CLOSE_DISTANCE = 1.0; // meters
+    public static final double VERY_CLOSE_DISTANCE = 0.5; // meters
     
     // Maximum velocity constraints (m/s)
     public static final double FAR_MAX_VEL = 3.0;
-    public static final double MID_MAX_VEL = 2.0;
-    public static final double CLOSE_MAX_VEL = 1.0;
+    public static final double MID_MAX_VEL = 1.0;
+    public static final double CLOSE_MAX_VEL = .75;
     public static final double VERY_CLOSE_MAX_VEL = 0.5;
     
     // Maximum acceleration constraints (m/s²)
