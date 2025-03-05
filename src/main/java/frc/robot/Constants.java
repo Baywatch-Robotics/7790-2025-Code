@@ -176,6 +176,12 @@ public final class Constants
     // public static final float highBallPose = -50f;
     // public static final float lowBallPose = -25f;
     
+    // New elevator height thresholds for speed control
+    public static final float SLIGHTLY_RAISED_THRESHOLD = -5f;
+    public static final float PARTIALLY_RAISED_THRESHOLD = -20f;
+    public static final float MID_RAISED_THRESHOLD = -40f;
+    public static final float FULLY_RAISED_THRESHOLD = -60f;
+    
     public static final float P = 0.25f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
@@ -423,11 +429,10 @@ public final class Constants
     // Default speed when elevator is lowered
     public static final float elevatorLoweredSpeed = 1.0f;
     
-    // Distance thresholds for various proximity classifications
-    public static final float veryCloseDistance = 0.5f;
-    public static final float closeDistance = 1.0f;
-    public static final float approachingDistance = 1.5f;
-    public static final float linedUpDistance = 0.08f;
+    // New speed constants for different elevator heights
+    public static final float elevatorPartiallyRaisedSpeed = 0.5f;
+    public static final float elevatorMidRaisedSpeed = 0.3f;
+    public static final float elevatorFullyRaisedSpeed = 0.1f;
   }
 
   /**
@@ -471,6 +476,20 @@ public final class Constants
     public static final double MID_MAX_ROT_ACCEL = Units.degreesToRadians(270);
     public static final double CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(180);
     public static final double VERY_CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(90);
+    
+    // Elevator-based constraint multipliers (0.0-1.0)
+    // These will be multiplied by the distance-based constraints
+    public static final double ELEVATOR_LOW_VEL_MULTIPLIER = 1.0;
+    public static final double ELEVATOR_LOW_ACCEL_MULTIPLIER = 1.0;
+    
+    public static final double ELEVATOR_PARTIAL_VEL_MULTIPLIER = 0.8;
+    public static final double ELEVATOR_PARTIAL_ACCEL_MULTIPLIER = 0.7;
+    
+    public static final double ELEVATOR_MID_VEL_MULTIPLIER = 0.6;
+    public static final double ELEVATOR_MID_ACCEL_MULTIPLIER = 0.5;
+    
+    public static final double ELEVATOR_HIGH_VEL_MULTIPLIER = 0.5;
+    public static final double ELEVATOR_HIGH_ACCEL_MULTIPLIER = 0.4;
     
     // Target position and rotation tolerance
     public static final double POSITION_TOLERANCE = 0.02; // meters

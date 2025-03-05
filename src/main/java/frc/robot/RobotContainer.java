@@ -130,10 +130,24 @@ public class RobotContainer
   private boolean isAtTargetPosition = false;
   private boolean isAtTargetRotation = false;
   private boolean isAtTarget = false;
+  
+  // Add back tolerance variables that were accidentally removed
   private double positionTolerance = Constants.DriveToPoseConstants.POSITION_TOLERANCE; 
   private double rotationTolerance = Constants.DriveToPoseConstants.ROTATION_TOLERANCE;
   
-  // Trigger for when the robot is at the target position
+  // Flag to track if we've removed visualization after reaching a target
+  private boolean hasReachedAndClearedTarget = false;
+  
+  // Add auto-cancel functionality when target is reached
+  private boolean autoCancel = true;
+  private boolean hasAutoCanceled = false;
+  
+  // Trigger that fires when target is reached (can be used elsewhere)
+  public Trigger targetReachedTrigger = new Trigger(() -> isAtTarget && isDriveToPoseActive());
+  public Trigger targetPositionReachedTrigger = new Trigger(() -> isAtTargetPosition && isDriveToPoseActive());
+  public Trigger targetRotationReachedTrigger = new Trigger(() -> isAtTargetRotation && isDriveToPoseActive());
+  
+  // Triggers for when the robot is at the target position
   public Trigger atTargetPositionTrigger = new Trigger(() -> isAtTargetPosition);
   public Trigger atTargetRotationTrigger = new Trigger(() -> isAtTargetRotation);
   public Trigger atTargetTrigger = new Trigger(() -> isAtTarget);
@@ -319,7 +333,7 @@ SwerveInputStream driveButtonBoxInput =
   };
 
   // Create a stream that includes drive-to-pose capability with dynamic controllers
-  SwerveInputStream driveToPoseStream = driveDirectAngle.copy().driveToPose(
+  public SwerveInputStream driveToPoseStream = driveDirectAngle.copy().driveToPose(
       () -> {
           // Flag that controllers should be updated
           pidControllersNeedUpdate = true;
@@ -385,21 +399,38 @@ SwerveInputStream driveButtonBoxInput =
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
   public Command driveFieldOrientedDriveToPose = drivebase.driveFieldOriented(driveToPoseStream);
 
-  // Track whether drive-to-pose is currently enabled
-  private boolean isDriveToPoseEnabled = false;
-
-  // Command to enable drive-to-pose
+  // Command to enable drive-to-pose - Modified to make it work in autonomous
   public Command enableDriveToPoseCommand = Commands.runOnce(() -> {
+    // Reset PID controllers to ensure fresh values
+    pidControllersNeedUpdate = true;
+    currentXController = null;
+    currentRotController = null;
+    
+    // Enable drive to pose
     driveToPoseStream.driveToPoseEnabled(true);
-    isDriveToPoseEnabled = true;
     SmartDashboard.putBoolean("Drive To Pose Enabled", true);
+    SmartDashboard.putString("Drive Status", "Autonomous Drive-to-Pose Active");
+    
+    // Reset target position status
+    isAtTargetPosition = false;
+    isAtTargetRotation = false;
+    isAtTarget = false;
+    hasReachedAndClearedTarget = false;
+    hasAutoCanceled = false;
   });
 
-  // Command to disable drive-to-pose
+  // Command to disable drive-to-pose - Modified for consistency
   public Command disableDriveToPoseCommand = Commands.runOnce(() -> {
     driveToPoseStream.driveToPoseEnabled(false);
-    isDriveToPoseEnabled = false;
     SmartDashboard.putBoolean("Drive To Pose Enabled", false);
+    SmartDashboard.putString("Drive Status", "Drive-to-Pose Disabled");
+    
+    // Reset target position status
+    isAtTargetPosition = false;
+    isAtTargetRotation = false;
+    isAtTarget = false;
+    hasReachedAndClearedTarget = false;
+    hasAutoCanceled = false;
   });
 
   // Create a command to temporarily run drive-to-pose without canceling default command
@@ -415,16 +446,11 @@ SwerveInputStream driveButtonBoxInput =
             // Flash warning on dashboard (will be visible)
             SmartDashboard.putBoolean("No Target Warning", true);
             
-            // Log a console message
-            System.out.println("Drive-to-pose attempted with no target available");
         } else {
             // Check if target is near origin (extra safety)
             Pose2d targetPose = new Pose2d(target.getX(), target.getY(), new Rotation2d(target.getZ()));
             Pose2d allianceAdjustedPose = TargetClass.toPose2d(targetPose);
             
-            // Debug output for target location
-            System.out.println("Target: " + target.getName() + " at: " + 
-                allianceAdjustedPose.getX() + ", " + allianceAdjustedPose.getY());
             
             // Validate the target is not at/near origin (0,0,0)
             if (isNearOrigin(allianceAdjustedPose)) {
@@ -451,13 +477,11 @@ SwerveInputStream driveButtonBoxInput =
                 currentXController = null; // Reset controllers to ensure they're recreated
                 currentRotController = null;
                 driveToPoseStream.driveToPoseEnabled(true);
-                isDriveToPoseEnabled = true;
                 
                 // Reset target position status
                 isAtTargetPosition = false;
                 isAtTargetRotation = false;
                 isAtTarget = false;
-                hasReachedAndClearedTarget = false; // Reset the target clearing flag
                 
                 SmartDashboard.putBoolean("Drive To Pose Active", true);
                 SmartDashboard.putBoolean("At Target Position", false);
@@ -482,7 +506,17 @@ SwerveInputStream driveButtonBoxInput =
     
     // Only run drive-to-pose command if a target is available AND valid
     Commands.either(
-        driveFieldOrientedDriveToPose,
+        // Add auto-cancellation when target is reached
+        Commands.sequence(
+            driveFieldOrientedDriveToPose.until(() -> isAtTarget && autoCancel),
+            Commands.runOnce(() -> {
+                if (!hasAutoCanceled) {
+                    System.out.println("AUTO-CANCELING drive-to-pose - target reached!");
+                    hasAutoCanceled = true;
+                    SmartDashboard.putString("Drive Status", "Auto-Canceled - Target Reached");
+                }
+            })
+        ),
         Commands.none(), // Do nothing if no target
         () -> {
             TargetClass target = buttonBox.peekNextTarget();
@@ -498,25 +532,29 @@ SwerveInputStream driveButtonBoxInput =
     // Disable drive-to-pose when done (this runs even if interrupted)
     Commands.runOnce(() -> {
         driveToPoseStream.driveToPoseEnabled(false);
-        isDriveToPoseEnabled = false;
         SmartDashboard.putBoolean("Drive To Pose Active", false);
         SmartDashboard.putString("Drive Status", "Normal Driving");
         SmartDashboard.putBoolean("No Target Warning", false);
         SmartDashboard.putBoolean("Invalid Target Warning", false);
         
-        // Reset target position status
+        // Reset target position status and auto-cancel flag
         isAtTargetPosition = false;
         isAtTargetRotation = false;
         isAtTarget = false;
-        hasReachedAndClearedTarget = false; // Reset the target clearing flag
+        hasAutoCanceled = false;
+        
         SmartDashboard.putBoolean("At Target Position", false);
         SmartDashboard.putBoolean("At Target Rotation", false);
         SmartDashboard.putBoolean("At Target", false);
     })
   ).withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
 
-  // Flag to track if we've removed visualization after reaching a target
-  private boolean hasReachedAndClearedTarget = false;
+  /**
+   * Linear interpolation helper method
+   */
+  private double lerp(double a, double b, double t) {
+    return a + (b - a) * t;
+  }
 
   public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
   public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
@@ -537,6 +575,9 @@ SwerveInputStream driveButtonBoxInput =
     
     // Initialize drive to pose command for debugging
     SmartDashboard.putBoolean("Drive To Pose Enabled", false);
+    
+    // Initialize auto-cancel feature (can be toggled in SmartDashboard if needed)
+    SmartDashboard.putBoolean("Auto-Cancel Enabled", autoCancel);
   }
 
    /**
@@ -726,7 +767,6 @@ SwerveInputStream driveButtonBoxInput =
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
     SmartDashboard.putData(chooser);
-
   }
 
   public Command changeDriveSpeedCommand(float speed)
@@ -736,79 +776,46 @@ SwerveInputStream driveButtonBoxInput =
 
   public void setDriveSpeedBasedOnElevatorAndCloseness()
   {    
-    // Base speed determined by elevator position using constants
-
-
-    targetDriveSpeed = elevator.isRaisedEnough() ? SpeedConstants.elevatorRaisedSpeed : SpeedConstants.elevatorLoweredSpeed;
-
+    // Determine drive speed based on elevator height category using the new constants
+    Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
+    
+    // Set target speed based on elevator height
+    switch (heightCategory) {
+      case FULLY_RAISED:
+        targetDriveSpeed = SpeedConstants.elevatorFullyRaisedSpeed;
+        break;
+      case MID_RAISED:
+        targetDriveSpeed = SpeedConstants.elevatorMidRaisedSpeed;
+        break;
+      case PARTIALLY_RAISED:
+        targetDriveSpeed = SpeedConstants.elevatorPartiallyRaisedSpeed;
+        break;
+      case SLIGHTLY_RAISED:
+        targetDriveSpeed = SpeedConstants.elevatorRaisedSpeed;
+        break;
+      case LOWERED:
+      default:
+        targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
+        break;
+    }
+    
+    // Update SmartDashboard with current elevator height state
+    SmartDashboard.putString("Elevator Height State", heightCategory.toString());
+    
     // Update zone statuses
     Pose2d currentPose = drivebase.getPose();
     isInReefZone = isInReefZone(currentPose);
-
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
 
-    /*
-    // Reset distance to a large value by default
-    distanceToTarget = Double.POSITIVE_INFINITY;
-    
-
-    
-    // Adjust speed based on proximity to target if there's a valid target
-    TargetClass currentTarget = buttonBox.peekNextTarget();
-    if (currentTarget != null) {
-      // Get current robot position and target position
-      Pose2d robotPose = drivebase.getPose();
-      Pose2d targetPoseNonCorrected = new Pose2d(currentTarget.getX(), currentTarget.getY(), 
-                                    new Rotation2d(currentTarget.getZ()));
-
-      Pose2d targetPose = TargetClass.toPose2d(targetPoseNonCorrected);
-      // Calculate and store distance to target
-      distanceToTarget = robotPose.getTranslation().getDistance(targetPose.getTranslation());
-      
-      
-      // Define local proximity checks that always use current distance value using constants
-      isVeryClose = distanceToTarget < SpeedConstants.veryCloseDistance;
-      isClose = distanceToTarget < SpeedConstants.closeDistance;
-      isApproaching = distanceToTarget < SpeedConstants.approachingDistance;
-      isLinedUp = distanceToTarget < SpeedConstants.linedUpDistance;
-      
-      // Graduated speed reduction based on distance using constants
-      if (isVeryClose) {
-        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.veryCloseSpeedFactor);
-      } else if (isClose) {
-        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.closeSpeedFactor);
-      } else if (isApproaching) {
-        targetDriveSpeed = Math.min(baseSpeed, SpeedConstants.approachingSpeedFactor);
-      } else {
-        targetDriveSpeed = baseSpeed; // Use the base speed from elevator status
-      }
-      
-
-      // For debugging
-      SmartDashboard.putNumber("Distance to Target", distanceToTarget);
-      SmartDashboard.putBoolean("Very Close to Target", isVeryClose);
-      SmartDashboard.putBoolean("Close to Target", isClose);
-      SmartDashboard.putBoolean("Approaching Target", isApproaching);
-    } else {
-      // No target or not in drive-to-pose mode, just use elevator-based speed
-      targetDriveSpeed = baseSpeed;
-      
-      // Reset the dashboard indicators when not targeting
-      SmartDashboard.putNumber("Distance to Target", distanceToTarget);
-      SmartDashboard.putBoolean("Very Close to Target", false);
-      SmartDashboard.putBoolean("Close to Target", false);
-      SmartDashboard.putBoolean("Approaching Target", false);
-    }
-*/
     // Apply zone-based speed modifier
     float zoneModifier = getZoneSpeedMultiplier();
-    
     targetDriveSpeed = Math.min(targetDriveSpeed, targetDriveSpeed * zoneModifier);
 
     // Smooth the speed transition
     smoothDriveSpeed();
 
+    // Update dashboard with speed values
     SmartDashboard.putNumber("Target Drive Speed", targetDriveSpeed);
     SmartDashboard.putNumber("Actual Drive Speed", actualDriveSpeed);
     SmartDashboard.putNumber("Drive Speed", targetDriveSpeed);
@@ -816,16 +823,17 @@ SwerveInputStream driveButtonBoxInput =
     
     // Update zone status on dashboard
     SmartDashboard.putBoolean("In Reef Zone", isInReefZone);
-    SmartDashboard.putBoolean("In Coral Station Left", isInCoralStationLeftZone);  // Renamed
-    SmartDashboard.putBoolean("In Coral Station Right", isInCoralStationRightZone); // Renamed
+    SmartDashboard.putBoolean("In Coral Station Left", isInCoralStationLeftZone);
+    SmartDashboard.putBoolean("In Coral Station Right", isInCoralStationRightZone);
 
+    // Update drive suppliers with new speed
     driveY = () -> -driverXbox.getLeftY() * targetDriveSpeed;
     driveX = () -> -driverXbox.getLeftX() * targetDriveSpeed;
-
     angSpeed = () -> (-driverXbox.getRightX() * .8) * targetDriveSpeed;
 
+    // Handle drive-to-pose status updates
     // If drive-to-pose is active, update target position status
-    if (tempDriveToPoseCommand.isScheduled() && isDriveToPoseEnabled) {
+    if (tempDriveToPoseCommand.isScheduled()) {
       TargetClass target = buttonBox.peekNextTarget();
       
       if (target != null) {
@@ -834,15 +842,22 @@ SwerveInputStream driveButtonBoxInput =
           Pose2d targetPose = new Pose2d(target.getX(), target.getY(), new Rotation2d(target.getZ()));
           Pose2d allianceAdjustedPose = TargetClass.toPose2d(targetPose);
           
-          // Calculate position and rotation errors
+          // Calculate position error (distance between points)
           double positionError = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
-          double rotationError = Math.abs(robotPose.getRotation().minus(allianceAdjustedPose.getRotation()).getRadians());
-          rotationError = Math.abs(Math.atan2(Math.sin(rotationError), Math.cos(rotationError))); // Normalize to [0, π]
           
-          // Update status based on errors
+          // Calculate rotation error with proper normalization
+          // Get the difference between current and target rotation
+          double rotationDiff = robotPose.getRotation().minus(allianceAdjustedPose.getRotation()).getRadians();
+          // Normalize to [-π, π]
+          double rotationError = Math.abs(Math.atan2(Math.sin(rotationDiff), Math.cos(rotationDiff)));
+          
+          // Update status based on errors with strict comparison
           isAtTargetPosition = positionError <= positionTolerance;
           isAtTargetRotation = rotationError <= rotationTolerance;
           isAtTarget = isAtTargetPosition && isAtTargetRotation;
+          
+          // Display status about auto-cancel feature
+          SmartDashboard.putBoolean("Has Auto-Canceled", hasAutoCanceled);
           
           // Clear target visualization when we reach the target position
           // Only do this once when the target is first reached
@@ -851,8 +866,7 @@ SwerveInputStream driveButtonBoxInput =
               drivebase.clearTargetVisualization();
               hasReachedAndClearedTarget = true;
               
-              // Log target reached
-              System.out.println("Target reached: " + target.getName());
+              System.out.println("TARGET REACHED: " + target.getName());
           } else if (!isAtTarget) {
               // Reset flag when we're not at the target
               hasReachedAndClearedTarget = false;
@@ -860,7 +874,9 @@ SwerveInputStream driveButtonBoxInput =
           
           // Display on dashboard
           SmartDashboard.putNumber("Position Error", positionError);
+          SmartDashboard.putNumber("Position Tolerance", positionTolerance);
           SmartDashboard.putNumber("Rotation Error (deg)", Units.radiansToDegrees(rotationError));
+          SmartDashboard.putNumber("Rotation Tolerance (deg)", Units.radiansToDegrees(rotationTolerance));
           SmartDashboard.putBoolean("At Target Position", isAtTargetPosition);
           SmartDashboard.putBoolean("At Target Rotation", isAtTargetRotation);
           SmartDashboard.putBoolean("At Target", isAtTarget);
@@ -875,27 +891,31 @@ SwerveInputStream driveButtonBoxInput =
           } else {
               SmartDashboard.putString("Drive Status", "Driving to Target");
           }
+      } else {
+          // No target available, reset all flags to false
+          isAtTargetPosition = false;
+          isAtTargetRotation = false;
+          isAtTarget = false;
+          hasReachedAndClearedTarget = false;
+          hasAutoCanceled = false;
+          
+          SmartDashboard.putBoolean("At Target Position", false);
+          SmartDashboard.putBoolean("At Target Rotation", false);
+          SmartDashboard.putBoolean("At Target", false);
+          SmartDashboard.putString("Drive Status", "No Target Selected");
       }
+    } else {
+      // Drive-to-pose not active, reset all flags to false
+      isAtTargetPosition = false;
+      isAtTargetRotation = false;
+      isAtTarget = false;
+      hasReachedAndClearedTarget = false;
+      hasAutoCanceled = false;
       
-      // ...existing controller update code...
-  }
-
-    // If drive-to-pose is active, always update the PID controllers
-    if (tempDriveToPoseCommand.isScheduled() && isDriveToPoseEnabled) {
-      // Always update controllers on every run - simple and reliable
-      pidControllersNeedUpdate = true;
-      
-      // Force the suppliers to generate new controllers
-      driveToPoseXControllerSupplier.get();
-      driveToPoseRotControllerSupplier.get();
-      
-      // Reset flag after update
-      pidControllersNeedUpdate = false;
-  }
-
-    // Update SmartDashboard with drive-to-pose status
-    SmartDashboard.putBoolean("Drive To Pose Enabled", isDriveToPoseEnabled);
-    SmartDashboard.putBoolean("Drive To Pose Active", isDriveToPoseActive());
+      SmartDashboard.putBoolean("At Target Position", false);
+      SmartDashboard.putBoolean("At Target Rotation", false);
+      SmartDashboard.putBoolean("At Target", false);
+    }
   }
 
   /**
@@ -1002,9 +1022,23 @@ SwerveInputStream driveButtonBoxInput =
    */
   public Command getAutonomousCommand()
   {
-      // An example command will be run in autonomous
-      return chooser.getSelected();
-    }
+    // Make sure drive-to-pose is inactive at start of auto mode
+    driveToPoseStream.driveToPoseEnabled(false);
+    
+    // Set auto-cancel to true for autonomous
+    autoCancel = true;
+    SmartDashboard.putBoolean("Auto-Cancel Enabled", autoCancel);
+    
+    // Reset all drive-to-pose controllers
+    resetDriveToPoseForAuto();
+    
+    // Set the default drive command to drive-to-pose during auto
+    // This ensures the swerve subsystem can be used for drive-to-pose immediately
+    drivebase.setDefaultCommand(driveFieldOrientedDriveToPose);
+    
+    // Return the selected autonomous command
+    return chooser.getSelected();
+  }
 
   public void setMotorBrake(boolean brake)
   {
@@ -1012,71 +1046,110 @@ SwerveInputStream driveButtonBoxInput =
   }
 
   /**
-   * Get dynamic translation constraints based on distance to target with smoothing
+   * Get dynamic translation constraints based on distance to target with smoothing,
+   * now also considering elevator height
    */
   private Constraints getTranslationConstraintsForDistance(double distance) {
-      // Special case - if we're checking for a target at/near the origin, return zero constraints
-      if (distance <= 0.0) {
-          System.out.println("ZERO constraints: Invalid distance value: " + distance);
-          return new Constraints(0, 0); // Zero velocity and acceleration
-      }
-      
-      // Calculate target velocity and acceleration based on distance
-      double targetVel;
-      double targetAccel;
-      
-      // Use default "far" constraints if no target or infinite distance
-      if (Double.isInfinite(distance)) {
-          // Use moderate default values that allow movement but not too fast
-          targetVel = Constants.DriveToPoseConstants.FAR_MAX_VEL * 0.5;
-          targetAccel = Constants.DriveToPoseConstants.FAR_MAX_ACCEL * 0.5;
-      }
-      else if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
-          targetVel = Constants.DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-          targetAccel = Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-      } else if (distance < Constants.DriveToPoseConstants.CLOSE_DISTANCE) {
-          // Interpolate between CLOSE and VERY_CLOSE constraints
-          double t = (distance - Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) / 
-                     (Constants.DriveToPoseConstants.CLOSE_DISTANCE - Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE);
-          targetVel = lerp(Constants.DriveToPoseConstants.VERY_CLOSE_MAX_VEL, 
-                           Constants.DriveToPoseConstants.CLOSE_MAX_VEL, t);
-          targetAccel = lerp(Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL, 
-                             Constants.DriveToPoseConstants.CLOSE_MAX_ACCEL, t);
-      } else if (distance < Constants.DriveToPoseConstants.MID_DISTANCE) {
-          // Interpolate between MID and CLOSE constraints
-          double t = (distance - Constants.DriveToPoseConstants.CLOSE_DISTANCE) / 
-                     (Constants.DriveToPoseConstants.MID_DISTANCE - Constants.DriveToPoseConstants.CLOSE_DISTANCE);
-          targetVel = lerp(Constants.DriveToPoseConstants.CLOSE_MAX_VEL, 
-                           Constants.DriveToPoseConstants.MID_MAX_VEL, t);
-          targetAccel = lerp(Constants.DriveToPoseConstants.CLOSE_MAX_ACCEL, 
-                             Constants.DriveToPoseConstants.MID_MAX_ACCEL, t);
-      } else {
-          // Interpolate between FAR and MID constraints
-          double t = Math.min(1.0, (distance - Constants.DriveToPoseConstants.MID_DISTANCE) / 
-                     (Constants.DriveToPoseConstants.FAR_DISTANCE - Constants.DriveToPoseConstants.MID_DISTANCE));
-          targetVel = lerp(Constants.DriveToPoseConstants.MID_MAX_VEL, 
-                           Constants.DriveToPoseConstants.FAR_MAX_VEL, t);
-          targetAccel = lerp(Constants.DriveToPoseConstants.MID_MAX_ACCEL, 
-                             Constants.DriveToPoseConstants.FAR_MAX_ACCEL, t);
-      }
-      
-      // Apply smoothing between previous and target values
-      double smoothedVel = lerp(prevTransVel, targetVel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
-      double smoothedAccel = lerp(prevTransAccel, targetAccel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
-      
-      // Save current values for next cycle
-      prevTransVel = smoothedVel;
-      prevTransAccel = smoothedAccel;
-      
-      // Log the constraint values
-      SmartDashboard.putNumber("Translation Vel Constraint", smoothedVel);
-      SmartDashboard.putNumber("Translation Accel Constraint", smoothedAccel);
-      
-      return new Constraints(smoothedVel, smoothedAccel);
+    // Special case - if we're checking for a target at/near the origin, return zero constraints
+    if (distance <= 0.0) {
+        System.out.println("ZERO constraints: Invalid distance value: " + distance);
+        return new Constraints(0, 0); // Zero velocity and acceleration
+    }
+    
+    // Calculate base target velocity and acceleration based on distance
+    double targetVel;
+    double targetAccel;
+    
+    // Use default "far" constraints if no target or infinite distance
+    if (Double.isInfinite(distance)) {
+        // Use moderate default values that allow movement but not too fast
+        targetVel = Constants.DriveToPoseConstants.FAR_MAX_VEL * 0.5;
+        targetAccel = Constants.DriveToPoseConstants.FAR_MAX_ACCEL * 0.5;
+    }
+    else if (distance < Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) {
+        targetVel = Constants.DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
+        targetAccel = Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
+    } else if (distance < Constants.DriveToPoseConstants.CLOSE_DISTANCE) {
+        // Interpolate between CLOSE and VERY_CLOSE constraints
+        double t = (distance - Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE) / 
+                   (Constants.DriveToPoseConstants.CLOSE_DISTANCE - Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE);
+        targetVel = lerp(Constants.DriveToPoseConstants.VERY_CLOSE_MAX_VEL, 
+                         Constants.DriveToPoseConstants.CLOSE_MAX_VEL, t);
+        targetAccel = lerp(Constants.DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL, 
+                           Constants.DriveToPoseConstants.CLOSE_MAX_ACCEL, t);
+    } else if (distance < Constants.DriveToPoseConstants.MID_DISTANCE) {
+        // Interpolate between MID and CLOSE constraints
+        double t = (distance - Constants.DriveToPoseConstants.CLOSE_DISTANCE) / 
+                   (Constants.DriveToPoseConstants.MID_DISTANCE - Constants.DriveToPoseConstants.CLOSE_DISTANCE);
+        targetVel = lerp(Constants.DriveToPoseConstants.CLOSE_MAX_VEL, 
+                         Constants.DriveToPoseConstants.MID_MAX_VEL, t);
+        targetAccel = lerp(Constants.DriveToPoseConstants.CLOSE_MAX_ACCEL, 
+                           Constants.DriveToPoseConstants.MID_MAX_ACCEL, t);
+    } else {
+        // Interpolate between FAR and MID constraints
+        double t = Math.min(1.0, (distance - Constants.DriveToPoseConstants.MID_DISTANCE) / 
+                   (Constants.DriveToPoseConstants.FAR_DISTANCE - Constants.DriveToPoseConstants.MID_DISTANCE));
+        targetVel = lerp(Constants.DriveToPoseConstants.MID_MAX_VEL, 
+                         Constants.DriveToPoseConstants.FAR_MAX_VEL, t);
+        targetAccel = lerp(Constants.DriveToPoseConstants.MID_MAX_ACCEL, 
+                           Constants.DriveToPoseConstants.FAR_MAX_ACCEL, t);
+    }
+    
+    // Now apply elevator height-based modifiers
+    double elevatorVelMultiplier;
+    double elevatorAccelMultiplier;
+    
+    // Get elevator height category
+    Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
+    
+    // Set constraint multipliers based on elevator height
+    switch (heightCategory) {
+        case FULLY_RAISED:
+            elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_HIGH_VEL_MULTIPLIER;
+            elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_HIGH_ACCEL_MULTIPLIER;
+            break;
+        case MID_RAISED:
+            elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_MID_VEL_MULTIPLIER;
+            elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_MID_ACCEL_MULTIPLIER;
+            break;
+        case PARTIALLY_RAISED:
+            elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_PARTIAL_VEL_MULTIPLIER;
+            elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_PARTIAL_ACCEL_MULTIPLIER;
+            break;
+        case SLIGHTLY_RAISED:
+        case LOWERED:
+        default:
+            elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_LOW_VEL_MULTIPLIER;
+            elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_LOW_ACCEL_MULTIPLIER;
+            break;
+    }
+    
+    // Apply elevator based modifiers
+    targetVel *= elevatorVelMultiplier;
+    targetAccel *= elevatorAccelMultiplier;
+    
+    // Display multipliers to dashboard
+    SmartDashboard.putNumber("Elevator Velocity Multiplier", elevatorVelMultiplier);
+    SmartDashboard.putNumber("Elevator Accel Multiplier", elevatorAccelMultiplier);
+    
+    // Apply smoothing between previous and target values
+    double smoothedVel = lerp(prevTransVel, targetVel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
+    double smoothedAccel = lerp(prevTransAccel, targetAccel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
+    
+    // Save current values for next cycle
+    prevTransVel = smoothedVel;
+    prevTransAccel = smoothedAccel;
+    
+    // Log the constraint values
+    SmartDashboard.putNumber("Translation Vel Constraint", smoothedVel);
+    SmartDashboard.putNumber("Translation Accel Constraint", smoothedAccel);
+    
+    return new Constraints(smoothedVel, smoothedAccel);
   }
   
   /**
-   * Get dynamic rotation constraints based on distance to target with smoothing
+   * Get dynamic rotation constraints based on distance to target with smoothing,
+   * now also considering elevator height
    */
   private Constraints getRotationConstraintsForDistance(double distance) {
       // Special case - if we're checking for a target at/near the origin, return zero constraints
@@ -1085,7 +1158,7 @@ SwerveInputStream driveButtonBoxInput =
           return new Constraints(0, 0); // Zero velocity and acceleration
       }
       
-      // Calculate target velocity and acceleration based on distance
+      // Calculate base target velocity and acceleration based on distance
       double targetVel;
       double targetAccel;
       
@@ -1124,6 +1197,39 @@ SwerveInputStream driveButtonBoxInput =
                              Constants.DriveToPoseConstants.FAR_MAX_ROT_ACCEL, t);
       }
       
+      // Apply elevator height-based modifiers to rotation constraints as well
+      double elevatorVelMultiplier;
+      double elevatorAccelMultiplier;
+      
+      // Get elevator height category
+      Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
+      
+      // Set constraint multipliers based on elevator height
+      switch (heightCategory) {
+          case FULLY_RAISED:
+              elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_HIGH_VEL_MULTIPLIER;
+              elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_HIGH_ACCEL_MULTIPLIER;
+              break;
+          case MID_RAISED:
+              elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_MID_VEL_MULTIPLIER;
+              elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_MID_ACCEL_MULTIPLIER;
+              break;
+          case PARTIALLY_RAISED:
+              elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_PARTIAL_VEL_MULTIPLIER;
+              elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_PARTIAL_ACCEL_MULTIPLIER;
+              break;
+          case SLIGHTLY_RAISED:
+          case LOWERED:
+          default:
+              elevatorVelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_LOW_VEL_MULTIPLIER;
+              elevatorAccelMultiplier = Constants.DriveToPoseConstants.ELEVATOR_LOW_ACCEL_MULTIPLIER;
+              break;
+      }
+      
+      // Apply elevator based modifiers
+      targetVel *= elevatorVelMultiplier;
+      targetAccel *= elevatorAccelMultiplier;
+      
       // Apply smoothing between previous and target values
       double smoothedVel = lerp(prevRotVel, targetVel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
       double smoothedAccel = lerp(prevRotAccel, targetAccel, Constants.DriveToPoseConstants.CONSTRAINT_SMOOTHING_FACTOR);
@@ -1139,13 +1245,6 @@ SwerveInputStream driveButtonBoxInput =
       return new Constraints(smoothedVel, smoothedAccel);
   }
   
-  /**
-   * Linear interpolation helper method
-   */
-  private double lerp(double a, double b, double t) {
-    return a + (b - a) * t;
-  }
-  
   // Remove this method as we don't need it anymore
   // public void updatePeriodicCounter() {
   //   periodicCounter++;
@@ -1156,32 +1255,17 @@ SwerveInputStream driveButtonBoxInput =
     return tempDriveToPoseCommand.isScheduled();
   }
 
-  // Method to check if the robot has reached the target
+  // Method to check if the robot has reached the target - fix by using direct field access
   public boolean isAtTargetPosition() {
-    return isAtTargetPosition;
+    return isAtTargetPosition && isDriveToPoseActive();
   }
   
   public boolean isAtTargetRotation() {
-    return isAtTargetRotation;
+    return isAtTargetRotation && isDriveToPoseActive();
   }
   
   public boolean isAtTarget() {
-    return isAtTarget;
-  }
-  
-  // Allow setting custom tolerances if needed
-  public void setPositionTolerance(double meters) {
-    positionTolerance = meters;
-  }
-  
-  public void setRotationTolerance(double radians) {
-    rotationTolerance = radians;
-  }
-  
-  // Reset to default from constants
-  public void resetTolerancesToDefault() {
-    positionTolerance = Constants.DriveToPoseConstants.POSITION_TOLERANCE;
-    rotationTolerance = Constants.DriveToPoseConstants.ROTATION_TOLERANCE;
+    return isAtTarget && isDriveToPoseActive();
   }
 
   // Add new helper method to check if a pose is at or near the origin
@@ -1201,5 +1285,89 @@ SwerveInputStream driveButtonBoxInput =
       }
       
       return nearOrigin;
+  }
+
+  // Add a method to immediately cancel drive-to-pose (callable from other commands)
+  public void cancelDriveToPose() {
+    if (tempDriveToPoseCommand.isScheduled()) {
+      tempDriveToPoseCommand.cancel();
+      System.out.println("Drive-to-pose manually canceled by external request");
+    }
+  }
+  
+  // Command to cancel drive-to-pose (can be used in command groups)
+  public Command cancelDriveToPoseCommand = Commands.runOnce(this::cancelDriveToPose);
+  
+  // Method to check if the nearest target is reached with custom tolerance
+  public boolean isNearTarget(double customPositionTolerance) {
+    if (!isDriveToPoseActive() || buttonBox.peekNextTarget() == null) {
+      return false;
+    }
+    
+    TargetClass target = buttonBox.peekNextTarget();
+    Pose2d robotPose = drivebase.getPose();
+    Pose2d targetPose = new Pose2d(target.getX(), target.getY(), new Rotation2d(target.getZ()));
+    Pose2d allianceAdjustedPose = TargetClass.toPose2d(targetPose);
+    
+    double positionError = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
+    return positionError <= customPositionTolerance;
+  }
+  
+  // Get custom triggers for external use (with different tolerances)
+  public Trigger createCustomDistanceTrigger(double customTolerance) {
+    return new Trigger(() -> isNearTarget(customTolerance));
+  }
+
+  // Add methods specifically for autonomous drive-to-pose control
+  
+  /**
+   * Enable drive-to-pose specifically for autonomous mode
+   * This bypasses the safety checks in the normal command
+   */
+  public void enableDriveToPoseForAuto() {
+    // Reset PID controllers to ensure fresh values
+    pidControllersNeedUpdate = true;
+    currentXController = null;
+    currentRotController = null;
+    
+    // Enable drive to pose
+    driveToPoseStream.driveToPoseEnabled(true);
+    isAtTargetPosition = false;
+    isAtTargetRotation = false;
+    isAtTarget = false;
+    hasReachedAndClearedTarget = false;
+    hasAutoCanceled = false;
+    
+    SmartDashboard.putBoolean("Drive To Pose Enabled", true);
+    SmartDashboard.putString("Drive Status", "Auto Drive-to-Pose Active");
+  }
+  
+  /**
+   * Disable drive-to-pose specifically for autonomous mode
+   */
+  public void disableDriveToPoseForAuto() {
+    driveToPoseStream.driveToPoseEnabled(false);
+    
+    SmartDashboard.putBoolean("Drive To Pose Enabled", false);
+    SmartDashboard.putString("Drive Status", "Normal Driving");
+    
+    // Reset target position status
+    isAtTargetPosition = false;
+    isAtTargetRotation = false;
+    isAtTarget = false;
+  }
+  
+  /**
+   * Reset the drive-to-pose system for autonomous
+   */
+  public void resetDriveToPoseForAuto() {
+    disableDriveToPoseForAuto();
+    pidControllersNeedUpdate = true;
+    currentXController = null;
+    currentRotController = null;
+    prevTransVel = 0;
+    prevTransAccel = 0;
+    prevRotVel = 0;
+    prevRotAccel = 0;
   }
 }

@@ -43,6 +43,12 @@ public class Elevator extends SubsystemBase {
     private Trigger raisedTrigger;
     private Trigger clearToIntakeTrigger;
     private Trigger clearToClimbAngleTrigger;
+    
+    // Additional triggers for more precise height detection
+    private Trigger slightlyRaisedTrigger;
+    private Trigger partiallyRaisedTrigger;
+    private Trigger midRaisedTrigger;
+    private Trigger fullyRaisedTrigger;
 
     public Elevator(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
@@ -258,6 +264,80 @@ public class Elevator extends SubsystemBase {
                m_encoder.getPosition() <= elevatorDesiredPosition + 5;
     }
 
+    // New methods to check elevator height status
+    public Trigger isSlightlyRaisedTrigger() {
+        return new Trigger(() -> {
+            boolean slightlyRaised = m_encoder.getPosition() <= ElevatorConstants.SLIGHTLY_RAISED_THRESHOLD;
+            SmartDashboard.putBoolean("Elevator Slightly Raised", slightlyRaised);
+            return slightlyRaised;
+        });
+    }
+    
+    public Trigger isPartiallyRaisedTrigger() {
+        return new Trigger(() -> {
+            boolean partiallyRaised = m_encoder.getPosition() <= ElevatorConstants.PARTIALLY_RAISED_THRESHOLD;
+            SmartDashboard.putBoolean("Elevator Partially Raised", partiallyRaised);
+            return partiallyRaised;
+        });
+    }
+    
+    public Trigger isMidRaisedTrigger() {
+        return new Trigger(() -> {
+            boolean midRaised = m_encoder.getPosition() <= ElevatorConstants.MID_RAISED_THRESHOLD;
+            SmartDashboard.putBoolean("Elevator Mid Raised", midRaised);
+            return midRaised;
+        });
+    }
+    
+    public Trigger isFullyRaisedTrigger() {
+        return new Trigger(() -> {
+            boolean fullyRaised = m_encoder.getPosition() <= ElevatorConstants.FULLY_RAISED_THRESHOLD;
+            SmartDashboard.putBoolean("Elevator Fully Raised", fullyRaised);
+            return fullyRaised;
+        });
+    }
+    
+    // New boolean methods for direct checking
+    public boolean isSlightlyRaised() {
+        return m_encoder.getPosition() <= ElevatorConstants.SLIGHTLY_RAISED_THRESHOLD;
+    }
+    
+    public boolean isPartiallyRaised() {
+        return m_encoder.getPosition() <= ElevatorConstants.PARTIALLY_RAISED_THRESHOLD;
+    }
+    
+    public boolean isMidRaised() {
+        return m_encoder.getPosition() <= ElevatorConstants.MID_RAISED_THRESHOLD;
+    }
+    
+    public boolean isFullyRaised() {
+        return m_encoder.getPosition() <= ElevatorConstants.FULLY_RAISED_THRESHOLD;
+    }
+    
+    // Get elevator height category as an enum for easier state management
+    public enum ElevatorHeight {
+        LOWERED,
+        SLIGHTLY_RAISED,
+        PARTIALLY_RAISED,
+        MID_RAISED,
+        FULLY_RAISED
+    }
+    
+    public ElevatorHeight getElevatorHeightCategory() {
+        double position = m_encoder.getPosition();
+        
+        if (position <= ElevatorConstants.FULLY_RAISED_THRESHOLD) {
+            return ElevatorHeight.FULLY_RAISED;
+        } else if (position <= ElevatorConstants.MID_RAISED_THRESHOLD) {
+            return ElevatorHeight.MID_RAISED;
+        } else if (position <= ElevatorConstants.PARTIALLY_RAISED_THRESHOLD) {
+            return ElevatorHeight.PARTIALLY_RAISED;
+        } else if (position <= ElevatorConstants.SLIGHTLY_RAISED_THRESHOLD) {
+            return ElevatorHeight.SLIGHTLY_RAISED;
+        } else {
+            return ElevatorHeight.LOWERED;
+        }
+    }
 
     public void moveAmount(final double amount) {
 
@@ -285,6 +365,7 @@ public class Elevator extends SubsystemBase {
         
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
+        SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
 
         // Initialize triggers once
         if (atSetpointTrigger == null) {
@@ -307,12 +388,33 @@ public class Elevator extends SubsystemBase {
             clearToClimbAngleTrigger = isClearToClimbAngle();
         }
         
-        // Replace direct calls with stored triggers
-        clearToIntakeTrigger.getAsBoolean();  // This evaluates the trigger
+        // Initialize the new triggers
+        if (slightlyRaisedTrigger == null) {
+            slightlyRaisedTrigger = isSlightlyRaisedTrigger();
+        }
+        
+        if (partiallyRaisedTrigger == null) {
+            partiallyRaisedTrigger = isPartiallyRaisedTrigger();
+        }
+        
+        if (midRaisedTrigger == null) {
+            midRaisedTrigger = isMidRaisedTrigger();
+        }
+        
+        if (fullyRaisedTrigger == null) {
+            fullyRaisedTrigger = isFullyRaisedTrigger();
+        }
+        
+        // Evaluate all triggers
+        clearToIntakeTrigger.getAsBoolean();
         atHomeTrigger.getAsBoolean();
         atSetpointTrigger.getAsBoolean();
         clearToClimbAngleTrigger.getAsBoolean();
         raisedTrigger.getAsBoolean();
+        slightlyRaisedTrigger.getAsBoolean();
+        partiallyRaisedTrigger.getAsBoolean();
+        midRaisedTrigger.getAsBoolean();
+        fullyRaisedTrigger.getAsBoolean();
 
         // Update drive speed based on elevator position
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
@@ -339,5 +441,22 @@ public class Elevator extends SubsystemBase {
     
     public Trigger getIsClearToClimbAngleTrigger() {
         return clearToClimbAngleTrigger;
+    }
+    
+    // Getters for the new trigger instances
+    public Trigger getIsSlightlyRaisedTrigger() {
+        return slightlyRaisedTrigger;
+    }
+    
+    public Trigger getIsPartiallyRaisedTrigger() {
+        return partiallyRaisedTrigger;
+    }
+    
+    public Trigger getIsMidRaisedTrigger() {
+        return midRaisedTrigger;
+    }
+    
+    public Trigger getIsFullyRaisedTrigger() {
+        return fullyRaisedTrigger;
     }
 }
