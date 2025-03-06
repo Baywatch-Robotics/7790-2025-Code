@@ -121,10 +121,20 @@ public class RobotContainer
   public Trigger linedUpTrigger = new Trigger(() -> isLinedUp);
   
   // Triggers for zone detection
-  public Trigger reefZoneTrigger = new Trigger(() -> isInReefZone);
-  public Trigger coralStationLeftTrigger = new Trigger(() -> isInCoralStationLeftZone);
-  public Trigger coralStationRightTrigger = new Trigger(() -> isInCoralStationRightZone);
-  public Trigger anyZoneTrigger = new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
+  public Trigger reefZoneTrigger(){
+    return new Trigger(() -> isInReefZone);
+  }
+  
+  public Trigger coralStationLeftTrigger(){
+    return new Trigger(() -> isInCoralStationLeftZone);
+  }
+  public Trigger coralStationRightTrigger(){
+    return new Trigger(() -> isInCoralStationRightZone);
+  }
+
+  public Trigger anyZoneTrigger(){
+    return new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
+  }
 
   // Track positioning accuracy
   private boolean isAtTargetPosition = false;
@@ -142,15 +152,22 @@ public class RobotContainer
   private boolean autoCancel = true;
   private boolean hasAutoCanceled = false;
   
-  // Trigger that fires when target is reached (can be used elsewhere)
-  public Trigger targetReachedTrigger = new Trigger(() -> isAtTarget && isDriveToPoseActive());
-  public Trigger targetPositionReachedTrigger = new Trigger(() -> isAtTargetPosition && isDriveToPoseActive());
-  public Trigger targetRotationReachedTrigger = new Trigger(() -> isAtTargetRotation && isDriveToPoseActive());
+  // Add flag to track if we've processed the current target
+  private boolean hasProcessedCurrentTarget = false;
   
-  // Triggers for when the robot is at the target position
-  public Trigger atTargetPositionTrigger = new Trigger(() -> isAtTargetPosition);
-  public Trigger atTargetRotationTrigger = new Trigger(() -> isAtTargetRotation);
-  public Trigger atTargetTrigger = new Trigger(() -> isAtTarget);
+  // Add flag to control auto-advance to next target
+  private boolean autoAdvanceTargets = true;
+  
+  // Trigger that fires when target is reached (can be used elsewhere)
+  public Trigger targetReachedTrigger(){
+    return new Trigger(() -> isAtTarget && isDriveToPoseActive());
+  }
+  public Trigger targetPositionReachedTrigger(){
+    return new Trigger(() -> isAtTargetPosition && isDriveToPoseActive());
+  }
+  public Trigger targetRotationReachedTrigger(){
+    return new Trigger(() -> isAtTargetRotation && isDriveToPoseActive());
+  }
 
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driveY.getAsDouble(),
@@ -399,39 +416,28 @@ SwerveInputStream driveButtonBoxInput =
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
   public Command driveFieldOrientedDriveToPose = drivebase.driveFieldOriented(driveToPoseStream);
 
-  // Command to enable drive-to-pose - Modified to make it work in autonomous
-  public Command enableDriveToPoseCommand = Commands.runOnce(() -> {
-    // Reset PID controllers to ensure fresh values
-    pidControllersNeedUpdate = true;
-    currentXController = null;
-    currentRotController = null;
-    
-    // Enable drive to pose
-    driveToPoseStream.driveToPoseEnabled(true);
-    SmartDashboard.putBoolean("Drive To Pose Enabled", true);
-    SmartDashboard.putString("Drive Status", "Autonomous Drive-to-Pose Active");
-    
-    // Reset target position status
-    isAtTargetPosition = false;
-    isAtTargetRotation = false;
-    isAtTarget = false;
-    hasReachedAndClearedTarget = false;
-    hasAutoCanceled = false;
-  });
 
-  // Command to disable drive-to-pose - Modified for consistency
-  public Command disableDriveToPoseCommand = Commands.runOnce(() -> {
-    driveToPoseStream.driveToPoseEnabled(false);
-    SmartDashboard.putBoolean("Drive To Pose Enabled", false);
-    SmartDashboard.putString("Drive Status", "Drive-to-Pose Disabled");
-    
-    // Reset target position status
-    isAtTargetPosition = false;
-    isAtTargetRotation = false;
-    isAtTarget = false;
-    hasReachedAndClearedTarget = false;
-    hasAutoCanceled = false;
-  });
+// Simplified enableDriveToPoseCommand: just schedule tempDriveToPoseCommand
+public Command enableDriveToPoseCommand() {
+    return Commands.runOnce(() -> {
+        // Only schedule if not already running
+        if (!tempDriveToPoseCommand.isScheduled()) {
+            tempDriveToPoseCommand.schedule();
+        }
+    });
+}
+
+// Simplified disableDriveToPoseCommand: just cancel tempDriveToPoseCommand
+public Command disableDriveToPoseCommand() {
+    return Commands.runOnce(() -> {
+        // Only cancel if currently running
+        if (tempDriveToPoseCommand.isScheduled()) {
+            tempDriveToPoseCommand.cancel();
+        }
+    });
+}
+
+
 
   // Create a command to temporarily run drive-to-pose without canceling default command
   private Command tempDriveToPoseCommand = Commands.sequence(
@@ -482,6 +488,8 @@ SwerveInputStream driveButtonBoxInput =
                 isAtTargetPosition = false;
                 isAtTargetRotation = false;
                 isAtTarget = false;
+                hasReachedAndClearedTarget = false;
+                hasProcessedCurrentTarget = false;
                 
                 SmartDashboard.putBoolean("Drive To Pose Active", true);
                 SmartDashboard.putBoolean("At Target Position", false);
@@ -542,6 +550,8 @@ SwerveInputStream driveButtonBoxInput =
         isAtTargetRotation = false;
         isAtTarget = false;
         hasAutoCanceled = false;
+        hasReachedAndClearedTarget = false;
+        hasProcessedCurrentTarget = false;
         
         SmartDashboard.putBoolean("At Target Position", false);
         SmartDashboard.putBoolean("At Target Rotation", false);
@@ -578,6 +588,9 @@ SwerveInputStream driveButtonBoxInput =
     
     // Initialize auto-cancel feature (can be toggled in SmartDashboard if needed)
     SmartDashboard.putBoolean("Auto-Cancel Enabled", autoCancel);
+    
+    // Initialize auto-advance feature (can be toggled in SmartDashboard if needed)
+    SmartDashboard.putBoolean("Auto-Advance Targets", autoAdvanceTargets);
   }
 
    /**
@@ -704,7 +717,7 @@ SwerveInputStream driveButtonBoxInput =
 
 
 
-    
+    /*
     // Hold back button to temporarily use drive-to-pose
     driverXbox.back().whileTrue(tempDriveToPoseCommand);
     
@@ -716,7 +729,7 @@ SwerveInputStream driveButtonBoxInput =
             () -> tempDriveToPoseCommand.isScheduled()
         )
     );
-    
+    */
 
     // Cancel drive-to-pose when driver provides manual input
     driverXbox.axisMagnitudeGreaterThan(0, 0.1)
@@ -811,6 +824,10 @@ SwerveInputStream driveButtonBoxInput =
     // Apply zone-based speed modifier
     float zoneModifier = getZoneSpeedMultiplier();
     targetDriveSpeed = Math.min(targetDriveSpeed, targetDriveSpeed * zoneModifier);
+    
+    reefZoneTrigger();
+    coralStationLeftTrigger();
+    coralStationRightTrigger();
 
     // Smooth the speed transition
     smoothDriveSpeed();
@@ -829,7 +846,7 @@ SwerveInputStream driveButtonBoxInput =
     // Update drive suppliers with new speed
     driveY = () -> -driverXbox.getLeftY() * targetDriveSpeed;
     driveX = () -> -driverXbox.getLeftX() * targetDriveSpeed;
-    angSpeed = () -> (-driverXbox.getRightX() * .8) * targetDriveSpeed;
+    angSpeed = () -> -driverXbox.getRightX() * targetDriveSpeed;
 
     // Handle drive-to-pose status updates
     // If drive-to-pose is active, update target position status
@@ -866,10 +883,43 @@ SwerveInputStream driveButtonBoxInput =
               drivebase.clearTargetVisualization();
               hasReachedAndClearedTarget = true;
               
+              targetPositionReachedTrigger();
+              targetRotationReachedTrigger();
+              targetReachedTrigger();
+              
               System.out.println("TARGET REACHED: " + target.getName());
+              
+              // Process the target - get the next one if auto-advance is enabled
+              if (autoAdvanceTargets && !hasProcessedCurrentTarget) {
+                  hasProcessedCurrentTarget = true;
+                  System.out.println("Auto-advancing to next target");
+                  
+                  // Get the current target (which we've reached)
+                  buttonBox.getNextTarget();
+                  
+                  // If there are more targets, prepare for the next one
+                  if (buttonBox.hasQueue()) {
+                      TargetClass nextTarget = buttonBox.peekNextTarget();
+                      if (nextTarget != null) {
+                          System.out.println("Next target: " + nextTarget.getName());
+                          
+                          // Reset flags to handle the next target
+                          hasReachedAndClearedTarget = false;
+                          hasProcessedCurrentTarget = false;
+                          hasAutoCanceled = false;
+                          
+                          // No need to reset isAtTarget flags or disable drive-to-pose
+                          // We'll let the next target get processed naturally
+                      }
+                  } else {
+                      // No more targets in queue
+                      System.out.println("No more targets in queue");
+                  }
+              }
           } else if (!isAtTarget) {
-              // Reset flag when we're not at the target
+              // Reset flags when we're not at the target
               hasReachedAndClearedTarget = false;
+              hasProcessedCurrentTarget = false;
           }
           
           // Display on dashboard
@@ -898,6 +948,7 @@ SwerveInputStream driveButtonBoxInput =
           isAtTarget = false;
           hasReachedAndClearedTarget = false;
           hasAutoCanceled = false;
+          hasProcessedCurrentTarget = false;
           
           SmartDashboard.putBoolean("At Target Position", false);
           SmartDashboard.putBoolean("At Target Rotation", false);
@@ -911,10 +962,12 @@ SwerveInputStream driveButtonBoxInput =
       isAtTarget = false;
       hasReachedAndClearedTarget = false;
       hasAutoCanceled = false;
+      hasProcessedCurrentTarget = false;
       
       SmartDashboard.putBoolean("At Target Position", false);
       SmartDashboard.putBoolean("At Target Rotation", false);
       SmartDashboard.putBoolean("At Target", false);
+      
     }
   }
 
@@ -1031,10 +1084,6 @@ SwerveInputStream driveButtonBoxInput =
     
     // Reset all drive-to-pose controllers
     resetDriveToPoseForAuto();
-    
-    // Set the default drive command to drive-to-pose during auto
-    // This ensures the swerve subsystem can be used for drive-to-pose immediately
-    drivebase.setDefaultCommand(driveFieldOrientedDriveToPose);
     
     // Return the selected autonomous command
     return chooser.getSelected();
@@ -1318,29 +1367,6 @@ SwerveInputStream driveButtonBoxInput =
     return new Trigger(() -> isNearTarget(customTolerance));
   }
 
-  // Add methods specifically for autonomous drive-to-pose control
-  
-  /**
-   * Enable drive-to-pose specifically for autonomous mode
-   * This bypasses the safety checks in the normal command
-   */
-  public void enableDriveToPoseForAuto() {
-    // Reset PID controllers to ensure fresh values
-    pidControllersNeedUpdate = true;
-    currentXController = null;
-    currentRotController = null;
-    
-    // Enable drive to pose
-    driveToPoseStream.driveToPoseEnabled(true);
-    isAtTargetPosition = false;
-    isAtTargetRotation = false;
-    isAtTarget = false;
-    hasReachedAndClearedTarget = false;
-    hasAutoCanceled = false;
-    
-    SmartDashboard.putBoolean("Drive To Pose Enabled", true);
-    SmartDashboard.putString("Drive Status", "Auto Drive-to-Pose Active");
-  }
   
   /**
    * Disable drive-to-pose specifically for autonomous mode
@@ -1369,5 +1395,49 @@ SwerveInputStream driveButtonBoxInput =
     prevTransAccel = 0;
     prevRotVel = 0;
     prevRotAccel = 0;
+  }
+  
+  // Add a method to toggle auto-target advancement
+  public void setAutoAdvanceTargets(boolean enabled) {
+    this.autoAdvanceTargets = enabled;
+    SmartDashboard.putBoolean("Auto-Advance Targets", enabled);
+  }
+  
+  // Command to toggle auto-target advancement
+  public Command toggleAutoAdvanceTargetsCommand() {
+    return Commands.runOnce(() -> {
+      setAutoAdvanceTargets(!autoAdvanceTargets);
+      System.out.println("Auto-advance targets " + (autoAdvanceTargets ? "enabled" : "disabled"));
+    });
+  }
+
+  // Add this method to allow for explicit advancement to next target
+  public Command advanceToNextTargetCommand() {
+    return Commands.runOnce(() -> {
+      if (buttonBox.hasQueue()) {
+        buttonBox.getNextTarget();
+        
+        // Reset flags for the next target
+        hasReachedAndClearedTarget = false;
+        hasProcessedCurrentTarget = false;
+        
+        System.out.println("Manually advanced to next target");
+        
+        // Clear visualization of previous target
+        drivebase.clearTargetVisualization();
+        
+        // If there are still targets in the queue, show status
+        if (buttonBox.hasQueue()) {
+          TargetClass nextTarget = buttonBox.peekNextTarget();
+          if (nextTarget != null) {
+            System.out.println("Next target: " + nextTarget.getName());
+          }
+        } else {
+          System.out.println("No more targets in queue");
+        }
+      } else {
+        System.out.println("No targets in queue to advance to");
+      }
+    });
   }
 }
