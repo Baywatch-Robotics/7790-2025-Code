@@ -82,7 +82,7 @@ public final class Constants
   public static final class ShooterArmConstants{
     public static final int ID = 15;
 
-    public static final float angleOffset = .2f;
+    public static final float angleOffset = .83f;
 
     public static final float manualMultiplier = -0.005f;
 
@@ -107,8 +107,13 @@ public final class Constants
     public static final float P = 3.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 200;
+    //public static final float maxVelocity = 1000;
+    //public static final float maxAcceleration = 200;
+
+    public static final float maxVelocity = 100;
+    public static final float maxAcceleration = 50;
+
+
     public static final float allowedClosedLoopError = .05f;
   }
 

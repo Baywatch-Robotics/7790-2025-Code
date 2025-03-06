@@ -23,7 +23,7 @@ import java.util.Optional;
 public class AprilTagVision extends SubsystemBase {
     
     private static final PhotonCamera rightCam = new PhotonCamera("rightcam");
-    //private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
+    private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
     //private static final PhotonCamera limelight = new PhotonCamera("limelight");
 
     private static final Transform3d rightCamToRobot = new Transform3d(
@@ -61,7 +61,7 @@ public class AprilTagVision extends SubsystemBase {
         return rightPoseEstimator.update(rightCam.getLatestResult());
     }
 
-    /*
+    
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
         return leftPoseEstimator.update(leftCam.getLatestResult());
@@ -84,7 +84,7 @@ public class AprilTagVision extends SubsystemBase {
                 validPoses.add(estimate.estimatedPose);
             }
         }
-/*
+
         Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
         if (leftCamEstimate.isPresent()) {
             EstimatedRobotPose estimate = leftCamEstimate.get();

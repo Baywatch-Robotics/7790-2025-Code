@@ -678,6 +678,8 @@ public Command disableDriveToPoseCommand() {
     }, algaeShooter));
     
 
+
+
       buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
       buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
       buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
@@ -735,6 +737,11 @@ public Command disableDriveToPoseCommand() {
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
       //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
+
+    driverXbox.start().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+
+
+    
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
   
