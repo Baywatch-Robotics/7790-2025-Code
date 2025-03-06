@@ -82,7 +82,7 @@ public final class Constants
   public static final class ShooterArmConstants{
     public static final int ID = 15;
 
-    public static final float angleOffset = .5f;
+    public static final float angleOffset = .2f;
 
     public static final float manualMultiplier = -0.005f;
 
@@ -109,37 +109,6 @@ public final class Constants
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
     public static final float maxAcceleration = 200;
-    public static final float allowedClosedLoopError = .05f;
-  }
-
-  public static final class ShooterPivotConstants{
-
-    public static final int ID = 17;
-
-    public static final float leftAngleInitial = 0.382339f;
-    public static final float rightAngleInitial = 0.622852f;
-    public static final float centerAngle = .503f;
-
-    //Pivot Set Positions
-    public static final float leftL2Angle = 0.336f;
-    public static final float rightL2Angle = 0.65666f;
-    public static final float leftL3Angle = 0.281f;
-    public static final float rightL3Angle = 0.64f;
-    public static final float leftL4Angle = 0.392f;
-    public static final float rightL4Angle = 0.688f;
-
-    public static final float angleOffset = 0.48f;
-
-    public static final float max = 0.73f;
-    public static final float min = 0.255f;
-
-    public static final float manualMultiplier = 0.005f;
-
-    public static final float P = 5f;
-    public static final float I = 0.0f;
-    public static final float D = 0.0f;
-    public static final float maxVelocity = 250;
-    public static final float maxAcceleration = 100;
     public static final float allowedClosedLoopError = .05f;
   }
 

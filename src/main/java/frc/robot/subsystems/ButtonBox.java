@@ -10,11 +10,17 @@ import java.util.LinkedList;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class ButtonBox extends SubsystemBase {
 
     private Queue<TargetClass> targetQueue = new LinkedList<>();
     private TargetClass lastAddedTarget = null; // Store the last target that was added
+    private final SwerveSubsystem swerveSubsystem;
+
+    public ButtonBox(SwerveSubsystem swerveSubsystem) {
+        this.swerveSubsystem = swerveSubsystem;
+    }
 
     public void addTarget(TargetClass target) {
         targetQueue.add(target);
@@ -29,6 +35,10 @@ public class ButtonBox extends SubsystemBase {
 
     public void clearTargets() {
         targetQueue.clear();
+        // Clear target visualization on the field
+        if (swerveSubsystem != null) {
+            swerveSubsystem.clearTargetVisualization();
+        }
         updateDashboard();
     }
     
@@ -92,7 +102,9 @@ public class ButtonBox extends SubsystemBase {
     }
 
     public void updateDashboard() {
-        SmartDashboard.putStringArray("Target List", getQueueString());
+        String[] queueArray = getQueueString();
+        String queueString = String.join(", ", queueArray);
+        SmartDashboard.putString("Target List", queueString);
     }
 
     public boolean hasQueue() {

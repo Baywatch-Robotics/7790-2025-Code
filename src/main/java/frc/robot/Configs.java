@@ -7,7 +7,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.AlgaeArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ShooterArmConstants;
-import frc.robot.Constants.ShooterPivotConstants;
 
 public final class Configs {
   public static final class Elevator {
@@ -88,35 +87,6 @@ public final class Configs {
           .allowedClosedLoopError(ShooterArmConstants.allowedClosedLoopError);      
     }
   }
-  public static final class ShooterPivot {
-    public static final SparkMaxConfig shooterPivotConfig = new SparkMaxConfig();
-
-    static {
-      // Configure basic settings of the elevator motor
-      shooterPivotConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
-      /*
-       * Configure the closed loop controller. We want to make sure we set the
-       * feedback sensor as the primary encoder.
-       */
-      shooterPivotConfig.absoluteEncoder.zeroOffset(ShooterPivotConstants.angleOffset);
-
-      shooterPivotConfig
-      .inverted(false)
-          .closedLoop
-          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-          // Set PID values for position control
-          .pid(ShooterPivotConstants.P, ShooterPivotConstants.I, ShooterPivotConstants.D)
-          .outputRange(-1, 1)
-          .maxMotion
-          // Set MAXMotion parameters for position control
-          .maxVelocity(ShooterPivotConstants.maxVelocity)
-          .maxAcceleration(ShooterPivotConstants.maxAcceleration)
-          .allowedClosedLoopError(ShooterPivotConstants.allowedClosedLoopError);
-    }
-  }
-
-
-
 
   public static final class AlgaeArm {
     public static final SparkMaxConfig algaeArmConfig = new SparkMaxConfig();

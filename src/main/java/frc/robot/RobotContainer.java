@@ -30,7 +30,6 @@ import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
-import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
 
@@ -119,13 +118,13 @@ public class RobotContainer
   //private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
-  private final ShooterPivot shooterPivot = new ShooterPivot();
   private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator(this);
 
   //private final Funnel funnel = new Funnel();
   //private final LED LED = new LED();
-  private final ButtonBox buttonBox = new ButtonBox();
+
+  private final ButtonBox buttonBox = new ButtonBox(drivebase);
 
   // Triggers for proximity detection
   public Trigger approachingTrigger = new Trigger(() -> isApproaching);
@@ -608,8 +607,8 @@ public Command disableDriveToPoseCommand() {
     return a + (b - a) * t;
   }
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
-  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
+  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
 
 
   SendableChooser<Command> chooser = new SendableChooser<>();
@@ -649,7 +648,6 @@ public Command disableDriveToPoseCommand() {
     elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     //algaeArm.setDefaultCommand(new RunCommand(() -> algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated to use moveTrigger
     shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
-    shooterPivot.setDefaultCommand(new RunCommand(() -> shooterPivot.moveAmount(shooterPivotUpDown.getAsDouble()), shooterPivot));
 
     //climber.setDefaultCommand(new RunCommand(() -> climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
 
@@ -737,8 +735,8 @@ public Command disableDriveToPoseCommand() {
       buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
       //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
-    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
   
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
@@ -746,11 +744,11 @@ public Command disableDriveToPoseCommand() {
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
 
-    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox));
-    driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
+    driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
-    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(shooter, shooterArm, shooterPivot, elevator));
-    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, shooterPivot, elevator));
+    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(shooter, shooterArm, elevator));
+    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
     
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
@@ -785,20 +783,20 @@ public Command disableDriveToPoseCommand() {
             }
         }));
 
-    driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-    driverXbox.y().onTrue(
-        Commands.either(
-            Commands.runOnce(() -> tempDriveToPoseCommand.cancel()),
-            Commands.runOnce(() -> tempDriveToPoseCommand.schedule()),
-            () -> tempDriveToPoseCommand.isScheduled()
-        )
-    );
+    //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+    //driverXbox.y().onTrue(
+    //    Commands.either(
+    //        Commands.runOnce(() -> tempDriveToPoseCommand.cancel()),
+    //        Commands.runOnce(() -> tempDriveToPoseCommand.schedule()),
+    //        () -> tempDriveToPoseCommand.isScheduled()
+    //    )
+    //);
 
 
 
 
 
-    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, shooterPivot, elevator));
+    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
