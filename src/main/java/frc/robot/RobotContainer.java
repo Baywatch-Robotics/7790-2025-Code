@@ -32,6 +32,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.Coral.ShooterPivot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.util.Elastic;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
@@ -42,6 +43,7 @@ import frc.robot.Constants.SpeedConstants;
 
 
 /**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
  * little robot logic should actually be handled in the {@link Robot} periodic methods (other than the scheduler calls).
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
@@ -274,7 +276,10 @@ SwerveInputStream driveButtonBoxInput =
                   distanceToTarget = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
                   constraints = getTranslationConstraintsForDistance(distanceToTarget);
               } else {
-                  System.out.println("WARNING: Using ZERO translation constraints for invalid target near origin");
+                  Elastic.sendNotification(
+                    new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                    "Zero Constraints", 
+                    "Using ZERO translation constraints for invalid target near origin"));
               }
               
               SmartDashboard.putString("Target Name", target.getName());
@@ -282,7 +287,10 @@ SwerveInputStream driveButtonBoxInput =
           } else {
               SmartDashboard.putString("Target Name", "None");
               SmartDashboard.putBoolean("Target Available", false);
-              System.out.println("WARNING: Using ZERO translation constraints (no target available)");
+              Elastic.sendNotification(
+                new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                "Zero Constraints", 
+                "Using ZERO translation constraints (no target available)"));
           }
 
           // Always create controller with proper PID values, but use constraints based on target validity
@@ -329,10 +337,16 @@ SwerveInputStream driveButtonBoxInput =
                   
                   constraints = getRotationConstraintsForDistance(distanceToTarget);
               } else {
-                  System.out.println("WARNING: Using ZERO rotation constraints for invalid target near origin");
+                  Elastic.sendNotification(
+                    new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                    "Zero Constraints", 
+                    "Using ZERO rotation constraints for invalid target near origin"));
               }
           } else {
-              System.out.println("WARNING: Using ZERO rotation constraints (no target available)");
+              Elastic.sendNotification(
+                new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                "Zero Constraints", 
+                "Using ZERO rotation constraints (no target available)"));
           }
 
           // Always create controller with proper PID values, but use constraints based on target validity
@@ -364,8 +378,10 @@ SwerveInputStream driveButtonBoxInput =
               
               // SAFETY CHECK: Verify target location isn't at/near origin
               if (isNearOrigin(allianceAdjustedPose)) {
-                  System.out.println("WARNING: Target position near origin detected: " + 
-                      allianceAdjustedPose + " - Using current pose instead");
+                  Elastic.sendNotification(
+                    new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                    "Target Near Origin", 
+                    "Target position near origin detected: " + allianceAdjustedPose + " - Using current pose instead"));
                   return drivebase.getPose(); // Return current pose as failsafe
               }
               
@@ -403,7 +419,10 @@ SwerveInputStream driveButtonBoxInput =
               
               // CRITICAL FIX: Return current pose instead of potentially (0,0,0)
               // This prevents the robot from trying to drive to the origin
-              System.out.println("No target available - Using current pose instead of (0,0,0)");
+              Elastic.sendNotification(
+                new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                "No Target Available", 
+                "No target available - Using current pose instead of (0,0,0)"));
               return drivebase.getPose();
           }
       },
@@ -460,7 +479,10 @@ public Command disableDriveToPoseCommand() {
             
             // Validate the target is not at/near origin (0,0,0)
             if (isNearOrigin(allianceAdjustedPose)) {
-                System.out.println("WARNING: Target position near origin detected: " + allianceAdjustedPose);
+                Elastic.sendNotification(
+                  new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+                  "Target Near Origin", 
+                  "Target position near origin detected: " + allianceAdjustedPose));
                 SmartDashboard.putString("Drive Status", "ERROR: Invalid Target Position!");
                 SmartDashboard.putBoolean("Invalid Target Warning", true);
             }
@@ -519,7 +541,10 @@ public Command disableDriveToPoseCommand() {
             driveFieldOrientedDriveToPose.until(() -> isAtTarget && autoCancel),
             Commands.runOnce(() -> {
                 if (!hasAutoCanceled) {
-                    System.out.println("AUTO-CANCELING drive-to-pose - target reached!");
+                    Elastic.sendNotification(
+                      new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                      "Auto-Cancel", 
+                      "AUTO-CANCELING drive-to-pose - target reached!"));
                     hasAutoCanceled = true;
                     SmartDashboard.putString("Drive Status", "Auto-Canceled - Target Reached");
                 }
@@ -887,12 +912,18 @@ public Command disableDriveToPoseCommand() {
               targetRotationReachedTrigger();
               targetReachedTrigger();
               
-              System.out.println("TARGET REACHED: " + target.getName());
+              Elastic.sendNotification(
+                new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                "Target Reached", 
+                "TARGET REACHED: " + target.getName()));
               
               // Process the target - get the next one if auto-advance is enabled
               if (autoAdvanceTargets && !hasProcessedCurrentTarget) {
                   hasProcessedCurrentTarget = true;
-                  System.out.println("Auto-advancing to next target");
+                  Elastic.sendNotification(
+                    new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                    "Auto-Advance", 
+                    "Auto-advancing to next target"));
                   
                   // Get the current target (which we've reached)
                   buttonBox.getNextTarget();
@@ -901,7 +932,10 @@ public Command disableDriveToPoseCommand() {
                   if (buttonBox.hasQueue()) {
                       TargetClass nextTarget = buttonBox.peekNextTarget();
                       if (nextTarget != null) {
-                          System.out.println("Next target: " + nextTarget.getName());
+                          Elastic.sendNotification(
+                            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                            "Next Target", 
+                            "Next target: " + nextTarget.getName()));
                           
                           // Reset flags to handle the next target
                           hasReachedAndClearedTarget = false;
@@ -913,7 +947,10 @@ public Command disableDriveToPoseCommand() {
                       }
                   } else {
                       // No more targets in queue
-                      System.out.println("No more targets in queue");
+                      Elastic.sendNotification(
+                        new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                        "Queue Empty", 
+                        "No more targets in queue"));
                   }
               }
           } else if (!isAtTarget) {
@@ -1101,7 +1138,10 @@ public Command disableDriveToPoseCommand() {
   private Constraints getTranslationConstraintsForDistance(double distance) {
     // Special case - if we're checking for a target at/near the origin, return zero constraints
     if (distance <= 0.0) {
-        System.out.println("ZERO constraints: Invalid distance value: " + distance);
+        Elastic.sendNotification(
+          new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+          "Zero Constraints", 
+          "ZERO constraints: Invalid distance value: " + distance));
         return new Constraints(0, 0); // Zero velocity and acceleration
     }
     
@@ -1203,7 +1243,10 @@ public Command disableDriveToPoseCommand() {
   private Constraints getRotationConstraintsForDistance(double distance) {
       // Special case - if we're checking for a target at/near the origin, return zero constraints
       if (distance <= 0.0) {
-          System.out.println("ZERO constraints: Invalid distance value: " + distance);
+          Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+            "Zero Constraints", 
+            "ZERO constraints: Invalid distance value: " + distance));
           return new Constraints(0, 0); // Zero velocity and acceleration
       }
       
@@ -1329,8 +1372,11 @@ public Command disableDriveToPoseCommand() {
                           (Math.abs(pose.getX()) < 0.001 && Math.abs(pose.getY()) < 0.001);
       
       if (nearOrigin) {
-          System.out.println("WARNING: Position too close to origin: " + 
-              pose.getX() + ", " + pose.getY() + " (distance: " + distanceFromOrigin + ")");
+          Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+            "Invalid Position", 
+            "Position too close to origin: " + pose.getX() + ", " + pose.getY() + 
+            " (distance: " + distanceFromOrigin + ")"));
       }
       
       return nearOrigin;
@@ -1340,7 +1386,10 @@ public Command disableDriveToPoseCommand() {
   public void cancelDriveToPose() {
     if (tempDriveToPoseCommand.isScheduled()) {
       tempDriveToPoseCommand.cancel();
-      System.out.println("Drive-to-pose manually canceled by external request");
+      Elastic.sendNotification(
+        new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+        "Drive-to-pose Canceled", 
+        "Drive-to-pose manually canceled by external request"));
     }
   }
   
@@ -1407,7 +1456,10 @@ public Command disableDriveToPoseCommand() {
   public Command toggleAutoAdvanceTargetsCommand() {
     return Commands.runOnce(() -> {
       setAutoAdvanceTargets(!autoAdvanceTargets);
-      System.out.println("Auto-advance targets " + (autoAdvanceTargets ? "enabled" : "disabled"));
+      Elastic.sendNotification(
+        new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+        "Auto-Advance", 
+        "Auto-advance targets " + (autoAdvanceTargets ? "enabled" : "disabled")));
     });
   }
 
@@ -1421,7 +1473,10 @@ public Command disableDriveToPoseCommand() {
         hasReachedAndClearedTarget = false;
         hasProcessedCurrentTarget = false;
         
-        System.out.println("Manually advanced to next target");
+        Elastic.sendNotification(
+          new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+          "Target Advanced", 
+          "Manually advanced to next target"));
         
         // Clear visualization of previous target
         drivebase.clearTargetVisualization();
@@ -1430,13 +1485,22 @@ public Command disableDriveToPoseCommand() {
         if (buttonBox.hasQueue()) {
           TargetClass nextTarget = buttonBox.peekNextTarget();
           if (nextTarget != null) {
-            System.out.println("Next target: " + nextTarget.getName());
+            Elastic.sendNotification(
+              new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+              "Next Target", 
+              "Next target: " + nextTarget.getName()));
           }
         } else {
-          System.out.println("No more targets in queue");
+          Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+            "Queue Empty", 
+            "No more targets in queue"));
         }
       } else {
-        System.out.println("No targets in queue to advance to");
+        Elastic.sendNotification(
+          new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
+          "Empty Queue", 
+          "No targets in queue to advance to"));
       }
     });
   }
