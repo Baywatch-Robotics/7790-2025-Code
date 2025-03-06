@@ -236,8 +236,8 @@ public final class Constants
   public static final class TargetClassConstants{
 
     public static final float SLPositionX = (float)Units.inchesToMeters(43.5);
-    public static final float SLPositionY = (float)Units.inchesToMeters(274.43);
-    public static final float SLPositionZ = (float)Units.degreesToRadians(226);
+    public static final float SLPositionY = (float)Units.inchesToMeters(278.52);
+    public static final float SLPositionZ = (float)Units.degreesToRadians(306);
 
     public static final float SRPositionX = (float)Units.inchesToMeters(43.5);
     public static final float SRPositionY = (float)Units.inchesToMeters(38.48);
@@ -413,7 +413,7 @@ public final class Constants
     
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;
-    public static final float coralStationMultiplier = 0.6f;
+    public static final float coralStationMultiplier = 0.4f;
 
 
     public static final float speedSmoothingFactor = 0.2f; // Controls how quickly speed changes (0.0-1.0)
@@ -494,6 +494,9 @@ public final class Constants
     // Target position and rotation tolerance
     public static final double POSITION_TOLERANCE = 0.02; // meters
     public static final double ROTATION_TOLERANCE = Units.degreesToRadians(2.0); // radians
+    
+    // Time in seconds the robot must be at target before declaring "reached"
+    public static final double TARGET_REACHED_DEBOUNCE_TIME = 0.25; // seconds
     
     // Smoothing factor for constraint changes (0.0-1.0)
     // Lower values = smoother/slower transitions, higher values = quicker transitions

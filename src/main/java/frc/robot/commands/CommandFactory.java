@@ -205,7 +205,6 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, S
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(robotContainer.disableDriveToPoseCommand())
 
-
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C631")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, shooterPivot, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
@@ -213,12 +212,11 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, S
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(shooterPivot.setCenterCommand())
   .andThen(elevator.setElevatorPickupCommand())
-  
 
-  .andThen(drivebase.pathfindThenFollowPath("Left To Source"))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
   .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, shooterPivot, elevator, buttonBox, robotContainer, drivebase))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  .andThen(robotContainer.disableDriveToPoseCommand());
     
   command.addRequirements(shooter, shooterArm, shooterPivot, elevator);
   return command; 

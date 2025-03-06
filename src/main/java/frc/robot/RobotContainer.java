@@ -56,6 +56,17 @@ public class RobotContainer
   private double prevRotVel = 0;
   private double prevRotAccel = 0;
 
+
+    // Add timer variables for debouncing target reached detection
+    private double positionReachedTimestamp = 0;
+    private double rotationReachedTimestamp = 0;
+    private double targetReachedTimestamp = 0;
+    private boolean positionTimerActive = false;
+    private boolean rotationTimerActive = false;
+    private boolean targetTimerActive = false;
+
+
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   final CommandXboxController driverXbox = new CommandXboxController(0);
 
@@ -142,6 +153,7 @@ public class RobotContainer
   private boolean isAtTargetPosition = false;
   private boolean isAtTargetRotation = false;
   private boolean isAtTarget = false;
+  
   
   // Add back tolerance variables that were accidentally removed
   private double positionTolerance = Constants.DriveToPoseConstants.POSITION_TOLERANCE; 
@@ -441,6 +453,11 @@ public Command enableDriveToPoseCommand() {
     return Commands.runOnce(() -> {
         // Only schedule if not already running
         if (!tempDriveToPoseCommand.isScheduled()) {
+          
+            targetTimerActive = false;
+            positionReachedTimestamp = 0;
+            rotationReachedTimestamp = 0;
+            targetReachedTimestamp = 0;
             tempDriveToPoseCommand.schedule();
         }
     });
@@ -893,13 +910,73 @@ public Command disableDriveToPoseCommand() {
           // Normalize to [-π, π]
           double rotationError = Math.abs(Math.atan2(Math.sin(rotationDiff), Math.cos(rotationDiff)));
           
-          // Update status based on errors with strict comparison
-          isAtTargetPosition = positionError <= positionTolerance;
-          isAtTargetRotation = rotationError <= rotationTolerance;
-          isAtTarget = isAtTargetPosition && isAtTargetRotation;
+          // Determine instantaneous status based on errors
+          boolean instantAtPosition = positionError <= positionTolerance;
+          boolean instantAtRotation = rotationError <= rotationTolerance;
+          boolean instantAtTarget = instantAtPosition && instantAtRotation;
+          
+          // Current time for timestamp comparison
+          double currentTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+          
+          // Apply time-based debounce logic for position
+          if (instantAtPosition) {
+              // Start or continue the timer
+              if (!positionTimerActive) {
+                  positionReachedTimestamp = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+                  positionTimerActive = true;
+              }
+              // Check if we've been at position long enough
+              isAtTargetPosition = (currentTime - positionReachedTimestamp) >= 
+                  Constants.DriveToPoseConstants.TARGET_REACHED_DEBOUNCE_TIME;
+          } else {
+              // Reset the timer
+              positionTimerActive = false;
+              positionReachedTimestamp = 0;
+              isAtTargetPosition = false;
+          }
+          
+          // Apply time-based debounce logic for rotation
+          if (instantAtRotation) {
+              // Start or continue the timer
+              if (!rotationTimerActive) {
+                  rotationReachedTimestamp = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+                  rotationTimerActive = true;
+              }
+              // Check if we've been at rotation long enough
+              isAtTargetRotation = (currentTime - rotationReachedTimestamp) >= 
+                  Constants.DriveToPoseConstants.TARGET_REACHED_DEBOUNCE_TIME;
+          } else {
+              // Reset the timer
+              rotationTimerActive = false;
+              rotationReachedTimestamp = 0;
+              isAtTargetRotation = false;
+          }
+          
+          // Apply time-based debounce logic for full target
+          if (instantAtTarget) {
+              // Start or continue the timer
+              if (!targetTimerActive) {
+                  targetReachedTimestamp = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+                  targetTimerActive = true;
+              }
+              // Check if we've been at target long enough
+              isAtTarget = (currentTime - targetReachedTimestamp) >= 
+                  Constants.DriveToPoseConstants.TARGET_REACHED_DEBOUNCE_TIME;
+          } else {
+              // Reset the timer
+              targetTimerActive = false;
+              targetReachedTimestamp = 0;
+              isAtTarget = false;
+          }
           
           // Display status about auto-cancel feature
           SmartDashboard.putBoolean("Has Auto-Canceled", hasAutoCanceled);
+          
+          // Display timer values on dashboard for debugging
+          SmartDashboard.putNumber("Position Time Elapsed", positionTimerActive ? currentTime - positionReachedTimestamp : 0);
+          SmartDashboard.putNumber("Rotation Time Elapsed", rotationTimerActive ? currentTime - rotationReachedTimestamp : 0);
+          SmartDashboard.putNumber("Target Time Elapsed", targetTimerActive ? currentTime - targetReachedTimestamp : 0);
+          SmartDashboard.putNumber("Target Debounce Time", Constants.DriveToPoseConstants.TARGET_REACHED_DEBOUNCE_TIME);
           
           // Clear target visualization when we reach the target position
           // Only do this once when the target is first reached
@@ -987,6 +1064,14 @@ public Command disableDriveToPoseCommand() {
           hasAutoCanceled = false;
           hasProcessedCurrentTarget = false;
           
+          // Reset all timers
+          positionTimerActive = false;
+          rotationTimerActive = false;
+          targetTimerActive = false;
+          positionReachedTimestamp = 0;
+          rotationReachedTimestamp = 0;
+          targetReachedTimestamp = 0;
+          
           SmartDashboard.putBoolean("At Target Position", false);
           SmartDashboard.putBoolean("At Target Rotation", false);
           SmartDashboard.putBoolean("At Target", false);
@@ -1000,6 +1085,14 @@ public Command disableDriveToPoseCommand() {
       hasReachedAndClearedTarget = false;
       hasAutoCanceled = false;
       hasProcessedCurrentTarget = false;
+      
+      // Reset all timers
+      positionTimerActive = false;
+      rotationTimerActive = false;
+      targetTimerActive = false;
+      positionReachedTimestamp = 0;
+      rotationReachedTimestamp = 0;
+      targetReachedTimestamp = 0;
       
       SmartDashboard.putBoolean("At Target Position", false);
       SmartDashboard.putBoolean("At Target Rotation", false);
@@ -1444,6 +1537,14 @@ public Command disableDriveToPoseCommand() {
     prevTransAccel = 0;
     prevRotVel = 0;
     prevRotAccel = 0;
+    
+    // Reset timers for autonomous
+    positionTimerActive = false;
+    rotationTimerActive = false;
+    targetTimerActive = false;
+    positionReachedTimestamp = 0;
+    rotationReachedTimestamp = 0;
+    targetReachedTimestamp = 0;
   }
   
   // Add a method to toggle auto-target advancement
@@ -1490,17 +1591,7 @@ public Command disableDriveToPoseCommand() {
               "Next Target", 
               "Next target: " + nextTarget.getName()));
           }
-        } else {
-          Elastic.sendNotification(
-            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
-            "Queue Empty", 
-            "No more targets in queue"));
         }
-      } else {
-        Elastic.sendNotification(
-          new Elastic.Notification(Elastic.Notification.NotificationLevel.WARNING, 
-          "Empty Queue", 
-          "No targets in queue to advance to"));
       }
     });
   }
