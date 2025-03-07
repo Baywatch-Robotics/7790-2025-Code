@@ -108,6 +108,9 @@ public class RobotContainer
   DoubleSupplier algaeShooterIntake = () -> driverXbox.getLeftTriggerAxis();
   DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
 
+  // Add flag for full speed toggle
+  private boolean fullSpeedModeEnabled = false;
+
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                 "swerve/neo"));
@@ -738,8 +741,11 @@ public Command disableDriveToPoseCommand() {
       //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.addTarget("SR")));
 
 
-    driverXbox.start().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    // Modified: combine zero gyro with full speed toggle
+    driverXbox.back().onTrue(
+        new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
+    driverXbox.start().onTrue(toggleFullSpeedModeCommand());
     
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
@@ -765,7 +771,7 @@ public Command disableDriveToPoseCommand() {
 
     
     // Hold back button to temporarily use drive-to-pose
-    driverXbox.back().whileTrue(tempDriveToPoseCommand);
+    //driverXbox.back().whileTrue(tempDriveToPoseCommand);
     
     /*
     // Toggle drive-to-pose with start button
@@ -829,6 +835,20 @@ public Command disableDriveToPoseCommand() {
     SmartDashboard.putData(chooser);
   }
 
+  /**
+   * Command to toggle full speed mode on/off
+   */
+  public Command toggleFullSpeedModeCommand() {
+    return Commands.runOnce(() -> {
+        fullSpeedModeEnabled = !fullSpeedModeEnabled;
+        SmartDashboard.putBoolean("Full Speed Mode", fullSpeedModeEnabled);
+        Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+            "Speed Mode Changed", 
+            "Full speed mode " + (fullSpeedModeEnabled ? "enabled" : "disabled")));
+    });
+  }
+
   public Command changeDriveSpeedCommand(float speed)
   {
     return new InstantCommand(() -> targetDriveSpeed = speed);
@@ -839,7 +859,7 @@ public Command disableDriveToPoseCommand() {
     // Determine drive speed based on elevator height category using the new constants
     Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
     
-    // Set target speed based on elevator height
+    // ALWAYS apply elevator-based speed restrictions, regardless of full speed mode
     switch (heightCategory) {
       case FULLY_RAISED:
         targetDriveSpeed = SpeedConstants.elevatorFullyRaisedSpeed;
@@ -868,9 +888,21 @@ public Command disableDriveToPoseCommand() {
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
 
-    // Apply zone-based speed modifier
-    float zoneModifier = getZoneSpeedMultiplier();
-    targetDriveSpeed = Math.min(targetDriveSpeed, targetDriveSpeed * zoneModifier);
+    // Update ShooterArm with reef zone status
+    shooterArm.setReefZoneStatus(isInReefZone);
+
+    // Apply zone-based speed modifier ONLY if full speed mode is disabled
+    if (!fullSpeedModeEnabled) {
+        float zoneModifier = getZoneSpeedMultiplier();
+        targetDriveSpeed = Math.min(targetDriveSpeed, targetDriveSpeed * zoneModifier);
+        SmartDashboard.putNumber("Zone Modifier", zoneModifier);
+    } else {
+        // When full speed mode is enabled, no zone modifier is applied
+        SmartDashboard.putNumber("Zone Modifier", 1.0);
+    }
+    
+    // Update SmartDashboard with full speed mode status
+    SmartDashboard.putBoolean("Full Speed Mode", fullSpeedModeEnabled);
     
     reefZoneTrigger();
     coralStationLeftTrigger();
@@ -883,7 +915,6 @@ public Command disableDriveToPoseCommand() {
     SmartDashboard.putNumber("Target Drive Speed", targetDriveSpeed);
     SmartDashboard.putNumber("Actual Drive Speed", actualDriveSpeed);
     SmartDashboard.putNumber("Drive Speed", targetDriveSpeed);
-    SmartDashboard.putNumber("Zone Modifier", zoneModifier);
     
     // Update zone status on dashboard
     SmartDashboard.putBoolean("In Reef Zone", isInReefZone);

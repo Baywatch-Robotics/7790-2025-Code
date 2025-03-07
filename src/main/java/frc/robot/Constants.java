@@ -90,6 +90,8 @@ public final class Constants
     //public static final float max = .9f;
     public static final float max = 0.698f;
 
+    
+
     public static final float maxManual = 0.698f;
     //public static final float maxManual = .9f;
     
@@ -97,6 +99,11 @@ public final class Constants
 
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.643f;
+    // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
+    public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
+    // Debounce time when exiting reef zone (seconds)
+    public static final float reefZoneExitDebounceTime = 0.5f;
+
     public static final float loadAngle = 0.2685f;
     
     // Ball position angle
@@ -411,6 +418,8 @@ public final class Constants
     public static final float elevatorPartiallyRaisedSpeed = 0.5f;
     public static final float elevatorMidRaisedSpeed = 0.3f;
     public static final float elevatorFullyRaisedSpeed = 0.1f;
+
+    public static float fullSpeedOverride = 1.0f;
   }
 
   /**

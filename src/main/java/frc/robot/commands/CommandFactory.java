@@ -119,8 +119,8 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = //CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox)
-  robotContainer.enableDriveToPoseCommand()
+  Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
+  .andThen(robotContainer.enableDriveToPoseCommand())
   .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()));
     
     command.addRequirements(shooter, shooterArm, elevator);
@@ -129,8 +129,8 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = //CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, shooterPivot, elevator, buttonBox)
-  robotContainer.enableDriveToPoseCommand()
+  Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
+  .andThen(robotContainer.enableDriveToPoseCommand())
   .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()))
     
   

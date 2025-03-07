@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,6 +31,14 @@ public class ShooterArm extends SubsystemBase {
     private float snapPosition = 0; // The position we initially snap to and target
     
     public boolean isInitialized = false;
+    
+    // Add flag to track if robot is in reef zone
+    private boolean isInReefZone = false;
+    private double reefZoneExitTime = 0; // Timestamp when robot exited reef zone
+    private boolean isInReefZoneDebounce = false; // Whether we're in the debounce period after exiting reef zone
+    
+    // Add variable to track the arm's lowest allowed position in reef zone
+    private float reefZoneMinimumAllowedAngle;
 
     private SparkMax shooterArmMotor = new SparkMax(ShooterArmConstants.ID, MotorType.kBrushless);
 
@@ -46,6 +55,37 @@ public class ShooterArm extends SubsystemBase {
         snapPosition = shooterArmDesiredAngle; // Initialize snap position
     }
 
+    /**
+     * Update the reef zone status
+     * @param inReefZone true if robot is currently in reef zone
+     */
+    public void setReefZoneStatus(boolean inReefZone) {
+        // When entering reef zone
+        if (!this.isInReefZone && inReefZone) {
+            // Record current position as minimum allowed if below the standard minimum
+            float currentPosition = (float)shooterArmEncoder.getPosition();
+            if (currentPosition < ShooterArmConstants.reefZoneMinimumAngle) {
+                // If arm is below standard minimum, use current position as the minimum allowed
+                reefZoneMinimumAllowedAngle = currentPosition;
+            } else {
+                // Otherwise use the standard minimum
+                reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
+            }
+            
+            // Reset exit timer and debounce flag when entering zone
+            reefZoneExitTime = 0;
+            isInReefZoneDebounce = false;
+        }
+        // When exiting reef zone
+        else if (this.isInReefZone && !inReefZone) {
+            // We just left the reef zone - start debounce timer
+            reefZoneExitTime = Timer.getFPGATimestamp();
+            isInReefZoneDebounce = true;
+        }
+        
+        // Update current value
+        this.isInReefZone = inReefZone;
+    }
 
     private void setScoreLOW() {
         shooterArmDesiredAngle = ShooterArmConstants.scoreAngleLOW;
@@ -155,15 +195,57 @@ public class ShooterArm extends SubsystemBase {
             shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
             previousDesiredAngle = shooterArmDesiredAngle;
             snapPosition = shooterArmDesiredAngle;
+            reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
             isInitialized = true;
         }
         
         isClearToElevate();
         
-        shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
+        // Handle reef zone debounce logic
+        if (isInReefZoneDebounce && !isInReefZone) {
+            // Check if we've waited long enough since exiting the reef zone
+            double currentTime = Timer.getFPGATimestamp();
+            double timeElapsed = currentTime - reefZoneExitTime;
+            
+            if (timeElapsed >= ShooterArmConstants.reefZoneExitDebounceTime) {
+                // Debounce period is over - reset timer and flag
+                isInReefZoneDebounce = false;
+                reefZoneExitTime = 0;  // Reset the exit time when debounce completes
+                // Reset the minimum allowed angle to the standard value
+                reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
+            }
+            
+            // During debounce period, act as if still in reef zone
+            // Display status on dashboard
+            SmartDashboard.putBoolean("Reef Zone Debounce Active", isInReefZoneDebounce);
+            SmartDashboard.putNumber("Reef Zone Exit Debounce Time", timeElapsed);
+        } else {
+            SmartDashboard.putBoolean("Reef Zone Debounce Active", false);
+            SmartDashboard.putNumber("Reef Zone Exit Debounce Time", 0);
+        }
         
-        // Get current arm position
+        // Get current arm position for dynamic reef zone constraint and smoothing operations
         float currentPosition = (float)shooterArmEncoder.getPosition();
+        
+        // Update minimum allowed angle if arm is raised above the standard minimum
+        if ((isInReefZone || isInReefZoneDebounce) && currentPosition >= ShooterArmConstants.reefZoneMinimumAngle) {
+            // Once above the standard minimum, use that as the minimum
+            reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
+        }
+        
+        // Apply reef zone constraint if in reef zone OR in debounce period
+        if (isInReefZone || isInReefZoneDebounce) {
+            // Don't allow arm to go lower than the current minimum allowed angle
+            shooterArmDesiredAngle = Math.max(shooterArmDesiredAngle, reefZoneMinimumAllowedAngle);
+            SmartDashboard.putBoolean("Reef Zone Arm Constraint", true);
+        } else {
+            SmartDashboard.putBoolean("Reef Zone Arm Constraint", false);
+        }
+        
+        SmartDashboard.putNumber("Reef Minimum Allowed Angle", reefZoneMinimumAllowedAngle);
+        
+        // Apply general constraints
+        shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
         
         // Detect if setpoint has changed
         if (Math.abs(shooterArmDesiredAngle - previousDesiredAngle) > 0.001) {
@@ -215,6 +297,11 @@ public class ShooterArm extends SubsystemBase {
                 // If we're essentially at the target, just set to the target exactly
                 snapPosition = shooterArmDesiredAngle;
             }
+        }
+        
+        // Apply reef zone constraint to snap position as well
+        if (isInReefZone || isInReefZoneDebounce) {
+            snapPosition = Math.max(snapPosition, reefZoneMinimumAllowedAngle);
         }
         
         // Apply limits to the snap position
