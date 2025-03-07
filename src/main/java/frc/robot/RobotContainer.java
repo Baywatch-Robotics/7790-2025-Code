@@ -740,7 +740,6 @@ public Command disableDriveToPoseCommand() {
 
     driverXbox.start().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
-
     
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
@@ -764,10 +763,11 @@ public Command disableDriveToPoseCommand() {
 
 
 
-    /*
+    
     // Hold back button to temporarily use drive-to-pose
     driverXbox.back().whileTrue(tempDriveToPoseCommand);
     
+    /*
     // Toggle drive-to-pose with start button
     driverXbox.start().onTrue(
         Commands.either(

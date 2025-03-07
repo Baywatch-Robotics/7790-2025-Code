@@ -360,12 +360,14 @@ public class Elevator extends SubsystemBase {
             elevatorDesiredPosition = 0;
             isInitialized = true;
         }
-        
+
         desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
         
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
         SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
+        
+        SmartDashboard.putNumber("Elevator Desired Power", elevatorMotor.getAppliedOutput());
 
         // Initialize triggers once
         if (atSetpointTrigger == null) {

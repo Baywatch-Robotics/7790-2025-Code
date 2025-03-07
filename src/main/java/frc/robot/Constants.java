@@ -86,7 +86,7 @@ public final class Constants
 
     public static final float manualMultiplier = -0.005f;
 
-    public static final float min = 0.225f;
+    public static final float min = 0.2685f;
     //public static final float max = .9f;
     public static final float max = 0.698f;
 
@@ -97,21 +97,21 @@ public final class Constants
 
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.643f;
-    public static final float loadAngle = 0.225f;
+    public static final float loadAngle = 0.2685f;
     
     // Ball position angle
     public static final float ballAngle = 0.5f;
 
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 3.5f;
+    public static final float P = 2.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     //public static final float maxVelocity = 1000;
     //public static final float maxAcceleration = 200;
 
-    public static final float maxVelocity = 100;
-    public static final float maxAcceleration = 50;
+    public static final float maxVelocity = 200f;
+    public static final float maxAcceleration = 200f;
 
 
     public static final float allowedClosedLoopError = .05f;
@@ -129,22 +129,22 @@ public final class Constants
     
     public static final int ID = 13;
     
-    public static final float manualMultiplier = 2f;
+    public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
 
     //Gray Spools
-    public static final float min = -79f;
+    public static final float min = -237f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -79f;
-    public static final float L3LPose = -44.33f;
-    public static final float L3RPose = -41f;
-    public static final float L2RPose = -16.67f;
-    public static final float L2LPose = -14.33f;
-    public static final float L1Pose = -14.67f;
-    public static final float pickupPose = -34.67f;
-    public static final float climbPose = -40.777790f;
+    public static final float L4Pose = -237f;
+    public static final float L3LPose = -133f;
+    public static final float L3RPose = -123f;
+    public static final float L2RPose = -50f;
+    public static final float L2LPose = -43f;
+    public static final float L1Pose = -44f;
+    public static final float pickupPose = -104f;
+    public static final float climbPose = -122.32f;
     
     // Ball pickup positions
     // public static final float highBallPose = -50f;
@@ -156,12 +156,12 @@ public final class Constants
     public static final float MID_RAISED_THRESHOLD = -40f;
     public static final float FULLY_RAISED_THRESHOLD = -60f;
     
-    public static final float P = 0.25f;
+    public static final float P = .25f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 4500;
     public static final float maxAcceleration = 6000;
-    public static final float allowedClosedLoopError = .5f;
+    public static final float allowedClosedLoopError = .1f;
   }
 
   public static final class FunnelConstants{
