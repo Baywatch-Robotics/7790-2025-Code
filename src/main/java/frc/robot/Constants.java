@@ -123,7 +123,7 @@ public final class Constants
 
     public static final float allowedClosedLoopError = .05f;
 
-    public static final float minSmoothingDistance = 0.1f;  // Minimum angle difference to trigger smoothing
+    public static final float minSmoothingDistance = 0.2f;  // Minimum angle difference to trigger smoothing
     public static final float approachSmoothingFactor = 0.02f;  // 0-1 value: smaller = smoother/slower approach
     public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
   }
