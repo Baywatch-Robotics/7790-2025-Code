@@ -962,31 +962,39 @@ public Command disableDriveToPoseCommand() {
 
   public void setDriveSpeedBasedOnElevatorAndCloseness()
   {    
-    // Determine drive speed based on elevator height category using the new constants
-    Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
-    
-    // ALWAYS apply elevator-based speed restrictions, regardless of full speed mode
-    switch (heightCategory) {
-      case FULLY_RAISED:
-        targetDriveSpeed = SpeedConstants.elevatorFullyRaisedSpeed;
-        break;
-      case MID_RAISED:
-        targetDriveSpeed = SpeedConstants.elevatorMidRaisedSpeed;
-        break;
-      case PARTIALLY_RAISED:
-        targetDriveSpeed = SpeedConstants.elevatorPartiallyRaisedSpeed;
-        break;
-      case SLIGHTLY_RAISED:
-        targetDriveSpeed = SpeedConstants.elevatorRaisedSpeed;
-        break;
-      case LOWERED:
-      default:
-        targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
-        break;
+    // Check if the elevator is at intake position - if so, use full speed regardless of height
+    if (elevator.isAtIntakePosition()) {
+      targetDriveSpeed = SpeedConstants.intakePositionSpeed;
+      SmartDashboard.putBoolean("At Intake Position", true);
+    } else {
+      SmartDashboard.putBoolean("At Intake Position", false);
+      
+      // Determine drive speed based on elevator height category using the new constants
+      Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
+      
+      // ALWAYS apply elevator-based speed restrictions, regardless of full speed mode
+      switch (heightCategory) {
+        case FULLY_RAISED:
+          targetDriveSpeed = SpeedConstants.elevatorFullyRaisedSpeed;
+          break;
+        case MID_RAISED:
+          targetDriveSpeed = SpeedConstants.elevatorMidRaisedSpeed;
+          break;
+        case PARTIALLY_RAISED:
+          targetDriveSpeed = SpeedConstants.elevatorPartiallyRaisedSpeed;
+          break;
+        case SLIGHTLY_RAISED:
+          targetDriveSpeed = SpeedConstants.elevatorRaisedSpeed;
+          break;
+        case LOWERED:
+        default:
+          targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
+          break;
+      }
     }
     
     // Update SmartDashboard with current elevator height state
-    SmartDashboard.putString("Elevator Height State", heightCategory.toString());
+    SmartDashboard.putString("Elevator Height State", elevator.getElevatorHeightCategory().toString());
     
     // Update zone statuses
     Pose2d currentPose = drivebase.getPose();
