@@ -25,6 +25,9 @@ import frc.robot.subsystems.ButtonBox;
 public class ShooterArm extends SubsystemBase {
 
     public float shooterArmDesiredAngle;
+    private float previousDesiredAngle; // Track previous desired angle to detect changes
+    private boolean waitingForSnapReach = false; // Track if we're waiting to reach snap position
+    private float snapPosition = 0; // The position we initially snap to and target
     
     public boolean isInitialized = false;
 
@@ -39,7 +42,9 @@ public class ShooterArm extends SubsystemBase {
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
-        }
+        previousDesiredAngle = shooterArmDesiredAngle; // Initialize previous angle
+        snapPosition = shooterArmDesiredAngle; // Initialize snap position
+    }
 
 
     private void setScoreLOW() {
@@ -146,20 +151,86 @@ public class ShooterArm extends SubsystemBase {
     @Override
     public void periodic() {
         
-        
         if (!isInitialized) {
             shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
+            previousDesiredAngle = shooterArmDesiredAngle;
+            snapPosition = shooterArmDesiredAngle;
             isInitialized = true;
         }
         
         isClearToElevate();
         
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
+        
+        // Get current arm position
+        float currentPosition = (float)shooterArmEncoder.getPosition();
+        
+        // Detect if setpoint has changed
+        if (Math.abs(shooterArmDesiredAngle - previousDesiredAngle) > 0.001) {
+            // Setpoint has changed, calculate the direction of change
+            float direction = Math.signum(shooterArmDesiredAngle - previousDesiredAngle);
+            
+            // Calculate the total distance from previous to desired
+            float totalDistance = Math.abs(shooterArmDesiredAngle - previousDesiredAngle);
+            
+            if (totalDistance > ShooterArmConstants.minSmoothingDistance) {
+                // Set snap position to be exactly minSmoothingDistance away from the TARGET
+                // (not from the previous position)
+                snapPosition = shooterArmDesiredAngle - (direction * ShooterArmConstants.minSmoothingDistance);
+            } else {
+                // If already closer than the minimum smoothing distance, just go directly
+                snapPosition = previousDesiredAngle;
+            }
+            
+            // Enter waiting state until arm reaches snap position
+            waitingForSnapReach = true;
+            
+            // Update the previous desired angle
+            previousDesiredAngle = shooterArmDesiredAngle;
+        }
+        
+        // Check if we're waiting to reach the snap position
+        if (waitingForSnapReach) {
+            // Calculate how close we are to the snap position
+            float distanceToSnap = Math.abs(currentPosition - snapPosition);
+            
+            // If we're close enough, exit waiting state and begin smoothing
+            if (distanceToSnap <= ShooterArmConstants.snapReachThreshold) {
+                waitingForSnapReach = false;
+            }
+            
+            // While waiting, just keep targeting the snap position
+            // No smoothing yet
+        }
+        else {
+            // We've reached the snap position, apply smoothing toward the final target
+            float angleDifference = shooterArmDesiredAngle - snapPosition;
+            float distToTarget = Math.abs(angleDifference);
+            
+            // Only apply smoothing if the distance is significant
+            if (distToTarget > 0.001) {
+                // Calculate an intermediate setpoint that moves toward the target
+                snapPosition += angleDifference * ShooterArmConstants.approachSmoothingFactor;
+            } else {
+                // If we're essentially at the target, just set to the target exactly
+                snapPosition = shooterArmDesiredAngle;
+            }
+        }
+        
+        // Apply limits to the snap position
+        snapPosition = (float)MathUtil.clamp(
+            snapPosition, 
+            ShooterArmConstants.min, 
+            ShooterArmConstants.max
+        );
 
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
-        SmartDashboard.putNumber("Shooter Arm Current Angle", (float)shooterArmEncoder.getPosition());
+        SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
+        SmartDashboard.putNumber("Shooter Arm Target Angle", snapPosition);
+        SmartDashboard.putBoolean("Shooter Arm Waiting For Snap", waitingForSnapReach);
         
-        shooterArmController.setReference(shooterArmDesiredAngle, ControlType.kPosition);
+        // Use the snap position for the actual motor control
+        shooterArmController.setReference(snapPosition, ControlType.kPosition);
 
     }
 }

@@ -115,6 +115,10 @@ public final class Constants
 
 
     public static final float allowedClosedLoopError = .05f;
+
+    public static final float minSmoothingDistance = 0.1f;  // Minimum angle difference to trigger smoothing
+    public static final float approachSmoothingFactor = 0.025f;  // 0-1 value: smaller = smoother/slower approach
+    public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
   }
 
   public static final class ClimberConstants{
@@ -390,7 +394,7 @@ public final class Constants
     public static final float coralStationMultiplier = 0.4f;
 
 
-    public static final float speedSmoothingFactor = 0.2f; // Controls how quickly speed changes (0.0-1.0)
+    public static final float speedSmoothingFactor = 0.1f; // Controls how quickly speed changes (0.0-1.0)
   }
 
   /**
@@ -474,6 +478,6 @@ public final class Constants
     
     // Smoothing factor for constraint changes (0.0-1.0)
     // Lower values = smoother/slower transitions, higher values = quicker transitions
-    public static final double CONSTRAINT_SMOOTHING_FACTOR = 0.2;
+    public static final double CONSTRAINT_SMOOTHING_FACTOR = 0.15;
   }
 }

@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -82,7 +81,6 @@ public final class Configs {
           .pid(ShooterArmConstants.P, ShooterArmConstants.I, ShooterArmConstants.D)
           .outputRange(-1, 1)
           .maxMotion
-          .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
           // Set MAXMotion parameters for position control
           .maxVelocity(ShooterArmConstants.maxVelocity)
           .maxAcceleration(ShooterArmConstants.maxAcceleration)
