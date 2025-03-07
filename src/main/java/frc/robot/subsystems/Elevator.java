@@ -235,6 +235,12 @@ public class Elevator extends SubsystemBase {
             return clearToIntake;
         });
     }
+    
+    // Direct method to check if elevator is at intake position
+    public boolean isAtIntakePosition() {
+        return m_encoder.getPosition() >= ElevatorConstants.pickupPose - ElevatorConstants.INTAKE_CLEARANCE_MARGIN &&
+               m_encoder.getPosition() <= ElevatorConstants.pickupPose + ElevatorConstants.INTAKE_CLEARANCE_MARGIN;
+    }
 
     public Trigger isAtSetpoint() {
         return new Trigger(() -> {

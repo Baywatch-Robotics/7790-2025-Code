@@ -162,10 +162,10 @@ public final class Constants
     // public static final float lowBallPose = -25f;
     
     // New elevator height thresholds for speed control
-    public static final float SLIGHTLY_RAISED_THRESHOLD = -5f;
-    public static final float PARTIALLY_RAISED_THRESHOLD = -20f;
-    public static final float MID_RAISED_THRESHOLD = -40f;
-    public static final float FULLY_RAISED_THRESHOLD = -60f;
+    public static final float SLIGHTLY_RAISED_THRESHOLD = -15f;
+    public static final float PARTIALLY_RAISED_THRESHOLD = -60f;
+    public static final float MID_RAISED_THRESHOLD = -120f;
+    public static final float FULLY_RAISED_THRESHOLD = -180f;
     
     // Elevator setpoint tolerance constants
     public static final float STANDARD_SETPOINT_TOLERANCE = 10.0f;
@@ -432,6 +432,9 @@ public final class Constants
     public static final float elevatorPartiallyRaisedSpeed = 0.5f;
     public static final float elevatorMidRaisedSpeed = 0.3f;
     public static final float elevatorFullyRaisedSpeed = 0.1f;
+    
+    // Full speed when at intake position
+    public static final float intakePositionSpeed = 1.0f;
 
     public static float fullSpeedOverride = 1.0f;
   }
