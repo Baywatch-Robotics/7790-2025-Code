@@ -130,10 +130,17 @@ public class RobotContainer
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
 
   // Triggers for proximity detection
-  public Trigger approachingTrigger = new Trigger(() -> isApproaching);
-  public Trigger closeTrigger = new Trigger(() -> isClose);
-  public Trigger veryCloseTrigger = new Trigger(() -> isVeryClose);
-  public Trigger linedUpTrigger = new Trigger(() -> isLinedUp);
+  public Trigger approachingTrigger(){
+    return new Trigger(() -> isApproaching);
+  }
+  
+  public Trigger closeTrigger(){
+    return new Trigger(() -> isClose);
+  }
+  
+  public Trigger veryCloseTrigger(){
+    return new Trigger(() -> isVeryClose);
+  }
   
   // Triggers for zone detection
   public Trigger reefZoneTrigger(){
@@ -946,6 +953,21 @@ public Command disableDriveToPoseCommand() {
           // Normalize to [-π, π]
           double rotationError = Math.abs(Math.atan2(Math.sin(rotationDiff), Math.cos(rotationDiff)));
           
+          // Update proximity flags based on distance to target
+          isApproaching = positionError <= Constants.DriveToPoseConstants.MID_DISTANCE;
+          isClose = positionError <= Constants.DriveToPoseConstants.CLOSE_DISTANCE;
+          isVeryClose = positionError <= Constants.DriveToPoseConstants.VERY_CLOSE_DISTANCE;
+          
+          approachingTrigger();
+          closeTrigger();
+          veryCloseTrigger();
+
+          // Update dashboard with proximity status
+          SmartDashboard.putBoolean("Approaching Target", isApproaching);
+          SmartDashboard.putBoolean("Close To Target", isClose);
+          SmartDashboard.putBoolean("Very Close To Target", isVeryClose);
+          SmartDashboard.putBoolean("Lined Up With Target", isLinedUp);
+          
           // Determine instantaneous status based on errors
           boolean instantAtPosition = positionError <= positionTolerance;
           boolean instantAtRotation = rotationError <= rotationTolerance;
@@ -1096,9 +1118,12 @@ public Command disableDriveToPoseCommand() {
           isAtTargetPosition = false;
           isAtTargetRotation = false;
           isAtTarget = false;
-          hasReachedAndClearedTarget = false;
-          hasAutoCanceled = false;
-          hasProcessedCurrentTarget = false;
+          
+          // Also reset proximity flags when no target
+          isApproaching = false;
+          isClose = false;
+          isVeryClose = false;
+          isLinedUp = false;
           
           // Reset all timers
           positionTimerActive = false;
@@ -1118,9 +1143,12 @@ public Command disableDriveToPoseCommand() {
       isAtTargetPosition = false;
       isAtTargetRotation = false;
       isAtTarget = false;
-      hasReachedAndClearedTarget = false;
-      hasAutoCanceled = false;
-      hasProcessedCurrentTarget = false;
+      
+      // Also reset proximity flags when drive-to-pose is inactive
+      isApproaching = false;
+      isClose = false;
+      isVeryClose = false;
+      isLinedUp = false;
       
       // Reset all timers
       positionTimerActive = false;

@@ -131,16 +131,15 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
   .andThen(robotContainer.enableDriveToPoseCommand())
+  .andThen(new WaitUntilCommand(robotContainer.closeTrigger()))
+  .andThen(shooter.shooterIntakeCommand())
   .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()))
-    
   
-    .andThen(shooter.shooterIntakeCommand())
-    //.andThen(new WaitCommand(.5))
-    .andThen(shooter.shooterOutakeCommand());
-    /*
-    .andThen(new WaitCommand(.5))
-    .andThen(shooter.shooterZeroSpeedCommand());
-    */
+  .andThen(shooter.shooterOutakeCommand())
+    
+  .andThen(new WaitCommand(.5))
+  .andThen(shooter.shooterZeroSpeedCommand());
+    
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
 }
@@ -162,8 +161,8 @@ return command;
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
   Command command = robotContainer.enableDriveToPoseCommand()
-  .andThen(new WaitCommand(2));
-    //.alongWith(CommandFactory.setIntakeCommand(shooter, shooterArm, shooterPivot, elevator));
+  .andThen(new WaitCommand(1))
+  .andThen(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
 
     command.addRequirements(shooter, shooterArm, elevator);
 
