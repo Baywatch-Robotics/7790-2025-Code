@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AlgaeShooterConstants;
+import frc.robot.Constants.SpeedConstants;
 import frc.robot.Constants.ZoneConstants;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
@@ -32,13 +37,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
-
-import java.io.File;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import swervelib.SwerveInputStream;
-import frc.robot.Constants.SpeedConstants;
 
 
 /**
@@ -87,6 +86,17 @@ public class RobotContainer
   private boolean isInCoralStationLeftZone = false;  // Consistent naming
   private boolean isInCoralStationRightZone = false; // Consistent naming
 
+  // Add flag to track reef zone restriction enforcement
+  private boolean enforceReefZoneElevatorRestriction = true;
+  
+  // Add flag to track if we're currently being held outside reef zone
+  private boolean heldOutsideReefZone = false;
+  
+  // Add trigger for reef zone restriction status
+  public Trigger reefZoneRestrictionActiveTrigger() {
+    return new Trigger(() -> heldOutsideReefZone);
+  }
+  
   
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX() * .8;
   DoubleSupplier angSpeed;
@@ -406,11 +416,43 @@ SwerveInputStream driveButtonBoxInput =
                   return drivebase.getPose(); // Return current pose as failsafe
               }
               
-              // Visualize the target pose
-              drivebase.visualizeTargetPose(allianceAdjustedPose);
-              
               // Get current robot pose
               Pose2d robotPose = drivebase.getPose();
+              
+              // Check if target is in reef zone and we need to restrict movement
+              boolean targetInReefZone = isInReefZone(allianceAdjustedPose);
+              boolean currentlyInReefZone = isInReefZone(robotPose);
+              boolean elevatorReady = elevator.isSafeForReefZoneEntry();
+              
+              // Update held status for dashboard
+              heldOutsideReefZone = targetInReefZone && !elevatorReady && 
+                                    !currentlyInReefZone && enforceReefZoneElevatorRestriction;
+              
+              SmartDashboard.putBoolean("Held Outside Reef Zone", heldOutsideReefZone);
+              SmartDashboard.putBoolean("Target In Reef Zone", targetInReefZone);
+              SmartDashboard.putBoolean("Elevator Ready For Reef", elevatorReady);
+              
+              // Create a modified target position if needed - keeps robot outside reef zone
+              if (heldOutsideReefZone) {
+                  Pose2d modifiedTarget = calculateHoldingPosition(robotPose, allianceAdjustedPose);
+                  
+                  // Visualize both the holding position and the actual target
+                  drivebase.visualizeTargetPose(allianceAdjustedPose);
+                  drivebase.visualizeHoldingPose(modifiedTarget);
+                  
+                  // Provide feedback in logs and dashboard
+                  SmartDashboard.putString("Drive Status", "Waiting for elevator to reach position");
+                  Elastic.sendNotification(
+                    new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+                    "Reef Zone Hold", 
+                    "Holding outside reef zone until elevator is positioned"));
+                      
+                  // Return the modified target that keeps us outside the reef
+                  return modifiedTarget;
+              }
+              
+              // Normal processing - visualize target and proceed
+              drivebase.visualizeTargetPose(allianceAdjustedPose);
               
               // Update distance and angle metrics
               distanceToTarget = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
@@ -418,6 +460,7 @@ SwerveInputStream driveButtonBoxInput =
                   allianceAdjustedPose.getY() - robotPose.getY(),
                   allianceAdjustedPose.getX() - robotPose.getX()
               ) - robotPose.getRotation().getRadians();
+              
               // Normalize angle
               angleToTarget = Math.atan2(Math.sin(angleToTarget), Math.cos(angleToTarget));
               
@@ -451,13 +494,69 @@ SwerveInputStream driveButtonBoxInput =
       driveToPoseRotControllerSupplier.get()
   );
 
-  // Create drive commands
+
+
+      // Create drive commands
   public Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
   public Command driveFieldOrientedDriveToPose = drivebase.driveFieldOriented(driveToPoseStream);
 
 
-// Simplified enableDriveToPoseCommand: just schedule tempDriveToPoseCommand
+
+  // Helper method to calculate a holding position outside the reef zone
+  private Pose2d calculateHoldingPosition(Pose2d robotPose, Pose2d targetPose) {
+      // Get alliance-relative reef center
+      Pose2d reefCenter = TargetClass.toPose2d(new Pose2d(
+          ZoneConstants.reefCenterX, 
+          ZoneConstants.reefCenterY, 
+          new Rotation2d(0)));
+      
+      // Calculate vector from reef center to target
+      double dx = targetPose.getX() - reefCenter.getX();
+      double dy = targetPose.getY() - reefCenter.getY();
+      
+      // Normalize this vector
+      double distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 0.001) {
+          // If target is at reef center (unlikely), just use a default direction
+          dx = 1.0;
+          dy = 0.0;
+      } else {
+          dx /= distance;
+          dy /= distance;
+      }
+      
+      // Calculate a position just outside the reef zone
+      double holdX = reefCenter.getX() + dx * (ZoneConstants.reefZoneRadius + ZoneConstants.REEF_ZONE_ENTRY_BUFFER);
+      double holdY = reefCenter.getY() + dy * (ZoneConstants.reefZoneRadius + ZoneConstants.REEF_ZONE_ENTRY_BUFFER);
+      
+      // Use the target's rotation for the holding position
+      return new Pose2d(holdX, holdY, targetPose.getRotation());
+  }
+  
+  // Add method to enable/disable reef zone restriction
+  public void setReefZoneRestriction(boolean enable) {
+      this.enforceReefZoneElevatorRestriction = enable;
+      SmartDashboard.putBoolean("Reef Zone Restriction", enable);
+      if (enable) {
+          Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+            "Reef Zone Protection", 
+            "Elevator-to-reef zone coordination enabled"));
+      } else {
+          Elastic.sendNotification(
+            new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO, 
+            "Reef Zone Protection", 
+            "Elevator-to-reef zone coordination disabled"));
+      }
+  }
+  
+  // Command to toggle reef zone restriction
+  public Command toggleReefZoneRestrictionCommand() {
+      return Commands.runOnce(() -> setReefZoneRestriction(!enforceReefZoneElevatorRestriction));
+  }
+  
+  // Simplified enableDriveToPoseCommand: just schedule tempDriveToPoseCommand
 public Command enableDriveToPoseCommand() {
     return Commands.runOnce(() -> {
         // Only schedule if not already running
@@ -1163,6 +1262,10 @@ public Command disableDriveToPoseCommand() {
       SmartDashboard.putBoolean("At Target", false);
       
     }
+    
+    // Update dashboard with reef zone restriction status
+    SmartDashboard.putBoolean("Reef Zone Restriction", enforceReefZoneElevatorRestriction);
+    SmartDashboard.putBoolean("Elevator Ready For Reef", elevator.isSafeForReefZoneEntry());
   }
 
   /**

@@ -229,8 +229,8 @@ public class Elevator extends SubsystemBase {
 
     public Trigger isClearToIntake() {
         return new Trigger(() -> {
-            boolean clearToIntake = m_encoder.getPosition() >= ElevatorConstants.pickupPose - 20 &&
-                                    m_encoder.getPosition() <= ElevatorConstants.pickupPose + 20;
+            boolean clearToIntake = m_encoder.getPosition() >= ElevatorConstants.pickupPose - ElevatorConstants.INTAKE_CLEARANCE_MARGIN &&
+                                    m_encoder.getPosition() <= ElevatorConstants.pickupPose + ElevatorConstants.INTAKE_CLEARANCE_MARGIN;
             SmartDashboard.putBoolean("Elevator Clear To Intake", clearToIntake);
             return clearToIntake;
         });
@@ -238,8 +238,8 @@ public class Elevator extends SubsystemBase {
 
     public Trigger isAtSetpoint() {
         return new Trigger(() -> {
-            boolean atSetpoint = m_encoder.getPosition() >= elevatorDesiredPosition - 10 &&
-                                 m_encoder.getPosition() <= elevatorDesiredPosition + 10;
+            boolean atSetpoint = m_encoder.getPosition() >= elevatorDesiredPosition - ElevatorConstants.STANDARD_SETPOINT_TOLERANCE &&
+                                 m_encoder.getPosition() <= elevatorDesiredPosition + ElevatorConstants.STANDARD_SETPOINT_TOLERANCE;
             // Log the values to help debug
             SmartDashboard.putBoolean("Elevator At Setpoint", atSetpoint);
             SmartDashboard.putNumber("Elevator Position Difference", m_encoder.getPosition() - elevatorDesiredPosition);
@@ -257,11 +257,52 @@ public class Elevator extends SubsystemBase {
 
     public Boolean isAtSetpointBoolean() {
 
-        if(m_encoder.getPosition() <= 5){
+        if(m_encoder.getPosition() <= ElevatorConstants.HOME_POSITION_THRESHOLD){
             return false;
         }
-        return m_encoder.getPosition() >= elevatorDesiredPosition - 5 &&
-               m_encoder.getPosition() <= elevatorDesiredPosition + 5;
+        return m_encoder.getPosition() >= elevatorDesiredPosition - ElevatorConstants.HOME_POSITION_THRESHOLD &&
+               m_encoder.getPosition() <= elevatorDesiredPosition + ElevatorConstants.HOME_POSITION_THRESHOLD;
+    }
+    
+    // New method to check if elevator is near setpoint with configurable tolerance
+    public boolean isNearSetpoint(double tolerance) {
+        // Don't consider "near setpoint" if desired position is near home/zero
+        if (Math.abs(elevatorDesiredPosition) <= ElevatorConstants.HOME_POSITION_THRESHOLD) {
+            return false;
+        }
+        
+        // Check if current position is within specified tolerance of desired position
+        return m_encoder.getPosition() >= elevatorDesiredPosition - tolerance &&
+               m_encoder.getPosition() <= elevatorDesiredPosition + tolerance;
+    }
+    
+    // Convenience methods with predefined tolerance levels
+    public boolean isNearSetpoint() {
+        return isNearSetpoint(ElevatorConstants.NEAR_SETPOINT_TOLERANCE);
+    }
+    
+    public boolean isApproachingSetpoint() {
+        return isNearSetpoint(ElevatorConstants.APPROACHING_SETPOINT_TOLERANCE);
+    }
+    
+    public boolean isAtSetpointPrecise() {
+        return isNearSetpoint(ElevatorConstants.STANDARD_SETPOINT_TOLERANCE);
+    }
+    
+    // Method to check if elevator is ready to enter reef zone
+    public boolean isSafeForReefZoneEntry() {
+        // If elevator is headed down (to home/retracted), it's always safe
+        if (elevatorDesiredPosition <= ElevatorConstants.HOME_POSITION_THRESHOLD) {
+            return true;
+        }
+        
+        // Otherwise, only enter reef zone when we're close to target height
+        return isNearSetpoint(ElevatorConstants.NEAR_SETPOINT_TOLERANCE);
+    }
+    
+    // Create a trigger for reef zone safety
+    public Trigger getSafeForReefEntryTrigger() {
+        return new Trigger(this::isSafeForReefZoneEntry);
     }
 
     // New methods to check elevator height status

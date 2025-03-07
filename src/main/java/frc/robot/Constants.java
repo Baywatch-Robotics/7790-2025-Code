@@ -167,6 +167,17 @@ public final class Constants
     public static final float MID_RAISED_THRESHOLD = -40f;
     public static final float FULLY_RAISED_THRESHOLD = -60f;
     
+    // Elevator setpoint tolerance constants
+    public static final float STANDARD_SETPOINT_TOLERANCE = 10.0f;
+    public static final float NEAR_SETPOINT_TOLERANCE = 20.0f;
+    public static final float APPROACHING_SETPOINT_TOLERANCE = 40.0f;
+    
+    // Home position threshold
+    public static final float HOME_POSITION_THRESHOLD = 5.0f;
+    
+    // Intake clearance thresholds
+    public static final float INTAKE_CLEARANCE_MARGIN = 20.0f;
+    
     public static final float P = .25f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
@@ -359,6 +370,9 @@ public final class Constants
     public static final float reefCenterX = (float)Units.inchesToMeters(176.745);
     public static final float reefCenterY = (float)Units.inchesToMeters(158.5);
     public static final float reefZoneRadius = (float)Units.inchesToMeters(76);
+    
+    // Buffer distance to keep outside reef zone until elevator is ready
+    public static final float REEF_ZONE_ENTRY_BUFFER = 0.3f;
     
     /*
     // Coral stations (rectangular) - Blue alliance coordinates

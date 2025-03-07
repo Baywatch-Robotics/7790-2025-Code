@@ -714,5 +714,14 @@ public Command driveToPose(ButtonBox buttonBox) {
         swerveDrive.field.getObject("targetPose").setPose(
             new Pose2d(-100, -100, new Rotation2d(0))
         );
+        swerveDrive.field.getObject("holdingPosition").setPose(
+            new Pose2d(-100, -100, new Rotation2d(0))
+        );
     }
+
+    // In SwerveSubsystem.java
+    public void visualizeHoldingPose(Pose2d holdingPose) {
+  // Similar to visualizeTargetPose but with different color (e.g., yellow)
+  swerveDrive.field.getObject("holdingPosition").setPose(holdingPose);
+}
 }
