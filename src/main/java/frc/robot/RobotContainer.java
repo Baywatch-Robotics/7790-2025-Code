@@ -730,9 +730,6 @@ public Command disableDriveToPoseCommand() {
     // Configure the trigger bindings
     configureBindings();
     
-    // Set default drive command
-    drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-    
     // Initialize drive to pose command for debugging
     SmartDashboard.putBoolean("Drive To Pose Enabled", false);
     

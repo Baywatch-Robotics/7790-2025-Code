@@ -479,7 +479,7 @@ public final class Constants
     public static final double VERY_CLOSE_DISTANCE = 0.5; // meters
     
     // Maximum velocity constraints (m/s)
-    public static final double FAR_MAX_VEL = 3.0;
+    public static final double FAR_MAX_VEL = 2.0;
     public static final double MID_MAX_VEL = 1.0;
     public static final double CLOSE_MAX_VEL = .75;
     public static final double VERY_CLOSE_MAX_VEL = 0.5;
