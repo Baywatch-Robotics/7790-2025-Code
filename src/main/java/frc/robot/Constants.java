@@ -86,7 +86,7 @@ public final class Constants
 
     public static final float manualMultiplier = -0.005f;
 
-    public static final float min = 0.2685f;
+    public static final float min = 0.252f;
     //public static final float max = .9f;
     public static final float max = 0.698f;
 
@@ -98,13 +98,14 @@ public final class Constants
     public static final float climbAngle = 0.698f; //Larger than this in reality
 
     public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.643f;
+    public static final float scoreAngleHIGH = 0.66f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float loadAngle = 0.2685f;
+    public static final float loadAngle = 0.252f
+    ;
     
     // Ball position angle
     public static final float ballAngle = 0.5f;
@@ -150,22 +151,22 @@ public final class Constants
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -48.037571f;
+    public static final float min = -46.767197f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -48.037571f;
-    public static final float L3LPose = -0;
-    public static final float L3RPose = -0;
+    public static final float L4Pose = -46.767197f;
+    public static final float L3LPose = -30;
+    public static final float L3RPose = -30;
     public static final float L2RPose = -10.737109f;
     public static final float L2LPose = -10.737109f;
     public static final float L1Pose = -0;
-    public static final float pickupPose = -22.7213f;
+    public static final float pickupPose = -20.858118f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
-
+    public static final float downPosition = -7f;
     
     // Ball pickup positions
     // public static final float highBallPose = -50f;
@@ -190,14 +191,14 @@ public final class Constants
     
     public static final float P = .25f;
     public static final float I = 0.0f;
-    public static final float D = 0.0f;
+    public static final float D = 0f;
 
     public static final float FFPercent = -0.05f;
 
     public static final float FFCutoff = -6.296857f;
     
-    public static final float maxVelocity = 10;
-    public static final float maxAcceleration = 10;
+    public static final float maxVelocity = 2750;
+    public static final float maxAcceleration = 6000;
     public static final float allowedClosedLoopError = .1f;
   }
 
@@ -439,18 +440,18 @@ public final class Constants
   public static final class SpeedConstants {
     
     // Default speed when elevator is lowered
-    public static final float elevatorLoweredSpeed = 0.6f;
+    public static final float elevatorLoweredSpeed = 0.8f;
     
     // New speed constants for different elevator heights
 
     //public static final float elevatorPartiallyRaisedSpeed = 0.5f;
 
-    public static final float elevatorPartiallyRaisedSpeed = 0.3f;
+    public static final float elevatorPartiallyRaisedSpeed = 0.4f;
 
     //public static final float elevatorMidRaisedSpeed = 0.3f;
 
-    public static final float elevatorMidRaisedSpeed = 0.2f;
-    public static final float elevatorFullyRaisedSpeed = 0.1f;
+    public static final float elevatorMidRaisedSpeed = 0.3f;
+    public static final float elevatorFullyRaisedSpeed = 0.2f;
     
     // Full speed when at intake position
     public static final float intakePositionSpeed = 0.5f;

@@ -73,7 +73,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private void setFullRetract() {
-        elevatorDesiredPosition = 0;
+        elevatorDesiredPosition = ElevatorConstants.downPosition;
     }
 
     private void setL4() {
@@ -101,7 +101,7 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
     }
     public void setPickupPlus() {
-        elevatorDesiredPosition = ElevatorConstants.pickupPose - 12;
+        elevatorDesiredPosition = ElevatorConstants.pickupPose - 2;
     }
     public void setClimbPose() {
         elevatorDesiredPosition = ElevatorConstants.climbPose;
@@ -223,19 +223,8 @@ public class Elevator extends SubsystemBase {
             return raised;
         });
     }
-    public Trigger isRaisedEnoughTrigger() {
-        return new Trigger(() -> {
-            boolean raisedEnough = m_encoder.getPosition() <= -120;
-            SmartDashboard.putBoolean("Elevator Is Raised Enough", raisedEnough);
-            return raisedEnough;
-        });
-    }
     public Boolean isRaised() {
          return m_encoder.getPosition() <= -1;
-    }
-
-    public Boolean isRaisedEnough() {
-        return m_encoder.getPosition() <= -120;
     }
 
     public Trigger isClearToIntake() {
@@ -479,11 +468,7 @@ public class Elevator extends SubsystemBase {
         // Update drive speed based on elevator position
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
-        if (m_encoder.getPosition() >= ElevatorConstants.FFCutoff) {
-        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kPosition, ClosedLoopSlot.kSlot0, 0, ArbFFUnits.kPercentOut);
-        } else {
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
-        }
     }
     
     // Use these methods to access the stored trigger instances

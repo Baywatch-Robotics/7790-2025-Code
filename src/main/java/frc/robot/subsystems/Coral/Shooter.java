@@ -124,5 +124,6 @@ public class Shooter extends SubsystemBase {
         }
 
         SmartDashboard.putNumber("Current Draw", getCurrentDraw());
+        SmartDashboard.putBoolean("Coral Loaded", coralLoaded);
     }
 }

@@ -28,7 +28,7 @@ public final class Configs {
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
           .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
-          .outputRange(-1, 1)
+          .outputRange(-1,1)
           .maxMotion
           // Set MAXMotion parameters for position control
           .maxVelocity(ElevatorConstants.maxVelocity)
