@@ -7,6 +7,8 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -30,6 +32,7 @@ public class Elevator extends SubsystemBase {
     private float desiredTotalHeight;
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
+    private SparkMax elevatorSlaveMotor = new SparkMax(ElevatorConstants.slaveID, MotorType.kBrushless);
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
 
@@ -55,8 +58,16 @@ public class Elevator extends SubsystemBase {
         
         m_encoder = elevatorMotor.getEncoder();
         m_encoder.setPosition(0);
+        
+
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+        
+
+        elevatorSlaveMotor.configure(
+                Configs.Elevator.elevatorSlaveConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
@@ -468,7 +479,11 @@ public class Elevator extends SubsystemBase {
         // Update drive speed based on elevator position
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
-        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl);
+        if (m_encoder.getPosition() >= ElevatorConstants.FFCutoff) {
+        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kPosition, ClosedLoopSlot.kSlot0, 0, ArbFFUnits.kPercentOut);
+        } else {
+        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
+        }
     }
     
     // Use these methods to access the stored trigger instances

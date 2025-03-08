@@ -972,6 +972,7 @@ public Command disableDriveToPoseCommand() {
       // Determine drive speed based on elevator height category using the new constants
       Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
       
+      /*
       // ALWAYS apply elevator-based speed restrictions, regardless of full speed mode
       switch (heightCategory) {
         case FULLY_RAISED:
@@ -983,14 +984,13 @@ public Command disableDriveToPoseCommand() {
         case PARTIALLY_RAISED:
           targetDriveSpeed = SpeedConstants.elevatorPartiallyRaisedSpeed;
           break;
-        case SLIGHTLY_RAISED:
-          targetDriveSpeed = SpeedConstants.elevatorRaisedSpeed;
-          break;
         case LOWERED:
         default:
           targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
           break;
       }
+      */
+
     }
     
     // Update SmartDashboard with current elevator height state
@@ -1008,7 +1008,7 @@ public Command disableDriveToPoseCommand() {
     // Apply zone-based speed modifier ONLY if full speed mode is disabled
     if (!fullSpeedModeEnabled) {
         float zoneModifier = getZoneSpeedMultiplier();
-        targetDriveSpeed = Math.min(targetDriveSpeed, targetDriveSpeed * zoneModifier);
+        targetDriveSpeed = Math.min(targetDriveSpeed, zoneModifier);
         SmartDashboard.putNumber("Zone Modifier", zoneModifier);
     } else {
         // When full speed mode is enabled, no zone modifier is applied

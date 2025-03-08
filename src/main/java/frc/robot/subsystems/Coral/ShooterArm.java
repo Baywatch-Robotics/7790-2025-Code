@@ -227,6 +227,7 @@ public class ShooterArm extends SubsystemBase {
         // Get current arm position for dynamic reef zone constraint and smoothing operations
         float currentPosition = (float)shooterArmEncoder.getPosition();
         
+        /*
         // Update minimum allowed angle if arm is raised above the standard minimum
         if ((isInReefZone || isInReefZoneDebounce) && currentPosition >= ShooterArmConstants.reefZoneMinimumAngle) {
             // Once above the standard minimum, use that as the minimum
@@ -241,7 +242,7 @@ public class ShooterArm extends SubsystemBase {
         } else {
             SmartDashboard.putBoolean("Reef Zone Arm Constraint", false);
         }
-        
+        */
         SmartDashboard.putNumber("Reef Minimum Allowed Angle", reefZoneMinimumAllowedAngle);
         
         // Apply general constraints

@@ -111,20 +111,20 @@ public final class Constants
 
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 2.0f;
+    public static final float P = 5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     //public static final float maxVelocity = 1000;
     //public static final float maxAcceleration = 200;
 
-    public static final float maxVelocity = 200f;
-    public static final float maxAcceleration = 200f;
+    public static final float maxVelocity = 100f;
+    public static final float maxAcceleration = 100f;
 
 
     public static final float allowedClosedLoopError = .05f;
 
-    public static final float minSmoothingDistance = 0.2f;  // Minimum angle difference to trigger smoothing
-    public static final float approachSmoothingFactor = 0.02f;  // 0-1 value: smaller = smoother/slower approach
+    public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
+    public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
     public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
   }
 
@@ -140,49 +140,64 @@ public final class Constants
     
     public static final int ID = 13;
     
+    public static final int slaveID = 17;
+    
+
+
+
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
 
     //Gray Spools
-    public static final float min = -237f;
+    //public static final float min = -44f;
+    public static final float min = -48.037571f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -237f;
-    public static final float L3LPose = -133f;
-    public static final float L3RPose = -123f;
-    public static final float L2RPose = -50f;
-    public static final float L2LPose = -43f;
-    public static final float L1Pose = -44f;
-    public static final float pickupPose = -104f;
-    public static final float climbPose = -122.32f;
+    public static final float L4Pose = -48.037571f;
+    public static final float L3LPose = -0;
+    public static final float L3RPose = 0;
+    public static final float L2RPose = -10.737109f;
+    public static final float L2LPose = -10.737109f;
+    public static final float L1Pose = 0f;
+    public static final float pickupPose = -22.7213f;
+    public static final float climbPose = 0;
+
+    //-6.296857f WHEN TO DISABLE FEED FORWARD
+    
+
     
     // Ball pickup positions
     // public static final float highBallPose = -50f;
     // public static final float lowBallPose = -25f;
     
     // New elevator height thresholds for speed control
-    public static final float SLIGHTLY_RAISED_THRESHOLD = -15f;
-    public static final float PARTIALLY_RAISED_THRESHOLD = -60f;
-    public static final float MID_RAISED_THRESHOLD = -120f;
-    public static final float FULLY_RAISED_THRESHOLD = -180f;
+    public static final float SLIGHTLY_RAISED_THRESHOLD = -10f;
+    public static final float PARTIALLY_RAISED_THRESHOLD = -20f;
+    public static final float MID_RAISED_THRESHOLD = -30f;
+    public static final float FULLY_RAISED_THRESHOLD = -40f;
     
     // Elevator setpoint tolerance constants
-    public static final float STANDARD_SETPOINT_TOLERANCE = 10.0f;
-    public static final float NEAR_SETPOINT_TOLERANCE = 20.0f;
-    public static final float APPROACHING_SETPOINT_TOLERANCE = 40.0f;
+    public static final float STANDARD_SETPOINT_TOLERANCE = 2.0f;
+    public static final float NEAR_SETPOINT_TOLERANCE = 5.0f;
+    public static final float APPROACHING_SETPOINT_TOLERANCE = 7.5f;
     
     // Home position threshold
     public static final float HOME_POSITION_THRESHOLD = 5.0f;
     
     // Intake clearance thresholds
-    public static final float INTAKE_CLEARANCE_MARGIN = 20.0f;
+    public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
     public static final float P = .25f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 4500;
-    public static final float maxAcceleration = 6000;
+
+    public static final float FFPercent = -0.05f;
+
+    public static final float FFCutoff = -6.296857f;
+    
+    public static final float maxVelocity = 10;
+    public static final float maxAcceleration = 10;
     public static final float allowedClosedLoopError = .1f;
   }
 
@@ -205,7 +220,7 @@ public final class Constants
     public static final double ambiguityThreshold = 0.1;
 
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
-    public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.021);
+    public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
 
     public static final float rightCamRoll = (float)Units.degreesToRadians(0.0);
@@ -422,19 +437,23 @@ public final class Constants
    * Speed control constants for the robot
    */
   public static final class SpeedConstants {
-    // Default speed when elevator is raised
-    public static final float elevatorRaisedSpeed = 0.3f;
     
     // Default speed when elevator is lowered
-    public static final float elevatorLoweredSpeed = 1.0f;
+    public static final float elevatorLoweredSpeed = 0.6f;
     
     // New speed constants for different elevator heights
-    public static final float elevatorPartiallyRaisedSpeed = 0.5f;
-    public static final float elevatorMidRaisedSpeed = 0.3f;
+
+    //public static final float elevatorPartiallyRaisedSpeed = 0.5f;
+
+    public static final float elevatorPartiallyRaisedSpeed = 0.3f;
+
+    //public static final float elevatorMidRaisedSpeed = 0.3f;
+
+    public static final float elevatorMidRaisedSpeed = 0.2f;
     public static final float elevatorFullyRaisedSpeed = 0.1f;
     
     // Full speed when at intake position
-    public static final float intakePositionSpeed = 1.0f;
+    public static final float intakePositionSpeed = 0.5f;
 
     public static float fullSpeedOverride = 1.0f;
   }

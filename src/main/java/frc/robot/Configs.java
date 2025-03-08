@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.AlgaeArmConstants;
@@ -9,6 +10,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ShooterArmConstants;
 
 public final class Configs {
+
   public static final class Elevator {
     public static final SparkMaxConfig elevatorConfig = new SparkMaxConfig();
 
@@ -33,8 +35,20 @@ public final class Configs {
           .maxAcceleration(ElevatorConstants.maxAcceleration)
           .allowedClosedLoopError(ElevatorConstants.allowedClosedLoopError);      
     }
-  }
 
+    public static final SparkMaxConfig elevatorSlaveConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the elevator motor
+      elevatorSlaveConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      
+      elevatorSlaveConfig
+          .inverted(false)
+          .follow(13);
+    }
+    
+
+  }
 
   public static final class Climber {
     public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
