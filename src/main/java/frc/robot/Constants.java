@@ -156,19 +156,15 @@ public final class Constants
     // elevator set positions
     public static final float L4Pose = -48.037571f;
     public static final float L3LPose = -0;
-    public static final float L3RPose = 0;
+    public static final float L3RPose = -0;
     public static final float L2RPose = -10.737109f;
     public static final float L2LPose = -10.737109f;
-    public static final float L1Pose = 0f;
+    public static final float L1Pose = -0;
     public static final float pickupPose = -22.7213f;
-    public static final float climbPose = 0;
+    public static final float climbPose = -0;
 
-    public static final float matchZeroPose = -7.0f;
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
-    // Constants for slack take-up behavior
-    public static final float SLACK_TAKE_UP_POSITION = -6.3f;  // Position where slack is considered taken up
-    public static final float SLACK_TAKE_UP_SPEED = -0.05f;     // Slow speed for taking up slack
 
     
     // Ball pickup positions
@@ -187,10 +183,10 @@ public final class Constants
     public static final float APPROACHING_SETPOINT_TOLERANCE = 7.5f;
     
     // Home position threshold
-    public static final float HOME_POSITION_THRESHOLD = 7.0f;
+    public static final float HOME_POSITION_THRESHOLD = 5.0f;
     
     // Intake clearance thresholds
-    public static final float INTAKE_CLEARANCE_MARGIN = 2.0f;
+    public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
     public static final float P = .25f;
     public static final float I = 0.0f;
@@ -449,15 +445,15 @@ public final class Constants
 
     //public static final float elevatorPartiallyRaisedSpeed = 0.5f;
 
-    public static final float elevatorPartiallyRaisedSpeed = 0.4f;
+    public static final float elevatorPartiallyRaisedSpeed = 0.3f;
 
     //public static final float elevatorMidRaisedSpeed = 0.3f;
 
-    public static final float elevatorMidRaisedSpeed = 0.3f;
-    public static final float elevatorFullyRaisedSpeed = 0.2f;
+    public static final float elevatorMidRaisedSpeed = 0.2f;
+    public static final float elevatorFullyRaisedSpeed = 0.1f;
     
     // Full speed when at intake position
-    public static final float intakePositionSpeed = 0.6f;
+    public static final float intakePositionSpeed = 0.5f;
 
     public static float fullSpeedOverride = 1.0f;
   }

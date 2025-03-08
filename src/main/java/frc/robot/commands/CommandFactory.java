@@ -67,7 +67,9 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
 
   public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator){
 
-    Command command = CommandFactory.setElevatorZero(shooter, shooterArm, elevator)
+    Command command = shooterArm.shooterArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.setElevatorClimbPoseCommand())
     .andThen(new WaitCommand(1))
     .andThen(algaeArm.algaeArmStraightOutCommand());
 
