@@ -251,20 +251,20 @@ public final class Constants
     public static final float SLPositionY = (float)Units.inchesToMeters(278.52);
     public static final float SLPositionZ = (float)Units.degreesToRadians(306);
 
-    public static final float SRPositionX = (float)Units.inchesToMeters(43.5);
-    public static final float SRPositionY = (float)Units.inchesToMeters(38.48);
+    public static final float SRPositionX = (float)Units.inchesToMeters(57.6);
+    public static final float SRPositionY = (float)Units.inchesToMeters(57.89);
     public static final float SRPositionZ = (float)Units.degreesToRadians(54);
     
     public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
     public static final float ProcessorPositionZ = (float)Units.degreesToRadians(270);
 
-    public static final float xValueC1XX = (float)Units.inchesToMeters(126);
+    public static final float xValueC1XX = (float)Units.inchesToMeters(102);
     public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(122.5);
+    public static final float xValueC130 = (float)Units.inchesToMeters(100);
     public static final float yValueC130 = (float)Units.inchesToMeters(166.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(123.5);
+    public static final float xValueC131 = (float)Units.inchesToMeters(100);
     public static final float yValueC131 = (float)Units.inchesToMeters(153);
     /*
     public static final float xValueC1XX = (float)Units.inchesToMeters(126);
@@ -277,13 +277,13 @@ public final class Constants
     */
     public static final int faceValueC1XX = 1;
 
-    public static final float xValueC2XX = (float)Units.inchesToMeters(151.37);
-    public static final float yValueC2XX = (float)Units.inchesToMeters(114.55);
+    public static final float xValueC2XX = (float)Units.inchesToMeters(139.37);
+    public static final float yValueC2XX = (float)Units.inchesToMeters(93.76);
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
-    public static final float xValueC230 = (float)Units.inchesToMeters(142.69);
-    public static final float yValueC230 = (float)Units.inchesToMeters(115.52);
-    public static final float xValueC231 = (float)Units.inchesToMeters(154.88);
-    public static final float yValueC231 = (float)Units.inchesToMeters(109.63);
+    public static final float xValueC230 = (float)Units.inchesToMeters(139.37);
+    public static final float yValueC230 = (float)Units.inchesToMeters(93.76);
+    public static final float xValueC231 = (float)Units.inchesToMeters(139.37);
+    public static final float yValueC231 = (float)Units.inchesToMeters(93.76);
     /*
     public static final float xValueC2XX = (float)Units.inchesToMeters(151.39);
     public static final float yValueC2XX = (float)Units.inchesToMeters(114.58);
@@ -296,13 +296,13 @@ public final class Constants
     public static final int faceValueC2XX = 2;
 
     
-    public static final float xValueC3XX = (float)Units.inchesToMeters(202.12);
-    public static final float yValueC3XX = (float)Units.inchesToMeters(114.55);
+    public static final float xValueC3XX = (float)Units.inchesToMeters(214.12);
+    public static final float yValueC3XX = (float)Units.inchesToMeters(93.76);
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
-    public static final float xValueC330 = (float)Units.inchesToMeters(196.94);
-    public static final float yValueC330 = (float)Units.inchesToMeters(107.52);
-    public static final float xValueC331 = (float)Units.inchesToMeters(210.66);
-    public static final float yValueC331 = (float)Units.inchesToMeters(113.55);
+    public static final float xValueC330 = (float)Units.inchesToMeters(214.12);
+    public static final float yValueC330 = (float)Units.inchesToMeters(93.76);
+    public static final float xValueC331 = (float)Units.inchesToMeters(214.12);
+    public static final float yValueC331 = (float)Units.inchesToMeters(93.76);
     /*
     public static final float xValueC3XX = (float)Units.inchesToMeters(202.1);
     public static final float yValueC3XX = (float)Units.inchesToMeters(114.58);
@@ -464,9 +464,9 @@ public final class Constants
    */
   public static final class DriveToPoseConstants {
     // PID Values
-    public static final double TRANSLATION_P = 5.0;
+    public static final double TRANSLATION_P = 3.0;
     public static final double TRANSLATION_I = 0.0;
-    public static final double TRANSLATION_D = 1.0;
+    public static final double TRANSLATION_D = 0.0;
     
     public static final double ROTATION_P = 5.0;
     public static final double ROTATION_I = 0.0;
@@ -479,16 +479,16 @@ public final class Constants
     public static final double VERY_CLOSE_DISTANCE = 0.5; // meters
     
     // Maximum velocity constraints (m/s)
-    public static final double FAR_MAX_VEL = 2.0;
-    public static final double MID_MAX_VEL = 1.0;
-    public static final double CLOSE_MAX_VEL = .75;
-    public static final double VERY_CLOSE_MAX_VEL = 0.5;
+    public static final double FAR_MAX_VEL = .001;
+    public static final double MID_MAX_VEL = .001;
+    public static final double CLOSE_MAX_VEL = .001;
+    public static final double VERY_CLOSE_MAX_VEL = 0.001;
     
     // Maximum acceleration constraints (m/s²)
-    public static final double FAR_MAX_ACCEL = 2.0;
-    public static final double MID_MAX_ACCEL = 1.5;
-    public static final double CLOSE_MAX_ACCEL = 0.8;
-    public static final double VERY_CLOSE_MAX_ACCEL = 0.4;
+    public static final double FAR_MAX_ACCEL = .1;
+    public static final double MID_MAX_ACCEL = .1;
+    public static final double CLOSE_MAX_ACCEL = 0.1;
+    public static final double VERY_CLOSE_MAX_ACCEL = 0.1;
     
     // Rotation constraints (rad/s and rad/s²)
     public static final double FAR_MAX_ROT_VEL = Units.degreesToRadians(360);
@@ -507,13 +507,13 @@ public final class Constants
     public static final double ELEVATOR_LOW_ACCEL_MULTIPLIER = 1.0;
     
     public static final double ELEVATOR_PARTIAL_VEL_MULTIPLIER = 0.8;
-    public static final double ELEVATOR_PARTIAL_ACCEL_MULTIPLIER = 0.7;
+    public static final double ELEVATOR_PARTIAL_ACCEL_MULTIPLIER = 0.8;
     
-    public static final double ELEVATOR_MID_VEL_MULTIPLIER = 0.6;
-    public static final double ELEVATOR_MID_ACCEL_MULTIPLIER = 0.5;
+    public static final double ELEVATOR_MID_VEL_MULTIPLIER = 0.8;
+    public static final double ELEVATOR_MID_ACCEL_MULTIPLIER = 0.8;
     
-    public static final double ELEVATOR_HIGH_VEL_MULTIPLIER = 0.5;
-    public static final double ELEVATOR_HIGH_ACCEL_MULTIPLIER = 0.4;
+    public static final double ELEVATOR_HIGH_VEL_MULTIPLIER = 0.8;
+    public static final double ELEVATOR_HIGH_ACCEL_MULTIPLIER = 0.8;
     
     // Target position and rotation tolerance
     public static final double POSITION_TOLERANCE = 0.02; // meters

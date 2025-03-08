@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -122,7 +123,7 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(robotContainer.enableDriveToPoseCommand())
+  .andThen(Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule()))
   .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()));
     
     command.addRequirements(shooter, shooterArm, elevator);
@@ -132,7 +133,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(robotContainer.enableDriveToPoseCommand())
+  .andThen(Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule()))
   .andThen(new WaitUntilCommand(robotContainer.closeTrigger()))
   .andThen(shooter.shooterIntakeCommand())
   .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()))
@@ -162,7 +163,7 @@ return command;
 
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
-  Command command = robotContainer.enableDriveToPoseCommand()
+  Command command = Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule())
   .andThen(new WaitCommand(1))
   .andThen(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
 

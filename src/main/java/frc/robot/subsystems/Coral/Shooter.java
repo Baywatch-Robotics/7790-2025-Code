@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
     private double currentBelowThresholdStartTime = 0;
-    private final double DEBOUNCE_TIME = 0.5; // 0.5 seconds for debouncing
+    private final double DEBOUNCE_TIME = 0.25;
 
     public Shooter() {
         shooterMotor.configure(

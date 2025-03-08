@@ -97,7 +97,11 @@ public class RobotContainer
     return new Trigger(() -> heldOutsideReefZone);
   }
   
+  Supplier<ProfiledPIDController> xProfiledPID;
+  Supplier<ProfiledPIDController> rotProfiledPID;
   
+
+
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX() * .8;
   DoubleSupplier angSpeed;
 
@@ -284,9 +288,9 @@ SwerveInputStream driveButtonBoxInput =
   private boolean pidControllersNeedUpdate = true;
   private ProfiledPIDController currentXController;
   private ProfiledPIDController currentRotController;
-  
+  /* */
   // Dynamic PID controller suppliers
-  private Supplier<ProfiledPIDController> driveToPoseXControllerSupplier = () -> {
+  private void updateXProfiledPID() {
       // Create or update the translation controller
       if (currentXController == null || pidControllersNeedUpdate) {
           TargetClass target = buttonBox.peekNextTarget();
@@ -334,10 +338,10 @@ SwerveInputStream driveButtonBoxInput =
           currentXController.setTolerance(0.05);
           SmartDashboard.putNumber("X Controller P", Constants.DriveToPoseConstants.TRANSLATION_P);
       }
-      return currentXController;
+      xProfiledPID = () -> currentXController;
   };
   
-  private Supplier<ProfiledPIDController> driveToPoseRotControllerSupplier = () -> {
+  private void updateROTProfiledPID() {
       // Create or update the rotation controller
       if (currentRotController == null || pidControllersNeedUpdate) {
           TargetClass target = buttonBox.peekNextTarget();
@@ -391,7 +395,7 @@ SwerveInputStream driveButtonBoxInput =
           currentRotController.enableContinuousInput(-Math.PI, Math.PI);
           SmartDashboard.putNumber("Rot Controller P", Constants.DriveToPoseConstants.ROTATION_P);
       }
-      return currentRotController;
+      rotProfiledPID = () -> currentRotController;
   };
 
   // Create a stream that includes drive-to-pose capability with dynamic controllers
@@ -458,15 +462,16 @@ SwerveInputStream driveButtonBoxInput =
               // Normal processing - visualize target and proceed
               drivebase.visualizeTargetPose(allianceAdjustedPose);
               
+              /*
               // Update distance and angle metrics
               distanceToTarget = robotPose.getTranslation().getDistance(allianceAdjustedPose.getTranslation());
               angleToTarget = Math.atan2(
                   allianceAdjustedPose.getY() - robotPose.getY(),
                   allianceAdjustedPose.getX() - robotPose.getX()
               ) - robotPose.getRotation().getRadians();
-              
+              */
               // Normalize angle
-              angleToTarget = Math.atan2(Math.sin(angleToTarget), Math.cos(angleToTarget));
+              //angleToTarget = Math.atan2(Math.sin(angleToTarget), Math.cos(angleToTarget));
               
               SmartDashboard.putNumber("Distance To Target", distanceToTarget);
               SmartDashboard.putNumber("Angle To Target (deg)", Units.radiansToDegrees(angleToTarget));
@@ -494,9 +499,10 @@ SwerveInputStream driveButtonBoxInput =
               return drivebase.getPose();
           }
       },
-      new ProfiledPIDController(2.0, 0, 0, new Constraints(.25, .25)),
-      new ProfiledPIDController(.5, 0, 0, new Constraints(Units.degreesToRadians(15), Units.degreesToRadians(15)))
+      new ProfiledPIDController(2.0, 0, 0, new Constraints(.1, .1)),
+      new ProfiledPIDController(5.0, 0, 0, new Constraints(Units.degreesToRadians(10), Units.degreesToRadians(10)))
   );
+
 
 
 
@@ -734,6 +740,10 @@ public Command disableDriveToPoseCommand() {
 */
   public RobotContainer()
   {
+    // Make sure to call these methods to update the PID controllers
+    updateXProfiledPID();
+    updateROTProfiledPID();
+    
     // Configure the trigger bindings
     configureBindings();
     
@@ -1203,7 +1213,7 @@ public Command disableDriveToPoseCommand() {
           SmartDashboard.putNumber("Position Error", positionError);
           SmartDashboard.putNumber("Position Tolerance", positionTolerance);
           SmartDashboard.putNumber("Rotation Error (deg)", Units.radiansToDegrees(rotationError));
-          SmartDashboard.putNumber("Rotation Tolerance (deg)", Units.radiansToDegrees(rotationTolerance));
+          SmartDashboard.putNumber("Rotation Tolerance (deg)", Units.degreesToRadians(rotationTolerance));
           SmartDashboard.putBoolean("At Target Position", isAtTargetPosition);
           SmartDashboard.putBoolean("At Target Rotation", isAtTargetRotation);
           SmartDashboard.putBoolean("At Target", isAtTarget);
