@@ -395,10 +395,14 @@ SwerveInputStream driveButtonBoxInput =
   };
 
   // Create a stream that includes drive-to-pose capability with dynamic controllers
-  public SwerveInputStream driveToPoseStream = driveDirectAngle.copy().driveToPose(
+  private SwerveInputStream driveToPoseStream = driveDirectAngle.copy().driveToPose(
       () -> {
           // Flag that controllers should be updated
           pidControllersNeedUpdate = true;
+          
+          // Force recreation of controllers each cycle
+          currentXController = null;
+          currentRotController = null;
           
           // Get the target pose and update distance metrics
           TargetClass target = buttonBox.peekNextTarget();
@@ -490,8 +494,8 @@ SwerveInputStream driveButtonBoxInput =
               return drivebase.getPose();
           }
       },
-      driveToPoseXControllerSupplier.get(),
-      driveToPoseRotControllerSupplier.get()
+      new ProfiledPIDController(2.0, 0, 0, new Constraints(.25, .25)),
+      new ProfiledPIDController(.5, 0, 0, new Constraints(Units.degreesToRadians(15), Units.degreesToRadians(15)))
   );
 
 
@@ -555,21 +559,7 @@ SwerveInputStream driveButtonBoxInput =
   public Command toggleReefZoneRestrictionCommand() {
       return Commands.runOnce(() -> setReefZoneRestriction(!enforceReefZoneElevatorRestriction));
   }
-  
-  // Simplified enableDriveToPoseCommand: just schedule tempDriveToPoseCommand
-public Command enableDriveToPoseCommand() {
-    return Commands.runOnce(() -> {
-        // Only schedule if not already running
-        if (!tempDriveToPoseCommand.isScheduled()) {
-          
-            targetTimerActive = false;
-            positionReachedTimestamp = 0;
-            rotationReachedTimestamp = 0;
-            targetReachedTimestamp = 0;
-            tempDriveToPoseCommand.schedule();
-        }
-    });
-}
+
 
 // Simplified disableDriveToPoseCommand: just cancel tempDriveToPoseCommand
 public Command disableDriveToPoseCommand() {
@@ -577,6 +567,14 @@ public Command disableDriveToPoseCommand() {
         // Only cancel if currently running
         if (tempDriveToPoseCommand.isScheduled()) {
             tempDriveToPoseCommand.cancel();
+            
+            // Reset speeds to normal when canceling
+            targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
+            actualDriveSpeed = targetDriveSpeed;
+            prevTransVel = 0;
+            prevTransAccel = 0;
+            prevRotVel = 0;
+            prevRotAccel = 0;
         }
     });
 }
@@ -584,7 +582,8 @@ public Command disableDriveToPoseCommand() {
 
 
   // Create a command to temporarily run drive-to-pose without canceling default command
-  private Command tempDriveToPoseCommand = Commands.sequence(
+  public Command tempDriveToPoseCommand = 
+    Commands.sequence(
     // First check if a target is available
     Commands.runOnce(() -> {
         // Check if we have a target
@@ -703,12 +702,20 @@ public Command disableDriveToPoseCommand() {
         hasReachedAndClearedTarget = false;
         hasProcessedCurrentTarget = false;
         
+        // Reset speed values when drive-to-pose ends
+        targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
+        actualDriveSpeed = targetDriveSpeed;
+        prevTransVel = 0;
+        prevTransAccel = 0;
+        prevRotVel = 0;
+        prevRotAccel = 0;
+        
         SmartDashboard.putBoolean("At Target Position", false);
         SmartDashboard.putBoolean("At Target Rotation", false);
         SmartDashboard.putBoolean("At Target", false);
     })
   ).withInterruptBehavior(Command.InterruptionBehavior.kCancelSelf);
-
+  
   /**
    * Linear interpolation helper method
    */
@@ -845,8 +852,8 @@ public Command disableDriveToPoseCommand() {
 
 
     // Modified: combine zero gyro with full speed toggle
-    driverXbox.back().onTrue(
-        new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    //driverXbox.back().onTrue(
+    //    new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
     
@@ -876,16 +883,10 @@ public Command disableDriveToPoseCommand() {
     // Hold back button to temporarily use drive-to-pose
     //driverXbox.back().whileTrue(tempDriveToPoseCommand);
     
-    /*
+    
     // Toggle drive-to-pose with start button
-    driverXbox.start().onTrue(
-        Commands.either(
-            Commands.runOnce(() -> tempDriveToPoseCommand.cancel()),
-            Commands.runOnce(() -> tempDriveToPoseCommand.schedule()),
-            () -> tempDriveToPoseCommand.isScheduled()
-        )
-    );
-    */
+    driverXbox.back().onTrue(tempDriveToPoseCommand);
+    
 
     // Cancel drive-to-pose when driver provides manual input
     driverXbox.axisMagnitudeGreaterThan(0, 0.1)
