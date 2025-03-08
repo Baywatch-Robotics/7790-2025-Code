@@ -972,7 +972,7 @@ public Command disableDriveToPoseCommand() {
       // Determine drive speed based on elevator height category using the new constants
       Elevator.ElevatorHeight heightCategory = elevator.getElevatorHeightCategory();
       
-      /*
+      
       // ALWAYS apply elevator-based speed restrictions, regardless of full speed mode
       switch (heightCategory) {
         case FULLY_RAISED:
@@ -989,7 +989,7 @@ public Command disableDriveToPoseCommand() {
           targetDriveSpeed = SpeedConstants.elevatorLoweredSpeed;
           break;
       }
-      */
+      
 
     }
     

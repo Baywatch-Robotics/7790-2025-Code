@@ -22,12 +22,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class Elevator extends SubsystemBase {
 
     public float elevatorDesiredPosition = 0;
 
     public boolean isInitialized = false;
+    
+    // New variables for slack take-up
+    private boolean slackTakeUpCompleted = false;
+    private boolean slackTakeUpStarted = false;
+    private float slackTakeUpTarget = 0;
 
     private float desiredTotalHeight;
 
@@ -73,7 +79,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private void setFullRetract() {
-        elevatorDesiredPosition = 0;
+        elevatorDesiredPosition = ElevatorConstants.matchZeroPose;
     }
 
     private void setL4() {
@@ -101,7 +107,7 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
     }
     public void setPickupPlus() {
-        elevatorDesiredPosition = ElevatorConstants.pickupPose - 12;
+        elevatorDesiredPosition = ElevatorConstants.pickupPose - 3;
     }
     public void setClimbPose() {
         elevatorDesiredPosition = ElevatorConstants.climbPose;
@@ -382,8 +388,11 @@ public class Elevator extends SubsystemBase {
     }
     
     public ElevatorHeight getElevatorHeightCategory() {
+
         double position = m_encoder.getPosition();
         
+        //double position = elevatorDesiredPosition;
+
         if (position <= ElevatorConstants.FULLY_RAISED_THRESHOLD) {
             return ElevatorHeight.FULLY_RAISED;
         } else if (position <= ElevatorConstants.MID_RAISED_THRESHOLD) {
@@ -416,10 +425,56 @@ public class Elevator extends SubsystemBase {
 
         if (!isInitialized) {
             elevatorDesiredPosition = 0;
+            slackTakeUpTarget = 0;
+            slackTakeUpCompleted = false;
+            slackTakeUpStarted = false;
             isInitialized = true;
         }
 
-        desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+        // Only start slack take-up process when robot is enabled
+        boolean robotEnabled = DriverStation.isEnabled();
+        
+        // Handle slack take-up phase
+        if (!slackTakeUpCompleted) {
+            // Only proceed with slack take-up if robot is enabled
+            if (robotEnabled) {
+                if (!slackTakeUpStarted) {
+                    // Initialize slack take-up now that robot is enabled
+                    slackTakeUpStarted = true;
+                    SmartDashboard.putBoolean("Slack Take-Up Started", true);
+                }
+                
+                // Gradually move toward slack take-up position
+                slackTakeUpTarget += ElevatorConstants.SLACK_TAKE_UP_SPEED;
+                
+                // If we've reached or passed the slack take-up position, complete the process
+                if (slackTakeUpTarget <= ElevatorConstants.SLACK_TAKE_UP_POSITION) {
+                    slackTakeUpTarget = ElevatorConstants.SLACK_TAKE_UP_POSITION;
+                    slackTakeUpCompleted = true;
+                    
+                    // If no explicit position has been set yet, maintain the slack take-up position
+                    if (elevatorDesiredPosition == 0) {
+                        elevatorDesiredPosition = ElevatorConstants.SLACK_TAKE_UP_POSITION;
+                    }
+                    
+                    SmartDashboard.putBoolean("Slack Take-Up Completed", true);
+                }
+                
+                // During slack take-up phase, use the slackTakeUpTarget as the desired position
+                desiredTotalHeight = (float)MathUtil.clamp(slackTakeUpTarget, ElevatorConstants.min, ElevatorConstants.max);
+                
+                SmartDashboard.putNumber("Slack Take-Up Target", slackTakeUpTarget);
+            } else {
+                // If robot is disabled during slack take-up, use the normal desired position
+                desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+            }
+        } else {
+            // Normal operation after slack is taken up
+            desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+        }
+        
+        // Output slack take-up status to dashboard
+        SmartDashboard.putBoolean("Slack Take-Up In Progress", !slackTakeUpCompleted && slackTakeUpStarted);
         
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
@@ -480,7 +535,7 @@ public class Elevator extends SubsystemBase {
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
         if (m_encoder.getPosition() >= ElevatorConstants.FFCutoff) {
-        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kPosition, ClosedLoopSlot.kSlot0, 0, ArbFFUnits.kPercentOut);
+        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, 0, ArbFFUnits.kPercentOut);
         } else {
         elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
         }

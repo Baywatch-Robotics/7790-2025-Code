@@ -176,16 +176,21 @@ public class ShooterArm extends SubsystemBase {
     }
     
     public void moveAmount(final double amount) {
-
         if (Math.abs(amount) < 0.2) {
             return;
         }
 
         float scale = ShooterArmConstants.manualMultiplier;
+        float newAngle = (float)(shooterArmDesiredAngle + amount * scale);
 
-        float f = (float) MathUtil.clamp(shooterArmDesiredAngle + amount * scale, ShooterArmConstants.min, ShooterArmConstants.maxManual);
+        // Apply minimum constraints only if moving downward and in reef zone
+        if ((isInReefZone || isInReefZoneDebounce) && amount < 0) {
+            // Only restrict downward movement, not upward
+            newAngle = Math.max(newAngle, reefZoneMinimumAllowedAngle);
+        }
 
-        shooterArmDesiredAngle = f;
+        // Apply the general min/max constraints
+        shooterArmDesiredAngle = (float) MathUtil.clamp(newAngle, ShooterArmConstants.min, ShooterArmConstants.maxManual);
     }
 
     @Override
@@ -227,7 +232,7 @@ public class ShooterArm extends SubsystemBase {
         // Get current arm position for dynamic reef zone constraint and smoothing operations
         float currentPosition = (float)shooterArmEncoder.getPosition();
         
-        /*
+        
         // Update minimum allowed angle if arm is raised above the standard minimum
         if ((isInReefZone || isInReefZoneDebounce) && currentPosition >= ShooterArmConstants.reefZoneMinimumAngle) {
             // Once above the standard minimum, use that as the minimum
@@ -235,14 +240,16 @@ public class ShooterArm extends SubsystemBase {
         }
         
         // Apply reef zone constraint if in reef zone OR in debounce period
-        if (isInReefZone || isInReefZoneDebounce) {
+        // Only apply the constraint when trying to move downward below the minimum
+        if ((isInReefZone || isInReefZoneDebounce) && shooterArmDesiredAngle < reefZoneMinimumAllowedAngle) {
             // Don't allow arm to go lower than the current minimum allowed angle
-            shooterArmDesiredAngle = Math.max(shooterArmDesiredAngle, reefZoneMinimumAllowedAngle);
+            // But allow it to move upward
+            shooterArmDesiredAngle = reefZoneMinimumAllowedAngle;
             SmartDashboard.putBoolean("Reef Zone Arm Constraint", true);
         } else {
             SmartDashboard.putBoolean("Reef Zone Arm Constraint", false);
         }
-        */
+        
         SmartDashboard.putNumber("Reef Minimum Allowed Angle", reefZoneMinimumAllowedAngle);
         
         // Apply general constraints
@@ -300,9 +307,9 @@ public class ShooterArm extends SubsystemBase {
             }
         }
         
-        // Apply reef zone constraint to snap position as well
-        if (isInReefZone || isInReefZoneDebounce) {
-            snapPosition = Math.max(snapPosition, reefZoneMinimumAllowedAngle);
+        // Apply reef zone constraint to snap position as well - only when moving down
+        if ((isInReefZone || isInReefZoneDebounce) && snapPosition < reefZoneMinimumAllowedAngle) {
+            snapPosition = reefZoneMinimumAllowedAngle;
         }
         
         // Apply limits to the snap position
