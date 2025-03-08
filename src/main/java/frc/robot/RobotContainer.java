@@ -195,6 +195,7 @@ public class RobotContainer
   // Add flag to control auto-advance to next target
   private boolean autoAdvanceTargets = true;
   
+  /*
   // Trigger that fires when target is reached (can be used elsewhere)
   public Trigger targetReachedTrigger(){
     return new Trigger(() -> isAtTarget && isDriveToPoseActive());
@@ -205,7 +206,7 @@ public class RobotContainer
   public Trigger targetRotationReachedTrigger(){
     return new Trigger(() -> isAtTargetRotation && isDriveToPoseActive());
   }
-
+*/
   SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
   () -> driveY.getAsDouble(),
   () -> driveX.getAsDouble())
@@ -288,7 +289,7 @@ SwerveInputStream driveButtonBoxInput =
   private boolean pidControllersNeedUpdate = true;
   private ProfiledPIDController currentXController;
   private ProfiledPIDController currentRotController;
-  /* */
+  /*
   // Dynamic PID controller suppliers
   private void updateXProfiledPID() {
       // Create or update the translation controller
@@ -469,7 +470,7 @@ SwerveInputStream driveButtonBoxInput =
                   allianceAdjustedPose.getY() - robotPose.getY(),
                   allianceAdjustedPose.getX() - robotPose.getX()
               ) - robotPose.getRotation().getRadians();
-              */
+              
               // Normalize angle
               //angleToTarget = Math.atan2(Math.sin(angleToTarget), Math.cos(angleToTarget));
               
@@ -503,15 +504,15 @@ SwerveInputStream driveButtonBoxInput =
       new ProfiledPIDController(5.0, 0, 0, new Constraints(Units.degreesToRadians(10), Units.degreesToRadians(10)))
   );
 
-
+*/
 
 
       // Create drive commands
   public Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-  public Command driveFieldOrientedDriveToPose = drivebase.driveFieldOriented(driveToPoseStream);
+  //public Command driveFieldOrientedDriveToPose = drivebase.driveFieldOriented(driveToPoseStream);
 
-
+/*
 
   // Helper method to calculate a holding position outside the reef zone
   private Pose2d calculateHoldingPosition(Pose2d robotPose, Pose2d targetPose) {
@@ -741,8 +742,8 @@ public Command disableDriveToPoseCommand() {
   public RobotContainer()
   {
     // Make sure to call these methods to update the PID controllers
-    updateXProfiledPID();
-    updateROTProfiledPID();
+    //updateXProfiledPID();
+    //updateROTProfiledPID();
     
     // Configure the trigger bindings
     configureBindings();
@@ -895,7 +896,7 @@ public Command disableDriveToPoseCommand() {
     
     
     // Toggle drive-to-pose with start button
-    driverXbox.back().onTrue(tempDriveToPoseCommand);
+    driverXbox.back().onTrue(drivebase.driveToPose(buttonBox));
     
 
     // Cancel drive-to-pose when driver provides manual input
@@ -903,12 +904,7 @@ public Command disableDriveToPoseCommand() {
         .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
         .or(driverXbox.axisMagnitudeGreaterThan(4, .1))
         .or(driverXbox.axisMagnitudeGreaterThan(5, .1))
-        .onTrue(Commands.runOnce(() -> {
-            drivebase.setCancel(true);
-            if (tempDriveToPoseCommand.isScheduled()) {
-                tempDriveToPoseCommand.cancel();
-            }
-        }));
+        .onTrue(Commands.runOnce(() -> drivebase.driveToPose(buttonBox).cancel()));
 
     //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
     //driverXbox.y().onTrue(
@@ -1048,6 +1044,7 @@ public Command disableDriveToPoseCommand() {
     driveX = () -> -driverXbox.getLeftX() * targetDriveSpeed;
     angSpeed = () -> -driverXbox.getRightX() * targetDriveSpeed;
 
+    /*
     // Handle drive-to-pose status updates
     // If drive-to-pose is active, update target position status
     if (tempDriveToPoseCommand.isScheduled()) {
@@ -1278,7 +1275,7 @@ public Command disableDriveToPoseCommand() {
       SmartDashboard.putBoolean("At Target", false);
       
     }
-    
+    */
     // Update dashboard with reef zone restriction status
     SmartDashboard.putBoolean("Reef Zone Restriction", enforceReefZoneElevatorRestriction);
     SmartDashboard.putBoolean("Elevator Ready For Reef", elevator.isSafeForReefZoneEntry());
@@ -1388,15 +1385,9 @@ public Command disableDriveToPoseCommand() {
    */
   public Command getAutonomousCommand()
   {
-    // Make sure drive-to-pose is inactive at start of auto mode
-    driveToPoseStream.driveToPoseEnabled(false);
-    
     // Set auto-cancel to true for autonomous
     autoCancel = true;
     SmartDashboard.putBoolean("Auto-Cancel Enabled", autoCancel);
-    
-    // Reset all drive-to-pose controllers
-    resetDriveToPoseForAuto();
     
     // Return the selected autonomous command
     return chooser.getSelected();
@@ -1618,6 +1609,7 @@ public Command disableDriveToPoseCommand() {
   //   periodicCounter++;
   // }
 
+  /*
   // Add a method to check if drive-to-pose is active
   public boolean isDriveToPoseActive() {
     return tempDriveToPoseCommand.isScheduled();
@@ -1692,10 +1684,7 @@ public Command disableDriveToPoseCommand() {
     return new Trigger(() -> isNearTarget(customTolerance));
   }
 
-  
-  /**
-   * Disable drive-to-pose specifically for autonomous mode
-   */
+
   public void disableDriveToPoseForAuto() {
     driveToPoseStream.driveToPoseEnabled(false);
     
@@ -1708,9 +1697,7 @@ public Command disableDriveToPoseCommand() {
     isAtTarget = false;
   }
   
-  /**
-   * Reset the drive-to-pose system for autonomous
-   */
+
   public void resetDriveToPoseForAuto() {
     disableDriveToPoseForAuto();
     pidControllersNeedUpdate = true;
@@ -1778,4 +1765,5 @@ public Command disableDriveToPoseCommand() {
       }
     });
   }
+    */
 }

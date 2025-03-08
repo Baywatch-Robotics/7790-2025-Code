@@ -123,8 +123,8 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule()))
-  .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()));
+  .andThen(drivebase.driveToPose(buttonBox))
+  .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()));
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
@@ -133,10 +133,10 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule()))
+  .andThen(drivebase.driveToPose(buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.closeTrigger()))
   .andThen(shooter.shooterIntakeCommand())
-  .andThen(new WaitUntilCommand(robotContainer.targetReachedTrigger()))
+  .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
   
   .andThen(shooter.shooterOutakeCommand())
     
@@ -163,7 +163,7 @@ return command;
 
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
-  Command command = Commands.runOnce(() -> robotContainer.tempDriveToPoseCommand.schedule())
+  Command command = drivebase.driveToPose(buttonBox)
   .andThen(new WaitCommand(1))
   .andThen(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
 
@@ -177,38 +177,32 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
   Command command = new InstantCommand(() -> buttonBox.addTarget("C521"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand())
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
   .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand())
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C620")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand())
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
   .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C621")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand())
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
   .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(robotContainer.disableDriveToPoseCommand());
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
   command.addRequirements(shooter, shooterArm, elevator);
   return command; 
@@ -219,38 +213,32 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     Command command = new InstantCommand(() -> buttonBox.addTarget("C321"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand())
     .andThen(shooterArm.shooterArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand())
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C221")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand())
     .andThen(shooterArm.shooterArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand())
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C220")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand())
     .andThen(shooterArm.shooterArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase))
-    .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(robotContainer.disableDriveToPoseCommand());
+    .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
