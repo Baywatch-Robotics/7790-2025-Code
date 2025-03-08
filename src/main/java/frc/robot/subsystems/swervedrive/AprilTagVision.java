@@ -23,7 +23,7 @@ import java.util.Optional;
 public class AprilTagVision extends SubsystemBase {
     
     private static final PhotonCamera rightCam = new PhotonCamera("rightcam");
-    private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
+    //private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
     //private static final PhotonCamera limelight = new PhotonCamera("limelight");
 
     private static final Transform3d rightCamToRobot = new Transform3d(
@@ -61,7 +61,7 @@ public class AprilTagVision extends SubsystemBase {
         return rightPoseEstimator.update(rightCam.getLatestResult());
     }
 
-    
+    /*
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
         return leftPoseEstimator.update(leftCam.getLatestResult());
@@ -73,7 +73,6 @@ public class AprilTagVision extends SubsystemBase {
         return limelightPoseEstimator.update(limelight.getLatestResult());
     }
     */
-    
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
@@ -84,7 +83,7 @@ public class AprilTagVision extends SubsystemBase {
                 validPoses.add(estimate.estimatedPose);
             }
         }
-
+/*
         Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
         if (leftCamEstimate.isPresent()) {
             EstimatedRobotPose estimate = leftCamEstimate.get();
@@ -109,24 +108,19 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     private static Pose3d averagePoses(List<Pose3d> poses) {
-
         double x = 0, y = 0, z = 0;
         double roll = 0, pitch = 0, yaw = 0;
         int count = poses.size();
 
-
         for (Pose3d pose : poses) {
-
             x += pose.getX();
             y += pose.getY();
             z += pose.getZ();
             roll += pose.getRotation().getX();
             pitch += pose.getRotation().getY();
             yaw += pose.getRotation().getZ();
-
         }
 
         return new Pose3d(x / count, y / count, z / count, new Rotation3d(roll / count, pitch / count, yaw / count));
-
     }
 }
