@@ -58,7 +58,7 @@ public final class Constants
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
     public static final float maxAcceleration = 1000;
-    public static final float allowedClosedLoopError = .05f;
+    public static final float allowedClosedLoopError = .01f;
   }
 
     public static final class AlgaeShooterConstants{
@@ -122,7 +122,7 @@ public final class Constants
     public static final float maxAcceleration = 100f;
 
 
-    public static final float allowedClosedLoopError = .05f;
+    public static final float allowedClosedLoopError = 0.01f;
 
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
     public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
@@ -200,11 +200,43 @@ public final class Constants
     
     public static final float maxVelocity = 2750;
     public static final float maxAcceleration = 6000;
-    public static final float allowedClosedLoopError = .1f;
+    public static final float allowedClosedLoopError = .01f;
   }
 
-  public static final class FunnelConstants{
+  public static final class FunnelConstants {
+    public static final int ID = 20;
     
+    // Position constants
+    public static final float homePosition = 0;
+    public static final float fullUpPosition = 0;
+    
+    // Angle offset for absolute encoder
+    public static final float angleOffset = 0.0f; // Adjust this based on mechanical setup
+    
+    // Min and max position limits
+    public static final float min = 0;
+    public static final float max = 0;
+    
+    // Manual control multiplier
+    public static final float manualMultiplier = 0.05f;
+    
+    // Position tolerance for "at position" detection
+    public static final float positionTolerance = 0.05f;
+    
+    // PID Constants
+    public static final float P = 3.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    
+    // Motion profile parameters
+    public static final float maxVelocity = 1000f;
+    public static final float maxAcceleration = 1000f;
+    public static final float allowedClosedLoopError = 0.01f;
+    
+    // Smoothing constants (similar to ShooterArm)
+    public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
+    public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
+    public static final float snapReachThreshold = 0.05f;  // How close funnel must get to snap position before smoothing begins
   }
 
   public static final class LEDConstants{

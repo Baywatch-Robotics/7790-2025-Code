@@ -38,6 +38,7 @@ import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
+import frc.robot.subsystems.Funnel;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -112,6 +113,9 @@ public class RobotContainer {
   DoubleSupplier algaeShooterIntake = () -> driverXbox.getLeftTriggerAxis();
   DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
 
+  // Add supplier for funnel control
+  //DoubleSupplier funnelUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
+
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
 
@@ -127,7 +131,9 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final Elevator elevator = new Elevator(this);
 
-  // private final Funnel funnel = new Funnel();
+  // Initialize funnel subsystem
+  private final Funnel funnel = new Funnel();
+  
   // private final LED LED = new LED();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
@@ -284,6 +290,9 @@ public class RobotContainer {
       }
     }, algaeShooter));
 
+    // Add default command for funnel manual control
+    //funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
+
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
     buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
@@ -408,6 +417,7 @@ public class RobotContainer {
     opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+
 
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);

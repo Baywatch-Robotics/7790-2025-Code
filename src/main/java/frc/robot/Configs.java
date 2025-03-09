@@ -7,6 +7,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.AlgaeArmConstants;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.FunnelConstants;
 import frc.robot.Constants.ShooterArmConstants;
 
 public final class Configs {
@@ -141,6 +142,31 @@ public final class Configs {
       
       algaeShooterConfig
       .inverted(false);
+    }
+  }
+
+  public static final class Funnel {
+    public static final SparkMaxConfig funnelConfig = new SparkMaxConfig();
+
+    static {
+      // Configure basic settings of the funnel motor - 20 amp limit as requested
+      funnelConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      
+      // Configure absolute encoder
+      funnelConfig.absoluteEncoder.zeroOffset(FunnelConstants.angleOffset);
+
+      funnelConfig
+          .inverted(false)
+          .closedLoop
+          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          // Set PID values for position control
+          .pid(FunnelConstants.P, FunnelConstants.I, FunnelConstants.D)
+          .outputRange(-1, 1)
+          .maxMotion
+          // Set MAXMotion parameters for position control
+          .maxVelocity(FunnelConstants.maxVelocity)
+          .maxAcceleration(FunnelConstants.maxAcceleration)
+          .allowedClosedLoopError(FunnelConstants.allowedClosedLoopError);      
     }
   }
 }
