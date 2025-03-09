@@ -22,7 +22,7 @@ public class CommandFactory {
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
-      //.andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+      .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(new WaitCommand(5))
       .andThen(shooter.shooterZeroSpeedCommand());
