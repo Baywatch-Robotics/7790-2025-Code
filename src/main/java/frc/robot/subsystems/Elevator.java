@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.RobotContainer;
-import edu.wpi.first.wpilibj.DriverStation;
 
 public class Elevator extends SubsystemBase {
 
@@ -54,21 +53,12 @@ public class Elevator extends SubsystemBase {
     private Trigger midRaisedTrigger;
     private Trigger fullyRaisedTrigger;
 
-    // Smooth initialization variables
-    private boolean smoothInitInProgress = false;
-    private int initCounter = 0;
-    private float smoothedInitPosition = 0;
-    private float initStartPosition = 0;
-    private boolean wasRobotEnabled = false;
-
     public Elevator(RobotContainer robotContainer) {
         this.robotContainer = robotContainer;
         
         m_encoder = elevatorMotor.getEncoder();
         m_encoder.setPosition(0);
         
-        // Don't start smooth initialization here
-        // We'll start it when the robot is first enabled
 
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
@@ -80,20 +70,6 @@ public class Elevator extends SubsystemBase {
                 Configs.Elevator.elevatorSlaveConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-    }
-
-    // Method to start/restart smooth initialization
-    public void startSmoothInitialization() {
-        if (ElevatorConstants.ENABLE_SMOOTH_INIT) {
-            smoothInitInProgress = true;
-            initCounter = 0;
-            initStartPosition = (float)m_encoder.getPosition();
-            smoothedInitPosition = initStartPosition;
-            elevatorDesiredPosition = initStartPosition; // Start where we are
-            isInitialized = false; // Mark as not fully initialized yet
-            
-            SmartDashboard.putBoolean("Smooth Init Started", true);
-        }
     }
 
     private void setFullRetract() {
@@ -426,60 +402,10 @@ public class Elevator extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Check for robot enabled state transition
-        boolean isRobotEnabled = DriverStation.isEnabled();
-        
-        // If robot just got enabled and we're not initialized, start smooth init
-        if (isRobotEnabled && !wasRobotEnabled && !isInitialized) {
-            startSmoothInitialization();
-        }
-        wasRobotEnabled = isRobotEnabled;
-        
-        // Only run smooth initialization when robot is enabled
-        if (!isInitialized && isRobotEnabled) {
-            if (ElevatorConstants.ENABLE_SMOOTH_INIT && smoothInitInProgress) {
-                // Implement smooth initialization
-                if (initCounter < ElevatorConstants.INIT_SMOOTHING_TICKS) {
-                    // Calculate smooth position for this tick
-                    smoothedInitPosition = smoothedInitPosition + 
-                                         (ElevatorConstants.downPosition - smoothedInitPosition) * 
-                                         ElevatorConstants.INIT_SMOOTHING_RATE;
-                    
-                    // Use smoothed position as current target
-                    elevatorDesiredPosition = smoothedInitPosition;
-                    
-                    // Increment counter
-                    initCounter++;
-                    
-                    // Check if we're close enough to consider initialization complete
-                    if (Math.abs(smoothedInitPosition - ElevatorConstants.downPosition) < 
-                        ElevatorConstants.INIT_COMPLETE_THRESHOLD) {
-                        smoothInitInProgress = false;
-                        elevatorDesiredPosition = ElevatorConstants.downPosition;
-                        isInitialized = true;
-                    }
-                    
-                    SmartDashboard.putNumber("Init Progress", 
-                        (double)initCounter / ElevatorConstants.INIT_SMOOTHING_TICKS);
-                } else {
-                    // Max ticks reached, end smooth init
-                    smoothInitInProgress = false;
-                    elevatorDesiredPosition = ElevatorConstants.downPosition;
-                    isInitialized = true;
-                }
-                
-                SmartDashboard.putBoolean("Smooth Init In Progress", smoothInitInProgress);
-                SmartDashboard.putNumber("Smooth Init Position", smoothedInitPosition);
-            } else if (!smoothInitInProgress) {
-                // If smooth init not in progress but not initialized and enabled,
-                // set the position directly
-                elevatorDesiredPosition = ElevatorConstants.downPosition;
-                isInitialized = true;
-            }
-        } else if (!isInitialized && !isRobotEnabled) {
-            // When disabled but not initialized, don't start moving yet
-            // Just track current position
-            elevatorDesiredPosition = (float)m_encoder.getPosition();
+
+        if (!isInitialized) {
+            elevatorDesiredPosition = 0;
+            isInitialized = true;
         }
 
         desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
@@ -489,6 +415,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
         
         SmartDashboard.putNumber("Elevator Desired Power", elevatorMotor.getAppliedOutput());
+        SmartDashboard.putNumber("Slave Power", elevatorSlaveMotor.getAppliedOutput());
 
         // Initialize triggers once
         if (atSetpointTrigger == null) {
@@ -581,15 +508,5 @@ public class Elevator extends SubsystemBase {
     
     public Trigger getIsFullyRaisedTrigger() {
         return fullyRaisedTrigger;
-    }
-
-    // Getter for initialization status
-    public boolean isSmoothInitComplete() {
-        return !smoothInitInProgress;
-    }
-    
-    // Command to reset and restart initialization if needed
-    public Command resetInitializationCommand() {
-        return new InstantCommand(this::startSmoothInitialization);
     }
 }

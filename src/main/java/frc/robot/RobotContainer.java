@@ -115,7 +115,7 @@ public class RobotContainer {
   DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
 
   // Add supplier for funnel control
-  //DoubleSupplier funnelUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
+  DoubleSupplier funnelUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
 
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
@@ -260,9 +260,18 @@ public class RobotContainer {
     elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     // algaeArm.setDefaultCommand(new RunCommand(() ->
     // algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated
+
+
+
+
     // to use moveTrigger
     shooterArm
         .setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+
+
+    // Add default command for funnel manual control
+    funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
+
 
     // climber.setDefaultCommand(new RunCommand(() ->
     // climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
@@ -290,8 +299,6 @@ public class RobotContainer {
       }
     }, algaeShooter));
 
-    // Add default command for funnel manual control
-    //funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -397,7 +404,7 @@ public class RobotContainer {
     // () -> tempDriveToPoseCommand.isScheduled()
     // )
     // );
-    
+
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 

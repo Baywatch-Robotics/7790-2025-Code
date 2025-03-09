@@ -75,7 +75,7 @@ public class Funnel extends SubsystemBase {
     @Override
     public void periodic() {
         if (!isInitialized) {
-            funnelDesiredAngle = (double)(funnelEncoder.getPosition());
+            funnelDesiredAngle = FunnelConstants.homePosition;
             previousDesiredAngle = funnelDesiredAngle;
             snapPosition = funnelDesiredAngle;
             isInitialized = true;

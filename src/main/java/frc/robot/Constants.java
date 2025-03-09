@@ -156,13 +156,13 @@ public final class Constants
 
     // elevator set positions
     public static final float L4Pose = -46.767197f;
-    public static final float L3LPose = -22.977661f;
-    public static final float L3RPose = -22.977661f
+    public static final float L3LPose = -24;
+    public static final float L3RPose = -24f
     ;
-    public static final float L2RPose = -8.41037f;
-    public static final float L2LPose = -8.41037f;
+    public static final float L2RPose = -9f;
+    public static final float L2LPose = -9f;
     public static final float L1Pose = -0;
-    public static final float pickupPose = -22f;
+    public static final float pickupPose = -23f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -190,16 +190,16 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = .25f;
+    public static final float P = .1f;
     public static final float I = 0.0f;
-    public static final float D = 0f;
+    public static final float D = 0.0f;
 
     public static final float FFPercent = -0.04f;
 
     public static final float FFCutoff = -6.296857f;
     
-    public static final float maxVelocity = 2750;
-    public static final float maxAcceleration = 6000;
+    public static final float maxVelocity = 1000;
+    public static final float maxAcceleration = 1000;
     public static final float allowedClosedLoopError = .01f;
 
     // Constants for smooth initialization
@@ -224,13 +224,13 @@ public final class Constants
     public static final float max = .555f;
     
     // Manual control multiplier
-    public static final float manualMultiplier = 0.05f;
+    public static final float manualMultiplier = 0.005f;
     
     // Position tolerance for "at position" detection
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 3.0f;
+    public static final float P = 1.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -313,6 +313,26 @@ public final class Constants
     public static final double RED_GREEN_MULTIPLIER_SCALE = 0.4;
     public static final double BLUE_GREEN_MULTIPLIER = 0.7;
     public static final double BLUE_RED_BRIGHTNESS_MULTIPLIER = 0.1;
+
+    // Breathing pattern constants
+    public static final double BREATHING_CYCLE_PERIOD = 1.5; // Full breath cycle in seconds
+    public static final double BREATHING_MIN_INTENSITY = 0.05
+    ; // Minimum brightness in breath cycle
+    public static final double BREATHING_MAX_INTENSITY = 0.8; // Maximum brightness in breath cycle
+    public static final int BREATHING_STEPS = 50; // Number of steps per breath (smoother = more steps)
+
+    // Beam pattern constants
+    public static final double BEAM_SPEED = 0.8;            // How fast the beams move (higher = faster)
+    public static final double BEAM_LENGTH = 0.25;          // Length of beam as fraction of strip segment
+    public static final double BEAM_INTENSITY = 0.9;        // Maximum brightness of beam
+    public static final double BEAM_TRAIL_LENGTH = 0.5;     // How much the beam fades (higher = longer tail)
+    public static final double BEAM_CYCLE_TIME = 2.0;       // Time for full cycle in seconds
+    
+    // Direction control booleans (true = forward/default, false = reverse)
+
+    public static final boolean LEFT_BEAM_UP = true;        // true = up, false = down
+    public static final boolean RIGHT_BEAM_UP = true;       // true = up, false = down
+    public static final boolean TOP_BEAM_INWARD = true;     // true = inward, false = outward
   }
   
   public static final class ScopeConstants{

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LED extends SubsystemBase {
   
@@ -15,12 +16,16 @@ public class LED extends SubsystemBase {
     private final AddressableLEDBuffer buffer;
     private final AddressableLEDBuffer tempBuffer; // For power calculations
 
-    // LED patterns - no more orange, add solid alliance colors
+    // LED patterns
     private final LEDPattern solidRed;
     private final LEDPattern solidBlue;
     private final LEDPattern solidOrange;
     private final LEDPattern blueFlame;
     private final LEDPattern redFlame;
+    private final LEDPattern blueBreathing;
+    private final LEDPattern redBreathing;
+    private final LEDPattern blueBeam;
+    private final LEDPattern redBeam;
     
     private LEDPattern currentPattern;
     
@@ -53,9 +58,18 @@ public class LED extends SubsystemBase {
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
 
-      // Create flame patterns for disabled mode
+      // Create flame patterns (keeping for future use)
       blueFlame = createFlamePattern(Color.kBlue);
       redFlame = createFlamePattern(Color.kRed);
+      
+      // Create breathing patterns
+      blueBreathing = createBreathingPattern(Color.kBlue);
+      redBreathing = createBreathingPattern(Color.kRed);
+      
+      // Create beam patterns
+      blueBeam = createBeamPattern(Color.kBlue);
+      redBeam = createBeamPattern(Color.kRed);
+      
       currentPattern = solidOrange;
     }
   
@@ -63,13 +77,11 @@ public class LED extends SubsystemBase {
     public void periodic() {
       // Check if robot is disabled
       boolean currentlyDisabled = DriverStation.isDisabled();
-      
-
       Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
       
       if (currentlyDisabled) {
-        // Robot is disabled - use flame patterns
-        currentPattern = (alliance == Alliance.Blue) ? blueFlame : redFlame;
+        // Robot is disabled - use breathing patterns instead of flames for now
+        currentPattern = (alliance == Alliance.Blue) ? blueBeam : redBeam;
       } else {
         // Robot is enabled - use solid alliance colors to save CPU
         currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
@@ -87,70 +99,121 @@ public class LED extends SubsystemBase {
       // Write the data to the LED strip
       led.setData(buffer);
     }
-    
+        
     /**
      * Calculates current draw based on RGB values and adjusts brightness if needed
      */
     private void adjustBrightnessForPower() {
-        double totalCurrentDraw = 0;
+      double totalCurrentDraw = 0;
+      
+      // Calculate potential power consumption based on temp buffer
+      for (int i = 0; i < tempBuffer.getLength(); i++) {
+          double red = tempBuffer.getLED(i).red;
+          double green = tempBuffer.getLED(i).green;
+          double blue = tempBuffer.getLED(i).blue;
+          
+          // Calculate current for this LED (in mA)
+          double ledCurrent = (red * LEDConstants.MILLIAMPS_PER_RED) +
+                              (green * LEDConstants.MILLIAMPS_PER_GREEN) +
+                              (blue * LEDConstants.MILLIAMPS_PER_BLUE);
+          
+          totalCurrentDraw += ledCurrent;
+      }
+      
+      // Convert mA to A
+      totalCurrentDraw /= 1000.0;
+      
+      // Calculate max safe brightness based on current power draw
+      if (totalCurrentDraw > 0) {
+          // How much we can scale up (or need to scale down) our brightness
+          double maxSafeBrightness = (LEDConstants.MAX_AMPERAGE * LEDConstants.POWER_SAFETY_MARGIN) / totalCurrentDraw;
+          
+          // Gradually adjust brightness for smooth transitions
+          if (maxSafeBrightness < currentBrightness) {
+              // Need to reduce brightness immediately to stay within power budget
+              currentBrightness = maxSafeBrightness;
+          } else if (maxSafeBrightness > currentBrightness) {
+              // Can increase brightness, but do it gradually
+              currentBrightness += (maxSafeBrightness - currentBrightness) * 0.1;
+          }
+          
+          // Ensure brightness is within reasonable limits
+          currentBrightness = Math.max(0.05, Math.min(1.0, currentBrightness));
+      }
+  }
+  
+  /**
+   * Applies the current pattern with adjusted brightness
+   */
+  private void applyPatternWithBrightness() {
+      // Apply pattern to temp buffer first
+      currentPattern.applyTo(tempBuffer);
+      
+      // Copy to main buffer with brightness adjustment
+      for (int i = 0; i < buffer.getLength(); i++) {
+          Color originalColor = tempBuffer.getLED(i);
+          Color adjustedColor = new Color(
+              originalColor.red * currentBrightness,
+              originalColor.green * currentBrightness,
+              originalColor.blue * currentBrightness
+          );
+          buffer.setLED(i, adjustedColor);
+      }
+  }
+  
+    /**
+     * Creates a breathing pattern in the specified color
+     * 
+     * @param baseColor The base color for the breathing pattern
+     * @return A breathing pattern LEDPattern
+     */
+    private LEDPattern createBreathingPattern(Color baseColor) {
+      return new LEDPattern() {
+        private final Timer breathingTimer = new Timer();
+        private boolean initialized = false;
         
-        // Calculate potential power consumption based on temp buffer
-        for (int i = 0; i < tempBuffer.getLength(); i++) {
-            double red = tempBuffer.getLED(i).red;
-            double green = tempBuffer.getLED(i).green;
-            double blue = tempBuffer.getLED(i).blue;
-            
-            // Calculate current for this LED (in mA)
-            double ledCurrent = (red * LEDConstants.MILLIAMPS_PER_RED) +
-                                (green * LEDConstants.MILLIAMPS_PER_GREEN) +
-                                (blue * LEDConstants.MILLIAMPS_PER_BLUE);
-            
-            totalCurrentDraw += ledCurrent;
+        {
+          // Initialize timer
+          breathingTimer.start();
         }
         
-        // Convert mA to A
-        totalCurrentDraw /= 1000.0;
-        
-        // Calculate max safe brightness based on current power draw
-        if (totalCurrentDraw > 0) {
-            // How much we can scale up (or need to scale down) our brightness
-            double maxSafeBrightness = (LEDConstants.MAX_AMPERAGE * LEDConstants.POWER_SAFETY_MARGIN) / totalCurrentDraw;
-            
-            // Gradually adjust brightness for smooth transitions
-            if (maxSafeBrightness < currentBrightness) {
-                // Need to reduce brightness immediately to stay within power budget
-                currentBrightness = maxSafeBrightness;
-            } else if (maxSafeBrightness > currentBrightness) {
-                // Can increase brightness, but do it gradually
-                currentBrightness += (maxSafeBrightness - currentBrightness) * 0.1;
-            }
-            
-            // Ensure brightness is within reasonable limits
-            currentBrightness = Math.max(0.05, Math.min(1.0, currentBrightness));
+        @Override
+        public void applyTo(AddressableLEDBuffer buffer) {
+          if (!initialized) {
+            breathingTimer.reset();
+            initialized = true;
+          }
+          
+          // Calculate the phase of the breathing cycle (0 to 1)
+          double time = breathingTimer.get();
+          double cyclePosition = (time % LEDConstants.BREATHING_CYCLE_PERIOD) / LEDConstants.BREATHING_CYCLE_PERIOD;
+          
+          // Calculate brightness using a sine wave for smooth transitions
+          // sin function oscillates between -1 and 1, so we adjust to 0-1 range
+          double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
+          
+          // Map to our desired min/max range
+          breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY + 
+              breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+          
+          // Apply the breathing effect to each LED
+          for (int i = 0; i < buffer.getLength(); i++) {
+            Color breathColor = new Color(
+                baseColor.red * breathIntensity,
+                baseColor.green * breathIntensity,
+                baseColor.blue * breathIntensity
+            );
+            buffer.setLED(i, breathColor);
+          }
         }
+      };
     }
     
-    /**
-     * Applies the current pattern with adjusted brightness
-     */
-    private void applyPatternWithBrightness() {
-        // Apply pattern to temp buffer first
-        currentPattern.applyTo(tempBuffer);
-        
-        // Copy to main buffer with brightness adjustment
-        for (int i = 0; i < buffer.getLength(); i++) {
-            Color originalColor = tempBuffer.getLED(i);
-            Color adjustedColor = new Color(
-                originalColor.red * currentBrightness,
-                originalColor.green * currentBrightness,
-                originalColor.blue * currentBrightness
-            );
-            buffer.setLED(i, adjustedColor);
-        }
-    }
+    // Existing adjustBrightnessForPower and applyPatternWithBrightness methods...
     
     /**
      * Creates a flame pattern in the specified color
+     * (Keeping this code intact for future use)
      * 
      * @param baseColor The base color for the flame pattern
      * @return A flame pattern LEDPattern
@@ -260,6 +323,136 @@ public class LED extends SubsystemBase {
                 
                 buffer.setLED(i, flameColor);
             }
+        }
+      };
+    }
+  
+    /**
+     * Creates a beam pattern that runs up both sides and inward from the edges on top
+     * 
+     * @param baseColor The base color for the beam pattern
+     * @return A beam pattern LEDPattern
+     */
+    private LEDPattern createBeamPattern(Color baseColor) {
+      return new LEDPattern() {
+        private final Timer beamTimer = new Timer();
+        private boolean initialized = false;
+        
+        {
+          // Initialize timer
+          beamTimer.start();
+        }
+        
+        @Override
+        public void applyTo(AddressableLEDBuffer buffer) {
+          if (!initialized) {
+            beamTimer.reset();
+            initialized = true;
+          }
+          
+          // Calculate the time position in the beam cycle (0 to 1)
+          double time = beamTimer.get();
+          double cyclePosition = (time % LEDConstants.BEAM_CYCLE_TIME) / LEDConstants.BEAM_CYCLE_TIME;
+          
+          // Clear buffer first (set all LEDs to black/off)
+          for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setLED(i, Color.kBlack);
+          }
+          
+          // Apply beam effect to left side
+          applyBeamToSegment(buffer, 
+                            0, 
+                            LEDConstants.LEFT_LEDS, 
+                            cyclePosition, 
+                            LEDConstants.LEFT_BEAM_UP, 
+                            baseColor);
+          
+          // Apply beam effect to right side
+          applyBeamToSegment(buffer, 
+                            LEDConstants.LEFT_LEDS + LEDConstants.TOP_LEDS, 
+                            LEDConstants.RIGHT_LEDS, 
+                            cyclePosition, 
+                            LEDConstants.RIGHT_BEAM_UP, 
+                            baseColor);
+          
+          // Apply beam effect to top, split into left and right halves for inward/outward movement
+          int topMiddle = LEDConstants.LEFT_LEDS + (LEDConstants.TOP_LEDS / 2);
+          
+          // Left half of top (moving right)
+          applyBeamToSegment(buffer,
+                            LEDConstants.LEFT_LEDS,
+                            LEDConstants.TOP_LEDS / 2,
+                            cyclePosition,
+                            LEDConstants.TOP_BEAM_INWARD,
+                            baseColor);
+          
+          // Right half of top (moving left)
+          applyBeamToSegment(buffer,
+                            topMiddle,
+                            LEDConstants.TOP_LEDS / 2,
+                            cyclePosition,
+                            !LEDConstants.TOP_BEAM_INWARD, // Inverse for other side
+                            baseColor);
+        }
+        
+        /**
+         * Apply beam effect to a segment of LEDs
+         * 
+         * @param buffer The LED buffer to modify
+         * @param startIndex Starting index of the segment
+         * @param length Length of the segment in LEDs
+         * @param cyclePosition Current position in animation cycle (0-1)
+         * @param forward Direction of beam motion
+         * @param color Base color of beam
+         */
+        private void applyBeamToSegment(AddressableLEDBuffer buffer, int startIndex, int length, 
+                                      double cyclePosition, boolean forward, Color color) {
+          
+          // Calculate beam position
+          double beamPos = cyclePosition * (1 + LEDConstants.BEAM_LENGTH + LEDConstants.BEAM_TRAIL_LENGTH);
+          
+          // For each LED in the segment
+          for (int i = 0; i < length; i++) {
+            // Convert LED position to 0-1 range within segment
+            double ledPos = (double)i / length;
+            
+            // Adjust position based on direction
+            if (!forward) {
+              ledPos = 1.0 - ledPos;
+            }
+            
+            // Calculate distance from beam peak position
+            double distFromBeam = Math.abs(ledPos - (beamPos % 1.0));
+            
+            // Wrap around for continuous effect
+            if (distFromBeam > 0.5) {
+              distFromBeam = 1.0 - distFromBeam;
+            }
+            
+            // Calculate intensity based on distance from beam
+            double intensity;
+            if (distFromBeam < LEDConstants.BEAM_LENGTH / 2) {
+              // Inside main beam
+              intensity = LEDConstants.BEAM_INTENSITY;
+            } else if (distFromBeam < LEDConstants.BEAM_LENGTH / 2 + LEDConstants.BEAM_TRAIL_LENGTH) {
+              // Inside beam trail
+              double trailPos = (distFromBeam - LEDConstants.BEAM_LENGTH / 2) / LEDConstants.BEAM_TRAIL_LENGTH;
+              intensity = LEDConstants.BEAM_INTENSITY * (1 - trailPos);
+            } else {
+              // Outside beam
+              intensity = 0;
+            }
+            
+            // Apply the intensity to this LED
+            if (intensity > 0) {
+              Color beamColor = new Color(
+                  color.red * intensity,
+                  color.green * intensity,
+                  color.blue * intensity
+              );
+              buffer.setLED(startIndex + i, beamColor);
+            }
+          }
         }
       };
     }

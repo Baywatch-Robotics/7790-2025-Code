@@ -156,7 +156,7 @@ public final class Configs {
       funnelConfig.absoluteEncoder.zeroOffset(FunnelConstants.angleOffset);
 
       funnelConfig
-          .inverted(false)
+          .inverted(true)
           .closedLoop
           .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
           // Set PID values for position control
