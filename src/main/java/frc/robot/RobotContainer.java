@@ -572,9 +572,6 @@ public class RobotContainer {
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
 
-    // Update ShooterArm with reef zone status
-    shooterArm.setReefZoneStatus(isInReefZone);
-
     // Apply zone-based speed modifier ONLY if full speed mode is disabled
     if (!fullSpeedModeEnabled) {
       float zoneModifier = getZoneSpeedMultiplier();

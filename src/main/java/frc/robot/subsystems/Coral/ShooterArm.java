@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,7 +33,6 @@ public class ShooterArm extends SubsystemBase {
     
     // Add flag to track if robot is in reef zone
     private boolean isInReefZone = false;
-    private double reefZoneExitTime = 0; // Timestamp when robot exited reef zone
     private boolean isInReefZoneDebounce = false; // Whether we're in the debounce period after exiting reef zone
     
     // Add variable to track the arm's lowest allowed position in reef zone
@@ -53,38 +51,6 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
         previousDesiredAngle = shooterArmDesiredAngle; // Initialize previous angle
         snapPosition = shooterArmDesiredAngle; // Initialize snap position
-    }
-
-    /**
-     * Update the reef zone status
-     * @param inReefZone true if robot is currently in reef zone
-     */
-    public void setReefZoneStatus(boolean inReefZone) {
-        // When entering reef zone
-        if (!this.isInReefZone && inReefZone) {
-            // Record current position as minimum allowed if below the standard minimum
-            float currentPosition = (float)shooterArmEncoder.getPosition();
-            if (currentPosition < ShooterArmConstants.reefZoneMinimumAngle) {
-                // If arm is below standard minimum, use current position as the minimum allowed
-                reefZoneMinimumAllowedAngle = currentPosition;
-            } else {
-                // Otherwise use the standard minimum
-                reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
-            }
-            
-            // Reset exit timer and debounce flag when entering zone
-            reefZoneExitTime = 0;
-            isInReefZoneDebounce = false;
-        }
-        // When exiting reef zone
-        else if (this.isInReefZone && !inReefZone) {
-            // We just left the reef zone - start debounce timer
-            reefZoneExitTime = Timer.getFPGATimestamp();
-            isInReefZoneDebounce = true;
-        }
-        
-        // Update current value
-        this.isInReefZone = inReefZone;
     }
 
     private void setScoreLOW() {

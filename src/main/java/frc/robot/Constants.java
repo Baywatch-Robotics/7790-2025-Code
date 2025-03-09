@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
-import com.pathplanner.lib.path.PathConstraints;
-
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
