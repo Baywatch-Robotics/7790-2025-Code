@@ -23,7 +23,7 @@ import java.util.Optional;
 public class AprilTagVision extends SubsystemBase {
     
     private static final PhotonCamera rightCam = new PhotonCamera("rightcam");
-    //private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
+    private static final PhotonCamera leftCam = new PhotonCamera("leftcam");
     //private static final PhotonCamera limelight = new PhotonCamera("limelight");
 
     private static final Transform3d rightCamToRobot = new Transform3d(
@@ -61,7 +61,7 @@ public class AprilTagVision extends SubsystemBase {
         return rightPoseEstimator.update(rightCam.getLatestResult());
     }
 
-    /*
+    
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
         return leftPoseEstimator.update(leftCam.getLatestResult());
@@ -73,6 +73,7 @@ public class AprilTagVision extends SubsystemBase {
         return limelightPoseEstimator.update(limelight.getLatestResult());
     }
     */
+    
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
@@ -83,7 +84,7 @@ public class AprilTagVision extends SubsystemBase {
                 validPoses.add(estimate.estimatedPose);
             }
         }
-/*
+
         Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
         if (leftCamEstimate.isPresent()) {
             EstimatedRobotPose estimate = leftCamEstimate.get();
@@ -108,19 +109,47 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     private static Pose3d averagePoses(List<Pose3d> poses) {
+        // If only one pose, return it directly
+        if (poses.size() == 1) {
+            return poses.get(0);
+        }
+        
+        // Average the positions
         double x = 0, y = 0, z = 0;
-        double roll = 0, pitch = 0, yaw = 0;
-        int count = poses.size();
-
+        
+        // We'll use quaternions to average rotations correctly
+        double qw = 0, qx = 0, qy = 0, qz = 0;
+        
         for (Pose3d pose : poses) {
+            // Add position components
             x += pose.getX();
             y += pose.getY();
             z += pose.getZ();
-            roll += pose.getRotation().getX();
-            pitch += pose.getRotation().getY();
-            yaw += pose.getRotation().getZ();
+            
+            // Convert rotation to quaternion and add components
+            // Note: WPILib Rotation3d stores quaternions internally
+            qw += pose.getRotation().getQuaternion().getW();
+            qx += pose.getRotation().getQuaternion().getX();
+            qy += pose.getRotation().getQuaternion().getY();
+            qz += pose.getRotation().getQuaternion().getZ();
         }
-
-        return new Pose3d(x / count, y / count, z / count, new Rotation3d(roll / count, pitch / count, yaw / count));
+        
+        int count = poses.size();
+        
+        // Average the position
+        Translation3d avgTranslation = new Translation3d(x / count, y / count, z / count);
+        
+        // Average and normalize the quaternion
+        double length = Math.sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
+        qw /= length;
+        qx /= length;
+        qy /= length;
+        qz /= length;
+        
+        // Create the rotation from the averaged quaternion
+        Rotation3d avgRotation = new Rotation3d(
+            new edu.wpi.first.math.geometry.Quaternion(qw, qx, qy, qz));
+        
+        return new Pose3d(avgTranslation, avgRotation);
     }
 }
