@@ -397,7 +397,7 @@ public class RobotContainer {
     // () -> tempDriveToPoseCommand.isScheduled()
     // )
     // );
-
+    
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 
@@ -418,9 +418,9 @@ public class RobotContainer {
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
-
-    chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left", leftAuto);
+    chooser.setDefaultOption("Right", rightAuto);
+    
     SmartDashboard.putData(chooser);
   }
 

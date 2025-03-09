@@ -201,6 +201,12 @@ public final class Constants
     public static final float maxVelocity = 2750;
     public static final float maxAcceleration = 6000;
     public static final float allowedClosedLoopError = .01f;
+
+    // Constants for smooth initialization
+    public static final boolean ENABLE_SMOOTH_INIT = true; // Toggle smooth initialization
+    public static final float INIT_SMOOTHING_RATE = 0.025f; // How quickly to approach target (smaller = smoother)
+    public static final int INIT_SMOOTHING_TICKS = 100; // Maximum periodic cycles for initialization
+    public static final float INIT_COMPLETE_THRESHOLD = 0.5f; // How close to target to consider initialization complete
   }
 
   public static final class FunnelConstants {
@@ -242,10 +248,73 @@ public final class Constants
   public static final class LEDConstants{
     
     public static final int port = 0;
+    public static final int length = 104;
 
-    public static final int length = 25;
+    // LED layout constants
+    public static final int LEFT_LEDS = 43;
+    public static final int TOP_LEDS = 18;
+    public static final int RIGHT_LEDS = 43;
+    public static final int TOTAL_LEDS = LEFT_LEDS + TOP_LEDS + RIGHT_LEDS;
+    
+    // WS2812B LED power specifications
+    public static final double MILLIAMPS_PER_LED_FULL_WHITE = 60.0; // mA per LED at full white
+    public static final double MILLIAMPS_PER_RED = 20.0;   // mA for full red
+    public static final double MILLIAMPS_PER_GREEN = 20.0; // mA for full green
+    public static final double MILLIAMPS_PER_BLUE = 20.0;  // mA for full blue
+    
+    // Power constraint - maximum allowed current in amps
+    public static final double MAX_AMPERAGE = 1.0; // Maximum current draw in amps
+    
+    // Default starting brightness if not using dynamic calculation
+    public static final double DEFAULT_BRIGHTNESS = 0.1;
+    
+    // Power headroom to prevent hitting exact power limit (0-1)
+    public static final double POWER_SAFETY_MARGIN = 0.9;
+    
+    // Calculate max brightness based on power constraints
+    // MAX_BRIGHTNESS = MAX_AMPERAGE / (number of LEDs * current per LED at full brightness)
+    public static final double MAX_BRIGHTNESS = MAX_AMPERAGE / (length * (MILLIAMPS_PER_LED_FULL_WHITE / 1000.0));  // Convert mA to A
 
+    public static final int ANIMATION_CYCLE_MODULO = 20;
+    public static final int FLAME_UPDATE_INTERVAL = 3;
+    public static final double NEW_TARGET_PROBABILITY = 0.1;
+    public static final double MIN_FLAME_INTENSITY = 0.5;
+    public static final double MAX_FLAME_INTENSITY = 1.0;
+    public static final double MIN_TARGET_INTENSITY = 0.4;
+    public static final double MAX_TARGET_INTENSITY = 1.0;
+    public static final double MIN_CHANGE_SPEED = 0.05;
+    public static final double MAX_CHANGE_SPEED = 0.2;
+    public static final double MIN_BRIGHTNESS_LIMIT = 0.2;
+    public static final double MAX_BRIGHTNESS_LIMIT = 1.0;
+    
+    // Left side flame constants
+    public static final double LEFT_SINE_AMPLITUDE = 0.3;
+    public static final double LEFT_SINE_OFFSET = 0.7;
+    public static final double LEFT_SINE_FREQUENCY = 10.0;
+    public static final double LEFT_BOTTOM_INTENSITY = 0.3;
+    public static final double LEFT_BOTTOM_OFFSET = 0.7;
+    
+    // Top flame constants
+    public static final double TOP_COSINE_AMPLITUDE = 0.2;
+    public static final double TOP_COSINE_OFFSET = 0.8;
+    public static final double TOP_COSINE_FREQUENCY = 5.0;
+    public static final double TOP_EDGE_INTENSITY = 0.3;
+    public static final double TOP_EDGE_OFFSET = 0.7;
+    
+    // Right side flame constants
+    public static final double RIGHT_SINE_AMPLITUDE = 0.3;
+    public static final double RIGHT_SINE_OFFSET = 0.7;
+    public static final double RIGHT_SINE_FREQUENCY = 10.0;
+    public static final double RIGHT_BOTTOM_INTENSITY = 0.3;
+    public static final double RIGHT_BOTTOM_OFFSET = 0.7;
+    
+    // Color variation constants
+    public static final double RED_GREEN_MULTIPLIER_BASE = 0.3;
+    public static final double RED_GREEN_MULTIPLIER_SCALE = 0.4;
+    public static final double BLUE_GREEN_MULTIPLIER = 0.7;
+    public static final double BLUE_RED_BRIGHTNESS_MULTIPLIER = 0.1;
   }
+  
   public static final class ScopeConstants{
     
   }
