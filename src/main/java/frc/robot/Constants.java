@@ -36,8 +36,8 @@ public final class Constants
   public static final class AlgaeArmConstants{
     public static final int ID = 14;
 
-    public static final float stowedUpAngle = 0.28f;
-    public static final float straightOutAngle = 0.5f;
+    public static final float stowedUpAngle = 0.305f;
+    public static final float straightOutAngle = 0.535f;
     public static final float groundIntakeAngle = 0.42f;
 
     public static final float holdAngle = 0.34f;
@@ -45,9 +45,9 @@ public final class Constants
     // Current threshold for detecting algae
     public static final float currentThreshold = 15.0f;
 
-    public static final float angleOffset = 0.44f;
+    public static final float angleOffset = 0.75f;
 
-    public static final float max = 0.5f;
+    public static final float max = 0.535f;
     public static final float min = 0.28f;
 
     public static final float manualMultiplier = 0.05f;
@@ -58,7 +58,7 @@ public final class Constants
     public static final float D = 0.0f;
     public static final float maxVelocity = 1000;
     public static final float maxAcceleration = 1000;
-    public static final float allowedClosedLoopError = .01f;
+    public static final float allowedClosedLoopError = .005f;
   }
 
     public static final class AlgaeShooterConstants{
@@ -122,7 +122,7 @@ public final class Constants
     public static final float maxAcceleration = 100f;
 
 
-    public static final float allowedClosedLoopError = 0.01f;
+    public static final float allowedClosedLoopError = 0.005f;
 
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
     public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
@@ -213,15 +213,15 @@ public final class Constants
     public static final int ID = 20;
     
     // Position constants
-    public static final float homePosition = 0;
-    public static final float fullUpPosition = 0;
+    public static final float homePosition = .555f;
+    public static final float fullUpPosition = .24f;
     
     // Angle offset for absolute encoder
-    public static final float angleOffset = 0.0f; // Adjust this based on mechanical setup
+    public static final float angleOffset = 0.13f; // Adjust this based on mechanical setup
     
     // Min and max position limits
-    public static final float min = 0;
-    public static final float max = 0;
+    public static final float min = .24f;
+    public static final float max = .555f;
     
     // Manual control multiplier
     public static final float manualMultiplier = 0.05f;
@@ -237,7 +237,7 @@ public final class Constants
     // Motion profile parameters
     public static final float maxVelocity = 1000f;
     public static final float maxAcceleration = 1000f;
-    public static final float allowedClosedLoopError = 0.01f;
+    public static final float allowedClosedLoopError = 0.005f;
     
     // Smoothing constants (similar to ShooterArm)
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing

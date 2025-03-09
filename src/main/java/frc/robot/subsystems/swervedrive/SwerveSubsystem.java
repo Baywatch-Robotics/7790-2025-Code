@@ -23,7 +23,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -113,7 +115,9 @@ public class SwerveSubsystem extends SubsystemBase
     else{
       addVisionMeasurement();
     }
-    
+  SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+  SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+
   }
 
   @Override

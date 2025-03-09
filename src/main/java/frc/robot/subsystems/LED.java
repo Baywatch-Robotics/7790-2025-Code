@@ -18,6 +18,7 @@ public class LED extends SubsystemBase {
     // LED patterns - no more orange, add solid alliance colors
     private final LEDPattern solidRed;
     private final LEDPattern solidBlue;
+    private final LEDPattern solidOrange;
     private final LEDPattern blueFlame;
     private final LEDPattern redFlame;
     
@@ -47,6 +48,7 @@ public class LED extends SubsystemBase {
       led.setLength(LEDConstants.length);
       led.start();
       
+      solidOrange = LEDPattern.solid(Color.kOrange);
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
@@ -54,10 +56,7 @@ public class LED extends SubsystemBase {
       // Create flame patterns for disabled mode
       blueFlame = createFlamePattern(Color.kBlue);
       redFlame = createFlamePattern(Color.kRed);
-      
-      // Set default pattern based on alliance
-      Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
-      currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+      currentPattern = solidOrange;
     }
   
     @Override
@@ -65,6 +64,7 @@ public class LED extends SubsystemBase {
       // Check if robot is disabled
       boolean currentlyDisabled = DriverStation.isDisabled();
       
+
       Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
       
       if (currentlyDisabled) {
