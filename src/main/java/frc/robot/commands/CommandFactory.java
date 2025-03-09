@@ -24,7 +24,7 @@ public class CommandFactory {
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(elevator.setElevatorPickupPlusCommand())
-      .andThen(new WaitCommand(5))
+      .andThen(new WaitCommand(1))
       .andThen(shooter.shooterZeroSpeedCommand());
 
 
@@ -132,10 +132,10 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
+  Command command = elevator.setElevatorPickupCommand()
   .andThen(drivebase.driveToPose(buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
-  .andThen(shooter.shooterIntakeCommand())
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
   
   .andThen(shooter.shooterOutakeCommand())

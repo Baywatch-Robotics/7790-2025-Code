@@ -486,17 +486,21 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       isLinedUp = distance <= DriveToPoseConstants.LINED_UP_POSITION_THRESHOLD && 
                  angleDifference <= DriveToPoseConstants.LINED_UP_ANGLE_THRESHOLD;
       
-      // If we just became lined up, clear the target visualization
-      if (isLinedUp && !wasLinedUp) {
-          drivebase.clearTargetVisualization();
-          // Optional: provide haptic feedback or logging
-          driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.5);
-          // Schedule a command to stop rumble after a short duration
-          Commands.waitSeconds(0.5)
-            .andThen(() -> driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0))
-            .schedule();
-      } else if (!isLinedUp && !wasLinedUp) {
-          // Only visualize the target if we're not lined up
+      // More aggressive approach to handling visualization
+      if (isLinedUp) {
+          // When lined up, always force clear visualization
+          drivebase.forceClearTargetVisualization();
+          
+          // Only provide haptic feedback when first becoming lined up
+          if (!wasLinedUp) {
+              driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.5);
+              Commands.waitSeconds(0.5)
+                  .andThen(() -> driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0))
+                  .schedule();
+          }
+      } else {
+          // When not lined up, enable visualization and show target
+          drivebase.setTargetVisualizationEnabled(true);
           drivebase.visualizeTargetPose(allianceRelativeTarget);
       }
     } else {
@@ -506,9 +510,12 @@ SwerveInputStream driveDirectAngleKeyboard     = driveAngularVelocityKeyboard.co
       isVeryClose = false;
       isLinedUp = false;
       
-      // Clear target visualization
-      drivebase.clearTargetVisualization();
+      // Force clear target visualization when no target
+      drivebase.forceClearTargetVisualization();
     }
+    
+    // Log lined up status to dashboard for debugging
+    SmartDashboard.putBoolean("Is Lined Up", isLinedUp);
     
     // Update SmartDashboard with proximity status
     SmartDashboard.putBoolean("Approaching Target", isApproaching);

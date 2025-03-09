@@ -481,15 +481,8 @@ public final class Constants
    */
   public static final class DriveToPoseConstants {
 
-    
-    public static final double FAR_DISTANCE = 2.0; // meters
-    public static final double CLOSE_DISTANCE = 1.0; // meters
-    public static final double VERY_CLOSE_DISTANCE = 0.5; // meters
-    
-
-
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 1.5; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
     
@@ -501,17 +494,17 @@ public final class Constants
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
 
     // Define numerical constraint values for different approach distances
-    public static final double APPROACHING_MAX_VEL = 3.0;
+    public static final double APPROACHING_MAX_VEL = 4.5;
     public static final double APPROACHING_MAX_ACCEL = 3.0;
     
-    public static final double CLOSE_MAX_VEL = 1.5;
-    public static final double CLOSE_MAX_ACCEL = 1.5;
+    public static final double CLOSE_MAX_VEL = 2.0;
+    public static final double CLOSE_MAX_ACCEL = 1.0;
     
     public static final double VERY_CLOSE_MAX_VEL = 1.0;
     public static final double VERY_CLOSE_MAX_ACCEL = 1.0;
     
     // Angular constraints (shared across all distances)
-    public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(120);
+    public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(240);
     public static final double MAX_ANGULAR_ACCEL = Units.degreesToRadians(120);
   }
 }
