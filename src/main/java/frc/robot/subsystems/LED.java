@@ -44,11 +44,6 @@ public class LED extends SubsystemBase {
       red = LEDPattern.solid(Color.kRed);
       blueFlame = createFlamePattern(Color.kBlue);
       redFlame = createFlamePattern(Color.kRed);
-      currentPattern = red;
-
-      // Set the default command to turn the strip off, otherwise the last colors written by
-      // the last command to run will continue to be displayed.
-      setDefaultCommand(runPattern(red));
     }
   
     @Override

@@ -39,6 +39,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.LED;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -133,7 +134,7 @@ public class RobotContainer {
   // Initialize funnel subsystem
   private final Funnel funnel = new Funnel();
   
-  // private final LED LED = new LED();
+  private final LED LED = new LED();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
 
