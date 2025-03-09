@@ -265,10 +265,10 @@ public final class Constants
     public static final float xValueC1X1 = (float)Units.inchesToMeters(126);
     public static final float yValueC1X1 = (float)Units.inchesToMeters(151.125);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(163.5);
-    public static final float yValueC130 = (float)Units.inchesToMeters(166.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(151.125);
-    public static final float yValueC131 = (float)Units.inchesToMeters(153);
+    public static final float xValueC130 = (float)Units.inchesToMeters(126);
+    public static final float yValueC130 = (float)Units.inchesToMeters(163.5);
+    public static final float xValueC131 = (float)Units.inchesToMeters(126);
+    public static final float yValueC131 = (float)Units.inchesToMeters(151.125);
     /*
     public static final float xValueC1XX = (float)Units.inchesToMeters(126);
     public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
@@ -347,12 +347,12 @@ public final class Constants
     public static final float xValueC5X0 = (float)Units.inchesToMeters(206.45);
     public static final float yValueC5X0 = (float)Units.inchesToMeters(199.95);
     public static final float xValueC5X1 = (float)Units.inchesToMeters(195.73);
-    public static final float yValueC5X1 = (float)Units.inchesToMeters(202.45);
+    public static final float yValueC5X1 = (float)Units.inchesToMeters(206.14);
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
     public static final float xValueC530 = (float)Units.inchesToMeters(206.45);
     public static final float yValueC530 = (float)Units.inchesToMeters(199.95);
     public static final float xValueC531 = (float)Units.inchesToMeters(195.73);
-    public static final float yValueC531 = (float)Units.inchesToMeters(202.45);
+    public static final float yValueC531 = (float)Units.inchesToMeters(206.14);
     /*
     public static final float xValueC5XX = (float)Units.inchesToMeters(202.1);
     public static final float yValueC5XX = (float)Units.inchesToMeters(202.42);
