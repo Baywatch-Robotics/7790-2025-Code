@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 
@@ -262,86 +263,96 @@ public class SwerveSubsystem extends SubsystemBase
 public Command driveToPose(ButtonBox buttonBox) {
     return new Command() {
         private Command pathCommand;
+        private PathConstraints lastConstraints = null;
+        private TargetClass lastTarget = null;
         
         @Override
         public void initialize() {
-            // Reset cancel flag at the start of a new path
+            // Reset cancel flag once at the very start
             setCancel(false);
-            
-            // Get the target at execution time
-            TargetClass target = buttonBox.currentTargetClassSupplier.get();
-            
-            PathConstraints constraints;
-            Pose2d pose;
-
-            if (target == null) {
-               constraints = new PathConstraints(
-                0, 0,
-                Units.degreesToRadians(0), Units.degreesToRadians(0));
-
-              target = TargetClass.GetTargetByName("C100");
-            }
-            else {
-                constraints = new PathConstraints(
-                1, 1,
-                Units.degreesToRadians(120), Units.degreesToRadians(120));
-            }
-            
-            // Get the pose from the target
-            pose = new Pose2d(new Translation2d(target.getX(), target.getY()), 
-                                    Rotation2d.fromRadians(target.getZ()));
-
-            Pose2d finalPose = TargetClass.toPose2d(pose);
-            
-            // Create the pathfinding command with the evaluated pose
-            pathCommand = AutoBuilder.pathfindToPose(finalPose,constraints,edu.wpi.first.units.Units.MetersPerSecond.of(0)); // Goal end velocity in meters/sec);
-            
-            // Schedule the path command
-            pathCommand.schedule();
-        }        
+        }
         
         @Override
         public void execute() {
-            // Check cancellation flag during each execution cycle
+            // Get current target from the supplier
+            TargetClass target = buttonBox.currentTargetClassSupplier.get();
+            if (target == null) {
+                target = TargetClass.GetTargetByName("C100");
+            }
+            
+            // Compute target pose from the target
+            Pose2d targetPose = new Pose2d(
+                new Translation2d(target.getX(), target.getY()),
+                Rotation2d.fromRadians(target.getZ())
+            );
+            Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
+            
+            // Calculate distance from current robot pose to target pose
+            double distance = getPose().getTranslation().getDistance(finalTargetPose.getTranslation());
+            
+            // Base velocity and acceleration values based on distance
+            double baseVelocity, baseAcceleration;
+            
+            if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
+                baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
+                baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
+            } else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
+                baseVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
+                baseAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
+            } else {
+                baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
+                baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
+            }
+            
+            // Apply elevator height-based multipliers
+            double finalVelocity = baseVelocity;
+            double finalAcceleration = baseAcceleration;
+            
+            // Create the PathConstraints with the computed values
+            PathConstraints currentConstraints = new PathConstraints(
+                finalVelocity, 
+                finalAcceleration,
+                DriveToPoseConstants.MAX_ANGULAR_VEL,
+                DriveToPoseConstants.MAX_ANGULAR_ACCEL
+            );
+            
+            // Only update when either constraints or target have changed
+            if (!currentConstraints.equals(lastConstraints) || !target.equals(lastTarget)) {
+                if (pathCommand != null && !pathCommand.isFinished()) {
+                    pathCommand.cancel();
+                }
+                
+                // Create and schedule the new pathfinding command using the computed constraints
+                pathCommand = AutoBuilder.pathfindToPose(finalTargetPose, currentConstraints,
+                    edu.wpi.first.units.Units.MetersPerSecond.of(0));
+                pathCommand.schedule();
+                
+                // Cache new values
+                lastConstraints = currentConstraints;
+                lastTarget = target;
+            }
+            
+            // Check cancellation flag during this cycle
             if (getCancel() && pathCommand != null && !pathCommand.isFinished()) {
-                // Force cancel the path command if cancel flag is set
                 pathCommand.cancel();
             }
         }
         
         @Override
         public boolean isFinished() {
-            // Return true if path is finished OR cancel has been requested
             return (pathCommand != null && pathCommand.isFinished()) || getCancel();
         }
         
         @Override
         public void end(boolean interrupted) {
             if (pathCommand != null) {
-                pathCommand.cancel(); // Ensure the pathCommand is cancelled
+                pathCommand.cancel();
             }
-            // Reset cancel flag when we're done
             setCancel(false);
         }
     };
 }
 
-  public Command driveToPoseTEST(){
-    Pose2d pose = new Pose2d(new Translation2d(15, 5.0), Rotation2d.fromDegrees(0));
-    
-
-    // Create the constraints to use while pathfinding
-    PathConstraints constraints = new PathConstraints(
-            1, 1,
-            Units.degreesToRadians(120), Units.degreesToRadians(120));
-
-// Since AutoBuilder is configured, we can use it to build pathfinding commands
-    return AutoBuilder.pathfindToPose(
-        pose,
-        constraints,
-        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
-                                     );
-  }
   /**
    * Command to characterize the robot drive motors using SysId
    *
@@ -714,14 +725,5 @@ public Command driveToPose(ButtonBox buttonBox) {
         swerveDrive.field.getObject("targetPose").setPose(
             new Pose2d(-100, -100, new Rotation2d(0))
         );
-        swerveDrive.field.getObject("holdingPosition").setPose(
-            new Pose2d(-100, -100, new Rotation2d(0))
-        );
     }
-
-    // In SwerveSubsystem.java
-    public void visualizeHoldingPose(Pose2d holdingPose) {
-  // Similar to visualizeTargetPose but with different color (e.g., yellow)
-  swerveDrive.field.getObject("holdingPosition").setPose(holdingPose);
-}
 }

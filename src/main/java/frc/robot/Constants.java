@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -476,67 +480,38 @@ public final class Constants
    * Constants for drive-to-pose behavior
    */
   public static final class DriveToPoseConstants {
-    // PID Values
-    public static final double TRANSLATION_P = 3.0;
-    public static final double TRANSLATION_I = 0.0;
-    public static final double TRANSLATION_D = 0.0;
+
     
-    public static final double ROTATION_P = 5.0;
-    public static final double ROTATION_I = 0.0;
-    public static final double ROTATION_D = 0.0;
-    
-    // Speed constraints based on distance
-    public static final double FAR_DISTANCE = 3.0; // meters
-    public static final double MID_DISTANCE = 1.5; // meters
+    public static final double FAR_DISTANCE = 2.0; // meters
     public static final double CLOSE_DISTANCE = 1.0; // meters
     public static final double VERY_CLOSE_DISTANCE = 0.5; // meters
     
-    // Maximum velocity constraints (m/s)
-    public static final double FAR_MAX_VEL = .001;
-    public static final double MID_MAX_VEL = .001;
-    public static final double CLOSE_MAX_VEL = .001;
-    public static final double VERY_CLOSE_MAX_VEL = 0.001;
+
+
+    // Distance thresholds in meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
+    public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
+    public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
     
-    // Maximum acceleration constraints (m/s²)
-    public static final double FAR_MAX_ACCEL = .1;
-    public static final double MID_MAX_ACCEL = .1;
-    public static final double CLOSE_MAX_ACCEL = 0.1;
-    public static final double VERY_CLOSE_MAX_ACCEL = 0.1;
+    // Alignment thresholds
+    public static final double LINED_UP_ANGLE_THRESHOLD = Math.toRadians(5.0); // radians
+    public static final double LINED_UP_POSITION_THRESHOLD = 0.02; // meters
     
-    // Rotation constraints (rad/s and rad/s²)
-    public static final double FAR_MAX_ROT_VEL = Units.degreesToRadians(360);
-    public static final double MID_MAX_ROT_VEL = Units.degreesToRadians(270);
-    public static final double CLOSE_MAX_ROT_VEL = Units.degreesToRadians(180);
-    public static final double VERY_CLOSE_MAX_ROT_VEL = Units.degreesToRadians(90);
+    // Visualization settings
+    public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
+
+    // Define numerical constraint values for different approach distances
+    public static final double APPROACHING_MAX_VEL = 3.0;
+    public static final double APPROACHING_MAX_ACCEL = 3.0;
     
-    public static final double FAR_MAX_ROT_ACCEL = Units.degreesToRadians(360);
-    public static final double MID_MAX_ROT_ACCEL = Units.degreesToRadians(270);
-    public static final double CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(180);
-    public static final double VERY_CLOSE_MAX_ROT_ACCEL = Units.degreesToRadians(90);
+    public static final double CLOSE_MAX_VEL = 1.5;
+    public static final double CLOSE_MAX_ACCEL = 1.5;
     
-    // Elevator-based constraint multipliers (0.0-1.0)
-    // These will be multiplied by the distance-based constraints
-    public static final double ELEVATOR_LOW_VEL_MULTIPLIER = 1.0;
-    public static final double ELEVATOR_LOW_ACCEL_MULTIPLIER = 1.0;
+    public static final double VERY_CLOSE_MAX_VEL = 1.0;
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.0;
     
-    public static final double ELEVATOR_PARTIAL_VEL_MULTIPLIER = 0.8;
-    public static final double ELEVATOR_PARTIAL_ACCEL_MULTIPLIER = 0.8;
-    
-    public static final double ELEVATOR_MID_VEL_MULTIPLIER = 0.8;
-    public static final double ELEVATOR_MID_ACCEL_MULTIPLIER = 0.8;
-    
-    public static final double ELEVATOR_HIGH_VEL_MULTIPLIER = 0.8;
-    public static final double ELEVATOR_HIGH_ACCEL_MULTIPLIER = 0.8;
-    
-    // Target position and rotation tolerance
-    public static final double POSITION_TOLERANCE = 0.02; // meters
-    public static final double ROTATION_TOLERANCE = Units.degreesToRadians(2.0); // radians
-    
-    // Time in seconds the robot must be at target before declaring "reached"
-    public static final double TARGET_REACHED_DEBOUNCE_TIME = 0.25; // seconds
-    
-    // Smoothing factor for constraint changes (0.0-1.0)
-    // Lower values = smoother/slower transitions, higher values = quicker transitions
-    public static final double CONSTRAINT_SMOOTHING_FACTOR = 0.15;
+    // Angular constraints (shared across all distances)
+    public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(120);
+    public static final double MAX_ANGULAR_ACCEL = Units.degreesToRadians(120);
   }
 }
