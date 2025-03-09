@@ -125,7 +125,6 @@ public class RobotContainer {
 
   private final AlgaeArm algaeArm = new AlgaeArm();
   private final AlgaeShooter algaeShooter = new AlgaeShooter();
-  // private final Scope scope = new Scope();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final Climber climber = new Climber();
