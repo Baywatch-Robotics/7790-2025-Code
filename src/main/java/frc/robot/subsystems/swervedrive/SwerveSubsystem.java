@@ -24,6 +24,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,6 +56,9 @@ public class SwerveSubsystem extends SubsystemBase
   private int visionMeasurementCounter = 0; // counter
 
   private boolean pathCanceled = false;
+
+  // Add a flag to track if we should show visualization
+  private boolean targetVisualizationEnabled = true;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -114,6 +118,10 @@ public class SwerveSubsystem extends SubsystemBase
       addVisionMeasurement();
     }
     
+    // Ensure visualization stays hidden when disabled
+    if (!targetVisualizationEnabled) {
+        forceClearTargetVisualization();
+    }
   }
 
   @Override
@@ -712,7 +720,18 @@ public Command driveToPose(ButtonBox buttonBox) {
      * @param targetPose The pose to visualize
      */
     public void visualizeTargetPose(Pose2d targetPose) {
-        swerveDrive.field.getObject("targetPose").setPose(targetPose);
+      // Only show visualization if enabled
+      if (targetVisualizationEnabled) {
+        try {
+          swerveDrive.field.getObject("targetPose").setPose(targetPose);
+          SmartDashboard.putBoolean("Target Visual Active", true);
+        } catch (Exception e) {
+          SmartDashboard.putString("Target Visual Error", e.getMessage());
+        }
+      } else {
+        // Ensure visualization is cleared when disabled
+        clearTargetVisualization();
+      }
     }
     
     /**
@@ -720,10 +739,60 @@ public Command driveToPose(ButtonBox buttonBox) {
      * This removes the target marker without affecting the queue
      */
     public void clearTargetVisualization() {
+      if (targetVisualizationEnabled) {
+        SmartDashboard.putString("Target Visual Status", "Standard Clear Attempted");
+    }
+    
+    try {
         // Set an invisible pose far away to effectively hide it
         // Using a position outside the field boundary keeps it hidden
         swerveDrive.field.getObject("targetPose").setPose(
             new Pose2d(-100, -100, new Rotation2d(0))
         );
+        SmartDashboard.putBoolean("Target Visual Active", false);
+    } catch (Exception e) {
+        SmartDashboard.putString("Target Visual Error", e.getMessage());
+    }
+    }
+
+    /**
+     * Force clear the target visualization using a more aggressive approach
+     * This will completely reset the visualization object to make sure it's gone
+     */
+    public void forceClearTargetVisualization() {
+      try {
+          // Remove the object completely and recreate it
+          swerveDrive.field.getObject("targetPose").setPose(new Pose2d(-1000, -1000, new Rotation2d(0)));
+          
+          // Set flag to indicate visualization is disabled
+          targetVisualizationEnabled = false;
+          
+          // Log to dashboard for debugging
+          SmartDashboard.putBoolean("Target Visual Active", false);
+          SmartDashboard.putString("Target Visual Status", "Force Cleared");
+      } catch (Exception e) {
+          SmartDashboard.putString("Target Visual Error", "Force clear failed: " + e.getMessage());
+      }
+  }
+
+    /**
+     * Enable or disable target visualization
+     * @param enabled Whether target visualization should be shown
+     */
+    public void setTargetVisualizationEnabled(boolean enabled) {
+      this.targetVisualizationEnabled = enabled;
+      
+      // Force clear visualization if disabling
+      if (!enabled) {
+        clearTargetVisualization();
+      }
+    }
+    
+    /**
+     * Get the current target visualization state
+     * @return Whether target visualization is enabled
+     */
+    public boolean isTargetVisualizationEnabled() {
+      return targetVisualizationEnabled;
     }
 }

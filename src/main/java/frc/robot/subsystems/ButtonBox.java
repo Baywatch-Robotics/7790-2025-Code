@@ -35,9 +35,11 @@ public class ButtonBox extends SubsystemBase {
 
     public void clearTargets() {
         targetQueue.clear();
-        // Clear target visualization on the field
+        lastAddedTarget = null; // Also reset the last added target reference
+        
+        // Ensure visualization is cleared from the field
         if (swerveSubsystem != null) {
-            swerveSubsystem.clearTargetVisualization();
+            swerveSubsystem.forceClearTargetVisualization();
         }
         updateDashboard();
     }
@@ -65,11 +67,21 @@ public class ButtonBox extends SubsystemBase {
         if (targetQueue instanceof LinkedList) {
             ((LinkedList<TargetClass>) targetQueue).removeLast();
         }
+        
+        // If queue is now empty, clear visualization
+        if (targetQueue.isEmpty() && swerveSubsystem != null) {
+            swerveSubsystem.forceClearTargetVisualization();
+        }
         updateDashboard();
     }
 
     public void deleteFirstTarget() {
         targetQueue.poll();
+        
+        // If queue is now empty, clear visualization
+        if (targetQueue.isEmpty() && swerveSubsystem != null) {
+            swerveSubsystem.forceClearTargetVisualization();
+        }
         updateDashboard();
     }
 
