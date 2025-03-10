@@ -730,4 +730,18 @@ public Command driveToPose(ButtonBox buttonBox) {
             new Pose2d(-100, -100, new Rotation2d(0))
         );
     }
+
+    /**
+     * Starts the drive to pose command and returns immediately.
+     * The drive command will continue running in the background.
+     * You can use your triggers (veryCloseTrigger, etc.) to determine when the robot is at the target.
+     * 
+     * @param buttonBox The button box containing target information
+     * @return A command that starts the drive process and completes immediately
+     */
+    public Command startDriveToPose(ButtonBox buttonBox) {
+        return Commands.runOnce(() -> {
+            driveToPose(buttonBox).schedule();
+        });
+    }
 }

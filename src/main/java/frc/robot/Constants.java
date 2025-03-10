@@ -553,7 +553,7 @@ public final class Constants
     
     // Alignment thresholds
     public static final double LINED_UP_ANGLE_THRESHOLD = Math.toRadians(5.0); // radians
-    public static final double LINED_UP_POSITION_THRESHOLD = 0.02; // meters
+    public static final double LINED_UP_POSITION_THRESHOLD = 0.04; // meters
     
     // Visualization settings
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker

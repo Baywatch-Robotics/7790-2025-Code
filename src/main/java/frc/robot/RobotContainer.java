@@ -385,9 +385,9 @@ public class RobotContainer {
     // driverXbox.back().whileTrue(tempDriveToPoseCommand);
 
     // Toggle drive-to-pose with start button
-    driverXbox.back().onTrue(drivebase.driveToPose(buttonBox));
+    //driverXbox.back().onTrue(drivebase.driveToPose(buttonBox));
 
-    driverXbox.start().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+    //driverXbox.start().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     // Cancel drive-to-pose when driver provides manual input
     driverXbox.axisMagnitudeGreaterThan(0, 0.1)
