@@ -134,8 +134,8 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
-  //.andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
-  //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
+  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())
   .andThen(new WaitCommand(.5))
   .andThen(shooter.shooterZeroSpeedCommand());
