@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,6 +26,8 @@ import frc.robot.RobotContainer;
 
 public class Elevator extends SubsystemBase {
 
+    private double kDt = 0.02;
+
     public float elevatorDesiredPosition = 0;
 
     public boolean isInitialized = false;
@@ -35,6 +38,13 @@ public class Elevator extends SubsystemBase {
     private SparkMax elevatorSlaveMotor = new SparkMax(ElevatorConstants.slaveID, MotorType.kBrushless);
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
+    
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(.5, .5));
+
+    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+
+    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
 
     private RelativeEncoder m_encoder;
     
@@ -367,8 +377,9 @@ public class Elevator extends SubsystemBase {
             isInitialized = true;
         }
 
-        desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
         
+        
+
         SmartDashboard.putNumber("Elevator Desired Height", desiredTotalHeight);
         SmartDashboard.putNumber("Elevator Current Height", elevatorMotor.getEncoder().getPosition());
         SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
@@ -377,7 +388,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Slave Power", elevatorSlaveMotor.getAppliedOutput());
 
         SmartDashboard.putNumber("Elevator Velocity", elevatorMotor.getEncoder().getVelocity());
-        
+
 
         // Initialize triggers once
         if (atSetpointTrigger == null) {
@@ -431,7 +442,16 @@ public class Elevator extends SubsystemBase {
         // Update drive speed based on elevator position
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
-        elevatorClosedLoopController.setReference(desiredTotalHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
+
+        desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+
+        m_goal = new TrapezoidProfile.State(desiredTotalHeight, 0);
+
+        m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+
+
+        elevatorClosedLoopController.setReference(m_setpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
+        
     }
     
     // Use these methods to access the stored trigger instances
