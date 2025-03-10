@@ -135,8 +135,6 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
   }
 
   
-
-
 public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = shooterArm.shooterArmBasedOnQueueCommand(buttonBox)
