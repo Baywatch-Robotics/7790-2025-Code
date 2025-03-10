@@ -386,21 +386,12 @@ public final class Constants
     public static final float xValueC1X0 = (float)Units.inchesToMeters(126);
     public static final float yValueC1X0 = (float)Units.inchesToMeters(163.5);
     public static final float xValueC1X1 = (float)Units.inchesToMeters(126);
-    public static final float yValueC1X1 = (float)Units.inchesToMeters(151.125);
+    public static final float yValueC1X1 = (float)Units.inchesToMeters(151.13);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(126);
+    public static final float xValueC130 = (float)Units.inchesToMeters(122.75);
     public static final float yValueC130 = (float)Units.inchesToMeters(163.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(126);
-    public static final float yValueC131 = (float)Units.inchesToMeters(151.125);
-    /*
-    public static final float xValueC1XX = (float)Units.inchesToMeters(126);
-    public static final float yValueC1XX = (float)Units.inchesToMeters(158.5);
-    public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float xValueC130 = (float)Units.inchesToMeters(121);
-    public static final float yValueC130 = (float)Units.inchesToMeters(165.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(121);
-    public static final float yValueC131 = (float)Units.inchesToMeters(151.5);
-    */
+    public static final float xValueC131 = (float)Units.inchesToMeters(122.75);
+    public static final float yValueC131 = (float)Units.inchesToMeters(149.5);
     public static final int faceValueC1XX = 1;
 
     public static final float xValueC2X0 = (float)Units.inchesToMeters(147.04);
@@ -408,19 +399,10 @@ public final class Constants
     public static final float xValueC2X1 = (float)Units.inchesToMeters(157.76);
     public static final float yValueC2X1 = (float)Units.inchesToMeters(110.86);
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
-    public static final float xValueC230 = (float)Units.inchesToMeters(147.04);
-    public static final float yValueC230 = (float)Units.inchesToMeters(117.05);
-    public static final float xValueC231 = (float)Units.inchesToMeters(157.76);
-    public static final float yValueC231 = (float)Units.inchesToMeters(110.86);
-    /*
-    public static final float xValueC2XX = (float)Units.inchesToMeters(151.39);
-    public static final float yValueC2XX = (float)Units.inchesToMeters(114.58);
-    public static final float zValueC2XX = (float)Units.degreesToRadians(60);
-    public static final float xValueC230 = (float)Units.inchesToMeters(142.83);
-    public static final float yValueC230 = (float)Units.inchesToMeters(113.55);
-    public static final float xValueC231 = (float)Units.inchesToMeters(154.95);
-    public static final float yValueC231 = (float)Units.inchesToMeters(106.75);
-    */
+    public static final float xValueC230 = (float)Units.inchesToMeters(145.42);
+    public static final float yValueC230 = (float)Units.inchesToMeters(114.24);
+    public static final float xValueC231 = (float)Units.inchesToMeters(157.54);
+    public static final float yValueC231 = (float)Units.inchesToMeters(107.24);
     public static final int faceValueC2XX = 2;
 
     
@@ -429,19 +411,10 @@ public final class Constants
     public static final float xValueC3X1 = (float)Units.inchesToMeters(208.51);
     public static final float yValueC3X1 = (float)Units.inchesToMeters(118.24);
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
-    public static final float xValueC330 = (float)Units.inchesToMeters(197.79);
-    public static final float yValueC330 = (float)Units.inchesToMeters(112.05);
-    public static final float xValueC331 = (float)Units.inchesToMeters(208.51);
-    public static final float yValueC331 = (float)Units.inchesToMeters(118.24);
-    /*
-    public static final float xValueC3XX = (float)Units.inchesToMeters(202.1);
-    public static final float yValueC3XX = (float)Units.inchesToMeters(114.58);
-    public static final float zValueC3XX = (float)Units.degreesToRadians(120);
-    public static final float xValueC330 = (float)Units.inchesToMeters(198.54);
-    public static final float yValueC330 = (float)Units.inchesToMeters(106.75);
-    public static final float xValueC331 = (float)Units.inchesToMeters(210.66);
-    public static final float yValueC331 = (float)Units.inchesToMeters(113.55);
-    */
+    public static final float xValueC330 = (float)Units.inchesToMeters(199.41);
+    public static final float yValueC330 = (float)Units.inchesToMeters(109.23);
+    public static final float xValueC331 = (float)Units.inchesToMeters(211.54);
+    public static final float yValueC331 = (float)Units.inchesToMeters(116.23);
     public static final int faceValueC3XX = 3;
 
     
@@ -450,19 +423,10 @@ public final class Constants
     public static final float xValueC4X1 = (float)Units.inchesToMeters(227.5);
     public static final float yValueC4X1 = (float)Units.inchesToMeters(165.875);
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
-    public static final float xValueC430 = (float)Units.inchesToMeters(231);
+    public static final float xValueC430 = (float)Units.inchesToMeters(230.75);
     public static final float yValueC430 = (float)Units.inchesToMeters(153.5);
-    public static final float xValueC431 = (float)Units.inchesToMeters(230);
-    public static final float yValueC431 = (float)Units.inchesToMeters(165.875);
-    /*
-    public static final float xValueC4XX = (float)Units.inchesToMeters(227.49);
-    public static final float yValueC4XX = (float)Units.inchesToMeters(158.5);
-    public static final float zValueC4XX = (float)Units.degreesToRadians(180);
-    public static final float xValueC430 = (float)Units.inchesToMeters(232.49);
-    public static final float yValueC430 = (float)Units.inchesToMeters(151.5);
-    public static final float xValueC431 = (float)Units.inchesToMeters(232.49);
-    public static final float yValueC431 = (float)Units.inchesToMeters(165.5);
-    */
+    public static final float xValueC431 = (float)Units.inchesToMeters(230.75);
+    public static final float yValueC431 = (float)Units.inchesToMeters(167.5);
     public static final int faceValueC4XX = 4;
 
 
@@ -472,19 +436,10 @@ public final class Constants
     public static final float xValueC5X1 = (float)Units.inchesToMeters(195.73);
     public static final float yValueC5X1 = (float)Units.inchesToMeters(206.14);
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
-    public static final float xValueC530 = (float)Units.inchesToMeters(206.45);
-    public static final float yValueC530 = (float)Units.inchesToMeters(199.95);
-    public static final float xValueC531 = (float)Units.inchesToMeters(195.73);
-    public static final float yValueC531 = (float)Units.inchesToMeters(206.14);
-    /*
-    public static final float xValueC5XX = (float)Units.inchesToMeters(202.1);
-    public static final float yValueC5XX = (float)Units.inchesToMeters(202.42);
-    public static final float zValueC5XX = (float)Units.degreesToRadians(240);
-    public static final float xValueC530 = (float)Units.inchesToMeters(210.66);
-    public static final float yValueC530 = (float)Units.inchesToMeters(203.25);
-    public static final float xValueC531 = (float)Units.inchesToMeters(198.54);
-    public static final float yValueC531 = (float)Units.inchesToMeters(210.98);
-    */
+    public static final float xValueC530 = (float)Units.inchesToMeters(208.08);
+    public static final float yValueC530 = (float)Units.inchesToMeters(202.77);
+    public static final float xValueC531 = (float)Units.inchesToMeters(195.95);
+    public static final float yValueC531 = (float)Units.inchesToMeters(209.77);
     public static final int faceValueC5XX = 5;
 
     
@@ -493,19 +448,10 @@ public final class Constants
     public static final float xValueC6X1 = (float)Units.inchesToMeters(144.98);
     public static final float yValueC6X1 = (float)Units.inchesToMeters(198.76);
     public static final float zValueC6XX = (float)Units.degreesToRadians(300);
-    public static final float xValueC630 = (float)Units.inchesToMeters(155.7);
-    public static final float yValueC630 = (float)Units.inchesToMeters(204.95);
-    public static final float xValueC631 = (float)Units.inchesToMeters(144.98);
-    public static final float yValueC631 = (float)Units.inchesToMeters(198.76);
-    /*
-    public static final float xValueC6XX = (float)Units.inchesToMeters(151.39);
-    public static final float yValueC6XX = (float)Units.inchesToMeters(202.42);
-    public static final float zValueC6XX = (float)Units.degreesToRadians(300);
-    public static final float xValueC630 = (float)Units.inchesToMeters(154.95);
-    public static final float yValueC630 = (float)Units.inchesToMeters(210.98);
-    public static final float xValueC631 = (float)Units.inchesToMeters(142.83);
-    public static final float yValueC631 = (float)Units.inchesToMeters(203.25);
-    */
+    public static final float xValueC630 = (float)Units.inchesToMeters(154.08);
+    public static final float yValueC630 = (float)Units.inchesToMeters(207.77);
+    public static final float xValueC631 = (float)Units.inchesToMeters(141.95);
+    public static final float yValueC631 = (float)Units.inchesToMeters(200.77);
     public static final int faceValueC6XX = 6;
 
     public static final int heightCX0X = 0;
@@ -601,7 +547,7 @@ public final class Constants
   public static final class DriveToPoseConstants {
 
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 1.5; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
     
@@ -613,10 +559,10 @@ public final class Constants
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
 
     // Define numerical constraint values for different approach distances
-    public static final double APPROACHING_MAX_VEL = 4.5;
-    public static final double APPROACHING_MAX_ACCEL = 3.0;
+    public static final double APPROACHING_MAX_VEL = 1.5;
+    public static final double APPROACHING_MAX_ACCEL = 1.0;
     
-    public static final double CLOSE_MAX_VEL = 2.0;
+    public static final double CLOSE_MAX_VEL = 1.5;
     public static final double CLOSE_MAX_ACCEL = 1.0;
     
     public static final double VERY_CLOSE_MAX_VEL = 1.0;
