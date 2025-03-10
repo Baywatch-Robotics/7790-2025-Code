@@ -81,7 +81,7 @@ public class LED extends SubsystemBase {
       
       if (currentlyDisabled) {
         // Robot is disabled - use breathing patterns instead of flames for now
-        currentPattern = (alliance == Alliance.Blue) ? blueBeam : redBeam;
+        currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
       } else {
         // Robot is enabled - use solid alliance colors to save CPU
         currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;

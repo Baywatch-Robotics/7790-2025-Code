@@ -190,16 +190,18 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = .1f;
+    public static final float P = 1.0f;
     public static final float I = 0.0f;
-    public static final float D = 0.0f;
+    public static final float D = 0.5f;
 
     public static final float FFPercent = -0.04f;
 
+    //public static final float FFPercent = 0;
+
     public static final float FFCutoff = -6.296857f;
     
-    public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 1000;
+    public static final float maxVelocity = 2000;
+    public static final float maxAcceleration = 2000;
     public static final float allowedClosedLoopError = .01f;
 
     // Constants for smooth initialization
