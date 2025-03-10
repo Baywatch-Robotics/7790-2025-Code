@@ -104,9 +104,9 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float loadAngle = 0.252f
-    ;
-    
+    public static final float loadAngle = 0.252f;
+    public static final float outLoadAngle = 0.24f;
+
     // Ball position angle
     public static final float ballAngle = 0.5f;
 

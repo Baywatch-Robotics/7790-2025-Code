@@ -62,13 +62,16 @@ public class ShooterArm extends SubsystemBase {
     private void setLoad() {
         shooterArmDesiredAngle = ShooterArmConstants.loadAngle;
     }
+    private void setoutLoad() {
+        shooterArmDesiredAngle = ShooterArmConstants.outLoadAngle;
+    }
     private void setScoreL1() {
         shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
     }
     private void setClimbAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
     }
-    
+
     // New method for ball position
     private void setBallAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.ballAngle;
@@ -91,6 +94,11 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
+    public Command shooterArmOutLoadCommand()
+    {
+        Command command = new InstantCommand(() -> this.setoutLoad());
+        return command;
+    }
     public Command shooterArmScoreL1Command()
     {
         Command command = new InstantCommand(() -> this.setScoreL1());

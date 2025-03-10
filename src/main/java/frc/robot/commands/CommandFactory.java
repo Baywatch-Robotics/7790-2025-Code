@@ -22,8 +22,9 @@ public class CommandFactory {
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+      .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
-      .andThen(new WaitCommand(1))
+      .andThen(new WaitCommand(.5))
       .andThen(shooter.shooterZeroSpeedCommand());
 
 
