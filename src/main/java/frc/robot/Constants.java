@@ -204,11 +204,13 @@ public final class Constants
     public static final float maxAcceleration = 2000;
     public static final float allowedClosedLoopError = .01f;
 
+    /* 
     // Constants for smooth initialization
     public static final boolean ENABLE_SMOOTH_INIT = true; // Toggle smooth initialization
     public static final float INIT_SMOOTHING_RATE = 0.025f; // How quickly to approach target (smaller = smoother)
     public static final int INIT_SMOOTHING_TICKS = 100; // Maximum periodic cycles for initialization
     public static final float INIT_COMPLETE_THRESHOLD = 0.5f; // How close to target to consider initialization complete
+    */
   }
 
   public static final class FunnelConstants {

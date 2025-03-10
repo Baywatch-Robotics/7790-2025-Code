@@ -34,6 +34,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
+import frc.robot.subsystems.Elevator;
 
 import java.io.File;
 import java.util.Optional;
@@ -264,7 +265,7 @@ public class SwerveSubsystem extends SubsystemBase
     return this.pathCanceled;
   }
   
-public Command driveToPose(ButtonBox buttonBox) {
+public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     return new Command() {
         private Command pathCommand;
         private PathConstraints lastConstraints = null;
@@ -297,6 +298,7 @@ public Command driveToPose(ButtonBox buttonBox) {
             // Base velocity and acceleration values based on distance
             double baseVelocity, baseAcceleration;
             
+            /*
             if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
                 baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
                 baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
@@ -307,7 +309,13 @@ public Command driveToPose(ButtonBox buttonBox) {
                 baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
                 baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
             }
+            */
+
+            if (elevator.)
             
+            
+
+
             // Apply elevator height-based multipliers
             double finalVelocity = baseVelocity;
             double finalAcceleration = baseAcceleration;
