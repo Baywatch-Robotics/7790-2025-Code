@@ -176,7 +176,7 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
-  .andThen(new WaitCommand(1))
+  .andThen(new WaitCommand(2))
   .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator));
 
     command.addRequirements(shooter, shooterArm, elevator);

@@ -270,14 +270,17 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
             Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
             
             // Calculate distance from current robot pose to target pose
-            double distance = getPose().getTranslation().getDistance(finalTargetPose.getTranslation());
+            
+            //double distance = getPose().getTranslation().getDistance(finalTargetPose.getTranslation());
             
             // Base velocity and acceleration values based on distance
             double baseVelocity, baseAcceleration;
             
           
+            baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
+            baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
             
-
+            /*
             if (elevator.isAtIntakePosition()){
               baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
               baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
@@ -295,6 +298,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
               baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
             }
           
+            
             if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
               baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_VEL);
               baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_ACCEL);
@@ -305,7 +309,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
               baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_VEL);
               baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
           }
-
+            */
 
             // Apply elevator height-based multipliers
             double finalVelocity = baseVelocity;

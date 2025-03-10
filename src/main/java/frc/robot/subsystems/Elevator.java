@@ -376,6 +376,9 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Desired Power", elevatorMotor.getAppliedOutput());
         SmartDashboard.putNumber("Slave Power", elevatorSlaveMotor.getAppliedOutput());
 
+        SmartDashboard.putNumber("Elevator Velocity", elevatorMotor.getEncoder().getVelocity());
+        
+
         // Initialize triggers once
         if (atSetpointTrigger == null) {
             atSetpointTrigger = isAtSetpoint();

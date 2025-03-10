@@ -113,7 +113,7 @@ public final class Constants
 
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 5f;
+    public static final float P = 6f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     //public static final float maxVelocity = 1000;
@@ -126,7 +126,7 @@ public final class Constants
     public static final float allowedClosedLoopError = 0.005f;
 
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
-    public static final float approachSmoothingFactor = 0.1f;  // 0-1 value: smaller = smoother/slower approach
+    public static final float approachSmoothingFactor = 0.075f;  // 0-1 value: smaller = smoother/slower approach
     public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
   }
 
@@ -550,9 +550,9 @@ public final class Constants
   public static final class DriveToPoseConstants {
 
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.5; // meters
-    public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
-    public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 4.0; // meters
+    public static final double CLOSE_DISTANCE_THRESHOLD = 1.5; // meters
+    public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.5; // meters
     
     // Alignment thresholds
     public static final double LINED_UP_ANGLE_THRESHOLD = Math.toRadians(5.0); // radians
@@ -562,14 +562,15 @@ public final class Constants
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
 
     // Define numerical constraint values for different approach distances
-    public static final double APPROACHING_MAX_VEL = 3.0;
-    public static final double APPROACHING_MAX_ACCEL = 2.0;
     
-    public static final double CLOSE_MAX_VEL = 1.5;
-    public static final double CLOSE_MAX_ACCEL = 1.0;
+    //public static final double APPROACHING_MAX_VEL = 3.0;
+    //public static final double APPROACHING_MAX_ACCEL = 2.0;
     
-    public static final double VERY_CLOSE_MAX_VEL = 1.0;
-    public static final double VERY_CLOSE_MAX_ACCEL = 1.0;
+    //public static final double CLOSE_MAX_VEL = 1.5;
+    //public static final double CLOSE_MAX_ACCEL = 1.5;
+    
+    public static final double VERY_CLOSE_MAX_VEL = 6.0;
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.5;
     
     // Angular constraints (shared across all distances)
     public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(240);
