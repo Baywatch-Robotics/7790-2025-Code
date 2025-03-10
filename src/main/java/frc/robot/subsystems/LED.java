@@ -26,8 +26,10 @@ public class LED extends SubsystemBase {
     private final LEDPattern redBreathing;
     private final LEDPattern blueBeam;
     private final LEDPattern redBeam;
+    private final LEDPattern redBlueGradient; // New gradient pattern
     
     private LEDPattern currentPattern;
+    private boolean validAllianceReceived = false;
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
 
@@ -70,22 +72,39 @@ public class LED extends SubsystemBase {
       blueBeam = createBeamPattern(Color.kBlue);
       redBeam = createBeamPattern(Color.kRed);
       
-      currentPattern = solidOrange;
+      // Create red-blue gradient pattern
+      redBlueGradient = createRedBlueGradientPattern();
+      
+      // Start with gradient pattern by default until alliance is known
+      currentPattern = redBlueGradient;
     }
   
     @Override
     public void periodic() {
       // Check if robot is disabled
       boolean currentlyDisabled = DriverStation.isDisabled();
-      Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
       
-      if (currentlyDisabled) {
-        // Robot is disabled - use breathing patterns instead of flames for now
-        currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
-      } else {
-        // Robot is enabled - use solid alliance colors to save CPU
-        currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+      // Check if alliance information is available
+      var allianceOption = DriverStation.getAlliance();
+      
+      if (allianceOption.isPresent()) {
+        // We have valid alliance information
+        validAllianceReceived = true;
+        Alliance alliance = allianceOption.get();
+        
+        if (currentlyDisabled) {
+          // Robot is disabled - use breathing patterns
+          currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
+        } else {
+          // Robot is enabled - use solid alliance colors
+          currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+        }
+      } else if (!validAllianceReceived) {
+        // No alliance information yet, use gradient
+        currentPattern = redBlueGradient;
       }
+      // If we have previously received valid alliance info but now lost it,
+      // we'll keep the last pattern rather than going back to the gradient
 
       // Apply the current pattern to temporary buffer for power calculation
       currentPattern.applyTo(tempBuffer);
@@ -98,6 +117,67 @@ public class LED extends SubsystemBase {
       
       // Write the data to the LED strip
       led.setData(buffer);
+    }
+    
+    /**
+     * Creates a gradient pattern that transitions from red to blue
+     * 
+     * @return A red-blue gradient LEDPattern
+     */
+    private LEDPattern createRedBlueGradientPattern() {
+      return new LEDPattern() {
+        private final Timer animationTimer = new Timer();
+        private boolean initialized = false;
+        
+        {
+          // Initialize timer
+          animationTimer.start();
+        }
+        
+        @Override
+        public void applyTo(AddressableLEDBuffer buffer) {
+          if (!initialized) {
+            animationTimer.reset();
+            initialized = true;
+          }
+          
+          // Make the gradient shift over time for a dynamic effect
+          double time = animationTimer.get() * 0.5; // Controls the speed of the animation
+          double cycle = (time % 1.0);
+          
+          int length = buffer.getLength();
+          
+          // Generate gradient
+          for (int i = 0; i < length; i++) {
+            // Calculate position in the gradient (0 to 1)
+            double position = ((double)i / length + cycle) % 1.0;
+            
+            // Create color based on position
+            // First half transitions from red to purple
+            // Second half transitions from purple to blue
+            double red, blue;
+            
+            if (position < 0.5) {
+              // 0.0 to 0.5: Red to Purple
+              // Red decreases, blue increases
+              red = 1.0;
+              blue = position * 2.0; // 0.0 to 1.0
+            } else {
+              // 0.5 to 1.0: Purple to Blue
+              // Red decreases, blue increases
+              red = 1.0 - ((position - 0.5) * 2.0); // 1.0 to 0.0
+              blue = 1.0;
+            }
+            
+            // Apply a pulse/wave effect
+            double brightness = 0.5 + 0.5 * Math.sin(time * 2 * Math.PI + i * Math.PI / 20);
+            
+            // Create the color with gradient and wave effect
+            Color gradientColor = new Color(red * brightness, 0, blue * brightness);
+            buffer.setLED(i, gradientColor);
+          }
+        }
+      };
     }
         
     /**
