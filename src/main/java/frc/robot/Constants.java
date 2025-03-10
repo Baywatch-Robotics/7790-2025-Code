@@ -104,8 +104,9 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float loadAngle = 0.252f;
-    public static final float outLoadAngle = 0.24f;
+    public static final float loadAngle = 0.27f;
+    public static final float outLoadAngle = 0.3f;
+
 
     // Ball position angle
     public static final float ballAngle = 0.5f;
@@ -125,7 +126,7 @@ public final class Constants
     public static final float allowedClosedLoopError = 0.005f;
 
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
-    public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
+    public static final float approachSmoothingFactor = 0.1f;  // 0-1 value: smaller = smoother/slower approach
     public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
   }
 
@@ -182,7 +183,7 @@ public final class Constants
     // Elevator setpoint tolerance constants
     public static final float STANDARD_SETPOINT_TOLERANCE = 2.0f;
     public static final float NEAR_SETPOINT_TOLERANCE = 5.0f;
-    public static final float APPROACHING_SETPOINT_TOLERANCE = 7.5f;
+    public static final float APPROACHING_SETPOINT_TOLERANCE = 8f;
     
     // Home position threshold
     public static final float HOME_POSITION_THRESHOLD = 5.0f;
@@ -549,7 +550,7 @@ public final class Constants
   public static final class DriveToPoseConstants {
 
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.5; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
     
@@ -561,8 +562,8 @@ public final class Constants
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
 
     // Define numerical constraint values for different approach distances
-    public static final double APPROACHING_MAX_VEL = 1.5;
-    public static final double APPROACHING_MAX_ACCEL = 1.0;
+    public static final double APPROACHING_MAX_VEL = 3.0;
+    public static final double APPROACHING_MAX_ACCEL = 2.0;
     
     public static final double CLOSE_MAX_VEL = 1.5;
     public static final double CLOSE_MAX_ACCEL = 1.0;

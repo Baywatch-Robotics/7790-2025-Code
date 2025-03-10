@@ -257,7 +257,7 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     // algaeArm.setDefaultCommand(new RunCommand(() ->
     // algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated
@@ -268,12 +268,12 @@ public class RobotContainer {
     // to use moveTrigger
     //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
-    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+    opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
     // Add default command for funnel manual control
     //funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
-    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
+    opXbox.axisMagnitudeGreaterThan(2, 0.2).or(opXbox.axisMagnitudeGreaterThan(3, 0.2)).whileTrue(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
     // climber.setDefaultCommand(new RunCommand(() ->
     // climber.moveAmount(elevatorUpDown.getAsDouble()), climber));

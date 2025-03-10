@@ -36,7 +36,8 @@ public class CommandFactory {
   
 
   public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
-      
+    
+
     Command command  = elevator.setElevatorPickupCommand()
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmLoadCommand())
@@ -48,18 +49,6 @@ public class CommandFactory {
 
     return command;
 }
-  public static Command setIntakePullInCommandForWhenDrivingAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
-      
-    Command command  = shooterArm.shooterArmOutLoadCommand()
-    .andThen(elevator.setElevatorPickupPlusCommand())
-    .andThen(new WaitCommand(1))
-    .andThen(shooter.shooterZeroSpeedCommand());
-
-
-    command.addRequirements(shooter, shooterArm, elevator);
-
-    return command;
-  }
 
   public static Command setElevatorZero(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
@@ -173,7 +162,6 @@ public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, Sh
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
-  .andThen(setIntakePullInCommandForWhenDrivingAUTOONLY(shooter, shooterArm, elevator))
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
@@ -234,7 +222,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
 
 public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-    Command command = new InstantCommand(() -> buttonBox.addTarget("C331"))
+    Command command = new InstantCommand(() -> buttonBox.addTarget("C330"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())
