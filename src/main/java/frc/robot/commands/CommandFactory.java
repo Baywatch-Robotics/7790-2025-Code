@@ -122,7 +122,7 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(drivebase.driveToPose(buttonBox))
+  .andThen(drivebase.startDriveToPose(buttonBox, elevator))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
@@ -132,10 +132,10 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = drivebase.startDriveToPose(buttonBox)
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
-  .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
-  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+  //.andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
+  //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())
   .andThen(new WaitCommand(.5))
   .andThen(shooter.shooterZeroSpeedCommand());
@@ -158,7 +158,7 @@ return command;
 
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
-  Command command = drivebase.startDriveToPose(buttonBox)
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitCommand(1))
   .andThen(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
 

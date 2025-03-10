@@ -298,22 +298,36 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
             // Base velocity and acceleration values based on distance
             double baseVelocity, baseAcceleration;
             
-            /*
-            if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
-                baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-                baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            } else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
-                baseVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
-                baseAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
-            } else {
-                baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-                baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-            }
-            */
+          
+            
 
-            if (elevator.)
-            
-            
+            if (elevator.isAtIntakePosition()){
+              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
+              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
+            }
+            else if(elevator.isPartiallyRaised()){
+              baseVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
+              baseAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
+            }
+            else if(elevator.isMidRaised()){
+              baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
+              baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
+            }
+            else{
+              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
+              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
+            }
+          
+            if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
+              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_VEL);
+              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_ACCEL);
+          } else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
+              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_VEL);
+              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_ACCEL);
+          } else {
+              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_VEL);
+              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
+          }
 
 
             // Apply elevator height-based multipliers
@@ -747,9 +761,9 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
      * @param buttonBox The button box containing target information
      * @return A command that starts the drive process and completes immediately
      */
-    public Command startDriveToPose(ButtonBox buttonBox) {
+    public Command startDriveToPose(ButtonBox buttonBox, Elevator elevator) {
         return Commands.runOnce(() -> {
-            driveToPose(buttonBox).schedule();
+            driveToPose(buttonBox, elevator).schedule();
         });
     }
 }
