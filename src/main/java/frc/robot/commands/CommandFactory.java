@@ -15,6 +15,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class CommandFactory {
 
+   
     public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
       Command command  = elevator.setElevatorPickupCommand()
@@ -24,13 +25,40 @@ public class CommandFactory {
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
-      .andThen(new WaitCommand(.5))
+      .andThen(new WaitCommand(1))
       .andThen(shooter.shooterZeroSpeedCommand());
 
 
       command.addRequirements(shooter, shooterArm, elevator);
 
       return command;
+  }
+  
+
+  public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
+      
+    Command command  = elevator.setElevatorPickupCommand()
+    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+    .andThen(shooterArm.shooterArmLoadCommand())
+    .andThen(shooter.shooterIntakeCommand())
+    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()));
+
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
+}
+  public static Command setIntakePullInCommandForWhenDrivingAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
+      
+    Command command  = shooterArm.shooterArmOutLoadCommand()
+    .andThen(elevator.setElevatorPickupPlusCommand())
+    .andThen(new WaitCommand(1))
+    .andThen(shooter.shooterZeroSpeedCommand());
+
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
   }
 
   public static Command setElevatorZero(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
@@ -130,7 +158,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
     return command; 
 }
 
-public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
@@ -144,23 +172,26 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
     return command; 
 }
 
-public static Command sourceDrive(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = setIntakeCommand(shooter, shooterArm, elevator)
-    .andThen(new WaitUntilCommand(robotContainer.coralStationLeftTrigger().or(robotContainer.coralStationRightTrigger())))
-    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
-    .andThen(shooter.shooterZeroSpeedCommand());
-
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
+  .andThen(setIntakePullInCommandForWhenDrivingAUTOONLY(shooter, shooterArm, elevator))
+  .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
+  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+  .andThen(shooter.shooterOutakeCommand())
+  .andThen(new WaitCommand(.5))
+  .andThen(shooter.shooterZeroSpeedCommand());
+    
     command.addRequirements(shooter, shooterArm, elevator);
-
-return command; 
+    return command; 
 }
 
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitCommand(1))
-  .andThen(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
+  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator));
 
     command.addRequirements(shooter, shooterArm, elevator);
 
@@ -170,7 +201,7 @@ public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, El
 public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("C531"))
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
@@ -206,7 +237,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
 public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
     Command command = new InstantCommand(() -> buttonBox.addTarget("C331"))
-    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
