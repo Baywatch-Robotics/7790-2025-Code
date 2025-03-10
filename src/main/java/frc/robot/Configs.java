@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.AlgaeArmConstants;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FunnelConstants;
 import frc.robot.Constants.ShooterArmConstants;
 
@@ -25,10 +26,10 @@ public final class Configs {
       elevatorConfig
           .inverted(false)
           .closedLoop
-          .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+          .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
-          .pid(ShooterArmConstants.P, ShooterArmConstants.I, ShooterArmConstants.D)
-          .outputRange(-.1, .1);
+          .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
+          .outputRange(-.5, .5);
     }
 
     public static final SparkMaxConfig elevatorSlaveConfig = new SparkMaxConfig();

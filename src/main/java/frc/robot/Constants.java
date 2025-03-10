@@ -98,7 +98,7 @@ public final class Constants
     public static final float climbAngle = 0.698f; //Larger than this in reality
 
     public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.66f;
+    public static final float scoreAngleHIGH = 0.65f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
@@ -152,11 +152,11 @@ public final class Constants
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -46.767197f;
+    public static final float min = -48.1287f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -46.767197f;
+    public static final float L4Pose = -48.1287f;
     public static final float L3LPose = -24;
     public static final float L3RPose = -24f
     ;
@@ -191,7 +191,7 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = 0.25f;
+    public static final float P = 0.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
@@ -201,9 +201,8 @@ public final class Constants
 
     public static final float FFCutoff = -6.296857f;
     
-    public static final float maxVelocity = 2000;
-    public static final float maxAcceleration = 2000;
-    public static final float allowedClosedLoopError = .01f;
+    public static final float maxVelocity = 150;
+    public static final float maxAcceleration = 75;
 
     /* 
     // Constants for smooth initialization
@@ -235,7 +234,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 1.0f;
+    public static final float P = 1.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -550,7 +549,7 @@ public final class Constants
   public static final class DriveToPoseConstants {
 
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 4.0; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.5; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.5; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.5; // meters
     

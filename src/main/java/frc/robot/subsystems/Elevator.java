@@ -39,7 +39,7 @@ public class Elevator extends SubsystemBase {
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
     
-    private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(.5, .5));
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
 
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
 
@@ -443,11 +443,12 @@ public class Elevator extends SubsystemBase {
         robotContainer.setDriveSpeedBasedOnElevatorAndCloseness();
 
 
-        desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
+      desiredTotalHeight = (float)MathUtil.clamp(elevatorDesiredPosition, ElevatorConstants.min, ElevatorConstants.max);
 
         m_goal = new TrapezoidProfile.State(desiredTotalHeight, 0);
 
         m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+
 
 
         elevatorClosedLoopController.setReference(m_setpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
