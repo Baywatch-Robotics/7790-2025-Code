@@ -257,7 +257,8 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
+    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     // algaeArm.setDefaultCommand(new RunCommand(() ->
     // algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated
 
@@ -265,13 +266,14 @@ public class RobotContainer {
 
 
     // to use moveTrigger
-    shooterArm
-        .setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
+    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
     // Add default command for funnel manual control
-    funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
+    //funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
+    opXbox.axisMagnitudeGreaterThan(0, 0.2).whileTrue(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
     // climber.setDefaultCommand(new RunCommand(() ->
     // climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
@@ -279,6 +281,7 @@ public class RobotContainer {
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
     // Updated default command for AlgaeShooter using suppliers
+    /* 
     algaeShooter.setDefaultCommand(new RunCommand(() -> {
       // Get trigger values from the suppliers
       double leftTrigger = algaeShooterIntake.getAsDouble();
@@ -298,7 +301,28 @@ public class RobotContainer {
         algaeShooter.setSpeed(0);
       }
     }, algaeShooter));
+    */
 
+    driverXbox.axisMagnitudeGreaterThan(0, 0.2).or(driverXbox.axisMagnitudeGreaterThan(0, 0.2))
+    .whileTrue(new RunCommand(() -> {
+      // Get trigger values from the suppliers
+      double leftTrigger = algaeShooterIntake.getAsDouble();
+      double rightTrigger = algaeShooterOutake.getAsDouble();
+
+      // Control logic for the algae shooter based on triggers
+      if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
+        // Left trigger controls intake (forward) at variable speed
+        double speed = leftTrigger * AlgaeShooterConstants.maxTriggerIntake;
+        algaeShooter.setSpeed(speed);
+      } else if (rightTrigger > AlgaeShooterConstants.triggerThreshold) {
+        // Right trigger controls outake (reverse) at variable speed
+        double speed = rightTrigger * AlgaeShooterConstants.maxTriggerOutake;
+        algaeShooter.setSpeed(speed);
+      } else {
+        // If both triggers are below threshold, stop the motor
+        algaeShooter.setSpeed(0);
+      }
+    }, algaeShooter));
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
