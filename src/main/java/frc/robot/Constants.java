@@ -109,6 +109,7 @@ public final class Constants
 
     
     // Ball position angle
+    public static final float preBallAngle = 0.634489f;
     public static final float ballAngle = 0.60072f;
 
     public static final float L1Angle = 0.5f;
@@ -172,7 +173,7 @@ public final class Constants
     
     // Ball pickup positions
      public static final float highBallPose = -38.39914f;
-     public static final float lowBallPose = -25f;
+     public static final float lowBallPose = -25.20623f;
     
     // New elevator height thresholds for speed control
     public static final float SLIGHTLY_RAISED_THRESHOLD = -10f;

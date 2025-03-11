@@ -77,6 +77,10 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = ShooterArmConstants.ballAngle;
     }
 
+    private void setPreBallAngle() {
+        shooterArmDesiredAngle = ShooterArmConstants.preBallAngle;
+    }
+
     public Command shooterArmScoreLOWCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOW());
@@ -117,6 +121,12 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
 
+    public Command shooterArmPreBallCommand()
+    {
+        Command command = new InstantCommand(() -> this.setPreBallAngle());
+        return command;
+    }
+    
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;

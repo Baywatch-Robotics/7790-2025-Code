@@ -103,7 +103,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmBallCommand());
+    .andThen(shooterArm.shooterArmPreBallCommand());
 
     command.addRequirements(shooter, shooterArm, elevator);
 
@@ -116,13 +116,22 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmBallCommand());
+    .andThen(shooterArm.shooterArmPreBallCommand());
+
 
     command.addRequirements(shooter, shooterArm, elevator);
 
     return command;
   }
 
+  public static Command ballDown(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
+      
+    Command command  = shooterArm.shooterArmBallCommand();
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
+  }
   
 public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
 
