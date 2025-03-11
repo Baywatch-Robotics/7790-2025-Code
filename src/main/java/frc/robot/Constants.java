@@ -243,7 +243,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 1.5f;
+    public static final float P = 2.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
