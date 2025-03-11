@@ -71,12 +71,15 @@ public final class Constants
     public static final float triggerThreshold = 0.1f;    // Minimum trigger value to activate
     public static final float maxTriggerIntake = 0.5f;    // Maximum intake speed with trigger (left)
     public static final float maxTriggerOutake = -0.6f;   // Maximum outake speed with trigger (right)
+    
+    public static final float DEBOUNCE_TIME = 1.0f; // Time to debounce current threshold (seconds)
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
     public static final float intake = 0.15f;
     public static final float outake = -.50f;
     public static final float currentThreshold = 15;
+    public static final float DEBOUNCE_TIME = 0.25f; // Time to debounce current threshold (seconds)
   }
 
   public static final class ShooterArmConstants{
