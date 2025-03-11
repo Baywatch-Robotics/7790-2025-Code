@@ -203,9 +203,9 @@ public class Elevator extends SubsystemBase {
         Command command = new InstantCommand(() -> {
 
             if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
-                setFullRetract();
+                new InstantCommand();
             } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
-                setFullRetract();
+                new InstantCommand();
             } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
                 setL2L();
             } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
