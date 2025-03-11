@@ -108,7 +108,7 @@ public class RobotContainer {
   DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); // Questionable Name Practices... Shooter Pivot UP DOWN
                                                                // not Left Right??
 
-  DoubleSupplier climberUpDown = () -> opXbox.getRightX();
+  //DoubleSupplier climberUpDown = () -> opXbox.getRightX();
 
   // Add suppliers for algae shooter triggers
   DoubleSupplier algaeShooterIntake = () -> driverXbox.getLeftTriggerAxis();
@@ -423,7 +423,7 @@ public class RobotContainer {
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
     opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-
+  
     opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
     opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
 
@@ -436,9 +436,6 @@ public class RobotContainer {
     // Add new position control commands
     // Fully retract climber (for stowing)
     opXbox.pov(270).onTrue(climber.climberFullRetractCommand());
-    
-    // Add manual control override using right stick X axis (previously unused)
-    opXbox.axisMagnitudeGreaterThan(4, 0.2).whileTrue(new RunCommand(() -> climber.moveAmount(climberUpDown.getAsDouble()), climber));
 
     //opXbox.rightBumper().onTrue(algaeArm.algaeArmGroundIntakeCommand());
     //opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());

@@ -52,7 +52,7 @@ public final class Constants
     public static final float max = 0.535f;
     public static final float min = 0.28f;
 
-    public static final float manualMultiplier = 0.05f;
+    public static final float manualMultiplier = 0.01f;
 
 
     public static final float P = 2f;
@@ -119,7 +119,7 @@ public final class Constants
 
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 6f;
+    public static final float P = 7.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     //public static final float maxVelocity = 1000;
@@ -264,7 +264,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 2.75f;
+    public static final float P = 3.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
