@@ -40,6 +40,7 @@ public class Funnel extends SubsystemBase {
     private double shakeStartTime = 0;
     private double baseShakePosition = 0;
     private double coralDetectionTime = 0;
+    private boolean bypassProfilerForShaking = false; // New flag to bypass profiler during shaking
     
     // Trapezoidal motion profile objects
     private final TrapezoidProfile m_profile = new TrapezoidProfile(
@@ -101,9 +102,6 @@ public class Funnel extends SubsystemBase {
         // Only move if safe to do so
         if (isSafeToMove()) {
             funnelDesiredAngle = FunnelConstants.fullUpPosition;
-        } else {
-            // If unsafe, log warning and stay at current position
-            System.out.println("WARNING: Cannot move funnel up - algae arm position unsafe");
         }
         
         isMonitoringForCoral = false;
@@ -117,9 +115,6 @@ public class Funnel extends SubsystemBase {
             funnelDesiredAngle = FunnelConstants.preIntakePosition;
             isMonitoringForCoral = true;
             coralDetected = false;
-        } else {
-            // If unsafe, log warning and stay at current position
-            System.out.println("WARNING: Cannot move funnel to pre-intake - algae arm position unsafe");
         }
     }
     
@@ -146,12 +141,14 @@ public class Funnel extends SubsystemBase {
             isShaking = true;
             shakeStartTime = Timer.getFPGATimestamp();
             baseShakePosition = funnelEncoder.getPosition();
+            bypassProfilerForShaking = true; // Enable profiler bypass for more intense shaking
         }
     }
     
     // Stop shaking the funnel
     private void stopShaking() {
         isShaking = false;
+        bypassProfilerForShaking = false; // Disable profiler bypass when shaking stops
     }
     
     /**
@@ -289,22 +286,41 @@ public class Funnel extends SubsystemBase {
         // Set goal for motion profile
         m_goal = new TrapezoidProfile.State(funnelDesiredAngle, 0);
         
-        // Calculate next setpoint - matches pattern used in Elevator and other subsystems
-        m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+        // Calculate next setpoint - but skip this when shaking with bypass enabled
+        if (!bypassProfilerForShaking) {
+            m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+            // Set the motor position to the trapezoidal profile setpoint
+            funnelController.setReference(m_setpoint.position, ControlType.kPosition);
+        } else {
+            // For intense shaking, bypass the profiler and set position directly
+            funnelController.setReference(funnelDesiredAngle, ControlType.kPosition);
+            // Update setpoint position to avoid jerky movement when returning to profiled motion
+            m_setpoint = new TrapezoidProfile.State(funnelDesiredAngle, 0);
+        }
         
         // Update dashboard with all relevant values
         SmartDashboard.putNumber("Funnel Desired Angle", funnelDesiredAngle);
         SmartDashboard.putNumber("Funnel Current Angle", funnelEncoder.getPosition());
-        SmartDashboard.putNumber("Funnel Target Angle", m_setpoint.position);
+        SmartDashboard.putNumber("Funnel Target Angle", bypassProfilerForShaking ? funnelDesiredAngle : m_setpoint.position);
         SmartDashboard.putNumber("Funnel Current Draw", funnelMotor.getOutputCurrent());
         SmartDashboard.putNumber("Funnel Velocity", funnelMotor.getEncoder().getVelocity());
         SmartDashboard.putBoolean("Funnel Shaking", isShaking);
         SmartDashboard.putBoolean("Funnel Coral Detected", coralDetected);
         SmartDashboard.putBoolean("Funnel Monitoring For Coral", isMonitoringForCoral);
         SmartDashboard.putNumber("Funnel Profile Velocity", m_setpoint.velocity);
-        
-        // Set the motor position to the trapezoidal profile setpoint
-        funnelController.setReference(m_setpoint.position, ControlType.kPosition);
+
+
+                // Calculate next setpoint - but skip this when shaking with bypass enabled
+                if (!bypassProfilerForShaking) {
+                    m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+                    // Set the motor position to the trapezoidal profile setpoint
+                    funnelController.setReference(m_setpoint.position, ControlType.kPosition);
+                } else {
+                    // For intense shaking, bypass the profiler and set position directly
+                    funnelController.setReference(funnelDesiredAngle, ControlType.kPosition);
+                    // Update setpoint position to avoid jerky movement when returning to profiled motion
+                    m_setpoint = new TrapezoidProfile.State(funnelDesiredAngle, 0);
+                }
     }
     
     /**
