@@ -76,6 +76,10 @@ public class LED extends SubsystemBase {
       
       // Start with gradient pattern by default until alliance is known
       currentPattern = redBlueGradient;
+      
+      // Apply initial pattern immediately to ensure LEDs light up even without computer
+      currentPattern.applyTo(buffer);
+      led.setData(buffer);
     }
   
     @Override
@@ -86,6 +90,7 @@ public class LED extends SubsystemBase {
       // Check if alliance information is available
       var allianceOption = DriverStation.getAlliance();
       
+      // Select the appropriate pattern based on conditions
       if (allianceOption.isPresent()) {
         Alliance alliance = allianceOption.get();
         
@@ -98,11 +103,10 @@ public class LED extends SubsystemBase {
         }
       } else {
         // No alliance information available, use gradient pattern
-        // Always reset to gradient pattern when no alliance data
         currentPattern = redBlueGradient;
       }
       
-      // Apply the pattern directly to the buffer - no need for tempBuffer here
+      // Apply current pattern to temp buffer for power calculations
       currentPattern.applyTo(tempBuffer);
       
       // Calculate power and adjust brightness if needed
@@ -214,8 +218,7 @@ public class LED extends SubsystemBase {
    * Applies the current pattern with adjusted brightness
    */
   private void applyPatternWithBrightness() {
-      // Apply pattern to temp buffer first
-      currentPattern.applyTo(tempBuffer);
+      // No need to apply the pattern again, it's already in tempBuffer
       
       // Copy to main buffer with brightness adjustment
       for (int i = 0; i < buffer.getLength(); i++) {
