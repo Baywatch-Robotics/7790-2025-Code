@@ -99,14 +99,14 @@ public class LED extends SubsystemBase {
           // Robot is enabled - use solid alliance colors
           currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
         }
-      } else if (!validAllianceReceived) {
-        // No alliance information yet, use gradient
+      } else {
+        // No alliance information available, use gradient pattern
+        // Always reset to gradient pattern when no alliance data
         currentPattern = redBlueGradient;
+        validAllianceReceived = false;
       }
-      // If we have previously received valid alliance info but now lost it,
-      // we'll keep the last pattern rather than going back to the gradient
-
-      // Apply the current pattern to temporary buffer for power calculation
+      
+      // Apply the pattern directly to the buffer - no need for tempBuffer here
       currentPattern.applyTo(tempBuffer);
       
       // Calculate power and adjust brightness if needed
@@ -127,20 +127,14 @@ public class LED extends SubsystemBase {
     private LEDPattern createRedBlueGradientPattern() {
       return new LEDPattern() {
         private final Timer animationTimer = new Timer();
-        private boolean initialized = false;
         
         {
-          // Initialize timer
+          // Initialize timer immediately
           animationTimer.start();
         }
         
         @Override
         public void applyTo(AddressableLEDBuffer buffer) {
-          if (!initialized) {
-            animationTimer.reset();
-            initialized = true;
-          }
-          
           // Make the gradient shift over time for a dynamic effect
           double time = animationTimer.get() * 0.5; // Controls the speed of the animation
           double cycle = (time % 1.0);
@@ -159,12 +153,10 @@ public class LED extends SubsystemBase {
             
             if (position < 0.5) {
               // 0.0 to 0.5: Red to Purple
-              // Red decreases, blue increases
               red = 1.0;
               blue = position * 2.0; // 0.0 to 1.0
             } else {
               // 0.5 to 1.0: Purple to Blue
-              // Red decreases, blue increases
               red = 1.0 - ((position - 0.5) * 2.0); // 1.0 to 0.0
               blue = 1.0;
             }
