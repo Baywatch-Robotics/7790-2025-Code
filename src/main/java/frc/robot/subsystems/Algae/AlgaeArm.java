@@ -168,43 +168,6 @@ public class AlgaeArm extends SubsystemBase {
         
         algaeArmDesiredAngle = MathUtil.clamp(newAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
     }
-    
-    // Track if we've already sent the "move up" command once after trigger release
-    private boolean hasSentStowCommand = false;
-    
-    /**
-     * Move the arm using a trigger input
-     * @param triggerValue Value between 0-1 from the trigger
-     */
-    public void moveTrigger(final double triggerValue) {
-        // Trigger is not pressed
-        if (triggerValue < 0.1) {
-            // Only send the command to move up once after trigger release
-            if (!hasSentStowCommand) {
-                // If not already at stowed position, move up
-                if (algaeArmDesiredAngle < AlgaeArmConstants.stowedUpAngle) {
-                    algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle;
-                }
-                hasSentStowCommand = true;
-            }
-            // After sending the command once, do nothing so other commands can take over
-            return;
-        }
-        
-        // Reset flag when trigger is pressed again
-        hasSentStowCommand = false;
-
-        // When trigger pressed, map trigger value (0.1-1.0) to position range
-        // As trigger is pressed more, arm goes lower
-        double mappedPosition = MathUtil.interpolate(
-            AlgaeArmConstants.stowedUpAngle,     // Upper position when trigger barely pressed
-            AlgaeArmConstants.groundIntakeAngle, // Lower position when trigger fully pressed
-            triggerValue                         // Input value
-        );
-
-        // Update the desired angle with limits
-        algaeArmDesiredAngle = MathUtil.clamp(mappedPosition, AlgaeArmConstants.min, AlgaeArmConstants.max);
-    }
 
     @Override
     public void periodic() {

@@ -440,8 +440,11 @@ public class RobotContainer {
     // Add manual control override using right stick X axis (previously unused)
     opXbox.axisMagnitudeGreaterThan(4, 0.2).whileTrue(new RunCommand(() -> climber.moveAmount(climberUpDown.getAsDouble()), climber));
 
-    opXbox.rightBumper().onTrue(algaeArm.algaeArmGroundIntakeCommand());
-    opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());
+    //opXbox.rightBumper().onTrue(algaeArm.algaeArmGroundIntakeCommand());
+    //opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());
+
+    opXbox.rightBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(1), algaeArm));
+    opXbox.leftBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(-1), algaeArm));
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
