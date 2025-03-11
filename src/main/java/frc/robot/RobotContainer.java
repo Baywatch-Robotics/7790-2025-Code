@@ -226,9 +226,8 @@ public class RobotContainer {
   // public Command driveFieldOrientedDriveToPose =
   // drivebase.driveFieldOriented(driveToPoseStream);
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
-  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase,
-      this);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -391,7 +390,7 @@ public class RobotContainer {
     // driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel));
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
@@ -410,14 +409,7 @@ public class RobotContainer {
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
 
-    // Hold back button to temporarily use drive-to-pose
-    // driverXbox.back().whileTrue(tempDriveToPoseCommand);
-
-    // Toggle drive-to-pose with start button
-    //driverXbox.back().onTrue(drivebase.driveToPose(buttonBox));
-
-    //driverXbox.start().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-
+    
     // Cancel drive-to-pose when driver provides manual input
     driverXbox.axisMagnitudeGreaterThan(0, 0.1)
         .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
@@ -425,14 +417,6 @@ public class RobotContainer {
         .or(driverXbox.axisMagnitudeGreaterThan(5, .1))
         .onTrue(Commands.runOnce(() -> drivebase.setCancel(true)));
 
-    // driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-    // driverXbox.y().onTrue(
-    // Commands.either(
-    // Commands.runOnce(() -> tempDriveToPoseCommand.cancel()),
-    // Commands.runOnce(() -> tempDriveToPoseCommand.schedule()),
-    // () -> tempDriveToPoseCommand.isScheduled()
-    // )
-    // );
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
