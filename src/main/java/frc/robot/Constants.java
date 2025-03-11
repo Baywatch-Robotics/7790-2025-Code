@@ -98,7 +98,7 @@ public final class Constants
     public static final float climbAngle = 0.698f; //Larger than this in reality
 
     public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.65f;
+    public static final float scoreAngleHIGH = 0.64f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
@@ -107,9 +107,9 @@ public final class Constants
     public static final float loadAngle = 0.27f;
     public static final float outLoadAngle = 0.3f;
 
-
+    
     // Ball position angle
-    public static final float ballAngle = 0.5f;
+    public static final float ballAngle = 0.60072f;
 
     public static final float L1Angle = 0.5f;
 
@@ -163,7 +163,7 @@ public final class Constants
     public static final float L2RPose = -9f;
     public static final float L2LPose = -9f;
     public static final float L1Pose = -0;
-    public static final float pickupPose = -23f;
+    public static final float pickupPose = -23.856016f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -171,8 +171,8 @@ public final class Constants
     public static final float downPosition = -7f;
     
     // Ball pickup positions
-    // public static final float highBallPose = -50f;
-    // public static final float lowBallPose = -25f;
+     public static final float highBallPose = -38.39914f;
+     public static final float lowBallPose = -25f;
     
     // New elevator height thresholds for speed control
     public static final float SLIGHTLY_RAISED_THRESHOLD = -10f;
@@ -549,7 +549,7 @@ public final class Constants
   public static final class DriveToPoseConstants {
 
     // Distance thresholds in meters
-    public static final double APPROACHING_DISTANCE_THRESHOLD = 2.5; // meters
+    public static final double APPROACHING_DISTANCE_THRESHOLD = 3.5; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.5; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.5; // meters
     
