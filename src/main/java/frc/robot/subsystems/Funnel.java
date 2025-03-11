@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,11 +26,7 @@ public class Funnel extends SubsystemBase {
     
     private boolean isInitialized = false;
     public double funnelDesiredAngle;
-    
-    // Add variables for position smoothing (similar to ShooterArm)
-    private double previousDesiredAngle; // Track previous desired angle to detect changes
-    private boolean waitingForSnapReach = false; // Track if we're waiting to reach snap position
-    private double snapPosition = 0; // The position we initially snap to and target
+    private double kDt = 0.02; // 20ms periodic loop time
     
     private SparkMax funnelMotor = new SparkMax(FunnelConstants.ID, MotorType.kBrushless);
     private SparkClosedLoopController funnelController = funnelMotor.getClosedLoopController();
@@ -44,14 +41,22 @@ public class Funnel extends SubsystemBase {
     private double baseShakePosition = 0;
     private double coralDetectionTime = 0;
     
+    // Trapezoidal motion profile objects
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(
+            FunnelConstants.maxVelocity, 
+            FunnelConstants.maxAcceleration
+        )
+    );
+    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+    
     // Reference to the AlgaeArm subsystem for safety checks
     private AlgaeArm algaeArm;
     
     public Funnel() {
         funnelMotor.configure(Configs.Funnel.funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         funnelDesiredAngle = FunnelConstants.homePosition;
-        previousDesiredAngle = funnelDesiredAngle; // Initialize previous angle
-        snapPosition = funnelDesiredAngle; // Initialize snap position
     }
     
     /**
@@ -261,8 +266,7 @@ public class Funnel extends SubsystemBase {
     public void periodic() {
         if (!isInitialized) {
             funnelDesiredAngle = FunnelConstants.homePosition;
-            previousDesiredAngle = funnelDesiredAngle;
-            snapPosition = funnelDesiredAngle;
+            m_setpoint = new TrapezoidProfile.State(FunnelConstants.homePosition, 0);
             isInitialized = true;
         }
         
@@ -282,76 +286,25 @@ public class Funnel extends SubsystemBase {
             }
         }
         
-        // Get current position for smoothing operations
-        double currentPosition = funnelEncoder.getPosition();
+        // Set goal for motion profile
+        m_goal = new TrapezoidProfile.State(funnelDesiredAngle, 0);
         
-        // Detect if setpoint has changed significantly and not from shaking
-        if (Math.abs(funnelDesiredAngle - previousDesiredAngle) > 0.001 && !isShaking) {
-            // Setpoint has changed, calculate the direction of change
-            double direction = Math.signum(funnelDesiredAngle - previousDesiredAngle);
-            
-            // Calculate the total distance from previous to desired
-            double totalDistance = Math.abs(funnelDesiredAngle - previousDesiredAngle);
-            
-            if (totalDistance > FunnelConstants.minSmoothingDistance) {
-                // Set snap position to be exactly minSmoothingDistance away from the TARGET
-                snapPosition = funnelDesiredAngle - (direction * FunnelConstants.minSmoothingDistance);
-            } else {
-                // If already closer than the minimum smoothing distance, just use previous position
-                snapPosition = previousDesiredAngle;
-            }
-            
-            // Enter waiting state until funnel reaches snap position
-            waitingForSnapReach = true;
-            
-            // Update the previous desired angle
-            previousDesiredAngle = funnelDesiredAngle;
-        }
-        
-        // Check if we're waiting to reach the snap position
-        if (waitingForSnapReach) {
-            // Calculate how close we are to the snap position
-            double distanceToSnap = Math.abs(currentPosition - snapPosition);
-            
-            // If we're close enough, exit waiting state and begin smoothing
-            if (distanceToSnap <= FunnelConstants.snapReachThreshold) {
-                waitingForSnapReach = false;
-            }
-            
-            // While waiting, just keep targeting the snap position
-            // No smoothing yet
-        }
-        else {
-            // We've reached the snap position, apply smoothing toward the final target
-            double angleDifference = funnelDesiredAngle - snapPosition;
-            double distToTarget = Math.abs(angleDifference);
-            
-            // Only apply smoothing if the distance is significant
-            if (distToTarget > 0.001) {
-                // Calculate an intermediate setpoint that moves toward the target
-                snapPosition += angleDifference * FunnelConstants.approachSmoothingFactor;
-            } else {
-                // If we're essentially at the target, just set to the target exactly
-                snapPosition = funnelDesiredAngle;
-            }
-        }
-        
-        // Apply limits to the snap position
-        snapPosition = MathUtil.clamp(snapPosition, FunnelConstants.min, FunnelConstants.max);
+        // Calculate next setpoint - matches pattern used in Elevator and other subsystems
+        m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
         
         // Update dashboard with all relevant values
         SmartDashboard.putNumber("Funnel Desired Angle", funnelDesiredAngle);
-        SmartDashboard.putNumber("Funnel Current Angle", currentPosition);
-        SmartDashboard.putNumber("Funnel Target Angle", snapPosition);
+        SmartDashboard.putNumber("Funnel Current Angle", funnelEncoder.getPosition());
+        SmartDashboard.putNumber("Funnel Target Angle", m_setpoint.position);
         SmartDashboard.putNumber("Funnel Current Draw", funnelMotor.getOutputCurrent());
         SmartDashboard.putNumber("Funnel Velocity", funnelMotor.getEncoder().getVelocity());
-        SmartDashboard.putBoolean("Funnel Waiting For Snap", waitingForSnapReach);
         SmartDashboard.putBoolean("Funnel Shaking", isShaking);
         SmartDashboard.putBoolean("Funnel Coral Detected", coralDetected);
         SmartDashboard.putBoolean("Funnel Monitoring For Coral", isMonitoringForCoral);
+        SmartDashboard.putNumber("Funnel Profile Velocity", m_setpoint.velocity);
         
-        // Set the motor position to the smoothed target
-        funnelController.setReference(snapPosition, ControlType.kPosition);
+        // Set the motor position to the trapezoidal profile setpoint
+        funnelController.setReference(m_setpoint.position, ControlType.kPosition);
     }
     
     /**

@@ -9,6 +9,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,7 +23,9 @@ import frc.robot.Constants.FunnelConstants;
 public class AlgaeArm extends SubsystemBase {
 
     public double algaeArmDesiredAngle;
-
+    
+    private double kDt = 0.02; // 20ms periodic loop time
+    
     private boolean isInitialized = false;
     
     // Algae piece detection
@@ -39,7 +42,16 @@ public class AlgaeArm extends SubsystemBase {
     private SparkClosedLoopController algaeArmController = algaeArmMotor.getClosedLoopController();
 
     private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
-
+    
+    // Trapezoidal motion profile objects
+    private final TrapezoidProfile m_profile = new TrapezoidProfile(
+        new TrapezoidProfile.Constraints(
+            AlgaeArmConstants.maxVelocity, 
+            AlgaeArmConstants.maxAcceleration
+        )
+    );
+    private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+    private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
     public AlgaeArm() {
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -147,16 +159,14 @@ public class AlgaeArm extends SubsystemBase {
     }
     
     public void moveAmount(final double amount) {
-
         if (Math.abs(amount) < 0.2) {
             return;
         }
 
         double scale = AlgaeArmConstants.manualMultiplier;
-
-        double f = MathUtil.clamp(algaeArmDesiredAngle + amount * scale, AlgaeArmConstants.min, AlgaeArmConstants.max);
-
-        algaeArmDesiredAngle = f;
+        double newAngle = algaeArmDesiredAngle + amount * scale;
+        
+        algaeArmDesiredAngle = MathUtil.clamp(newAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
     }
     
     // Track if we've already sent the "move up" command once after trigger release
@@ -198,9 +208,9 @@ public class AlgaeArm extends SubsystemBase {
 
     @Override
     public void periodic() {
-
         if (!isInitialized) {
             algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle;
+            m_setpoint = new TrapezoidProfile.State(AlgaeArmConstants.stowedUpAngle, 0);
             isInitialized = true;
         }
         
@@ -212,15 +222,24 @@ public class AlgaeArm extends SubsystemBase {
             holdPosition();
         }
         
+        // Apply position constraints
         algaeArmDesiredAngle = MathUtil.clamp(algaeArmDesiredAngle, AlgaeArmConstants.min, AlgaeArmConstants.max);
-
+        
+        // Set goal for motion profile
+        m_goal = new TrapezoidProfile.State(algaeArmDesiredAngle, 0);
+        
+        // Calculate next setpoint
+        m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+        
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
         SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition());
         SmartDashboard.putNumber("Algae Arm Current Draw", getCurrentDraw());
         SmartDashboard.putBoolean("Algae Loaded", algaeLoaded);
         SmartDashboard.putBoolean("Safe For Funnel", isSafeForFunnelExtension());
-
-        algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kPosition);
-
+        SmartDashboard.putNumber("Algae Arm Profile Position", m_setpoint.position);
+        SmartDashboard.putNumber("Algae Arm Profile Velocity", m_setpoint.velocity);
+        
+        // Set motor position using the profile's position
+        algaeArmController.setReference(m_setpoint.position, ControlType.kPosition);
     }
 }

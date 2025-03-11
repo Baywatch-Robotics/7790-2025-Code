@@ -33,6 +33,8 @@ public final class Constants
 
   public static final float armLength = (float)Units.inchesToMeters(0);
     
+
+
   public static final class AlgaeArmConstants{
     public static final int ID = 14;
 
@@ -56,8 +58,8 @@ public final class Constants
     public static final float P = 2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-    public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 1000;
+    public static final float maxVelocity = 50;
+    public static final float maxAcceleration = 50;
     public static final float allowedClosedLoopError = .005f;
   }
 
@@ -123,8 +125,8 @@ public final class Constants
     //public static final float maxVelocity = 1000;
     //public static final float maxAcceleration = 200;
 
-    public static final float maxVelocity = 100f;
-    public static final float maxAcceleration = 100f;
+    public static final float maxVelocity = 50;
+    public static final float maxAcceleration = 50;
 
 
     public static final float allowedClosedLoopError = 0.005f;
@@ -246,8 +248,8 @@ public final class Constants
     public static final float D = 0.0f;
     
     // Motion profile parameters
-    public static final float maxVelocity = 1000f;
-    public static final float maxAcceleration = 1000f;
+    public static final float maxVelocity = 50;
+    public static final float maxAcceleration = 50;
     public static final float allowedClosedLoopError = 0.005f;
     
     // Smoothing constants (similar to ShooterArm)

@@ -25,7 +25,6 @@ public class AlgaeShooter extends SubsystemBase {
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
     private double currentBelowThresholdStartTime = 0;
-    private final double DEBOUNCE_TIME = 0.5; // 0.5 seconds for debouncing
 
     public AlgaeShooter() {
         algaeShooterMotor.configure(
@@ -72,7 +71,7 @@ public class AlgaeShooter extends SubsystemBase {
             }
             
             // Check if we've been above threshold long enough
-            if (currentTime - currentAboveThresholdStartTime >= DEBOUNCE_TIME) {
+            if (currentTime - currentAboveThresholdStartTime >= AlgaeShooterConstants.DEBOUNCE_TIME) {
                 return algaeLoaded = true;
             }
         } else {
@@ -85,7 +84,7 @@ public class AlgaeShooter extends SubsystemBase {
             }
             
             // Check if we've been below threshold long enough
-            if (currentTime - currentBelowThresholdStartTime >= DEBOUNCE_TIME) {
+            if (currentTime - currentBelowThresholdStartTime >= AlgaeShooterConstants.DEBOUNCE_TIME) {
                 return algaeLoaded = false;
             }
         }

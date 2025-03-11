@@ -25,7 +25,6 @@ public class Shooter extends SubsystemBase {
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
     private double currentBelowThresholdStartTime = 0;
-    private final double DEBOUNCE_TIME = 0.25;
 
     public Shooter() {
         shooterMotor.configure(
@@ -57,7 +56,7 @@ public class Shooter extends SubsystemBase {
             }
             
             // Check if we've been above threshold long enough
-            if (currentTime - currentAboveThresholdStartTime >= DEBOUNCE_TIME) {
+            if (currentTime - currentAboveThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
                 return coralLoaded = true;
             }
         } else {
@@ -70,7 +69,7 @@ public class Shooter extends SubsystemBase {
             }
             
             // Check if we've been below threshold long enough
-            if (currentTime - currentBelowThresholdStartTime >= DEBOUNCE_TIME) {
+            if (currentTime - currentBelowThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
                 return coralLoaded = false;
             }
         }
