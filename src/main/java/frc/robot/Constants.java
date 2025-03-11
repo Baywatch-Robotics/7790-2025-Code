@@ -40,7 +40,7 @@ public final class Constants
 
     public static final float stowedUpAngle = 0.305f;
     public static final float straightOutAngle = 0.535f;
-    public static final float groundIntakeAngle = 0.42f;
+    public static final float groundIntakeAngle = 0.45f;
 
     public static final float holdAngle = 0.34f;
 
@@ -70,7 +70,7 @@ public final class Constants
     public static final float currentThreshold = 10f; // Current threshold for detecting algae
     
     // Trigger control constants
-    public static final float triggerThreshold = 0.1f;    // Minimum trigger value to activate
+    public static final float triggerThreshold = 0.25f;    // Minimum trigger value to activate
     public static final float maxTriggerIntake = 0.5f;    // Maximum intake speed with trigger (left)
     public static final float maxTriggerOutake = -0.6f;   // Maximum outake speed with trigger (right)
     
@@ -103,7 +103,7 @@ public final class Constants
     public static final float climbAngle = 0.698f; //Larger than this in reality
 
     public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.64f;
+    public static final float scoreAngleHIGH = 0.661367297f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
@@ -634,7 +634,7 @@ public final class Constants
     //public static final double CLOSE_MAX_ACCEL = 1.5;
     
     public static final double VERY_CLOSE_MAX_VEL = 6.0;
-    public static final double VERY_CLOSE_MAX_ACCEL = 1.5;
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.0;
     
     // Angular constraints (shared across all distances)
     public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(240);

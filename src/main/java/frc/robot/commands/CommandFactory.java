@@ -44,8 +44,6 @@ public class CommandFactory {
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmLoadCommand())
     .andThen(shooter.shooterIntakeCommand())
-    .andThen(new WaitUntilCommand(funnel.coralDetectedTrigger()))
-    .andThen(funnel.shakeUntilCoralLoadedCommand(shooter))
     .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()));
 
 
@@ -71,7 +69,7 @@ public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, AlgaeShooter alga
         .andThen(algaeShooter.algaeShooterIntakeCommand())
         .andThen(new WaitUntilCommand(algaeShooter.algaeLoadedTrigger()))
         .andThen(algaeArm.algaeArmHoldCommand())
-        .andThen(new WaitCommand(2))
+        .andThen(new WaitCommand(1))
         .andThen(algaeShooter.algaeShooterZeroSpeedCommand());
 
     command.addRequirements(algaeArm, algaeShooter);
@@ -152,8 +150,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
   .andThen(drivebase.startDriveToPose(buttonBox, elevator))
-  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()));
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 

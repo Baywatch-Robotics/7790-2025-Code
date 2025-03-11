@@ -194,6 +194,7 @@ public class Climber extends SubsystemBase {
             m_goal = new TrapezoidProfile.State(desiredPosition, 0);
             m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
             
+            
             // Set the motor to the profile setpoint
             climberClosedLoopController.setReference(m_setpoint.position, 
                                                   ControlType.kPosition, 

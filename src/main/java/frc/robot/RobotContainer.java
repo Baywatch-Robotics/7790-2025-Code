@@ -305,12 +305,12 @@ public class RobotContainer {
     }, algaeShooter));
     */
 
-    driverXbox.axisMagnitudeGreaterThan(0, 0.2).or(driverXbox.axisMagnitudeGreaterThan(0, 0.2))
+    driverXbox.axisMagnitudeGreaterThan(2, 0.2).or(driverXbox.axisMagnitudeGreaterThan(3, 0.2))
     .whileTrue(new RunCommand(() -> {
       // Get trigger values from the suppliers
       double leftTrigger = algaeShooterIntake.getAsDouble();
       double rightTrigger = algaeShooterOutake.getAsDouble();
-
+      
       // Control logic for the algae shooter based on triggers
       if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
         // Left trigger controls intake (forward) at variable speed
@@ -324,7 +324,8 @@ public class RobotContainer {
         // If both triggers are below threshold, stop the motor
         algaeShooter.setSpeed(0);
       }
-    }, algaeShooter));
+    }, algaeShooter))
+    .onFalse(new InstantCommand(() -> algaeShooter.setSpeed(0), algaeShooter));
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -400,7 +401,7 @@ public class RobotContainer {
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
-    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
+    driverXbox.a().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(shooter, shooterArm, elevator));
