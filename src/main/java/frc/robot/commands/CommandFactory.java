@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
@@ -83,16 +84,17 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
 }
 
-  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator){
+  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel) {
 
     Command command = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorClimbPoseCommand())
     .andThen(new WaitCommand(1))
-    .andThen(algaeArm.algaeArmStraightOutCommand());
+    .andThen(algaeArm.algaeArmStraightOutCommand())
+    .andThen(funnel.funnelFullUpCommand());
 
 
-    command.addRequirements(algaeArm, shooter, shooterArm, elevator);
+    command.addRequirements(algaeArm, shooter, shooterArm, elevator, funnel);
 
     return command;
   }

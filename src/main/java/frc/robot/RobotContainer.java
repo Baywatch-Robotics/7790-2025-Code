@@ -431,7 +431,7 @@ public class RobotContainer {
     // )
     // );
 
-    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator));
+    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());

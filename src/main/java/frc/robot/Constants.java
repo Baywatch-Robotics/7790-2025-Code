@@ -370,6 +370,29 @@ public final class Constants
     public static final float limelightRoll = (float)Units.degreesToRadians(0.0);
     public static final float limelightPitch = (float)Units.degreesToRadians(-30.0);
     public static final float limelightYaw = (float)Units.degreesToRadians(180);
+    
+    // Vision measurement confidence parameters
+    public static final double MAX_VISION_DISTANCE_TRUSTED = 0.5;    // Fully trust measurements within this distance (meters)
+    public static final double MAX_VISION_DISTANCE_CONSIDERED = 3.0; // Maximum distance to consider a measurement at all (meters)
+    public static final double MAX_VISION_ANGLE_TRUSTED = 10.0;      // Fully trust measurements within this angle (degrees)
+    public static final double MAX_VISION_ANGLE_CONSIDERED = 30.0;   // Maximum angle diff to consider a measurement (degrees)
+    
+    // Measurement filtering parameters
+    public static final int MIN_CONSECUTIVE_GOOD_MEASUREMENTS = 3;   // Require this many consecutive good measurements
+    public static final double OUTLIER_JUMP_DISTANCE = 3.0;          // Maximum plausible movement speed (m/s)
+    public static final double OUTLIER_JUMP_ANGLE = 30.0;           // Maximum plausible rotation speed (deg/s)
+    
+    // Standard deviation parameters for pose estimation
+    public static final double BASE_XY_STD_DEV = 0.1;    // Base XY standard deviation (10cm) at max confidence
+    public static final double BASE_ROT_STD_DEV = 0.05;  // Base rotation standard deviation (~3 degrees) at max confidence
+    
+    // Minimum confidence value to prevent division by zero
+    public static final double MIN_CONFIDENCE_VALUE = 0.05;
+    
+    // Initial pose parameters
+    public static final double INITIAL_DISTANCE_THRESHOLD = 1.0;     // Distance above which we do full pose reset
+    public static final double INITIAL_XY_STD_DEV = 0.1;             // Initial XY standard deviation for close measurements
+    public static final double INITIAL_ROT_STD_DEV = 0.05;           // Initial rotation standard deviation for close measurements
   }
 
   public static final class TargetClassConstants{
