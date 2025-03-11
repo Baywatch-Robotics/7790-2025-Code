@@ -236,6 +236,9 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+    // Set up the Funnel-AlgaeArm safety connection
+    funnel.setAlgaeArmReference(algaeArm);
+    
     // Configure the trigger bindings
     configureBindings();
 

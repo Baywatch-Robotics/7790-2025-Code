@@ -14,9 +14,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.FunnelConstants;
+import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Coral.Shooter;
 
 public class Funnel extends SubsystemBase {
@@ -42,6 +44,9 @@ public class Funnel extends SubsystemBase {
     private double baseShakePosition = 0;
     private double coralDetectionTime = 0;
     
+    // Reference to the AlgaeArm subsystem for safety checks
+    private AlgaeArm algaeArm;
+    
     public Funnel() {
         funnelMotor.configure(Configs.Funnel.funnelConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         funnelDesiredAngle = FunnelConstants.homePosition;
@@ -49,24 +54,68 @@ public class Funnel extends SubsystemBase {
         snapPosition = funnelDesiredAngle; // Initialize snap position
     }
     
-    // Define desired positions for the funnel
+    /**
+     * Set the AlgaeArm reference for safety checks
+     * Must be called after construction and before using safety-related methods
+     * @param algaeArm reference to the AlgaeArm subsystem
+     */
+    public void setAlgaeArmReference(AlgaeArm algaeArm) {
+        this.algaeArm = algaeArm;
+    }
+    
+    /**
+     * Check if it's safe to move the funnel based on algae arm position
+     * @return true if it's safe to move the funnel
+     */
+    public boolean isSafeToMove() {
+        // If we don't have a reference to the algae arm, assume it's unsafe
+        if (algaeArm == null) {
+            return false;
+        }
+        
+        // Use the algae arm's safety method which uses our constant
+        return algaeArm.isSafeForFunnelExtension();
+    }
+    
+    /**
+     * Trigger that returns true when it's safe to move the funnel
+     */
+    public Trigger safeToMoveTrigger() {
+        return new Trigger(this::isSafeToMove);
+    }
+    
+    // Define desired positions for the funnel with safety checks
     private void setHomePosition() {
+        // Home position is safe regardless of algae arm position
         funnelDesiredAngle = FunnelConstants.homePosition;
         isMonitoringForCoral = false;
         stopShaking();
     }
     
     private void setFullUpPosition() {
-        funnelDesiredAngle = FunnelConstants.fullUpPosition;
+        // Only move if safe to do so
+        if (isSafeToMove()) {
+            funnelDesiredAngle = FunnelConstants.fullUpPosition;
+        } else {
+            // If unsafe, log warning and stay at current position
+            System.out.println("WARNING: Cannot move funnel up - algae arm position unsafe");
+        }
+        
         isMonitoringForCoral = false;
         stopShaking();
     }
     
     // New method to set funnel to pre-intake position for coral detection
     public void setPreIntakePosition() {
-        funnelDesiredAngle = FunnelConstants.preIntakePosition;
-        isMonitoringForCoral = true;
-        coralDetected = false;
+        // Only move if safe to do so
+        if (isSafeToMove()) {
+            funnelDesiredAngle = FunnelConstants.preIntakePosition;
+            isMonitoringForCoral = true;
+            coralDetected = false;
+        } else {
+            // If unsafe, log warning and stay at current position
+            System.out.println("WARNING: Cannot move funnel to pre-intake - algae arm position unsafe");
+        }
     }
     
     // Commands to move the funnel to desired positions
@@ -74,13 +123,16 @@ public class Funnel extends SubsystemBase {
         return new InstantCommand(() -> setHomePosition());
     }
     
+    // Command that waits until safe, then moves the funnel up
     public Command funnelFullUpCommand() {
-        return new InstantCommand(() -> setFullUpPosition());
+        return new WaitUntilCommand(this::isSafeToMove)
+            .andThen(new InstantCommand(() -> setFullUpPosition()));
     }
     
-    // New command to move to pre-intake position
+    // New command to move to pre-intake position with safety
     public Command funnelPreIntakeCommand() {
-        return new InstantCommand(() -> setPreIntakePosition());
+        return new WaitUntilCommand(this::isSafeToMove)
+            .andThen(new InstantCommand(() -> setPreIntakePosition()));
     }
     
     // Start shaking the funnel to help coral entry
@@ -160,12 +212,20 @@ public class Funnel extends SubsystemBase {
         lastVelocity = currentVelocity;
     }
     
-    // Manual control method
+    // Manual control method with safety check
     public void moveAmount(final double amount) {
         if (Math.abs(amount) < 0.2) {
             return;
         }
         
+        // If attempting to move toward full up position (decreasing angle), check safety
+        if (amount < 0 && !isSafeToMove()) {
+            // Unsafe to move up, prevent movement
+            SmartDashboard.putBoolean("Funnel Move Blocked", true);
+            return;
+        }
+        
+        SmartDashboard.putBoolean("Funnel Move Blocked", false);
         double scale = FunnelConstants.manualMultiplier;
         double newAngle = funnelDesiredAngle + amount * scale;
         funnelDesiredAngle = MathUtil.clamp(newAngle, FunnelConstants.min, FunnelConstants.max);
@@ -208,6 +268,9 @@ public class Funnel extends SubsystemBase {
         
         // Apply limits
         funnelDesiredAngle = MathUtil.clamp(funnelDesiredAngle, FunnelConstants.min, FunnelConstants.max);
+        
+        // Update safety status on dashboard
+        SmartDashboard.putBoolean("Funnel Safe To Move", isSafeToMove());
         
         // Process shaking logic if active
         if (isShaking) {
@@ -292,22 +355,24 @@ public class Funnel extends SubsystemBase {
     }
     
     /**
-     * Method to handle coral loading process:
-     * 1. Move to pre-intake position
-     * 2. Monitor for coral impact
-     * 3. Start shaking when coral detected
-     * 4. Continue until shooter confirms coral is loaded
+     * Method to handle coral loading process with safety check:
+     * 1. Wait until safe to move
+     * 2. Move to pre-intake position
+     * 3. Monitor for coral impact
+     * 4. Start shaking when coral detected
+     * 5. Continue until shooter confirms coral is loaded
      * 
      * @param shooter Reference to the shooter subsystem to check if coral is loaded
      */
     public Command prepareForCoralCommand(Shooter shooter) {
-        return funnelPreIntakeCommand()
-            .andThen(new InstantCommand(() -> {
-                // Reset detection state
-                coralDetected = false;
-                coralDetectionTime = 0;
-                isMonitoringForCoral = true;
-            }));
+        return new WaitUntilCommand(this::isSafeToMove)
+            .andThen(funnelPreIntakeCommand()
+                .andThen(new InstantCommand(() -> {
+                    // Reset detection state
+                    coralDetected = false;
+                    coralDetectionTime = 0;
+                    isMonitoringForCoral = true;
+                })));
     }
     
     /**

@@ -228,6 +228,9 @@ public final class Constants
     public static final float min = .24f;
     public static final float max = .555f;
     
+    // Safety threshold - minimum algae arm position that allows funnel movement
+    public static final float SAFE_ALGAE_ARM_POSITION = 0.40f;
+    
     // Manual control multiplier
     public static final float manualMultiplier = 0.005f;
     

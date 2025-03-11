@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.AlgaeArmConstants;
+import frc.robot.Constants.FunnelConstants;
 
 public class AlgaeArm extends SubsystemBase {
 
@@ -39,9 +40,6 @@ public class AlgaeArm extends SubsystemBase {
 
     private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
 
-    // Define the minimum position where algae arm is considered "down" enough
-    // for the funnel to safely extend
-    private static final double SAFE_FOR_FUNNEL_POSITION = 0.40; // Adjust based on actual safe threshold
 
     public AlgaeArm() {
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -99,7 +97,7 @@ public class AlgaeArm extends SubsystemBase {
     public boolean isSafeForFunnelExtension() {
         // Compare current position with threshold
         // Arm is "down" enough when position value is higher (for this specific setup)
-        return algaeArmEncoder.getPosition() >= SAFE_FOR_FUNNEL_POSITION;
+        return algaeArmEncoder.getPosition() >= FunnelConstants.SAFE_ALGAE_ARM_POSITION;
     }
 
     /**
