@@ -29,7 +29,6 @@ public class LED extends SubsystemBase {
     private final LEDPattern redBlueGradient; // New gradient pattern
     
     private LEDPattern currentPattern;
-    private boolean validAllianceReceived = false;
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
 
@@ -88,8 +87,6 @@ public class LED extends SubsystemBase {
       var allianceOption = DriverStation.getAlliance();
       
       if (allianceOption.isPresent()) {
-        // We have valid alliance information
-        validAllianceReceived = true;
         Alliance alliance = allianceOption.get();
         
         if (currentlyDisabled) {
@@ -103,7 +100,6 @@ public class LED extends SubsystemBase {
         // No alliance information available, use gradient pattern
         // Always reset to gradient pattern when no alliance data
         currentPattern = redBlueGradient;
-        validAllianceReceived = false;
       }
       
       // Apply the pattern directly to the buffer - no need for tempBuffer here
