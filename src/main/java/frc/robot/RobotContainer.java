@@ -392,6 +392,9 @@ public class RobotContainer {
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel));
 
+    //driverXbox.rightBumper().onTrue(funnel.funnelPreIntakeCommand());
+    //driverXbox.leftBumper().onTrue(funnel.shakeUntilCoralLoadedCommand(shooter));
+
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());

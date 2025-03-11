@@ -24,8 +24,6 @@ public class CommandFactory {
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
-      .andThen(new WaitUntilCommand(funnel.coralDetectedTrigger()))
-      .andThen(funnel.shakeUntilCoralLoadedCommand(shooter))
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())

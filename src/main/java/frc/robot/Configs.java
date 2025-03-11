@@ -155,7 +155,7 @@ public final class Configs {
 
     static {
       // Configure basic settings of the funnel motor - 20 amp limit as requested
-      funnelConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      funnelConfig.idleMode(IdleMode.kCoast).smartCurrentLimit(20).voltageCompensation(12);
       
       // Configure absolute encoder
       funnelConfig.absoluteEncoder.zeroOffset(FunnelConstants.angleOffset);

@@ -108,13 +108,16 @@ public class Funnel extends SubsystemBase {
         stopShaking();
     }
     
-    // New method to set funnel to pre-intake position for coral detection
+    // New method to set funnel to pre-intake position and immediately start shaking
     public void setPreIntakePosition() {
         // Only move if safe to do so
         if (isSafeToMove()) {
             funnelDesiredAngle = FunnelConstants.preIntakePosition;
-            isMonitoringForCoral = true;
-            coralDetected = false;
+            // Start shaking immediately instead of just monitoring
+            startShaking();
+            // Mark coral as detected since we're bypassing detection
+            coralDetected = true;
+            isMonitoringForCoral = false; // No need to monitor since we're already shaking
         }
     }
     
@@ -136,7 +139,7 @@ public class Funnel extends SubsystemBase {
     }
     
     // Start shaking the funnel to help coral entry
-    private void startShaking() {
+    public void startShaking() {
         if (!isShaking) {
             isShaking = true;
             shakeStartTime = Timer.getFPGATimestamp();
@@ -146,7 +149,7 @@ public class Funnel extends SubsystemBase {
     }
     
     // Stop shaking the funnel
-    private void stopShaking() {
+    public void stopShaking() {
         isShaking = false;
         bypassProfilerForShaking = false; // Disable profiler bypass when shaking stops
     }
@@ -176,6 +179,7 @@ public class Funnel extends SubsystemBase {
     
     /**
      * Detect coral impact by monitoring motor velocity and current
+     * This method is now only used when manually monitoring is enabled
      */
     private void detectCoralImpact() {
         if (!isMonitoringForCoral || isShaking || coralDetected) return;
@@ -308,8 +312,8 @@ public class Funnel extends SubsystemBase {
         SmartDashboard.putBoolean("Funnel Coral Detected", coralDetected);
         SmartDashboard.putBoolean("Funnel Monitoring For Coral", isMonitoringForCoral);
         SmartDashboard.putNumber("Funnel Profile Velocity", m_setpoint.velocity);
-
-
+        
+        
                 // Calculate next setpoint - but skip this when shaking with bypass enabled
                 if (!bypassProfilerForShaking) {
                     m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
@@ -326,22 +330,15 @@ public class Funnel extends SubsystemBase {
     /**
      * Method to handle coral loading process with safety check:
      * 1. Wait until safe to move
-     * 2. Move to pre-intake position
-     * 3. Monitor for coral impact
-     * 4. Start shaking when coral detected
-     * 5. Continue until shooter confirms coral is loaded
+     * 2. Move to pre-intake position and immediately start shaking
+     * 3. Continue until shooter confirms coral is loaded
      * 
      * @param shooter Reference to the shooter subsystem to check if coral is loaded
      */
     public Command prepareForCoralCommand(Shooter shooter) {
         return new WaitUntilCommand(this::isSafeToMove)
-            .andThen(funnelPreIntakeCommand()
-                .andThen(new InstantCommand(() -> {
-                    // Reset detection state
-                    coralDetected = false;
-                    coralDetectionTime = 0;
-                    isMonitoringForCoral = true;
-                })));
+            .andThen(funnelPreIntakeCommand());
+            // No need to reset detection state or enable monitoring since we're starting shaking immediately
     }
     
     /**
@@ -349,20 +346,8 @@ public class Funnel extends SubsystemBase {
      */
     public Command shakeUntilCoralLoadedCommand(Shooter shooter) {
         return new InstantCommand(() -> {
-            // If coral already detected, start shaking
-            if (coralDetected) {
+                // Just ensuring shaking is started, though it should already be from preIntake
                 startShaking();
-            } else {
-                // Otherwise set to pre-intake and monitor
-                setPreIntakePosition();
-            }
-        })
-        // Continue until shooter detects coral
-        .until(shooter.coralLoadedTrigger())
-        // Then stop shaking and return to home
-        .finallyDo((interrupted) -> {
-            stopShaking();
-            setHomePosition();
-        });
+            });
     }
 }

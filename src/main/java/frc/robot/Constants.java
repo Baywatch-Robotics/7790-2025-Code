@@ -121,12 +121,12 @@ public final class Constants
 
     public static final float P = 7.0f;
     public static final float I = 0.0f;
-    public static final float D = 0.0f;
+    public static final float D = 0.5f;
     //public static final float maxVelocity = 1000;
     //public static final float maxAcceleration = 200;
 
-    public static final float maxVelocity = 50;
-    public static final float maxAcceleration = 50;
+    public static final float maxVelocity = 6;
+    public static final float maxAcceleration = 3;
 
 
     public static final float allowedClosedLoopError = 0.005f;
@@ -190,7 +190,7 @@ public final class Constants
     public static final float L2RPose = -9f;
     public static final float L2LPose = -9f;
     public static final float L1Pose = -0;
-    public static final float pickupPose = -23.856016f;
+    public static final float pickupPose = -23.5f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -273,22 +273,18 @@ public final class Constants
     public static final float maxAcceleration = 50;
     public static final float allowedClosedLoopError = 0.005f;
     
-    // Smoothing constants (similar to ShooterArm)
-    public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
-    public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
-    public static final float snapReachThreshold = 0.05f;  // How close funnel must get to snap position before smoothing begins
-
+    
     // Pre-intake position for coral detection
-    public static final float preIntakePosition = 0.52f; // Slightly raised from home position
+    public static final float preIntakePosition = 0.42f; // Slightly raised from home position
     
     // Coral detection parameters - reduced threshold and debounce time
-    public static final float velocityThreshold = 3.0f; // Lower threshold to detect smaller impacts
-    public static final float coralDetectionTime = 0.1f; // Reduced time to confirm detection (seconds)
+    public static final float velocityThreshold = 250f; // Lower threshold to detect smaller impacts
+    public static final float coralDetectionTime = 0.05f; // Reduced time to confirm detection (seconds)
     
     // Shaking parameters
-    public static final float shakingAmplitude = 0.05f; // How far to move when shaking
-    public static final float shakingFrequency = 2.5f; // Increased oscillations per second
-    public static final float shakingDuration = 10f; // Extended max duration (will stop early when coral loaded)
+    public static final float shakingAmplitude = 0.03f; // How far to move when shaking
+    public static final float shakingFrequency = 3f; // Increased oscillations per second
+    public static final float shakingDuration = 15f; // Extended max duration (will stop early when coral loaded)
     
     // Multiple detection methods
     public static final boolean USE_VELOCITY_DETECTION = true;
