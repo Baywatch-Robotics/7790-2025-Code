@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants.AlgaeArmConstants;
+import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.FunnelConstants;
 import frc.robot.Constants.ShooterArmConstants;
@@ -50,11 +51,20 @@ public final class Configs {
     public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
 
     static {
-      // Configure basic settings of the elevator motor
+      // Configure basic settings of the climber motor
       climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
 
       climberConfig
-      .inverted(false);
+      .inverted(false)
+      .closedLoop
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      // Set PID values for position control
+      .pid(ClimberConstants.P, ClimberConstants.I, ClimberConstants.D)
+      .outputRange(-1, 1)
+      .maxMotion
+      // Set MAXMotion parameters for position control
+      .maxVelocity(ClimberConstants.maxVelocity)
+      .maxAcceleration(ClimberConstants.maxAcceleration);
     }
   }
 

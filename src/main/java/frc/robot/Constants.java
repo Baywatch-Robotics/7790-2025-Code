@@ -142,6 +142,27 @@ public final class Constants
 
     public static final float extendSpeed = 1;
     public static final float retractSpeed = -1f;
+    
+    // Position control constants
+    public static final float P = 0.5f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
+    
+    // Motion profile parameters
+    public static final float maxVelocity = 100;
+    public static final float maxAcceleration = 75;
+    
+    
+    public static final float min = 0;  // Max extended position
+    public static final float max = 50f;    // Fully retracted position
+    
+    // Predefined positions (reversed from previous values to match Neo motor behavior)
+    public static final float retractedPosition = 0f;      // Fully retracted
+    public static final float partialPosition = 25f;      // Partially extended
+    public static final float extendedPosition = 50f;    // Fully extended
+    
+    // Tolerance for position control
+    public static final float SETPOINT_TOLERANCE = 2.0f;
   }
   
   public static final class ElevatorConstants{

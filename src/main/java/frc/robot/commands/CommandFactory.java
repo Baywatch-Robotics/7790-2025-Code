@@ -13,6 +13,7 @@ import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.Climber;
 
 public class CommandFactory {
 
@@ -88,17 +89,17 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
 }
 
-  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel) {
+  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, Climber climber) {
 
     Command command = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorClimbPoseCommand())
-    .andThen(new WaitCommand(1))
     .andThen(algaeArm.algaeArmStraightOutCommand())
-    .andThen(funnel.funnelFullUpCommand());
+    .andThen(funnel.funnelFullUpCommand())
+    // Add climber control - this will enable position mode temporarily
+    .andThen(climber.climberFullExtendCommand());
 
-
-    command.addRequirements(algaeArm, shooter, shooterArm, elevator, funnel);
+    command.addRequirements(algaeArm, shooter, shooterArm, elevator, funnel, climber);
 
     return command;
   }
