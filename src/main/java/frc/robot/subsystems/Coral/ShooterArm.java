@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -303,6 +304,10 @@ public class ShooterArm extends SubsystemBase {
             ShooterArmConstants.max
         );
 
+        if(DriverStation.isDisabled()){
+            shooterArmDesiredAngle = (float)shooterArmEncoder.getPosition();
+        }
+        
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
         SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
         SmartDashboard.putNumber("Shooter Arm Target Angle", snapPosition);

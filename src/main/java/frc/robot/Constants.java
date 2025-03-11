@@ -248,6 +248,22 @@ public final class Constants
     public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
     public static final float approachSmoothingFactor = 0.05f;  // 0-1 value: smaller = smoother/slower approach
     public static final float snapReachThreshold = 0.05f;  // How close funnel must get to snap position before smoothing begins
+
+    // Pre-intake position for coral detection
+    public static final float preIntakePosition = 0.52f; // Slightly raised from home position
+    
+    // Coral detection parameters - reduced threshold and debounce time
+    public static final float velocityThreshold = 3.0f; // Lower threshold to detect smaller impacts
+    public static final float coralDetectionTime = 0.1f; // Reduced time to confirm detection (seconds)
+    
+    // Shaking parameters
+    public static final float shakingAmplitude = 0.05f; // How far to move when shaking
+    public static final float shakingFrequency = 2.5f; // Increased oscillations per second
+    public static final float shakingDuration = 10f; // Extended max duration (will stop early when coral loaded)
+    
+    // Multiple detection methods
+    public static final boolean USE_VELOCITY_DETECTION = true;
+    public static final boolean USE_CURRENT_DETECTION = true;
   }
 
   public static final class LEDConstants{

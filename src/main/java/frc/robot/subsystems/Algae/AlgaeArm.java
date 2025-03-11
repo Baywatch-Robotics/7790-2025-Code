@@ -39,6 +39,10 @@ public class AlgaeArm extends SubsystemBase {
 
     private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
 
+    // Define the minimum position where algae arm is considered "down" enough
+    // for the funnel to safely extend
+    private static final double SAFE_FOR_FUNNEL_POSITION = 0.40; // Adjust based on actual safe threshold
+
     public AlgaeArm() {
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
@@ -87,6 +91,23 @@ public class AlgaeArm extends SubsystemBase {
     
     public Trigger algaeLoadedTrigger() { 
         return new Trigger(this::checkAlgaeLoaded);
+    }
+
+    /**
+     * Check if algae arm is in a position that allows funnel to safely extend
+     */
+    public boolean isSafeForFunnelExtension() {
+        // Compare current position with threshold
+        // Arm is "down" enough when position value is higher (for this specific setup)
+        return algaeArmEncoder.getPosition() >= SAFE_FOR_FUNNEL_POSITION;
+    }
+
+    /**
+     * Trigger that activates when the algae arm is in a position that allows
+     * the funnel to safely extend fully
+     */
+    public Trigger safeForFunnelExtensionTrigger() {
+        return new Trigger(this::isSafeForFunnelExtension);
     }
 
     // Define desired positions for the arm
@@ -199,6 +220,7 @@ public class AlgaeArm extends SubsystemBase {
         SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition());
         SmartDashboard.putNumber("Algae Arm Current Draw", getCurrentDraw());
         SmartDashboard.putBoolean("Algae Loaded", algaeLoaded);
+        SmartDashboard.putBoolean("Safe For Funnel", isSafeForFunnelExtension());
 
         algaeArmController.setReference(algaeArmDesiredAngle, ControlType.kPosition);
 
