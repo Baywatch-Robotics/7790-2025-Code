@@ -433,15 +433,6 @@ public class RobotContainer {
     opXbox.y().onTrue(climber.climberRetractCommand());
     opXbox.y().onFalse(climber.climberStopCommand());
     
-    // Add new position control commands
-    // Fully retract climber (for stowing)
-    opXbox.pov(270).onTrue(climber.climberFullRetractCommand());
-    
-    // Partial extension (mid position)
-    opXbox.back().onTrue(climber.climberPartialExtendCommand());
-    
-    // Full extension
-    opXbox.start().onTrue(climber.climberFullExtendCommand());
     
     // Add manual control override using right stick X axis (previously unused)
     opXbox.axisMagnitudeGreaterThan(4, 0.2).whileTrue(new RunCommand(() -> climber.moveAmount(climberUpDown.getAsDouble()), climber));
