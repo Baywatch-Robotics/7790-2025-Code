@@ -100,11 +100,24 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
   }
 
-  public static Command pullOffHighBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
+  public static Command pullOffHighAboveBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
     Command command  = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
+    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    .andThen(shooterArm.shooterArmPreBallCommand());
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
+  }
+
+  public static Command pullOffHighBelowBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
+      
+    Command command  = shooterArm.shooterArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.setElevatorHighBallBelowCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
     .andThen(shooterArm.shooterArmPreBallCommand());
 
@@ -119,7 +132,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmPreBallCommand());
+    .andThen(shooterArm.shooterArmPreLowBallCommand());
 
 
     command.addRequirements(shooter, shooterArm, elevator);
@@ -139,7 +152,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
 public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = shooterArm.shooterArmBasedOnQueueCommand(buttonBox)
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevateBasedOnQueue(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
     
     command.addRequirements(shooter, shooterArm, elevator);

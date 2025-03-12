@@ -385,16 +385,14 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    // driverXbox.back().onTrue(
-    // new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
-    // driverXbox.start().onTrue(toggleFullSpeedModeCommand());
+    driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel));
 
-    //driverXbox.rightBumper().onTrue(funnel.funnelPreIntakeCommand());
-    //driverXbox.leftBumper().onTrue(funnel.shakeUntilCoralLoadedCommand(shooter));
+
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
@@ -404,11 +402,11 @@ public class RobotContainer {
     driverXbox.a().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
-    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighBall(shooter, shooterArm, elevator));
+    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
+    driverXbox.pov(180).onTrue(CommandFactory.pullOffHighBelowBall(shooter, shooterArm, elevator));
+    
     driverXbox.rightStick().onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
-    driverXbox.pov(180).onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
-    driverXbox.rightStick().onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
-
+    driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));

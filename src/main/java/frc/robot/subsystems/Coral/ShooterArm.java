@@ -86,6 +86,10 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = ShooterArmConstants.preBallAngle;
     }
 
+    private void setPreLowBallAngle() {
+        shooterArmDesiredAngle = ShooterArmConstants.preLowBallAngle;
+    }
+
     public Command shooterArmScoreLOWCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOW());
@@ -132,6 +136,12 @@ public class ShooterArm extends SubsystemBase {
         return command;
     }
     
+    public Command shooterArmPreLowBallCommand()
+    {
+        Command command = new InstantCommand(() -> this.setPreLowBallAngle());
+        return command;
+    }
+    
     public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
@@ -164,6 +174,30 @@ public class ShooterArm extends SubsystemBase {
         return new Trigger(() -> shooterArmEncoder.getPosition() >= 0.5);
     }
     
+    /**
+     * Returns a trigger that's immediately true if the queue is for level 3 or 4
+     * Otherwise it checks the standard clearance condition
+     * @param buttonBox the button box to check the queue from
+     * @return Trigger that's either immediately true for levels 3-4 or checks clearance
+     */
+    public Trigger isClearToElevateBasedOnQueue(ButtonBox buttonBox) {
+        return new Trigger(() -> {
+            // If we have a button box and there's a target
+            if (buttonBox != null && buttonBox.currentLevelSupplier != null) {
+                // Get the current level from the queue
+                int currentLevel = buttonBox.currentLevelSupplier.getAsInt();
+                
+                // Immediately return true for levels 3 and 4
+                if (currentLevel == 3 || currentLevel == 4) {
+                    return true;
+                }
+            }
+            
+            // For all other cases, use the standard clearance condition
+            return shooterArmEncoder.getPosition() >= 0.5;
+        });
+    }
+
     public void moveAmount(final double amount) {
         if (Math.abs(amount) < 0.2) {
             return;

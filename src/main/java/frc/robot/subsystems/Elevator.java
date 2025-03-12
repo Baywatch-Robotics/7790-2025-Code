@@ -124,6 +124,10 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.highBallPose;
     }
     
+    public void setHighBallBelow() {
+        elevatorDesiredPosition = ElevatorConstants.highBallBelowPose;
+    }
+
     public void setLowBall() {
         elevatorDesiredPosition = ElevatorConstants.lowBallPose;
     }
@@ -186,6 +190,11 @@ public class Elevator extends SubsystemBase {
     
     public Command setElevatorHighBallCommand() {
         Command command = new InstantCommand(() -> setHighBall());
+        return command;
+    }
+    
+    public Command setElevatorHighBallBelowCommand() {
+        Command command = new InstantCommand(() -> setHighBallBelow());
         return command;
     }
     
