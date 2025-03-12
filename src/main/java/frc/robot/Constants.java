@@ -149,17 +149,16 @@ public final class Constants
     public static final float D = 0.0f;
     
     // Motion profile parameters
-    public static final float maxVelocity = 100;
-    public static final float maxAcceleration = 75;
+    public static final float maxVelocity = 1000;
+    public static final float maxAcceleration = 1000;
     
     
     public static final float min = 0;  // Max extended position
-    public static final float max = 50f;    // Fully retracted position
+    public static final float max = 519.041748f;    // Fully retracted position
     
     // Predefined positions (reversed from previous values to match Neo motor behavior)
     public static final float retractedPosition = 0f;      // Fully retracted
-    public static final float partialPosition = 25f;      // Partially extended
-    public static final float extendedPosition = 50f;    // Fully extended
+    public static final float extendedPosition = 519.041748f;    // Fully extended
     
     // Tolerance for position control
     public static final float SETPOINT_TOLERANCE = 2.0f;
@@ -171,9 +170,7 @@ public final class Constants
     
     public static final int slaveID = 17;
     
-
-
-
+    
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
 

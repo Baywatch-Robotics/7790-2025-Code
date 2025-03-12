@@ -63,11 +63,6 @@ public class Climber extends SubsystemBase {
         manualPower = 0; // Clear manual power
     }
 
-    public void setPartialExtend() {
-        climberDesiredPosition = ClimberConstants.partialPosition;
-        isInManualMode = false; // Switch to position control
-        manualPower = 0; // Clear manual power
-    }
 
     public void setFullExtend() {
         climberDesiredPosition = ClimberConstants.extendedPosition;
@@ -99,9 +94,6 @@ public class Climber extends SubsystemBase {
         return new InstantCommand(() -> setFullRetract());
     }
 
-    public Command climberPartialExtendCommand() {
-        return new InstantCommand(() -> setPartialExtend());
-    }
 
     public Command climberFullExtendCommand() {
         return new InstantCommand(() -> setFullExtend());
@@ -194,7 +186,7 @@ public class Climber extends SubsystemBase {
             m_goal = new TrapezoidProfile.State(desiredPosition, 0);
             m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
             
-            
+
             // Set the motor to the profile setpoint
             climberClosedLoopController.setReference(m_setpoint.position, 
                                                   ControlType.kPosition, 
