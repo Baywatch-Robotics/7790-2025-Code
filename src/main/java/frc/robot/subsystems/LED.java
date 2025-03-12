@@ -2,13 +2,15 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.LEDConstants;
 
 public class LED extends SubsystemBase {
   
@@ -28,9 +30,32 @@ public class LED extends SubsystemBase {
     private final LEDPattern redBeam;
     private final LEDPattern redBlueGradient; // New gradient pattern
     
+    // New patterns based on requirements
+    private LEDPattern reefPattern;
+    private LEDPattern targetReachedPattern;
+    private LEDPattern holdingAlgaePattern;
+    private LEDPattern climbingPattern;
+    private LEDPattern oneMinLeftPattern;
+    private LEDPattern thirtySecondsLeftPattern;
+    private LEDPattern countdownPattern;
+    private LEDPattern intakePattern;
+    
     private LEDPattern currentPattern;
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
+    
+    // Track the current state for pattern selection
+    private LEDState currentState = LEDState.DEFAULT;
+    
+    // Variables for target tracking
+    private double targetDistance = Double.MAX_VALUE;
+    
+    // Variables for countdown
+    private double countdownSecondsRemaining = 0;
+    private boolean isCountingDown = false;
+    
+    // Timer for one-shot patterns like match time warnings
+    private Timer patternTimer = new Timer();
 
     // Define our own LEDPattern interface since it's not standard in WPILib
     private interface LEDPattern {
@@ -46,6 +71,19 @@ public class LED extends SubsystemBase {
             };
         }
     }
+    
+    // Enum to track LED states for pattern selection
+    public enum LEDState {
+        DEFAULT,
+        REEF_TRACKING,
+        TARGET_REACHED,
+        HOLDING_ALGAE,
+        CLIMBING,
+        ONE_MIN_LEFT,
+        THIRTY_SEC_LEFT,
+        COUNTDOWN,
+        INTAKE
+    }
 
     public LED() {
       led = new AddressableLED(LEDConstants.port);
@@ -54,25 +92,30 @@ public class LED extends SubsystemBase {
       led.setLength(LEDConstants.length);
       led.start();
       
+      // Initialize pattern timer
+      patternTimer.start();
+      
+      // Create basic patterns
       solidOrange = LEDPattern.solid(Color.kOrange);
-      // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
-
-      // Create flame patterns (keeping for future use)
       blueFlame = createFlamePattern(Color.kBlue);
       redFlame = createFlamePattern(Color.kRed);
-      
-      // Create breathing patterns
       blueBreathing = createBreathingPattern(Color.kBlue);
       redBreathing = createBreathingPattern(Color.kRed);
-      
-      // Create beam patterns
       blueBeam = createBeamPattern(Color.kBlue);
       redBeam = createBeamPattern(Color.kRed);
-      
-      // Create red-blue gradient pattern
       redBlueGradient = createRedBlueGradientPattern();
+      
+      // Initialize new patterns
+      reefPattern = createReefPattern();
+      targetReachedPattern = createTargetReachedPattern();
+      holdingAlgaePattern = createHoldingAlgaePattern();
+      climbingPattern = createClimbingPattern();
+      oneMinLeftPattern = createOneMinLeftPattern();
+      thirtySecondsLeftPattern = createThirtySecondsLeftPattern();
+      countdownPattern = createCountdownPattern();
+      intakePattern = createIntakePattern();
       
       // Start with gradient pattern by default until alliance is known
       currentPattern = redBlueGradient;
@@ -81,30 +124,347 @@ public class LED extends SubsystemBase {
       currentPattern.applyTo(buffer);
       led.setData(buffer);
     }
+    
+    /**
+     * Creates a pattern that pulses reef color with frequency based on distance to target
+     */
+    private LEDPattern createReefPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            {
+                timer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                // Convert target distance to pulse frequency (closer = faster pulsing)
+                double normalizedDistance = Math.min(targetDistance, LEDConstants.MAX_TARGET_DISTANCE) / LEDConstants.MAX_TARGET_DISTANCE;
+                double pulseFrequency = LEDConstants.MIN_PULSE_FREQUENCY + 
+                    (1.0 - normalizedDistance) * (LEDConstants.MAX_PULSE_FREQUENCY - LEDConstants.MIN_PULSE_FREQUENCY);
+                
+                // Calculate pulse intensity using sine wave
+                double time = timer.get();
+                double pulsePhase = (time * pulseFrequency) % 1.0;
+                double pulseIntensity = (Math.sin(pulsePhase * 2 * Math.PI) + 1.0) / 2.0; // Range 0.0-1.0
+                
+                // Apply the reef color with intensity
+                Color reefColor = new Color(
+                    LEDConstants.REEF_COLOR[0] * pulseIntensity,
+                    LEDConstants.REEF_COLOR[1] * pulseIntensity,
+                    LEDConstants.REEF_COLOR[2] * pulseIntensity
+                );
+                
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    buffer.setLED(i, reefColor);
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a fast flashing green pattern for when target is reached
+     */
+    private LEDPattern createTargetReachedPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            {
+                timer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                double time = timer.get();
+                double flashPhase = (time * LEDConstants.TARGET_REACHED_FLASH_FREQUENCY) % 1.0;
+                
+                // On for half the cycle, off for half
+                boolean isOn = flashPhase < 0.5;
+                
+                Color ledColor = isOn ? 
+                    new Color(LEDConstants.GREEN_COLOR[0], LEDConstants.GREEN_COLOR[1], LEDConstants.GREEN_COLOR[2]) : 
+                    Color.kBlack;
+                
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    buffer.setLED(i, ledColor);
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a solid teal pattern for when holding algae
+     */
+    private LEDPattern createHoldingAlgaePattern() {
+        return buffer -> {
+            Color algaeColor = new Color(
+                LEDConstants.ALGAE_COLOR[0],
+                LEDConstants.ALGAE_COLOR[1],
+                LEDConstants.ALGAE_COLOR[2]
+            );
+            
+            for (int i = 0; i < buffer.getLength(); i++) {
+                buffer.setLED(i, algaeColor);
+            }
+        };
+    }
+    
+    /**
+     * Creates a pattern that transitions from purple to alliance color for climbing
+     */
+    private LEDPattern createClimbingPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            {
+                timer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                double time = timer.get();
+                double cycleTime = LEDConstants.CLIMBING_TRANSITION_TIME;
+                double phase = (time % cycleTime) / cycleTime;
+                
+                // Get alliance color
+                Color allianceColor;
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                    allianceColor = new Color(LEDConstants.RED_COLOR[0], LEDConstants.RED_COLOR[1], LEDConstants.RED_COLOR[2]);
+                } else {
+                    allianceColor = new Color(LEDConstants.BLUE_COLOR[0], LEDConstants.BLUE_COLOR[1], LEDConstants.BLUE_COLOR[2]);
+                }
+                
+                // Purple color
+                Color purpleColor = new Color(LEDConstants.PURPLE_COLOR[0], LEDConstants.PURPLE_COLOR[1], LEDConstants.PURPLE_COLOR[2]);
+                
+                // Transition from purple to alliance color
+                double purpleWeight = Math.cos(phase * Math.PI / 2);  // 1.0 -> 0.0
+                double allianceWeight = Math.sin(phase * Math.PI / 2); // 0.0 -> 1.0
+                
+                Color transitionColor = new Color(
+                    purpleColor.red * purpleWeight + allianceColor.red * allianceWeight,
+                    purpleColor.green * purpleWeight + allianceColor.green * allianceWeight,
+                    purpleColor.blue * purpleWeight + allianceColor.blue * allianceWeight
+                );
+                
+                // Apply a sweeping effect - traveling up both sides
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    double position;
+                    if (i < LEDConstants.LEFT_LEDS) {
+                        position = (double)i / LEDConstants.LEFT_LEDS;
+                    } else if (i < LEDConstants.LEFT_LEDS + LEDConstants.TOP_LEDS) {
+                        position = 1.0; // Top is always full intensity
+                    } else {
+                        position = (double)(i - LEDConstants.LEFT_LEDS - LEDConstants.TOP_LEDS) / LEDConstants.RIGHT_LEDS;
+                    }
+                    
+                    // Adjust position by time to create movement
+                    double adjustedPos = (position + phase) % 1.0;
+                    
+                    // Create wave intensity - brighter at the wave peak
+                    double intensity = 0.7 + 0.3 * Math.max(0, Math.sin(adjustedPos * 2 * Math.PI));
+                    
+                    Color finalColor = new Color(
+                        transitionColor.red * intensity,
+                        transitionColor.green * intensity,
+                        transitionColor.blue * intensity
+                    );
+                    
+                    buffer.setLED(i, finalColor);
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a white flashing pattern for 1 minute remaining
+     */
+    private LEDPattern createOneMinLeftPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            private boolean initialized = false;
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                if (!initialized) {
+                    timer.reset();
+                    timer.start();
+                    initialized = true;
+                }
+                
+                double time = timer.get();
+                double flashCycle = time * LEDConstants.TIMER_ALERT_FLASH_FREQUENCY;
+                
+                // Flash for a specific number of times
+                if (flashCycle < LEDConstants.TIMER_ALERT_FLASH_COUNT) {
+                    // Each flash cycle is 1.0 unit
+                    boolean isOn = (flashCycle % 1.0) < 0.5;
+                    
+                    Color color = isOn ? 
+                        new Color(LEDConstants.WHITE_COLOR[0], LEDConstants.WHITE_COLOR[1], LEDConstants.WHITE_COLOR[2]) : 
+                        Color.kBlack;
+                    
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, color);
+                    }
+                } else {
+                    // After flashing, return to default pattern
+                    currentState = LEDState.DEFAULT;
+                    
+                    // Just fill with black for this frame - next periodic will switch to appropriate pattern
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, Color.kBlack);
+                    }
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a yellow flashing pattern for 30 seconds remaining
+     */
+    private LEDPattern createThirtySecondsLeftPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            private boolean initialized = false;
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                if (!initialized) {
+                    timer.reset();
+                    timer.start();
+                    initialized = true;
+                }
+                
+                double time = timer.get();
+                double flashCycle = time * LEDConstants.TIMER_ALERT_FLASH_FREQUENCY;
+                
+                // Flash for a specific number of times
+                if (flashCycle < LEDConstants.TIMER_ALERT_FLASH_COUNT) {
+                    // Each flash cycle is 1.0 unit
+                    boolean isOn = (flashCycle % 1.0) < 0.5;
+                    
+                    Color color = isOn ? 
+                        new Color(LEDConstants.YELLOW_COLOR[0], LEDConstants.YELLOW_COLOR[1], LEDConstants.YELLOW_COLOR[2]) : 
+                        Color.kBlack;
+                    
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, color);
+                    }
+                } else {
+                    // After flashing, return to default pattern
+                    currentState = LEDState.DEFAULT;
+                    
+                    // Just fill with black for this frame - next periodic will switch to appropriate pattern
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, Color.kBlack);
+                    }
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a countdown pattern with the opposite alliance color
+     */
+    private LEDPattern createCountdownPattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            {
+                timer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                if (!isCountingDown) {
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, Color.kBlack);
+                    }
+                    return;
+                }
+                
+                // Get opposite alliance color
+                Color oppositeColor;
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                    oppositeColor = new Color(LEDConstants.BLUE_COLOR[0], LEDConstants.BLUE_COLOR[1], LEDConstants.BLUE_COLOR[2]);
+                } else {
+                    oppositeColor = new Color(LEDConstants.RED_COLOR[0], LEDConstants.RED_COLOR[1], LEDConstants.RED_COLOR[2]);
+                }
+                
+                // Calculate flash frequency based on time remaining (gets faster as time runs out)
+                double baseFrequency = LEDConstants.COUNTDOWN_FLASH_FREQUENCY;
+                double frequencyMultiplier = Math.max(1.0, 10.0 - countdownSecondsRemaining);
+                double flashFrequency = baseFrequency * frequencyMultiplier;
+                
+                // Calculate flash state
+                double time = timer.get();
+                boolean isOn = (time * flashFrequency % 1.0) < 0.5;
+                
+                // Apply color to all LEDs
+                Color color = isOn ? oppositeColor : Color.kBlack;
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    buffer.setLED(i, color);
+                }
+            }
+        };
+    }
+    
+    /**
+     * Creates a pattern for when intake is running
+     */
+    private LEDPattern createIntakePattern() {
+        return new LEDPattern() {
+            private Timer timer = new Timer();
+            {
+                timer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                double time = timer.get();
+                double cyclePosition = (time % LEDConstants.INTAKE_PATTERN_CYCLE_TIME) / LEDConstants.INTAKE_PATTERN_CYCLE_TIME;
+                
+                // Get alliance color
+                Color allianceColor;
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent() && alliance.get() == Alliance.Red) {
+                    allianceColor = new Color(LEDConstants.RED_COLOR[0], LEDConstants.RED_COLOR[1], LEDConstants.RED_COLOR[2]);
+                } else {
+                    allianceColor = new Color(LEDConstants.BLUE_COLOR[0], LEDConstants.BLUE_COLOR[1], LEDConstants.BLUE_COLOR[2]);
+                }
+                
+                // Create a "chasing" light effect from top to bottom
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    double position;
+                    if (i < LEDConstants.LEFT_LEDS) {
+                        position = 1.0 - ((double)i / LEDConstants.LEFT_LEDS); // 1.0->0.0 top to bottom on left
+                    } else if (i < LEDConstants.LEFT_LEDS + LEDConstants.TOP_LEDS) {
+                        position = 1.0; // Top section is always lit
+                    } else {
+                        position = 1.0 - ((double)(i - LEDConstants.LEFT_LEDS - LEDConstants.TOP_LEDS) / LEDConstants.RIGHT_LEDS); 
+                        // 1.0->0.0 top to bottom on right
+                    }
+                    
+                    // Create a moving segment effect
+                    double segment = (position - cyclePosition) * 3.0 % 1.0; // segments are 1/3 of the strip
+                    double intensity = Math.max(0, 1.0 - Math.abs(segment - 0.5) * 4.0); // peak at 0.5, zero elsewhere
+                    
+                    // Mix between alliance color and white based on intensity
+                    Color segmentColor = new Color(
+                        allianceColor.red * (1 - intensity) + intensity,
+                        allianceColor.green * (1 - intensity) + intensity,
+                        allianceColor.blue * (1 - intensity) + intensity
+                    );
+                    
+                    buffer.setLED(i, segmentColor);
+                }
+            }
+        };
+    }
   
     @Override
     public void periodic() {
-      // Check if robot is disabled
-      boolean currentlyDisabled = DriverStation.isDisabled();
-      
-      // Check if alliance information is available
-      var allianceOption = DriverStation.getAlliance();
-      
-      // Select the appropriate pattern based on conditions
-      if (allianceOption.isPresent()) {
-        Alliance alliance = allianceOption.get();
-        
-        if (currentlyDisabled) {
-          // Robot is disabled - use breathing patterns
-          currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
-        } else {
-          // Robot is enabled - use solid alliance colors
-          currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
-        }
-      } else {
-        // No alliance information available, use gradient pattern
-        currentPattern = redBlueGradient;
-      }
+      // Select pattern based on current state and conditions
+      selectPattern();
       
       // Apply current pattern to temp buffer for power calculations
       currentPattern.applyTo(tempBuffer);
@@ -120,56 +480,236 @@ public class LED extends SubsystemBase {
     }
     
     /**
+     * Selects the appropriate pattern based on current state
+     */
+    private void selectPattern() {
+        // Check for match time alerts
+        double matchTime = DriverStation.getMatchTime();
+        if (DriverStation.isTeleop() && matchTime <= 60.0 && matchTime >= 59.5 && currentState != LEDState.ONE_MIN_LEFT) {
+            setLEDState(LEDState.ONE_MIN_LEFT);
+        } else if (DriverStation.isTeleop() && matchTime <= 30.0 && matchTime >= 29.5 && currentState != LEDState.THIRTY_SEC_LEFT) {
+            setLEDState(LEDState.THIRTY_SEC_LEFT);
+        } else if (DriverStation.isTeleop() && matchTime <= 10.0 && currentState != LEDState.COUNTDOWN) {
+            setLEDState(LEDState.COUNTDOWN);
+            countdownSecondsRemaining = matchTime;
+            isCountingDown = true;
+        } else if (isCountingDown) {
+            countdownSecondsRemaining = matchTime;
+            if (matchTime <= 0) {
+                isCountingDown = false;
+                setLEDState(LEDState.DEFAULT);
+            }
+        }
+        
+        // Select pattern based on current state
+        switch (currentState) {
+            case REEF_TRACKING:
+                currentPattern = reefPattern;
+                break;
+                
+            case TARGET_REACHED:
+                currentPattern = targetReachedPattern;
+                break;
+                
+            case HOLDING_ALGAE:
+                currentPattern = holdingAlgaePattern;
+                break;
+                
+            case CLIMBING:
+                currentPattern = climbingPattern;
+                break;
+                
+            case ONE_MIN_LEFT:
+                currentPattern = oneMinLeftPattern;
+                break;
+                
+            case THIRTY_SEC_LEFT:
+                currentPattern = thirtySecondsLeftPattern;
+                break;
+                
+            case COUNTDOWN:
+                currentPattern = countdownPattern;
+                break;
+                
+            case INTAKE:
+                currentPattern = intakePattern;
+                break;
+                
+            case DEFAULT:
+            default:
+                // Check if robot is disabled
+                boolean currentlyDisabled = DriverStation.isDisabled();
+                
+                // Check if alliance information is available
+                var allianceOption = DriverStation.getAlliance();
+                
+                // Select the appropriate pattern based on conditions
+                if (allianceOption.isPresent()) {
+                    Alliance alliance = allianceOption.get();
+                    
+                    if (currentlyDisabled) {
+                        // Robot is disabled - use breathing patterns
+                        currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
+                    } else {
+                        // Robot is enabled - use solid alliance colors
+                        currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+                    }
+                } else {
+                    // No alliance information available, use gradient pattern
+                    currentPattern = redBlueGradient;
+                }
+                break;
+        }
+    }
+    
+    /**
+     * Sets the LED state and resets pattern timer
+     */
+    public void setLEDState(LEDState state) {
+        currentState = state;
+        patternTimer.reset();
+        patternTimer.start();
+    }
+    
+    /**
+     * Updates the target distance for reef pattern
+     */
+    public void setTargetDistance(double distance) {
+        this.targetDistance = distance;
+    }
+    
+    // Command generators for different LED patterns
+    
+    /**
+     * Command to show reef tracking pattern with pulsing based on distance
+     * @param distance The distance to target in meters
+     */
+    public Command reefTrackingCommand(double distance) {
+        return new InstantCommand(() -> {
+            setTargetDistance(distance);
+            setLEDState(LEDState.REEF_TRACKING);
+        });
+    }
+    
+    /**
+     * Command to show target reached pattern (fast flashing green)
+     */
+    public Command targetReachedCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.TARGET_REACHED));
+    }
+    
+    /**
+     * Command to show holding algae pattern (solid teal)
+     */
+    public Command holdingAlgaeCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.HOLDING_ALGAE));
+    }
+    
+    /**
+     * Command to show climbing pattern (purple to alliance color animation)
+     */
+    public Command climbingCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.CLIMBING));
+    }
+    
+    /**
+     * Command to run the intake pattern 
+     */
+    public Command intakeCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.INTAKE));
+    }
+    
+    /**
+     * Command to revert to default pattern
+     */
+    public Command defaultCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.DEFAULT));
+    }
+    
+    /**
+     * Command to run a pattern for a specific duration then revert to default
+     */
+    public Command timedPatternCommand(LEDState state, double durationSeconds) {
+        return new InstantCommand(() -> setLEDState(state))
+            .andThen(new WaitCommand(durationSeconds))
+            .andThen(new InstantCommand(() -> setLEDState(LEDState.DEFAULT)));
+    }
+    
+    /**
+     * Command to flash white for 1 minute warning
+     */
+    public Command oneMinuteWarningCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.ONE_MIN_LEFT));
+    }
+    
+    /**
+     * Command to flash yellow for 30 seconds warning
+     */
+    public Command thirtySecondWarningCommand() {
+        return new InstantCommand(() -> setLEDState(LEDState.THIRTY_SEC_LEFT));
+    }
+    
+    /**
+     * Command to start countdown pattern
+     */
+    public Command startCountdownCommand(double seconds) {
+        return new InstantCommand(() -> {
+            countdownSecondsRemaining = seconds;
+            isCountingDown = true;
+            setLEDState(LEDState.COUNTDOWN);
+        });
+    }
+    
+    /**
      * Creates a gradient pattern that transitions from red to blue
-     * 
-     * @return A red-blue gradient LEDPattern
      */
     private LEDPattern createRedBlueGradientPattern() {
-      return new LEDPattern() {
-        private final Timer animationTimer = new Timer();
-        
-        {
-          // Initialize timer immediately
-          animationTimer.start();
-        }
-        
-        @Override
-        public void applyTo(AddressableLEDBuffer buffer) {
-          // Make the gradient shift over time for a dynamic effect
-          double time = animationTimer.get() * 0.5; // Controls the speed of the animation
-          double cycle = (time % 1.0);
-          
-          int length = buffer.getLength();
-          
-          // Generate gradient
-          for (int i = 0; i < length; i++) {
-            // Calculate position in the gradient (0 to 1)
-            double position = ((double)i / length + cycle) % 1.0;
+        // ... existing implementation ...
+        return new LEDPattern() {
+            private final Timer animationTimer = new Timer();
             
-            // Create color based on position
-            // First half transitions from red to purple
-            // Second half transitions from purple to blue
-            double red, blue;
-            
-            if (position < 0.5) {
-              // 0.0 to 0.5: Red to Purple
-              red = 1.0;
-              blue = position * 2.0; // 0.0 to 1.0
-            } else {
-              // 0.5 to 1.0: Purple to Blue
-              red = 1.0 - ((position - 0.5) * 2.0); // 1.0 to 0.0
-              blue = 1.0;
+            {
+              // Initialize timer immediately
+              animationTimer.start();
             }
             
-            // Apply a pulse/wave effect
-            double brightness = 0.5 + 0.5 * Math.sin(time * 2 * Math.PI + i * Math.PI / 20);
-            
-            // Create the color with gradient and wave effect
-            Color gradientColor = new Color(red * brightness, 0, blue * brightness);
-            buffer.setLED(i, gradientColor);
-          }
-        }
-      };
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+              // Make the gradient shift over time for a dynamic effect
+              double time = animationTimer.get() * 0.5; // Controls the speed of the animation
+              double cycle = (time % 1.0);
+              
+              int length = buffer.getLength();
+              
+              // Generate gradient
+              for (int i = 0; i < length; i++) {
+                // Calculate position in the gradient (0 to 1)
+                double position = ((double)i / length + cycle) % 1.0;
+                
+                // Create color based on position
+                // First half transitions from red to purple
+                // Second half transitions from purple to blue
+                double red, blue;
+                
+                if (position < 0.5) {
+                    // 0.0 to 0.5: Red to Purple
+                    red = 1.0;
+                    blue = position * 2.0; // 0.0 to 1.0
+                } else {
+                    // 0.5 to 1.0: Purple to Blue
+                    red = 1.0 - ((position - 0.5) * 2.0); // 1.0 to 0.0
+                    blue = 1.0;
+                }
+                
+                // Apply a pulse/wave effect
+                double brightness = 0.5 + 0.5 * Math.sin(time * 2 * Math.PI + i * Math.PI / 20);
+                
+                // Create the color with gradient and wave effect
+                Color gradientColor = new Color(red * brightness, 0, blue * brightness);
+                buffer.setLED(i, gradientColor);
+              }
+            }
+          };
     }
         
     /**

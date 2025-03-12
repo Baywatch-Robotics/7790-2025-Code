@@ -14,13 +14,15 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.LED;
 
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel) {
+    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, LED led) {
       
-      Command command  = elevator.setElevatorPickupCommand()
+      Command command = led.intakeCommand()
+      .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
@@ -28,7 +30,8 @@ public class CommandFactory {
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(new WaitCommand(.5))
-      .andThen(shooter.shooterZeroSpeedCommand());
+      .andThen(shooter.shooterZeroSpeedCommand())
+      .andThen(led.defaultCommand());
 
 
       command.addRequirements(shooter, shooterArm, elevator);
@@ -64,13 +67,15 @@ public class CommandFactory {
     return command;
 }
 
-public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, AlgaeShooter algaeShooter) {
-    Command command = algaeArm.algaeArmGroundIntakeCommand()
+public static Command setAlgaeIntakeCommand(AlgaeArm algaeArm, AlgaeShooter algaeShooter, LED led) {
+    Command command = led.intakeCommand()
+        .andThen(algaeArm.algaeArmGroundIntakeCommand())
         .andThen(algaeShooter.algaeShooterIntakeCommand())
         .andThen(new WaitUntilCommand(algaeShooter.algaeLoadedTrigger()))
         .andThen(algaeArm.algaeArmHoldCommand())
         .andThen(new WaitCommand(1))
-        .andThen(algaeShooter.algaeShooterZeroSpeedCommand());
+        .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
+        .andThen(led.holdingAlgaeCommand());
 
     command.addRequirements(algaeArm, algaeShooter);
     return command;
@@ -85,9 +90,10 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
 }
 
-  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, Climber climber) {
+  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, Climber climber, LED led) {
 
-    Command command = shooterArm.shooterArmScoreLOWCommand()
+    Command command = led.climbingCommand()
+    .andThen(shooterArm.shooterArmScoreLOWCommand())
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorClimbPoseCommand())
     .andThen(algaeArm.algaeArmStraightOutCommand())
