@@ -378,33 +378,6 @@ public final class Constants
     public static final boolean LEFT_BEAM_UP = true;        // true = up, false = down
     public static final boolean RIGHT_BEAM_UP = true;       // true = up, false = down
     public static final boolean TOP_BEAM_INWARD = true;     // true = inward, false = outward
-
-    // Colors for different states (R, G, B values from 0.0 to 1.0)
-    public static final double[] REEF_COLOR = {0.769, 0.38, 0.549};  // RGB: 196, 97, 140 
-    public static final double[] GREEN_COLOR = {0.0, 1.0, 0.0};      // RGB: 0, 255, 0
-    public static final double[] ALGAE_COLOR = {0.0, 1.0, 0.871};    // RGB: 0, 255, 222
-    public static final double[] PURPLE_COLOR = {0.5, 0.0, 0.5};     // RGB: 127, 0, 127
-    public static final double[] WHITE_COLOR = {1.0, 1.0, 1.0};      // RGB: 255, 255, 255
-    public static final double[] YELLOW_COLOR = {1.0, 1.0, 0.0};     // RGB: 255, 255, 0
-    public static final double[] RED_COLOR = {1.0, 0.0, 0.0};        // RGB: 255, 0, 0
-    public static final double[] BLUE_COLOR = {0.0, 0.0, 1.0};       // RGB: 0, 0, 255
-    
-    // Target tracking constants
-    public static final double MAX_TARGET_DISTANCE = 5.0;  // Maximum distance to consider (meters)
-    public static final double MIN_PULSE_FREQUENCY = 0.5;  // Slowest pulse cycle (Hz) when far away
-    public static final double MAX_PULSE_FREQUENCY = 3.0;  // Fastest pulse cycle (Hz) when close
-    
-    // Flashing patterns
-    public static final double TARGET_REACHED_FLASH_FREQUENCY = 5.0;  // Flashes per second
-    public static final double TIMER_ALERT_FLASH_COUNT = 5.0;         // Number of flashes for timer alerts
-    public static final double TIMER_ALERT_FLASH_FREQUENCY = 2.0;     // Flashes per second for timer alerts
-    
-    // Countdown pattern
-    public static final double COUNTDOWN_FLASH_FREQUENCY = 1.0;       // Initial flashing rate (increases as time runs out)
-    
-    // Climbing pattern 
-    public static final double CLIMBING_TRANSITION_TIME = 2.0;        // Time for full purple->alliance transition
-    public static final double INTAKE_PATTERN_CYCLE_TIME = 1.0;       // Time for one full cycle of the intake pattern
   }
   
   public static final class ScopeConstants{
@@ -600,15 +573,6 @@ public final class Constants
     public static final float LCoralStationMaxX = (float)Units.inchesToMeters(86.99);
     public static final float LCoralStationMinY = (float)Units.inchesToMeters(235.95);
     public static final float LCoralStationMaxY = (float)Units.inchesToMeters(312.91);
-    
-    // Barge zone coordinates (rectangular) - set to 0 initially as placeholders
-    public static final float BargeZoneMinX = 0f;
-    public static final float BargeZoneMaxX = 0f;
-    public static final float BargeZoneMinY = 0f;
-    public static final float BargeZoneMaxY = 0f;
-    
-    // Barge zone speed multiplier (0 = stopped, adjust as needed)
-    public static final float bargeSpeedMultiplier = .2f;
     
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;

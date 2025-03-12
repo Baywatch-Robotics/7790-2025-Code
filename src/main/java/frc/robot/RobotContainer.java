@@ -81,8 +81,6 @@ public class RobotContainer {
   private boolean isInReefZone = false;
   private boolean isInCoralStationLeftZone = false; // Consistent naming
   private boolean isInCoralStationRightZone = false; // Consistent naming
-  private boolean isInBargeZone = false; // Add barge zone status
-
 
   // Add flag to track if we're currently being held outside reef zone
   private boolean heldOutsideReefZone = false;
@@ -90,11 +88,6 @@ public class RobotContainer {
   // Add trigger for reef zone restriction status
   public Trigger reefZoneRestrictionActiveTrigger() {
     return new Trigger(() -> heldOutsideReefZone);
-  }
-
-  // Add a trigger for barge zone detection
-  public Trigger bargeZoneTrigger() {
-    return new Trigger(() -> isInBargeZone);
   }
 
   Supplier<ProfiledPIDController> xProfiledPID;
@@ -397,7 +390,7 @@ public class RobotContainer {
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, LED));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel));
 
 
 
@@ -415,7 +408,7 @@ public class RobotContainer {
     driverXbox.rightStick().onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
-    driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter, LED));
+    driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
 
     
@@ -427,7 +420,7 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(() -> drivebase.setCancel(true)));
 
 
-    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel, climber, LED));
+    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel, climber));
     opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
@@ -453,9 +446,6 @@ public class RobotContainer {
     opXbox.leftBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(-1), algaeArm));
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-
-    // Add a binding for testing LED patterns - fix the LEDState reference
-    opXbox.start().onTrue(LED.timedPatternCommand(frc.robot.subsystems.LED.LEDState.TARGET_REACHED, 2.0));
 
     chooser.addOption("Left", leftAuto);
     chooser.setDefaultOption("Right", rightAuto);
@@ -536,12 +526,9 @@ public class RobotContainer {
             .schedule();
       } else if (!isLinedUp && !wasLinedUp) {
         // Only visualize the target if we're not lined up
+
         drivebase.visualizeTargetPose(allianceRelativeTarget);
       }
-      
-      // Display distance to target on dashboard
-      double distanceToDashboard = distance;
-      SmartDashboard.putNumber("Distance to Target", distanceToDashboard);
     } else {
       // No target, all triggers are false
       isApproaching = false;
@@ -551,11 +538,6 @@ public class RobotContainer {
 
       // Clear target visualization
       drivebase.clearTargetVisualization();
-      
-      // Reset LED to default when no target
-      LED.defaultCommand().schedule();
-      
-      SmartDashboard.putNumber("Distance to Target", -1); // No target
     }
 
     // Log lined up status to dashboard for debugging
@@ -566,6 +548,23 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Close to Target", isClose);
     SmartDashboard.putBoolean("Very Close to Target", isVeryClose);
     SmartDashboard.putBoolean("Lined Up with Target", isLinedUp);
+
+    // Add distance info if there's a target
+    if (currentTarget != null) {
+      Pose2d currentPoseForDashboard = drivebase.getPose();
+      Pose2d targetPoseForDashboard = TargetClass.toPose2d(new Pose2d(
+          currentTarget.getX(),
+          currentTarget.getY(),
+          Rotation2d.fromRadians(currentTarget.getZ())));
+
+      // Display distance to target on dashboard
+      double distanceToDashboard = Math.sqrt(
+          Math.pow(currentPoseForDashboard.getX() - targetPoseForDashboard.getX(), 2) +
+              Math.pow(currentPoseForDashboard.getY() - targetPoseForDashboard.getY(), 2));
+      SmartDashboard.putNumber("Distance to Target", distanceToDashboard);
+    } else {
+      SmartDashboard.putNumber("Distance to Target", -1); // No target
+    }
   }
 
   public void setDriveSpeedBasedOnElevatorAndCloseness() {
@@ -611,7 +610,6 @@ public class RobotContainer {
     isInReefZone = isInReefZone(currentPose);
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
-    isInBargeZone = isInBargeZone(currentPose); // Add barge zone check
 
     // Apply zone-based speed modifier ONLY if full speed mode is disabled
     if (!fullSpeedModeEnabled) {
@@ -642,7 +640,6 @@ public class RobotContainer {
     SmartDashboard.putBoolean("In Reef Zone", isInReefZone);
     SmartDashboard.putBoolean("In Coral Station Left", isInCoralStationLeftZone);
     SmartDashboard.putBoolean("In Coral Station Right", isInCoralStationRightZone);
-    SmartDashboard.putBoolean("In Barge Zone", isInBargeZone); // Add barge zone to dashboard
 
     // Update drive suppliers with new speed
     driveY = () -> -driverXbox.getLeftY() * targetDriveSpeed;
@@ -714,28 +711,6 @@ public class RobotContainer {
   }
 
   /**
-   * Check if robot is in the barge zone
-   */
-  private boolean isInBargeZone(Pose2d robotPose) {
-    // Get alliance-relative coordinates for barge zone
-    Pose2d minCorner = TargetClass.toPose2d(new Pose2d(
-        ZoneConstants.BargeZoneMinX,
-        ZoneConstants.BargeZoneMinY,
-        new Rotation2d(0)));
-
-    Pose2d maxCorner = TargetClass.toPose2d(new Pose2d(
-        ZoneConstants.BargeZoneMaxX,
-        ZoneConstants.BargeZoneMaxY,
-        new Rotation2d(0)));
-
-    return isInRectangularZone(robotPose,
-        Math.min(minCorner.getX(), maxCorner.getX()),
-        Math.max(minCorner.getX(), maxCorner.getX()),
-        Math.min(minCorner.getY(), maxCorner.getY()),
-        Math.max(minCorner.getY(), maxCorner.getY()));
-  }
-
-  /**
    * Helper method to check if a point is inside a rectangle
    */
   private boolean isInRectangularZone(Pose2d pose, double minX, double maxX, double minY, double maxY) {
@@ -747,9 +722,7 @@ public class RobotContainer {
    * Get speed multiplier based on what zone the robot is in
    */
   private float getZoneSpeedMultiplier() {
-    if (isInBargeZone) {
-      return ZoneConstants.bargeSpeedMultiplier;
-    } else if (isInReefZone) {
+    if (isInReefZone) {
       return ZoneConstants.reefSpeedMultiplier;
     } else if (isInCoralStationLeftZone || isInCoralStationRightZone) {
       return ZoneConstants.coralStationMultiplier;
