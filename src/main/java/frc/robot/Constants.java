@@ -583,6 +583,11 @@ public final class Constants
     public static final float LCoralStationMaxX = (float)Units.inchesToMeters(86.99);
     public static final float LCoralStationMinY = (float)Units.inchesToMeters(235.95);
     public static final float LCoralStationMaxY = (float)Units.inchesToMeters(312.91);
+
+    public static final float BargeMinX = (float)Units.inchesToMeters(297.5);
+    public static final float BargeMaxX = (float)Units.inchesToMeters(383.5);
+    public static final float BargeMinY = (float)Units.inchesToMeters(158.5);
+    public static final float BargeMaxY = (float)Units.inchesToMeters(320);
     
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;
