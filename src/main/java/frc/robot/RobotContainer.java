@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -241,6 +242,10 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(240, 240);
+    camera.setFPS(20);
+
   }
 
   /**
@@ -421,7 +426,7 @@ public class RobotContainer {
 
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel, climber));
-    opXbox.pov(90).onTrue(algaeArm.algaeArmStraightOutCommand());
+    opXbox.pov(90).onTrue(algaeArm.algaeArmHoldCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
     opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());

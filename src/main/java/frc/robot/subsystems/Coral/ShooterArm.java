@@ -86,6 +86,10 @@ public class ShooterArm extends SubsystemBase {
         shooterArmDesiredAngle = ShooterArmConstants.preBallAngle;
     }
 
+    private void setPreBallBelowAngle() {
+        shooterArmDesiredAngle = ShooterArmConstants.preBallBelowAngle;
+    }
+
     private void setPreLowBallAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.preLowBallAngle;
     }
@@ -133,6 +137,12 @@ public class ShooterArm extends SubsystemBase {
     public Command shooterArmPreBallCommand()
     {
         Command command = new InstantCommand(() -> this.setPreBallAngle());
+        return command;
+    }
+    
+    public Command shooterArmPreBallBelowCommand()
+    {
+        Command command = new InstantCommand(() -> this.setPreBallBelowAngle());
         return command;
     }
     

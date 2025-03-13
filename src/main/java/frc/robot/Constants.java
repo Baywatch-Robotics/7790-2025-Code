@@ -115,9 +115,9 @@ public final class Constants
     
     // Ball position angle
     public static final float preBallAngle = 0.634489f;
-    public static final float preLowBallAngle = 0.58f;
+    public static final float preLowBallAngle = 0.645951747f;
     public static final float ballAngle = 0.60072f;
-
+    public static final float preBallBelowAngle = 0.56342834234f;
     public static final float L1Angle = 0.5f;
 
     public static final float P = 7.0f;
@@ -126,7 +126,7 @@ public final class Constants
     //public static final float maxVelocity = 1000;
     //public static final float maxAcceleration = 200;
 
-    public static final float maxVelocity = 6;
+    public static final float maxVelocity = 5;
     public static final float maxAcceleration = 3;
 
 
@@ -196,9 +196,9 @@ public final class Constants
     public static final float downPosition = -7f;
     
     // Ball pickup positions
-     public static final float highBallPose = -38.39914f;
-     public static final float highBallBelowPose = -18f;
-     public static final float lowBallPose = -25.20623f;
+     public static final float highBallPose = -36.418819427f;
+     public static final float highBallBelowPose = -26.4765625f;
+     public static final float lowBallPose = -23.6913681f;
     
     // New elevator height thresholds for speed control
     public static final float SLIGHTLY_RAISED_THRESHOLD = -10f;
@@ -254,7 +254,7 @@ public final class Constants
     public static final float max = .555f;
     
     // Safety threshold - minimum algae arm position that allows funnel movement
-    public static final float SAFE_ALGAE_ARM_POSITION = 0.40f;
+    public static final float SAFE_ALGAE_ARM_POSITION = 0.323f;
     
     // Manual control multiplier
     public static final float manualMultiplier = 0.005f;
@@ -263,13 +263,13 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 3.0f;
+    public static final float P = 5.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
     // Motion profile parameters
-    public static final float maxVelocity = 50;
-    public static final float maxAcceleration = 50;
+    public static final float maxVelocity = 6;
+    public static final float maxAcceleration = 6;
     public static final float allowedClosedLoopError = 0.005f;
     
     

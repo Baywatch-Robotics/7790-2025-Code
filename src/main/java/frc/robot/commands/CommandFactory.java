@@ -119,7 +119,7 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallBelowCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmPreBallCommand());
+    .andThen(shooterArm.shooterArmPreBallBelowCommand());
 
     command.addRequirements(shooter, shooterArm, elevator);
 
