@@ -61,6 +61,8 @@ public final class Constants
     public static final float maxVelocity = 50;
     public static final float maxAcceleration = 50;
     public static final float allowedClosedLoopError = .005f;
+
+    public static final float L1ScoreAngle = 0.33f;
   }
 
     public static final class AlgaeShooterConstants{
@@ -187,7 +189,6 @@ public final class Constants
     ;
     public static final float L2RPose = -9f;
     public static final float L2LPose = -9f;
-    public static final float L1Pose = -0;
     public static final float pickupPose = -23.5f;
     public static final float climbPose = -0;
 
@@ -230,6 +231,7 @@ public final class Constants
     public static final float maxVelocity = 150;
     public static final float maxAcceleration = 75;
 
+    public static final float L1ScoreHeight = -34.8769264f;
     /* 
     // Constants for smooth initialization
     public static final boolean ENABLE_SMOOTH_INIT = true; // Toggle smooth initialization
@@ -254,7 +256,7 @@ public final class Constants
     public static final float max = .555f;
     
     // Safety threshold - minimum algae arm position that allows funnel movement
-    public static final float SAFE_ALGAE_ARM_POSITION = 0.323f;
+    public static final float SAFE_ALGAE_ARM_POSITION = 0.32f;
     
     // Manual control multiplier
     public static final float manualMultiplier = 0.005f;
@@ -288,6 +290,8 @@ public final class Constants
     // Multiple detection methods
     public static final boolean USE_VELOCITY_DETECTION = true;
     public static final boolean USE_CURRENT_DETECTION = true;
+
+    public static final float L1Pose = 0.436f;
   }
 
   public static final class LEDConstants{

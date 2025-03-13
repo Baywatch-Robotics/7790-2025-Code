@@ -106,7 +106,7 @@ public class Elevator extends SubsystemBase {
     }
 
     private void setL1() {
-        elevatorDesiredPosition = ElevatorConstants.L1Pose;
+        elevatorDesiredPosition = ElevatorConstants.L1ScoreHeight;
     }
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;

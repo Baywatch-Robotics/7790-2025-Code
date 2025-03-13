@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -242,10 +243,11 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    UsbCamera camera = CameraServer.startAutomaticCapture();
-    camera.setResolution(240, 240);
-    camera.setFPS(20);
-
+    //UsbCamera camera = CameraServer.startAutomaticCapture();'
+    
+    
+    //camera.setResolution(240, 240);
+    //camera.setFPS(20);
   }
 
   /**
@@ -395,7 +397,7 @@ public class RobotContainer {
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter));
 
 
 
@@ -408,7 +410,7 @@ public class RobotContainer {
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
-    driverXbox.pov(180).onTrue(CommandFactory.pullOffHighBelowBall(shooter, shooterArm, elevator));
+    driverXbox.pov(180).onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     
     driverXbox.rightStick().onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));

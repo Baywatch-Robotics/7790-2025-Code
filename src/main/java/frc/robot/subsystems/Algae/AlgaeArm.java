@@ -141,6 +141,10 @@ public class AlgaeArm extends SubsystemBase {
         isIntaking = false;
     }
 
+    private void scoreL1Postion() {
+        algaeArmDesiredAngle = AlgaeArmConstants.L1ScoreAngle;
+        isIntaking = false;
+    }
     // Commands to move the arm to the desired positions
     public Command algaeArmStowUpCommand() {
         return new InstantCommand(() -> stowUp());
@@ -156,6 +160,10 @@ public class AlgaeArm extends SubsystemBase {
     
     public Command algaeArmHoldCommand() {
         return new InstantCommand(() -> holdPosition());
+    }
+    
+    public Command algaeArmScoreL1Command() {
+        return new InstantCommand(() -> scoreL1Postion());
     }
     
     public void moveAmount(final double amount) {

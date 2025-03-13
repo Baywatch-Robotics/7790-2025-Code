@@ -18,9 +18,12 @@ import frc.robot.subsystems.Climber;
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel) {
+    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter) {
       
-      Command command  = elevator.setElevatorPickupCommand()
+      Command command  = funnel.funnelHomeCommand()
+      .andThen(algaeArm.algaeArmStowUpCommand())
+      .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
+      .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
@@ -31,10 +34,11 @@ public class CommandFactory {
       .andThen(shooter.shooterZeroSpeedCommand());
 
 
-      command.addRequirements(shooter, shooterArm, elevator);
+      command.addRequirements(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter);
 
       return command;
   }
+  
   
 
   public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel) {
@@ -149,6 +153,20 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
   }
   
+  public static Command scoreL1CommandNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, AlgaeArm algaeArm, AlgaeShooter algaeShooter, Funnel funnel) {
+      
+    Command command  = elevator.setElevatorL1Command()
+    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+    .andThen(shooterArm.shooterArmOutLoadCommand())
+    .andThen(algaeArm.algaeArmScoreL1Command())
+    .andThen(algaeShooter.algaeShooterIntakeCommand())
+    .andThen(funnel.funnelL1Command());
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
+  }
+
 public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = shooterArm.shooterArmBasedOnQueueCommand(buttonBox)

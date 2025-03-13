@@ -98,6 +98,16 @@ public class Funnel extends SubsystemBase {
         stopShaking();
     }
     
+    private void setL1Position() {
+        // Only move if safe to do so
+        if (isSafeToMove()) {
+            funnelDesiredAngle = FunnelConstants.L1Pose;
+        }
+        
+        isMonitoringForCoral = false;
+        stopShaking();
+    }
+
     private void setFullUpPosition() {
         // Only move if safe to do so
         if (isSafeToMove()) {
@@ -138,6 +148,11 @@ public class Funnel extends SubsystemBase {
             .andThen(new InstantCommand(() -> setPreIntakePosition()));
     }
     
+    public Command funnelL1Command() {
+        return new WaitUntilCommand(this::isSafeToMove)
+            .andThen(new InstantCommand(() -> setL1Position()));
+    }
+
     // Start shaking the funnel to help coral entry
     public void startShaking() {
         if (!isShaking) {
