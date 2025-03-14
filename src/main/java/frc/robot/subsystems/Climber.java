@@ -9,6 +9,8 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,6 +40,8 @@ public class Climber extends SubsystemBase {
     private double kDt = 0.02; // 20ms periodic time
     private boolean isInManualMode = true; // Default to manual mode
     private boolean isInitialized = false;
+
+    private boolean cameraOn = false;
     
     // Track manual control input
     private double manualPower = 0;
@@ -65,6 +69,14 @@ public class Climber extends SubsystemBase {
 
 
     public void setFullExtend() {
+
+        if(!cameraOn){
+            UsbCamera camera = CameraServer.startAutomaticCapture();
+            camera.setResolution(240, 240);
+            camera.setFPS(20);
+            cameraOn = true;
+        }
+
         climberDesiredPosition = ClimberConstants.extendedPosition;
         isInManualMode = false; // Switch to position control
         manualPower = 0; // Clear manual power

@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -83,6 +81,7 @@ public class RobotContainer {
   private boolean isInReefZone = false;
   private boolean isInCoralStationLeftZone = false; // Consistent naming
   private boolean isInCoralStationRightZone = false; // Consistent naming
+  private boolean isInBargeZone = false;
 
   // Add flag to track if we're currently being held outside reef zone
   private boolean heldOutsideReefZone = false;
@@ -170,6 +169,9 @@ public class RobotContainer {
     return new Trigger(() -> isInCoralStationRightZone);
   }
 
+  public Trigger bargeZoneTrigger() {
+    return new Trigger(() -> isInBargeZone);
+  }
   public Trigger anyZoneTrigger() {
     return new Trigger(() -> isInReefZone || isInCoralStationLeftZone || isInCoralStationRightZone);
   }
@@ -617,6 +619,7 @@ public class RobotContainer {
     isInReefZone = isInReefZone(currentPose);
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
+    isInBargeZone = isInBargeZone(currentPose);
 
     // Apply zone-based speed modifier ONLY if full speed mode is disabled
     if (!fullSpeedModeEnabled) {
@@ -634,6 +637,7 @@ public class RobotContainer {
     reefZoneTrigger();
     coralStationLeftTrigger();
     coralStationRightTrigger();
+    bargeZoneTrigger();
 
     // Smooth the speed transition
     smoothDriveSpeed();
@@ -716,6 +720,25 @@ public class RobotContainer {
         Math.min(minCorner.getY(), maxCorner.getY()),
         Math.max(minCorner.getY(), maxCorner.getY()));
   }
+  
+  private boolean isInBargeZone(Pose2d robotPose) {
+    // Get alliance-relative coordinates for barge zone
+    Pose2d minCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.BargeMinX,
+        ZoneConstants.BargeMinY,
+        new Rotation2d(0)));
+
+    Pose2d maxCorner = TargetClass.toPose2d(new Pose2d(
+        ZoneConstants.BargeMaxX,
+        ZoneConstants.BargeMaxY,
+        new Rotation2d(0)));
+
+    return isInRectangularZone(robotPose,
+        Math.min(minCorner.getX(), maxCorner.getX()),
+        Math.max(minCorner.getX(), maxCorner.getX()),
+        Math.min(minCorner.getY(), maxCorner.getY()),
+        Math.max(minCorner.getY(), maxCorner.getY()));
+  }
 
   /**
    * Helper method to check if a point is inside a rectangle
@@ -733,6 +756,9 @@ public class RobotContainer {
       return ZoneConstants.reefSpeedMultiplier;
     } else if (isInCoralStationLeftZone || isInCoralStationRightZone) {
       return ZoneConstants.coralStationMultiplier;
+    }
+    else if (isInBargeZone) {
+      return ZoneConstants.bargeMultiplier;
     }
     return 1.0f; // No speed reduction if not in any special zone
   }
