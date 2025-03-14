@@ -458,6 +458,7 @@ public final class Constants
     public static final float xValueC1X1 = (float)Units.inchesToMeters(126);
     public static final float yValueC1X1 = (float)Units.inchesToMeters(151.13);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
+    public static final float zValueC11X = (float)Units.degreesToRadians(180);
     public static final float xValueC130 = (float)Units.inchesToMeters(122.75);
     public static final float yValueC130 = (float)Units.inchesToMeters(163.5);
     public static final float xValueC131 = (float)Units.inchesToMeters(122.75);
@@ -469,6 +470,7 @@ public final class Constants
     public static final float xValueC2X1 = (float)Units.inchesToMeters(157.76);
     public static final float yValueC2X1 = (float)Units.inchesToMeters(110.86);
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
+    public static final float zValueC21X = (float)Units.degreesToRadians(240);
     public static final float xValueC230 = (float)Units.inchesToMeters(145.42);
     public static final float yValueC230 = (float)Units.inchesToMeters(114.24);
     public static final float xValueC231 = (float)Units.inchesToMeters(157.54);
@@ -481,6 +483,7 @@ public final class Constants
     public static final float xValueC3X1 = (float)Units.inchesToMeters(208.51);
     public static final float yValueC3X1 = (float)Units.inchesToMeters(118.24);
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
+    public static final float zValueC31X = (float)Units.degreesToRadians(300);
     public static final float xValueC330 = (float)Units.inchesToMeters(199.41);
     public static final float yValueC330 = (float)Units.inchesToMeters(109.23);
     public static final float xValueC331 = (float)Units.inchesToMeters(211.54);
@@ -493,6 +496,7 @@ public final class Constants
     public static final float xValueC4X1 = (float)Units.inchesToMeters(227.5);
     public static final float yValueC4X1 = (float)Units.inchesToMeters(165.875);
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
+    public static final float zValueC41X = (float)Units.degreesToRadians(0);
     public static final float xValueC430 = (float)Units.inchesToMeters(230.75);
     public static final float yValueC430 = (float)Units.inchesToMeters(153.5);
     public static final float xValueC431 = (float)Units.inchesToMeters(230.75);
@@ -506,6 +510,7 @@ public final class Constants
     public static final float xValueC5X1 = (float)Units.inchesToMeters(195.73);
     public static final float yValueC5X1 = (float)Units.inchesToMeters(206.14);
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
+    public static final float zValueC51X = (float)Units.degreesToRadians(60);
     public static final float xValueC530 = (float)Units.inchesToMeters(208.08);
     public static final float yValueC530 = (float)Units.inchesToMeters(202.77);
     public static final float xValueC531 = (float)Units.inchesToMeters(195.95);
@@ -518,6 +523,7 @@ public final class Constants
     public static final float xValueC6X1 = (float)Units.inchesToMeters(144.98);
     public static final float yValueC6X1 = (float)Units.inchesToMeters(198.76);
     public static final float zValueC6XX = (float)Units.degreesToRadians(300);
+    public static final float zValueC61X = (float)Units.degreesToRadians(120);
     public static final float xValueC630 = (float)Units.inchesToMeters(154.08);
     public static final float yValueC630 = (float)Units.inchesToMeters(207.77);
     public static final float xValueC631 = (float)Units.inchesToMeters(141.95);
@@ -577,6 +583,11 @@ public final class Constants
     public static final float LCoralStationMaxX = (float)Units.inchesToMeters(86.99);
     public static final float LCoralStationMinY = (float)Units.inchesToMeters(235.95);
     public static final float LCoralStationMaxY = (float)Units.inchesToMeters(312.91);
+
+    public static final float BargeMinX = (float)Units.inchesToMeters(297.5);
+    public static final float BargeMaxX = (float)Units.inchesToMeters(383.5);
+    public static final float BargeMinY = (float)Units.inchesToMeters(158.5);
+    public static final float BargeMaxY = (float)Units.inchesToMeters(320);
     
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;
