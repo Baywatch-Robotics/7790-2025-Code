@@ -454,6 +454,9 @@ public class RobotContainer {
     opXbox.rightBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(1), algaeArm));
     opXbox.leftBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(-1), algaeArm));
 
+    //opXbox.start().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(true)));
+    //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
+
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     chooser.addOption("Left", leftAuto);

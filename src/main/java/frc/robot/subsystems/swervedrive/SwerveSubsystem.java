@@ -66,6 +66,9 @@ public class SwerveSubsystem extends SubsystemBase
   private int goodMeasurementCounter = 0;
   private Pose2d lastVisionPose = null;
   private double lastVisionTimestamp = 0;
+  private int visionMeasurementCounter = 0; 
+
+  private boolean isOldMode = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -670,9 +673,54 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
   }
 
   public void addVisionMeasurement() {
-    Pose2d robotPose = swerveDrive.getPose();
-    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
 
+    //boolean newMode;
+
+    
+    //newMode = DriverStation.isDisabled();
+
+    
+    
+    //newMode = isOldMode;
+    
+    
+
+      if(DriverStation.isDisabled()){
+      
+      Pose2d robotPose = swerveDrive.getPose();
+  
+      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
+  
+      if (estimatedPose3d.isPresent()) {
+          Pose2d newPose = estimatedPose3d.get().toPose2d();
+          double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
+
+          if (distance <= .5) {
+            
+              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+            }
+            else{
+  
+              visionMeasurementCounter++;
+  
+              if(visionMeasurementCounter >= 3){
+  
+                swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+                visionMeasurementCounter = 0;
+                //backup incase it gets too far off
+              }
+  
+            }
+           }
+          }
+
+
+
+
+        else{
+    
+          Pose2d robotPose = swerveDrive.getPose();
+    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
     if (!estimatedPose3d.isPresent()) {
       // Reset counter when no vision measurements available
       goodMeasurementCounter = 0;
@@ -774,41 +822,30 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     } else {
       // Reset counter for rejected measurements
       goodMeasurementCounter = 0;
+        }
     }
   }
 
   public void addVisionMeasurementInitial() {
-    Pose2d robotPose = swerveDrive.getPose();
-    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose);
-  
-    if (estimatedPose3d.isPresent()) {
-      Pose2d newPose = estimatedPose3d.get().toPose2d();
-      double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-      
-      // Create standard deviation matrix for initial measurements
-      Matrix<N3, N1> stdDevs = new Matrix<>(N3.instance, N1.instance);
-      
-      if (distance >= AprilTagVisionConstants.INITIAL_DISTANCE_THRESHOLD) {
-        // We're far away - reset odometry completely
-        swerveDrive.resetOdometry(newPose);
-        // Store this as our first reference
-        lastVisionPose = newPose;
-        lastVisionTimestamp = Timer.getFPGATimestamp();
-      } else {
-        // We're close enough - apply as a weighted measurement
-        // Better confidence for initial close measurements
-        stdDevs.set(0, 0, AprilTagVisionConstants.INITIAL_XY_STD_DEV);
-        stdDevs.set(1, 0, AprilTagVisionConstants.INITIAL_XY_STD_DEV);
-        stdDevs.set(2, 0, AprilTagVisionConstants.INITIAL_ROT_STD_DEV);
+
+      Pose2d robotPose = swerveDrive.getPose();
+
+      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
+
+      if (estimatedPose3d.isPresent()) {
+        Pose2d newPose = estimatedPose3d.get().toPose2d();
         
-        swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp(), stdDevs);
-        lastVisionPose = newPose;
-        lastVisionTimestamp = Timer.getFPGATimestamp();
-        isClose = true;
-      }
+        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
+
+    // Only add the measurement if it's within 1 meter of the current pose
+    if (distance >= .5) {
+        swerveDrive.resetOdometry(newPose);
+    }
+    else{
+      isClose = true;
     }
   }
-
+ }
     
     /**
      * Visualize the target pose on the field
@@ -842,5 +879,12 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
         return Commands.runOnce(() -> {
             driveToPose(buttonBox, elevator).schedule();
         });
+    }
+
+    public void setOldModeTrue(){
+      isOldMode = true;
+    }
+    public void setOldModeFalse(){
+      isOldMode = false;
     }
 }
