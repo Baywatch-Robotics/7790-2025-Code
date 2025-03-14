@@ -274,7 +274,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
-    .andThen(new InstantCommand(() -> buttonBox.addTarget("C130")))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C230")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())
@@ -284,7 +284,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
-    .andThen(new InstantCommand(() -> buttonBox.addTarget("C131")))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C231")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())
