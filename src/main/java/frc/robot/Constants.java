@@ -456,78 +456,78 @@ public final class Constants
     public static final float xValueC1X0 = (float)Units.inchesToMeters(126);
     public static final float yValueC1X0 = (float)Units.inchesToMeters(164.25);
     public static final float xValueC1X1 = (float)Units.inchesToMeters(126);
-    public static final float yValueC1X1 = (float)Units.inchesToMeters(151.13);
+    public static final float yValueC1X1 = (float)Units.inchesToMeters(152);
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
     public static final float zValueC11X = (float)Units.degreesToRadians(180);
-    public static final float xValueC130 = (float)Units.inchesToMeters(122.62);
-    public static final float yValueC130 = (float)Units.inchesToMeters(163.5);
-    public static final float xValueC131 = (float)Units.inchesToMeters(122.62);
-    public static final float yValueC131 = (float)Units.inchesToMeters(150.75);
+    public static final float xValueC130 = (float)Units.inchesToMeters(120.995);
+    public static final float yValueC130 = (float)Units.inchesToMeters(164.125);
+    public static final float xValueC131 = (float)Units.inchesToMeters(120.995);
+    public static final float yValueC131 = (float)Units.inchesToMeters(151);
     public static final int faceValueC1XX = 1;
 
     public static final float xValueC2X0 = (float)Units.inchesToMeters(146.39);
     public static final float yValueC2X0 = (float)Units.inchesToMeters(117.42);
-    public static final float xValueC2X1 = (float)Units.inchesToMeters(157.76);
-    public static final float yValueC2X1 = (float)Units.inchesToMeters(110.86);
+    public static final float xValueC2X1 = (float)Units.inchesToMeters(157);
+    public static final float yValueC2X1 = (float)Units.inchesToMeters(111.3);
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
     public static final float zValueC21X = (float)Units.degreesToRadians(240);
-    public static final float xValueC230 = (float)Units.inchesToMeters(145.35);
-    public static final float yValueC230 = (float)Units.inchesToMeters(114.13);
-    public static final float xValueC231 = (float)Units.inchesToMeters(156.39);
-    public static final float yValueC231 = (float)Units.inchesToMeters(107.75);
+    public static final float xValueC230 = (float)Units.inchesToMeters(144);
+    public static final float yValueC230 = (float)Units.inchesToMeters(113.03);
+    public static final float xValueC231 = (float)Units.inchesToMeters(155.37);
+    public static final float yValueC231 = (float)Units.inchesToMeters(106.47);
     public static final int faceValueC2XX = 2;
 
     
     public static final float xValueC3X0 = (float)Units.inchesToMeters(197.14);
     public static final float yValueC3X0 = (float)Units.inchesToMeters(111.67);
-    public static final float xValueC3X1 = (float)Units.inchesToMeters(208.51);
-    public static final float yValueC3X1 = (float)Units.inchesToMeters(118.24);
+    public static final float xValueC3X1 = (float)Units.inchesToMeters(207.75);
+    public static final float yValueC3X1 = (float)Units.inchesToMeters(117.8);
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
     public static final float zValueC31X = (float)Units.degreesToRadians(300);
-    public static final float xValueC330 = (float)Units.inchesToMeters(199.48);
-    public static final float yValueC330 = (float)Units.inchesToMeters(109.13);
-    public static final float xValueC331 = (float)Units.inchesToMeters(210.52);
-    public static final float yValueC331 = (float)Units.inchesToMeters(115.5);
+    public static final float xValueC330 = (float)Units.inchesToMeters(199.75);
+    public static final float yValueC330 = (float)Units.inchesToMeters(107.41);
+    public static final float xValueC331 = (float)Units.inchesToMeters(211.12);
+    public static final float yValueC331 = (float)Units.inchesToMeters(113.97);
     public static final int faceValueC3XX = 3;
 
     
     public static final float xValueC4X0 = (float)Units.inchesToMeters(227.5);
     public static final float yValueC4X0 = (float)Units.inchesToMeters(152.75);
     public static final float xValueC4X1 = (float)Units.inchesToMeters(227.5);
-    public static final float yValueC4X1 = (float)Units.inchesToMeters(165.875);
+    public static final float yValueC4X1 = (float)Units.inchesToMeters(165);
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
     public static final float zValueC41X = (float)Units.degreesToRadians(0);
-    public static final float xValueC430 = (float)Units.inchesToMeters(230.87);
-    public static final float yValueC430 = (float)Units.inchesToMeters(153.5);
-    public static final float xValueC431 = (float)Units.inchesToMeters(230.87);
-    public static final float yValueC431 = (float)Units.inchesToMeters(166.25);
+    public static final float xValueC430 = (float)Units.inchesToMeters(232.495);
+    public static final float yValueC430 = (float)Units.inchesToMeters(152.875);
+    public static final float xValueC431 = (float)Units.inchesToMeters(232.495);
+    public static final float yValueC431 = (float)Units.inchesToMeters(166);
     public static final int faceValueC4XX = 4;
 
 
     
     public static final float xValueC5X0 = (float)Units.inchesToMeters(207.1);
     public static final float yValueC5X0 = (float)Units.inchesToMeters(199.58);
-    public static final float xValueC5X1 = (float)Units.inchesToMeters(195.73);
-    public static final float yValueC5X1 = (float)Units.inchesToMeters(206.14);
+    public static final float xValueC5X1 = (float)Units.inchesToMeters(196.49);
+    public static final float yValueC5X1 = (float)Units.inchesToMeters(205.7);
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
     public static final float zValueC51X = (float)Units.degreesToRadians(60);
-    public static final float xValueC530 = (float)Units.inchesToMeters(208.14);
-    public static final float yValueC530 = (float)Units.inchesToMeters(202.87);
-    public static final float xValueC531 = (float)Units.inchesToMeters(197.1);
-    public static final float yValueC531 = (float)Units.inchesToMeters(209.25);
+    public static final float xValueC530 = (float)Units.inchesToMeters(209.49);
+    public static final float yValueC530 = (float)Units.inchesToMeters(203.97);
+    public static final float xValueC531 = (float)Units.inchesToMeters(198.12);
+    public static final float yValueC531 = (float)Units.inchesToMeters(210.53);
     public static final int faceValueC5XX = 5;
 
     
     public static final float xValueC6X0 = (float)Units.inchesToMeters(156.35);
     public static final float yValueC6X0 = (float)Units.inchesToMeters(205.33);
-    public static final float xValueC6X1 = (float)Units.inchesToMeters(144.98);
-    public static final float yValueC6X1 = (float)Units.inchesToMeters(198.76);
+    public static final float xValueC6X1 = (float)Units.inchesToMeters(145.74);
+    public static final float yValueC6X1 = (float)Units.inchesToMeters(199.2);
     public static final float zValueC6XX = (float)Units.degreesToRadians(300);
     public static final float zValueC61X = (float)Units.degreesToRadians(120);
-    public static final float xValueC630 = (float)Units.inchesToMeters(154.01);
-    public static final float yValueC630 = (float)Units.inchesToMeters(207.87);
-    public static final float xValueC631 = (float)Units.inchesToMeters(142.97);
-    public static final float yValueC631 = (float)Units.inchesToMeters(201.5);
+    public static final float xValueC630 = (float)Units.inchesToMeters(153.74);
+    public static final float yValueC630 = (float)Units.inchesToMeters(209.59);
+    public static final float xValueC631 = (float)Units.inchesToMeters(142.37);
+    public static final float yValueC631 = (float)Units.inchesToMeters(203.03);
     public static final int faceValueC6XX = 6;
 
     public static final int heightCX0X = 0;

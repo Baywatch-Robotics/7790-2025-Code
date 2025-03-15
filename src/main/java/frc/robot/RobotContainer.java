@@ -461,7 +461,7 @@ public class RobotContainer {
 
     chooser.addOption("Left", leftAuto);
     chooser.setDefaultOption("Right", rightAuto);
-    
+     
     SmartDashboard.putData(chooser);
   }
 
