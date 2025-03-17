@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.Timer;
 
 public class LED extends SubsystemBase {
   
@@ -17,15 +17,31 @@ public class LED extends SubsystemBase {
     private final AddressableLEDBuffer tempBuffer; // For power calculations
 
     // LED patterns
-    private LEDPattern solidRed;
-    private LEDPattern solidBlue;
-    private LEDPattern blueBreathing;
-    private LEDPattern redBreathing;
-    private LEDPattern redBlueGradient;
+    private final LEDPattern solidRed;
+    private final LEDPattern solidBlue;
+
+    private final LEDPattern blueBreathing;
+    private final LEDPattern redBreathing;
+    private final LEDPattern redBlueGradient; // New gradient pattern
     
     private LEDPattern currentPattern;
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
+
+    // Define our own LEDPattern interface since it's not standard in WPILib
+    private interface LEDPattern {
+        void applyTo(AddressableLEDBuffer buffer);
+        
+        // Helper method to create solid color pattern
+        static LEDPattern solid(Color color) {
+            return buffer -> {
+                // Apply current dynamic brightness to solid colors
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    buffer.setLED(i, color);
+                }
+            };
+        }
+    }
 
     public LED() {
       led = new AddressableLED(LEDConstants.port);
@@ -34,17 +50,20 @@ public class LED extends SubsystemBase {
       led.setLength(LEDConstants.length);
       led.start();
       
+
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
 
-      // Create breathing patterns with a period of 1.5 seconds
-      blueBreathing = LEDPattern.solid(Color.kBlue).breathe(LEDConstants.BREATHING_CYCLE_PERIOD);
-      redBreathing = LEDPattern.solid(Color.kRed).breathe(LEDConstants.BREATHING_CYCLE_PERIOD);
       
-      // Create red-blue gradient pattern that shifts over time
-      redBlueGradient = LEDPattern.discontinuousGradient(Color.kRed, Color.kBlue)
-          .animate(2.0);
+      // Create breathing patterns
+      blueBreathing = createBreathingPattern(Color.kBlue);
+      redBreathing = createBreathingPattern(Color.kRed);
+      
+      
+      
+      // Create red-blue gradient pattern
+      redBlueGradient = createRedBlueGradientPattern();
       
       // Start with gradient pattern by default until alliance is known
       currentPattern = redBlueGradient;
@@ -92,6 +111,59 @@ public class LED extends SubsystemBase {
     }
     
     /**
+     * Creates a gradient pattern that transitions from red to blue
+     * 
+     * @return A red-blue gradient LEDPattern
+     */
+    private LEDPattern createRedBlueGradientPattern() {
+      return new LEDPattern() {
+        private final Timer animationTimer = new Timer();
+        
+        {
+          // Initialize timer immediately
+          animationTimer.start();
+        }
+        
+        @Override
+        public void applyTo(AddressableLEDBuffer buffer) {
+          // Make the gradient shift over time for a dynamic effect
+          double time = animationTimer.get() * 0.5; // Controls the speed of the animation
+          double cycle = (time % 1.0);
+          
+          int length = buffer.getLength();
+          
+          // Generate gradient
+          for (int i = 0; i < length; i++) {
+            // Calculate position in the gradient (0 to 1)
+            double position = ((double)i / length + cycle) % 1.0;
+            
+            // Create color based on position
+            // First half transitions from red to purple
+            // Second half transitions from purple to blue
+            double red, blue;
+            
+            if (position < 0.5) {
+              // 0.0 to 0.5: Red to Purple
+              red = 1.0;
+              blue = position * 2.0; // 0.0 to 1.0
+            } else {
+              // 0.5 to 1.0: Purple to Blue
+              red = 1.0 - ((position - 0.5) * 2.0); // 1.0 to 0.0
+              blue = 1.0;
+            }
+            
+            // Apply a pulse/wave effect
+            double brightness = 0.5 + 0.5 * Math.sin(time * 2 * Math.PI + i * Math.PI / 20);
+            
+            // Create the color with gradient and wave effect
+            Color gradientColor = new Color(red * brightness, 0, blue * brightness);
+            buffer.setLED(i, gradientColor);
+          }
+        }
+      };
+    }
+        
+    /**
      * Calculates current draw based on RGB values and adjusts brightness if needed
      */
     private void adjustBrightnessForPower() {
@@ -131,25 +203,74 @@ public class LED extends SubsystemBase {
           // Ensure brightness is within reasonable limits
           currentBrightness = Math.max(0.05, Math.min(1.0, currentBrightness));
       }
-    }
+  }
+  
+  /**
+   * Applies the current pattern with adjusted brightness
+   */
+  private void applyPatternWithBrightness() {
+      // No need to apply the pattern again, it's already in tempBuffer
+      
+      // Copy to main buffer with brightness adjustment
+      for (int i = 0; i < buffer.getLength(); i++) {
+          Color originalColor = tempBuffer.getLED(i);
+          Color adjustedColor = new Color(
+              originalColor.red * currentBrightness,
+              originalColor.green * currentBrightness,
+              originalColor.blue * currentBrightness
+          );
+          buffer.setLED(i, adjustedColor);
+      }
+  }
   
     /**
-     * Applies the current pattern with adjusted brightness
+     * Creates a breathing pattern in the specified color
+     * 
+     * @param baseColor The base color for the breathing pattern
+     * @return A breathing pattern LEDPattern
      */
-    private void applyPatternWithBrightness() {
-        // No need to apply the pattern again, it's already in tempBuffer
+    private LEDPattern createBreathingPattern(Color baseColor) {
+      return new LEDPattern() {
+        private final Timer breathingTimer = new Timer();
+        private boolean initialized = false;
         
-        // Copy to main buffer with brightness adjustment
-        for (int i = 0; i < buffer.getLength(); i++) {
-            Color originalColor = tempBuffer.getLED(i);
-            Color adjustedColor = new Color(
-                originalColor.red * currentBrightness,
-                originalColor.green * currentBrightness,
-                originalColor.blue * currentBrightness
-            );
-            buffer.setLED(i, adjustedColor);
+        {
+          // Initialize timer
+          breathingTimer.start();
         }
+        
+        @Override
+        public void applyTo(AddressableLEDBuffer buffer) {
+          if (!initialized) {
+            breathingTimer.reset();
+            initialized = true;
+          }
+          
+          // Calculate the phase of the breathing cycle (0 to 1)
+          double time = breathingTimer.get();
+          double cyclePosition = (time % LEDConstants.BREATHING_CYCLE_PERIOD) / LEDConstants.BREATHING_CYCLE_PERIOD;
+          
+          // Calculate brightness using a sine wave for smooth transitions
+          // sin function oscillates between -1 and 1, so we adjust to 0-1 range
+          double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
+          
+          // Map to our desired min/max range
+          breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY + 
+              breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+          
+          // Apply the breathing effect to each LED
+          for (int i = 0; i < buffer.getLength(); i++) {
+            Color breathColor = new Color(
+                baseColor.red * breathIntensity,
+                baseColor.green * breathIntensity,
+                baseColor.blue * breathIntensity
+            );
+            buffer.setLED(i, breathColor);
+          }
+        }
+      };
     }
+  
     
     /**
      * Creates a command that runs a pattern on the entire LED strip.
@@ -157,10 +278,7 @@ public class LED extends SubsystemBase {
      * @param pattern the LED pattern to run
      */
     public Command runPattern(LEDPattern pattern) {
-      return run(() -> {
-        pattern.applyTo(buffer);
-        led.setData(buffer);
-      });
+      return run(() -> pattern.applyTo(buffer));
     }
     
     /**
@@ -180,4 +298,3 @@ public class LED extends SubsystemBase {
         return totalCurrentDraw / 1000.0; // Convert mA to A
     }
 }
-
