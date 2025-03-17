@@ -416,9 +416,9 @@ public final class Constants
     public static final float limelightYaw = (float)Units.degreesToRadians(180);
     
     // Vision measurement confidence parameters
-    public static final double MAX_VISION_DISTANCE_TRUSTED = 0.5;    // Fully trust measurements within this distance (meters)
+    public static final double MAX_VISION_DISTANCE_TRUSTED = 0.2;    // Fully trust measurements within this distance (meters)
     public static final double MAX_VISION_DISTANCE_CONSIDERED = 3.0; // Maximum distance to consider a measurement at all (meters)
-    public static final double MAX_VISION_ANGLE_TRUSTED = 10.0;      // Fully trust measurements within this angle (degrees)
+    public static final double MAX_VISION_ANGLE_TRUSTED = 5.0;      // Fully trust measurements within this angle (degrees)
     public static final double MAX_VISION_ANGLE_CONSIDERED = 30.0;   // Maximum angle diff to consider a measurement (degrees)
     
     // Measurement filtering parameters
@@ -437,8 +437,26 @@ public final class Constants
     public static final double INITIAL_DISTANCE_THRESHOLD = 1.0;     // Distance above which we do full pose reset
     public static final double INITIAL_XY_STD_DEV = 0.1;             // Initial XY standard deviation for close measurements
     public static final double INITIAL_ROT_STD_DEV = 0.05;           // Initial rotation standard deviation for close measurements
+    
+    // April Tag IDs to use for each alliance (whitelist approach)
+    public static final Integer[] BLUE_ALLIANCE_TAGS = {17, 18, 19, 20, 21, 22}; // Blue alliance tags
+    public static final Integer[] RED_ALLIANCE_TAGS = {6, 7, 8, 9, 10, 11}; // Red alliance tags
+    
+    /*
+    public static Integer[] getAllowedTags() {
+        return DriverStation ? BLUE_ALLIANCE_TAGS : RED_ALLIANCE_TAGS;
+    }
+    
+    public static void setAlliance(boolean isBlue) {
+        isBlueAlliance = isBlue;
+    }
+    
+    public static boolean isBlueAlliance() {
+        return isBlueAlliance;
+    }
   }
-
+*/
+  }
   public static final class TargetClassConstants{
 
     public static final float SLPositionX = (float)Units.inchesToMeters(43.5);
