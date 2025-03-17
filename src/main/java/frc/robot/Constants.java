@@ -592,7 +592,7 @@ public final class Constants
     // Speed multipliers for each zone
     public static final float reefSpeedMultiplier = 0.4f;
     public static final float coralStationMultiplier = 0.4f;
-    public static final float bargeMultiplier = 0.4f;
+    public static final float bargeMultiplier = 0.25f;
 
     public static final float speedSmoothingFactor = 0.1f; // Controls how quickly speed changes (0.0-1.0)
   }
