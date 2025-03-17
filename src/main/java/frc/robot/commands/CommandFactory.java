@@ -18,13 +18,17 @@ import frc.robot.subsystems.Climber;
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter) {
+    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter, RobotContainer robotContainer) {
       
       Command command  = funnel.funnelHomeCommand()
       .andThen(algaeArm.algaeArmStowUpCommand())
       .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
       .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+      // Keep the shooter arm up until outside reef zone
+      .andThen(shooterArm.shooterArmScoreLOWCommand())
+      // Only proceed to loading position when outside reef zone
+      .andThen(new WaitUntilCommand(robotContainer.reefZoneTrigger().negate()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
