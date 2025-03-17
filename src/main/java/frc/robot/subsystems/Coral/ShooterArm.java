@@ -30,12 +30,6 @@ public class ShooterArm extends SubsystemBase {
     private double kDt = 0.02; // 20ms periodic loop time
     
     public boolean isInitialized = false;
-    
-    // Add flag to track if robot is in reef zone
-    private boolean isInReefZone = false;
-    
-    // Add variable to track the arm's lowest allowed position in reef zone
-    private float reefZoneMinimumAllowedAngle;
 
     private SparkMax shooterArmMotor = new SparkMax(ShooterArmConstants.ID, MotorType.kBrushless);
 
@@ -216,31 +210,17 @@ public class ShooterArm extends SubsystemBase {
         float scale = ShooterArmConstants.manualMultiplier;
         float newAngle = (float)(shooterArmDesiredAngle + amount * scale);
 
-        // Apply minimum constraints only if moving downward and in reef zone
-        if (isInReefZone && amount < 0) {
-            // Only restrict downward movement, not upward
-            newAngle = Math.max(newAngle, reefZoneMinimumAllowedAngle);
-        }
-
         // Apply the general min/max constraints
         shooterArmDesiredAngle = (float) MathUtil.clamp(newAngle, ShooterArmConstants.min, ShooterArmConstants.maxManual);
     }
     
-    /**
-     * Sets whether the robot is currently in the reef zone
-     * @param inReefZone true if in reef zone, false otherwise
-     */
-    public void setInReefZone(boolean inReefZone) {
-        this.isInReefZone = inReefZone;
-    }
-
     @Override
     public void periodic() {
         
         if (!isInitialized) {
             shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
             m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
-            reefZoneMinimumAllowedAngle = ShooterArmConstants.reefZoneMinimumAngle;
+            
             isInitialized = true;
         }
         
@@ -248,15 +228,6 @@ public class ShooterArm extends SubsystemBase {
         
         // Get current arm position for dynamic reef zone constraint
         float currentPosition = (float)shooterArmEncoder.getPosition();
-        
-        // Apply reef zone constraint if in reef zone
-        if (isInReefZone && shooterArmDesiredAngle < reefZoneMinimumAllowedAngle) {
-            // Don't allow arm to go lower than the minimum allowed angle when in reef zone
-            shooterArmDesiredAngle = reefZoneMinimumAllowedAngle;
-            SmartDashboard.putBoolean("Reef Zone Arm Constraint", true);
-        } else {
-            SmartDashboard.putBoolean("Reef Zone Arm Constraint", false);
-        }
         
         // Apply general constraints
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
@@ -276,8 +247,6 @@ public class ShooterArm extends SubsystemBase {
         SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
         SmartDashboard.putNumber("Shooter Arm Profile Position", m_setpoint.position);
         SmartDashboard.putNumber("Shooter Arm Profile Velocity", m_setpoint.velocity);
-        SmartDashboard.putBoolean("In Reef Zone", isInReefZone);
-        SmartDashboard.putNumber("Reef Minimum Allowed Angle", reefZoneMinimumAllowedAngle);
         
         // Use the profile position for the actual motor control
         shooterArmController.setReference(m_setpoint.position, ControlType.kPosition);
