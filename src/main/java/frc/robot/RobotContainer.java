@@ -242,6 +242,9 @@ public class RobotContainer {
     // Set up the Funnel-AlgaeArm safety connection
     funnel.setAlgaeArmReference(algaeArm);
     
+    // Set RobotContainer reference for the shooter
+    shooter.setRobotContainer(this);
+    
     // Configure the trigger bindings
     configureBindings();
 

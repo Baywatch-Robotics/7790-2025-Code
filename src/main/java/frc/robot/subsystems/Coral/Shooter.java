@@ -8,11 +8,13 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.RobotContainer;
 
 public class Shooter extends SubsystemBase {
 
@@ -25,6 +27,9 @@ public class Shooter extends SubsystemBase {
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
     private double currentBelowThresholdStartTime = 0;
+    
+    // Reference to RobotContainer for controller rumble
+    private RobotContainer robotContainer;
 
     public Shooter() {
         shooterMotor.configure(
@@ -34,6 +39,11 @@ public class Shooter extends SubsystemBase {
 
         coralLoaded = false;
         isLoading = false;
+    }
+    
+    // Set the RobotContainer reference
+    public void setRobotContainer(RobotContainer container) {
+        this.robotContainer = container;
     }
 
     // Method to get the current draw from the motor
@@ -57,7 +67,14 @@ public class Shooter extends SubsystemBase {
             
             // Check if we've been above threshold long enough
             if (currentTime - currentAboveThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
-                return coralLoaded = true;
+                // Check if we're transitioning from not loaded to loaded
+                if (!coralLoaded) {
+                    // Trigger rumble when coral becomes loaded
+                    if (robotContainer != null) {
+                        triggerCoralLoadedRumble();
+                    }
+                }
+                coralLoaded = true;
             }
         } else {
             // Reset the "above threshold" timer since we're below threshold
@@ -70,12 +87,41 @@ public class Shooter extends SubsystemBase {
             
             // Check if we've been below threshold long enough
             if (currentTime - currentBelowThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
-                return coralLoaded = false;
+                coralLoaded = false;
             }
         }
-        
-        // Return the current state if we haven't debounced yet
         return coralLoaded;
+    }
+    
+    /**
+     * Trigger a 3-pulse rumble pattern when coral is loaded
+     */
+    private void triggerCoralLoadedRumble() {
+        // Only proceed if robotContainer is set
+        if (robotContainer == null) return;
+        
+        // Create a command sequence for 3 rumble pulses
+        Command rumbleSequence = Commands.sequence(
+            // First pulse
+            robotContainer.setControllerRumbleCommand(1.0),
+            Commands.waitSeconds(0.15),
+            robotContainer.stopControllerRumbleCommand(),
+            Commands.waitSeconds(0.07),
+            
+            // Second pulse
+            robotContainer.setControllerRumbleCommand(1.0),
+            Commands.waitSeconds(0.15),
+            robotContainer.stopControllerRumbleCommand(),
+            Commands.waitSeconds(0.07),
+            
+            // Third pulse
+            robotContainer.setControllerRumbleCommand(1.0),
+            Commands.waitSeconds(0.15),
+            robotContainer.stopControllerRumbleCommand()
+        );
+        
+        // Schedule the rumble sequence
+        rumbleSequence.schedule();
     }
     
     public Trigger coralLoadedTrigger(){ 
@@ -98,28 +144,24 @@ public class Shooter extends SubsystemBase {
 
     // Commands
     public Command shooterZeroSpeedCommand() {
-        Command command = new InstantCommand(() -> setZeroSpeed());
-        
-        return command;
+        return new InstantCommand(this::setZeroSpeed, this);
     }
 
     public Command shooterIntakeCommand() {
-        Command command = new InstantCommand(() -> setIntake());
-        return command;
+        return new InstantCommand(this::setIntake, this);
     }
 
     public Command shooterOutakeCommand() {
-        Command command = new InstantCommand(() -> setOutake());
-        return command;
+        return new InstantCommand(this::setOutake, this);
     }
     
     @Override
     public void periodic(){
         checkCoralLoaded();
-        coralLoadedTrigger();
         
+        // If coral is loaded and we're still trying to intake, stop the motor
         if(coralLoaded && isLoading){
-            shooterZeroSpeedCommand();
+            setZeroSpeed(); // Directly call method instead of scheduling command
         }
 
         SmartDashboard.putNumber("Current Draw", getCurrentDraw());
