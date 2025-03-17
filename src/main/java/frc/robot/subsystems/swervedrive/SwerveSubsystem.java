@@ -66,9 +66,7 @@ public class SwerveSubsystem extends SubsystemBase
   private int goodMeasurementCounter = 0;
   private Pose2d lastVisionPose = null;
   private double lastVisionTimestamp = 0;
-  private int visionMeasurementCounter = 0; 
-
-  private boolean isOldMode = false;
+  private int visionMeasurementCounter = 0;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -879,12 +877,5 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
         return Commands.runOnce(() -> {
             driveToPose(buttonBox, elevator).schedule();
         });
-    }
-
-    public void setOldModeTrue(){
-      isOldMode = true;
-    }
-    public void setOldModeFalse(){
-      isOldMode = false;
     }
 }
