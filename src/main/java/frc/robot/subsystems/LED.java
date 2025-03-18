@@ -304,12 +304,16 @@ public class LED extends SubsystemBase {
   
     /**
      * Create a flashing pattern that alternates between a color and black
+     * Tracks completed cycles rather than duration
      */
     private LEDPattern createFlashPattern(Color color, int flashCount) {
         return new LEDPattern() {
             private final Timer flashTimer = new Timer();
             private boolean initialized = false;
             private boolean isComplete = false;
+            private int completedCycles = 0;
+            private boolean isOn = true;
+            private double nextTransitionTime = 0.0;
             
             {
                 // Initialize timer
@@ -321,10 +325,13 @@ public class LED extends SubsystemBase {
                 if (!initialized) {
                     flashTimer.reset();
                     isComplete = false;
+                    completedCycles = 0;
+                    isOn = true;
+                    nextTransitionTime = LEDConstants.FLASH_ON_DURATION;
                     initialized = true;
                 }
                 
-                // If we've completed all flashes plus the final delay, return to normal pattern
+                // If we've completed all flashes, return to normal pattern
                 if (isComplete) {
                     // Flash sequence is done, switch back to normal pattern
                     if (normalPattern != null) {
@@ -334,26 +341,28 @@ public class LED extends SubsystemBase {
                     return;
                 }
                 
-                double cycleTime = LEDConstants.FLASH_ON_DURATION + LEDConstants.FLASH_OFF_DURATION;
-                double elapsedTime = flashTimer.get();
-                int cycleCount = (int)(elapsedTime / cycleTime);
+                double currentTime = flashTimer.get();
                 
-                // Check if we've completed all flashes
-                if (cycleCount >= flashCount) {
-                    // Add a delay before returning to normal pattern
-                    if (elapsedTime >= (flashCount * cycleTime) + LEDConstants.FLASH_COMPLETE_DELAY) {
-                        isComplete = true;
+                // Check if it's time to transition
+                if (currentTime >= nextTransitionTime) {
+                    if (isOn) {
+                        // Transition from ON to OFF
+                        isOn = false;
+                        nextTransitionTime = currentTime + LEDConstants.FLASH_OFF_DURATION;
+                    } else {
+                        // Transition from OFF to ON
+                        isOn = true;
+                        completedCycles++;
+                        
+                        // Check if we've completed all required flashes
+                        if (completedCycles >= flashCount) {
+                            isComplete = true;
+                            return;
+                        }
+                        
+                        nextTransitionTime = currentTime + LEDConstants.FLASH_ON_DURATION;
                     }
-                    // During the delay, show black
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setLED(i, Color.kBlack);
-                    }
-                    return;
                 }
-                
-                // Calculate position within the current cycle
-                double cyclePosition = elapsedTime % cycleTime;
-                boolean isOn = cyclePosition < LEDConstants.FLASH_ON_DURATION;
                 
                 // Set all LEDs to either the flash color or black
                 for (int i = 0; i < buffer.getLength(); i++) {
@@ -407,6 +416,27 @@ public class LED extends SubsystemBase {
             normalPattern = currentPattern;
             currentPattern = pattern;
         });
+    }
+    
+    /**
+     * Creates a flash pattern command with a custom number of flashes
+     *
+     * @param patternName the name of the flash pattern
+     * @param flashCount the number of times to flash
+     * @return Command that runs the flash pattern
+     */
+    public Command runFlashPattern(String patternName, int flashCount) {
+        // For named patterns that are flashing patterns, we need to recreate them with the custom count
+        if (patternName.equals("LINED_UP_FLASH")) {
+            LEDPattern customFlash = createFlashPattern(Color.kGreen, flashCount);
+            return runOnce(() -> {
+                normalPattern = currentPattern;
+                currentPattern = customFlash;
+            });
+        }
+        
+        // For other patterns, fall back to the standard implementation
+        return runFlashPattern(patternName);
     }
     
     /**

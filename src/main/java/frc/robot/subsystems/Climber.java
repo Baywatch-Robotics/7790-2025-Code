@@ -13,7 +13,6 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -21,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.util.Elastic;
 
 public class Climber extends SubsystemBase {
 
@@ -76,7 +76,7 @@ public class Climber extends SubsystemBase {
             camera.setResolution(240, 240);
             camera.setFPS(20);
             cameraOn = true;
-            Shuffleboard.selectTab("Climber");
+            Elastic.selectTab("Climber");
         }
 
         climberDesiredPosition = ClimberConstants.extendedPosition;
