@@ -184,8 +184,7 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .andThen(drivebase.startDriveToPose(buttonBox, elevator))
-  .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()));
+  .alongWith(drivebase.startDriveToPose(buttonBox, elevator));
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
