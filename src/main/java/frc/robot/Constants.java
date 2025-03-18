@@ -122,9 +122,14 @@ public final class Constants
     public static final float preBallBelowAngle = 0.56342834234f;
     public static final float L1Angle = 0.5f;
 
-    public static final float P = 7.0f;
+    //public static final float P = 7.0f;
+    //public static final float I = 0.0f;
+    //public static final float D = 0.5f;
+
+    //public static final float P = 0.0f;
+    public static final float P = 2.0f;
     public static final float I = 0.0f;
-    public static final float D = 0.5f;
+    public static final float D = 0.0f;
 
     // Uncomment profile constants
     public static final float maxVelocity = 5;
@@ -134,10 +139,12 @@ public final class Constants
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 0.0f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kG = .6f;  // Gravity compensation (tune this based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
+    public static final float feedforwardOffset = 0.25f;
+
     // PID position tolerance
     public static final float positionTolerance = 0.01f;
   }
@@ -301,6 +308,12 @@ public final class Constants
     
     public static final int port = 0;
     public static final int length = 104;
+
+    // Add flash pattern constants
+    public static final double FLASH_ON_DURATION = 0.2;     // Time flash stays on (seconds)
+    public static final double FLASH_OFF_DURATION = 0.2;    // Time flash stays off (seconds)
+    public static final int DEFAULT_FLASH_COUNT = 3;        // Default number of flashes
+    public static final double FLASH_COMPLETE_DELAY = 0.5;  // Delay after flashing completes before returning to normal pattern
 
     // LED layout constants
     public static final int LEFT_LEDS = 43;

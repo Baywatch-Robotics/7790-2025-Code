@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -57,6 +58,29 @@ public class ShooterArm extends SubsystemBase {
     );
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
+    // Conversion factors to convert between encoder units and radians
+    private final double kEncoderToRadians = 2.0 * Math.PI; // Adjust this value based on your encoder's range
+    
+    // Reference angle for zero position (in radians)
+    private final double kHorizontalReferenceRad = Math.PI / 2.0; // 90 degrees, adjust based on your setup
+    
+    /**
+     * Converts from encoder units to radians
+     */
+    private double encoderToRadians(double encoderPosition) {
+        return encoderPosition * kEncoderToRadians;
+    }
+    
+    
+    /**
+     * Converts from encoder position to radians used by feedforward
+     * (typically 0 = horizontal, positive = above horizontal)
+     */
+    private double encoderToFeedforwardRadians(double encoderPosition) {
+        // Convert to radians then adjust for the coordinate system
+        return encoderToRadians(encoderPosition) - kHorizontalReferenceRad;
+    }
 
     public ShooterArm() {
         shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -257,16 +281,22 @@ public class ShooterArm extends SubsystemBase {
             m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
         }
         
-        // Calculate the feedforward output - now using the profile's position and velocity
+        // Convert profile positions to radians for feedforward
+        double currentPositonRad = encoderToFeedforwardRadians(shooterArmEncoder.getPosition() - ShooterArmConstants.feedforwardOffset);
+        double currentVelocityRad = shooterArmEncoder.getVelocity() * kEncoderToRadians;
+        
+        // Calculate the feedforward output using radians
         double feedforwardOutput = armFeedforward.calculate(
-            m_setpoint.position,      // Profile position 
-            m_setpoint.velocity,      // Profile velocity
-            0                         // Zero acceleration for now
+            currentPositonRad,    // Position in radians (0 = horizontal)
+            currentVelocityRad,    // Velocity in radians/second
+            0                       // Zero acceleration for now
         );
         
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
         SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
         SmartDashboard.putNumber("Shooter Arm Feedforward", feedforwardOutput);
+        SmartDashboard.putNumber("Shooter Arm Position (rad)", currentPositonRad);
+        SmartDashboard.putNumber("Shooter Arm Velocity (rad/s)", currentVelocityRad);
         // Restore profile metrics
         SmartDashboard.putNumber("Shooter Arm Profile Position", m_setpoint.position);
         SmartDashboard.putNumber("Shooter Arm Profile Velocity", m_setpoint.velocity);
@@ -276,7 +306,8 @@ public class ShooterArm extends SubsystemBase {
             m_setpoint.position, 
             ControlType.kPosition,
             ClosedLoopSlot.kSlot0,  // Use slot 0 for PID
-            feedforwardOutput       // Add feedforward term
+            feedforwardOutput,
+            ArbFFUnits.kVoltage
         );
     }
 }
