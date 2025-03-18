@@ -125,18 +125,21 @@ public final class Constants
     public static final float P = 7.0f;
     public static final float I = 0.0f;
     public static final float D = 0.5f;
-    //public static final float maxVelocity = 1000;
-    //public static final float maxAcceleration = 200;
 
+    // Uncomment profile constants
     public static final float maxVelocity = 5;
     public static final float maxAcceleration = 3;
 
-
     public static final float allowedClosedLoopError = 0.005f;
-
-    public static final float minSmoothingDistance = 1.0f;  // Minimum angle difference to trigger smoothing
-    public static final float approachSmoothingFactor = 0.075f;  // 0-1 value: smaller = smoother/slower approach
-    public static final float snapReachThreshold = 0.05f;  // How close arm must get to snap position before smoothing begins
+    
+    // New feedforward constants
+    public static final float kS = 0.0f;  // Static friction compensation
+    public static final float kG = 0.0f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kV = 0.0f;  // Velocity feedforward
+    public static final float kA = 0.0f;  // Acceleration feedforward
+    
+    // PID position tolerance
+    public static final float positionTolerance = 0.01f;
   }
 
   public static final class ClimberConstants{

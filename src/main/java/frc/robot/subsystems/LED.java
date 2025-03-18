@@ -10,21 +10,36 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LED extends SubsystemBase {
   
     private final AddressableLED led;
     private final AddressableLEDBuffer buffer;
     private final AddressableLEDBuffer tempBuffer; // For power calculations
 
+    private final Color reefColor = new Color(196, 97, 140);
+    private final Color algaeColor = new Color(0, 255, 222);
+
+    // Map to store patterns by name
+    private final Map<String, LEDPattern> patternMap = new HashMap<>();
+
     // LED patterns
     private final LEDPattern solidRed;
     private final LEDPattern solidBlue;
+    private final LEDPattern solidReef;
+    private final LEDPattern solidHoldingAlgae;
 
     private final LEDPattern blueBreathing;
     private final LEDPattern redBreathing;
     private final LEDPattern redBlueGradient; // New gradient pattern
     
+    // Add default flash patterns
+    private final LEDPattern linedUpFlash;
+    
     private LEDPattern currentPattern;
+    private LEDPattern normalPattern; // Pattern to return to after flashing
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
 
@@ -44,6 +59,7 @@ public class LED extends SubsystemBase {
     }
 
     public LED() {
+
       led = new AddressableLED(LEDConstants.port);
       buffer = new AddressableLEDBuffer(LEDConstants.length);
       tempBuffer = new AddressableLEDBuffer(LEDConstants.length); // For calculations
@@ -54,16 +70,29 @@ public class LED extends SubsystemBase {
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
-
+      solidHoldingAlgae = LEDPattern.solid(algaeColor);
+      solidReef = LEDPattern.solid(reefColor);
       
       // Create breathing patterns
       blueBreathing = createBreathingPattern(Color.kBlue);
       redBreathing = createBreathingPattern(Color.kRed);
       
-      
-      
+  
       // Create red-blue gradient pattern
       redBlueGradient = createRedBlueGradientPattern();
+      
+      // Initialize flash patterns
+      linedUpFlash = createFlashPattern(Color.kGreen, 3);
+      
+      // Initialize pattern map with all available patterns
+      patternMap.put("SOLID_RED", solidRed);
+      patternMap.put("SOLID_BLUE", solidBlue);
+      patternMap.put("SOLID_REEF", solidReef);
+      patternMap.put("SOLID_ALGAE", solidHoldingAlgae);
+      patternMap.put("BLUE_BREATHING", blueBreathing);
+      patternMap.put("RED_BREATHING", redBreathing);
+      patternMap.put("RED_BLUE_GRADIENT", redBlueGradient);
+      patternMap.put("LINED_UP_FLASH", linedUpFlash);
       
       // Start with gradient pattern by default until alliance is known
       currentPattern = redBlueGradient;
@@ -82,19 +111,21 @@ public class LED extends SubsystemBase {
       var allianceOption = DriverStation.getAlliance();
       
       // Select the appropriate pattern based on conditions
-      if (allianceOption.isPresent()) {
-        Alliance alliance = allianceOption.get();
-        
-        if (currentlyDisabled) {
-          // Robot is disabled - use breathing patterns
-          currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
+      if (normalPattern == null) { // Only change pattern if not currently flashing
+        if (allianceOption.isPresent()) {
+          Alliance alliance = allianceOption.get();
+          
+          if (currentlyDisabled) {
+            // Robot is disabled - use breathing patterns
+            currentPattern = (alliance == Alliance.Blue) ? blueBreathing : redBreathing;
+          } else {
+            // Robot is enabled - use solid alliance colors
+            currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+          }
         } else {
-          // Robot is enabled - use solid alliance colors
-          currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+          // No alliance information available, use gradient pattern
+          currentPattern = redBlueGradient;
         }
-      } else {
-        // No alliance information available, use gradient pattern
-        currentPattern = redBlueGradient;
       }
       
       // Apply current pattern to temp buffer for power calculations
@@ -271,14 +302,145 @@ public class LED extends SubsystemBase {
       };
     }
   
+    /**
+     * Create a flashing pattern that alternates between a color and black
+     */
+    private LEDPattern createFlashPattern(Color color, int flashCount) {
+        return new LEDPattern() {
+            private final Timer flashTimer = new Timer();
+            private boolean initialized = false;
+            private boolean isComplete = false;
+            
+            {
+                // Initialize timer
+                flashTimer.start();
+            }
+            
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                if (!initialized) {
+                    flashTimer.reset();
+                    isComplete = false;
+                    initialized = true;
+                }
+                
+                // If we've completed all flashes plus the final delay, return to normal pattern
+                if (isComplete) {
+                    // Flash sequence is done, switch back to normal pattern
+                    if (normalPattern != null) {
+                        currentPattern = normalPattern;
+                        normalPattern = null;
+                    }
+                    return;
+                }
+                
+                double cycleTime = LEDConstants.FLASH_ON_DURATION + LEDConstants.FLASH_OFF_DURATION;
+                double elapsedTime = flashTimer.get();
+                int cycleCount = (int)(elapsedTime / cycleTime);
+                
+                // Check if we've completed all flashes
+                if (cycleCount >= flashCount) {
+                    // Add a delay before returning to normal pattern
+                    if (elapsedTime >= (flashCount * cycleTime) + LEDConstants.FLASH_COMPLETE_DELAY) {
+                        isComplete = true;
+                    }
+                    // During the delay, show black
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, Color.kBlack);
+                    }
+                    return;
+                }
+                
+                // Calculate position within the current cycle
+                double cyclePosition = elapsedTime % cycleTime;
+                boolean isOn = cyclePosition < LEDConstants.FLASH_ON_DURATION;
+                
+                // Set all LEDs to either the flash color or black
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    buffer.setLED(i, isOn ? color : Color.kBlack);
+                }
+            }
+        };
+    }
+
+    
+    /**
+     * Gets a pattern by its name
+     * @param patternName The name of the pattern
+     * @return The LEDPattern, or null if not found
+     */
+    public LEDPattern getPatternByName(String patternName) {
+        return patternMap.getOrDefault(patternName, null);
+    }
+    
+    /**
+     * Creates a command that runs a pattern on the entire LED strip using the pattern name.
+     *
+     * @param patternName the name of the LED pattern to run
+     * @return Command that sets the LED pattern
+     */
+    public Command runPattern(String patternName) {
+        LEDPattern pattern = getPatternByName(patternName);
+        if (pattern == null) {
+            // Pattern not found, return a command that does nothing
+            return runOnce(() -> {});
+        }
+        return runOnce(() -> {
+            currentPattern = pattern;
+            normalPattern = null;
+        });
+    }
+
+    /**
+     * Creates a flash pattern command that temporarily shows a pattern and then returns to normal
+     *
+     * @param patternName the name of the flash pattern to run
+     * @return Command that runs the flash pattern
+     */
+    public Command runFlashPattern(String patternName) {
+        LEDPattern pattern = getPatternByName(patternName);
+        if (pattern == null) {
+            // Pattern not found, return a command that does nothing
+            return runOnce(() -> {});
+        }
+        return runOnce(() -> {
+            normalPattern = currentPattern;
+            currentPattern = pattern;
+        });
+    }
+    
+    /**
+     * Gets all available pattern names
+     * @return Array of pattern names
+     */
+    public String[] getAvailablePatterns() {
+        return patternMap.keySet().toArray(new String[0]);
+    }
     
     /**
      * Creates a command that runs a pattern on the entire LED strip.
+     * This is kept for compatibility with existing code.
      *
      * @param pattern the LED pattern to run
      */
     public Command runPattern(LEDPattern pattern) {
-      return run(() -> pattern.applyTo(buffer));
+        return runOnce(() -> {
+            currentPattern = pattern;
+            normalPattern = null;
+        });
+    }
+
+    /**
+     * Creates a flash pattern command that temporarily shows a pattern and then returns to normal.
+     * This is kept for compatibility with existing code.
+     * 
+     * @param pattern the LED pattern to flash
+     */
+    public Command runFlashPattern(LEDPattern pattern) {
+        return runOnce(() -> {
+            normalPattern = currentPattern;
+            currentPattern = pattern;
+        });
     }
     
     /**
