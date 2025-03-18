@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -13,6 +14,8 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
+// Restore trapezoidal profile import
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,10 +40,18 @@ public class ShooterArm extends SubsystemBase {
 
     private AbsoluteEncoder shooterArmEncoder = shooterArmMotor.getAbsoluteEncoder();
     
-    // Trapezoidal motion profile objects
+    // Keep ArmFeedforward controller
+    private final ArmFeedforward armFeedforward = new ArmFeedforward(
+        ShooterArmConstants.kS, 
+        ShooterArmConstants.kG,
+        ShooterArmConstants.kV,
+        ShooterArmConstants.kA
+    );
+    
+    // Update trapezoidal profile to use constants from ShooterArmConstants
     private final TrapezoidProfile m_profile = new TrapezoidProfile(
         new TrapezoidProfile.Constraints(
-            ShooterArmConstants.maxVelocity, 
+            ShooterArmConstants.maxVelocity,
             ShooterArmConstants.maxAcceleration
         )
     );
@@ -219,6 +230,7 @@ public class ShooterArm extends SubsystemBase {
         
         if (!isInitialized) {
             shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
+            // Restore setpoint initialization
             m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
             
             isInitialized = true;
@@ -232,6 +244,7 @@ public class ShooterArm extends SubsystemBase {
         // Apply general constraints
         shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
         
+        // Restore trapezoidal profile calculation
         // Set goal for motion profile
         m_goal = new TrapezoidProfile.State(shooterArmDesiredAngle, 0);
         
@@ -240,15 +253,30 @@ public class ShooterArm extends SubsystemBase {
 
         if (DriverStation.isDisabled()) {
             shooterArmDesiredAngle = (float)shooterArmEncoder.getPosition();
+            // Restore setpoint reset
             m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
         }
         
+        // Calculate the feedforward output - now using the profile's position and velocity
+        double feedforwardOutput = armFeedforward.calculate(
+            m_setpoint.position,      // Profile position 
+            m_setpoint.velocity,      // Profile velocity
+            0                         // Zero acceleration for now
+        );
+        
         SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
         SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
+        SmartDashboard.putNumber("Shooter Arm Feedforward", feedforwardOutput);
+        // Restore profile metrics
         SmartDashboard.putNumber("Shooter Arm Profile Position", m_setpoint.position);
         SmartDashboard.putNumber("Shooter Arm Profile Velocity", m_setpoint.velocity);
         
-        // Use the profile position for the actual motor control
-        shooterArmController.setReference(m_setpoint.position, ControlType.kPosition);
+        // Use profiled position with feedforward
+        shooterArmController.setReference(
+            m_setpoint.position, 
+            ControlType.kPosition,
+            ClosedLoopSlot.kSlot0,  // Use slot 0 for PID
+            feedforwardOutput       // Add feedforward term
+        );
     }
 }
