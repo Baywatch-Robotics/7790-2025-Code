@@ -31,20 +31,7 @@ public final class Configs {
           // Set PID values for position control
           .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
           .outputRange(-.5, .5);
-    }
-
-    public static final SparkMaxConfig elevatorSlaveConfig = new SparkMaxConfig();
-
-    static {
-      // Configure basic settings of the elevator motor
-      elevatorSlaveConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
-      
-      elevatorSlaveConfig
-          .inverted(false)
-          .follow(13);
-    }
-    
-
+    }  
   }
 
   public static final class Climber {

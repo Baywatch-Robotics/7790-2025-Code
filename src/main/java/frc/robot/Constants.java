@@ -179,10 +179,7 @@ public final class Constants
   
   public static final class ElevatorConstants{
     
-    public static final int ID = 13;
-    
-    public static final int slaveID = 17;
-    
+    public static final int ID = 13;   
     
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing

@@ -36,7 +36,6 @@ public class Elevator extends SubsystemBase {
     private float desiredTotalHeight;
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
-    private SparkMax elevatorSlaveMotor = new SparkMax(ElevatorConstants.slaveID, MotorType.kBrushless);
 
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
     
@@ -73,12 +72,6 @@ public class Elevator extends SubsystemBase {
 
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
-                ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-        
-
-        elevatorSlaveMotor.configure(
-                Configs.Elevator.elevatorSlaveConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
@@ -395,7 +388,6 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
         
         SmartDashboard.putNumber("Elevator Desired Power", elevatorMotor.getAppliedOutput());
-        SmartDashboard.putNumber("Slave Power", elevatorSlaveMotor.getAppliedOutput());
 
         SmartDashboard.putNumber("Elevator Velocity", elevatorMotor.getEncoder().getVelocity());
 
