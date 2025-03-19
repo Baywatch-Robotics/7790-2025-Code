@@ -28,15 +28,15 @@ public class LED extends SubsystemBase {
     // LED patterns
     private final LEDPattern solidRed;
     private final LEDPattern solidBlue;
-    private final LEDPattern solidReef;
     private final LEDPattern solidHoldingAlgae;
+    private final LEDPattern solidShoot;
+    private final LEDPattern solidintaken;
 
     private final LEDPattern blueBreathing;
     private final LEDPattern redBreathing;
     private final LEDPattern redBlueGradient; // New gradient pattern
     
     // Add default flash patterns
-    private final LEDPattern linedUpFlash;
     
     private LEDPattern currentPattern;
     private LEDPattern normalPattern; // Pattern to return to after flashing
@@ -70,8 +70,11 @@ public class LED extends SubsystemBase {
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
       solidBlue = LEDPattern.solid(Color.kBlue);
+
+      solidShoot = LEDPattern.solid(Color.kAqua);
+
       solidHoldingAlgae = LEDPattern.solid(algaeColor);
-      solidReef = LEDPattern.solid(reefColor);
+      solidintaken = LEDPattern.solid(reefColor);
       
       // Create breathing patterns
       blueBreathing = createBreathingPattern(Color.kBlue);
@@ -81,18 +84,19 @@ public class LED extends SubsystemBase {
       // Create red-blue gradient pattern
       redBlueGradient = createRedBlueGradientPattern();
       
-      // Initialize flash patterns
-      linedUpFlash = createFlashPattern(Color.kGreen, 3);
-      
       // Initialize pattern map with all available patterns
       patternMap.put("SOLID_RED", solidRed);
       patternMap.put("SOLID_BLUE", solidBlue);
-      patternMap.put("SOLID_REEF", solidReef);
       patternMap.put("SOLID_ALGAE", solidHoldingAlgae);
       patternMap.put("BLUE_BREATHING", blueBreathing);
       patternMap.put("RED_BREATHING", redBreathing);
       patternMap.put("RED_BLUE_GRADIENT", redBlueGradient);
-      patternMap.put("LINED_UP_FLASH", linedUpFlash);
+      patternMap.put("INTAKE_PATTERN", redBlueGradient);
+
+      patternMap.put("INTAKEN_PATTERN", solidintaken);
+
+      patternMap.put("MANUAL_SHOOTING_PATTERN", solidShoot);
+
       
       // Start with gradient pattern by default until alliance is known
       currentPattern = redBlueGradient;
@@ -101,6 +105,9 @@ public class LED extends SubsystemBase {
       currentPattern.applyTo(buffer);
       led.setData(buffer);
     }
+    
+    // Add this flag to prevent periodic from overriding custom patterns
+    private boolean customPatternActive = false;
   
     @Override
     public void periodic() {
@@ -111,7 +118,7 @@ public class LED extends SubsystemBase {
       var allianceOption = DriverStation.getAlliance();
       
       // Select the appropriate pattern based on conditions
-      if (normalPattern == null) { // Only change pattern if not currently flashing
+      if (normalPattern == null && !customPatternActive) { // Only change pattern if not flashing or using a custom pattern
         if (allianceOption.isPresent()) {
           Alliance alliance = allianceOption.get();
           
@@ -382,21 +389,33 @@ public class LED extends SubsystemBase {
         return patternMap.getOrDefault(patternName, null);
     }
     
+
     /**
-     * Creates a command that runs a pattern on the entire LED strip using the pattern name.
-     *
-     * @param patternName the name of the LED pattern to run
-     * @return Command that sets the LED pattern
+     * Execute a pattern by name
+     * 
+     * @param patternName The name of the pattern to run
+     * @return Command that sets the pattern
      */
     public Command runPattern(String patternName) {
-        LEDPattern pattern = getPatternByName(patternName);
-        if (pattern == null) {
-            // Pattern not found, return a command that does nothing
-            return runOnce(() -> {});
-        }
         return runOnce(() -> {
-            currentPattern = pattern;
-            normalPattern = null;
+            // Get the pattern from the map
+            LEDPattern pattern = getPatternByName(patternName);
+            if (pattern != null) {
+                // Clear flash state - important to ensure we're not stuck in a flashing pattern
+                normalPattern = null;
+                
+                // Set the flag to prevent periodic from changing our pattern
+                customPatternActive = true;
+                
+                // Set the new pattern as the current pattern
+                currentPattern = pattern;
+                
+                // Apply the pattern immediately to see instant results
+                pattern.applyTo(tempBuffer);
+                adjustBrightnessForPower();
+                applyPatternWithBrightness();
+                led.setData(buffer);
+            }
         });
     }
 
@@ -407,69 +426,37 @@ public class LED extends SubsystemBase {
      * @return Command that runs the flash pattern
      */
     public Command runFlashPattern(String patternName) {
-        LEDPattern pattern = getPatternByName(patternName);
-        if (pattern == null) {
-            // Pattern not found, return a command that does nothing
-            return runOnce(() -> {});
-        }
         return runOnce(() -> {
+            // Turn off custom pattern mode
+            customPatternActive = false;
+            
+            // Store current pattern to return to when flashing is done
             normalPattern = currentPattern;
-            currentPattern = pattern;
+            
+            // Create a fresh flash pattern every time to ensure it resets
+            LEDPattern freshPattern = null;
+            
+            if ("LINED_UP_FLASH".equals(patternName)) {
+                freshPattern = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
+            } else {
+                // Try to get the pattern from the map
+                freshPattern = getPatternByName(patternName);
+            }
+            
+            // Set the pattern if found
+            if (freshPattern != null) {
+                currentPattern = freshPattern;
+            }
         });
     }
     
     /**
-     * Creates a flash pattern command with a custom number of flashes
-     *
-     * @param patternName the name of the flash pattern
-     * @param flashCount the number of times to flash
-     * @return Command that runs the flash pattern
+     * Resets to default pattern behavior based on alliance
      */
-    public Command runFlashPattern(String patternName, int flashCount) {
-        // For named patterns that are flashing patterns, we need to recreate them with the custom count
-        if (patternName.equals("LINED_UP_FLASH")) {
-            LEDPattern customFlash = createFlashPattern(Color.kGreen, flashCount);
-            return runOnce(() -> {
-                normalPattern = currentPattern;
-                currentPattern = customFlash;
-            });
-        }
-        
-        // For other patterns, fall back to the standard implementation
-        return runFlashPattern(patternName);
-    }
-    
-    /**
-     * Gets all available pattern names
-     * @return Array of pattern names
-     */
-    public String[] getAvailablePatterns() {
-        return patternMap.keySet().toArray(new String[0]);
-    }
-    
-    /**
-     * Creates a command that runs a pattern on the entire LED strip.
-     * This is kept for compatibility with existing code.
-     *
-     * @param pattern the LED pattern to run
-     */
-    public Command runPattern(LEDPattern pattern) {
+    public Command resetToDefaultPattern() {
         return runOnce(() -> {
-            currentPattern = pattern;
+            customPatternActive = false;
             normalPattern = null;
-        });
-    }
-
-    /**
-     * Creates a flash pattern command that temporarily shows a pattern and then returns to normal.
-     * This is kept for compatibility with existing code.
-     * 
-     * @param pattern the LED pattern to flash
-     */
-    public Command runFlashPattern(LEDPattern pattern) {
-        return runOnce(() -> {
-            normalPattern = currentPattern;
-            currentPattern = pattern;
         });
     }
     

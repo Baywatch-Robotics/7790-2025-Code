@@ -8,6 +8,7 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
+import frc.robot.subsystems.LED;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
@@ -18,20 +19,21 @@ import frc.robot.subsystems.Climber;
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter, RobotContainer robotContainer) {
+    public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter, RobotContainer robotContainer, LED led) {
       
       Command command  = funnel.funnelHomeCommand()
+      .andThen(led.runPattern("INTAKE_PATTERN"))
       .andThen(algaeArm.algaeArmStowUpCommand())
       .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
+      .andThen(shooterArm.shooterArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger()))
       .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-      // Keep the shooter arm up until outside reef zone
-      .andThen(shooterArm.shooterArmScoreLOWCommand())
       // Only proceed to loading position when outside reef zone
       .andThen(new WaitUntilCommand(robotContainer.reefZoneTrigger().negate()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+      .andThen(led.runPattern("INTAKEN_PATTERN"))
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(new WaitCommand(.5))

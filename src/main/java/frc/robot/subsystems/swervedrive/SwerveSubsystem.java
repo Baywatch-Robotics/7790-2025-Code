@@ -277,57 +277,17 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
                 Rotation2d.fromRadians(target.getZ())
             );
             Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
-            
-            // Calculate distance from current robot pose to target pose
-            
-            //double distance = getPose().getTranslation().getDistance(finalTargetPose.getTranslation());
-            
-            // Base velocity and acceleration values based on distance
+
             double baseVelocity, baseAcceleration;
             
           
             baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
             baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
             
-            /*
-            if (elevator.isAtIntakePosition()){
-              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            }
-            else if(elevator.isPartiallyRaised()){
-              baseVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
-            }
-            else if(elevator.isMidRaised()){
-              baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-            }
-            else{
-              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            }
-          
-            
-            if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_ACCEL);
-          } else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_ACCEL);
-          } else {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
-          }
-            */
-
-            // Apply elevator height-based multipliers
-            double finalVelocity = baseVelocity;
-            double finalAcceleration = baseAcceleration;
-            
             // Create the PathConstraints with the computed values
             PathConstraints currentConstraints = new PathConstraints(
-                finalVelocity, 
-                finalAcceleration,
+              baseVelocity, 
+              baseAcceleration,
                 DriveToPoseConstants.MAX_ANGULAR_VEL,
                 DriveToPoseConstants.MAX_ANGULAR_ACCEL
             );

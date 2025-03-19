@@ -135,7 +135,7 @@ public class RobotContainer {
   // Initialize funnel subsystem
   private final Funnel funnel = new Funnel();
   
-  private final LED LED = new LED();
+  private final LED led = new LED();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
 
@@ -402,13 +402,14 @@ public class RobotContainer {
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this));
+    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
 
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+    driverXbox.y().onTrue(led.runPattern("MANUAL_SHOOTING_PATTERN"));
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
 
     driverXbox.a().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
@@ -534,6 +535,9 @@ public class RobotContainer {
       if (isLinedUp && !wasLinedUp) {
         drivebase.clearTargetVisualization();
         // Optional: provide haptic feedback or logging
+
+        led.runFlashPattern("LINED_UP_FLASH");
+
         driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.5);
         // Schedule a command to stop rumble after a short duration
         Commands.waitSeconds(0.5)
