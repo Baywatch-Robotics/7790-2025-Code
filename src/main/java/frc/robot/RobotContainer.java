@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -410,9 +411,10 @@ public class RobotContainer {
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+    // Use alongWith to combine the LED pattern with the shooter command
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
-    driverXbox.y().onTrue(led.runPattern("MANUAL_SHOOTING_PATTERN"));
-    driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand());
+    driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
+    driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
 
     driverXbox.a().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
@@ -540,7 +542,9 @@ public class RobotContainer {
 
         loadedSingleTime = false;
 
-        led.runFlashPattern("LINED_UP_FLASH");
+        // Run a more noticeable flash pattern and log it
+        led.flashLEDs(Color.kGreen, 5).schedule();
+        SmartDashboard.putString("LED Action", "Flashed GREEN for lineup");
 
         driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.5);
         // Schedule a command to stop rumble after a short duration

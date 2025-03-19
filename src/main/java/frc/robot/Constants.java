@@ -127,13 +127,13 @@ public final class Constants
     //public static final float D = 0.5f;
 
     //public static final float P = 0.0f;
-    public static final float P = 2.0f;
+    public static final float P = 1.2f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 5;
-    public static final float maxAcceleration = 3;
+    public static final float maxVelocity = 10;
+    public static final float maxAcceleration = 20;
 
     public static final float allowedClosedLoopError = 0.005f;
     

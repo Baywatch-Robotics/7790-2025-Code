@@ -9,6 +9,7 @@ import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import java.util.HashMap;
@@ -105,6 +106,9 @@ public class LED extends SubsystemBase {
       // Create red-blue gradient pattern
       redBlueGradient = createRedBlueGradientPattern();
       
+      // Create lined up flash pattern
+      LEDPattern linedUpFlash = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
+      
       // Initialize pattern map with all available patterns
       patternMap.put("SOLID_RED", solidRed);
       patternMap.put("SOLID_BLUE", solidBlue);
@@ -119,6 +123,7 @@ public class LED extends SubsystemBase {
       patternMap.put("CORAL_LOADED_PATTERN", coralLoadedPattern);
 
       patternMap.put("MANUAL_SHOOTING_PATTERN", solidShoot);
+      patternMap.put("LINED_UP_FLASH", linedUpFlash); // Add the flash pattern to the map
 
       
       // Start with gradient pattern by default until alliance is known
@@ -134,6 +139,15 @@ public class LED extends SubsystemBase {
     
     // Add a class variable to track the current distance
     private double currentDistanceToTarget = 0.0;
+
+    // Add these fields at the class level
+    private boolean isFlashing = false;
+    private Color flashColor = Color.kGreen; // Default flash color
+    private boolean flashState = true;
+    private double flashNextChangeTime = 0;
+    private int flashCurrentCycles = 0;
+    private int flashMaxCycles = 3; // Default to 3 flashes
+    private LEDPattern previousPattern = null;
   
     @Override
     public void periodic() {
@@ -142,6 +156,61 @@ public class LED extends SubsystemBase {
       
       // Check if alliance information is available
       var allianceOption = DriverStation.getAlliance();
+      
+      // Handle manual flashing mode
+      if (isFlashing) {
+          double currentTime = Timer.getFPGATimestamp();
+          
+          if (currentTime >= flashNextChangeTime) {
+              flashState = !flashState; // Toggle flash state
+              
+              if (!flashState) { // Just turned OFF
+                  flashCurrentCycles++;
+                  
+                  // Check if we've finished all cycles
+                  if (flashCurrentCycles >= flashMaxCycles) {
+                      // End flashing and restore previous pattern
+                      isFlashing = false;
+                      currentPattern = previousPattern;
+                      customPatternActive = false;
+                      SmartDashboard.putString("LED Pattern", "Previous");
+                  }
+              }
+              
+              // Set next change time
+              flashNextChangeTime = currentTime + (flashState ? 
+                  LEDConstants.FLASH_ON_DURATION : LEDConstants.FLASH_OFF_DURATION);
+              
+              // Update pattern immediately for this cycle
+              if (isFlashing) {
+                  // Create a solid pattern of the current flash state
+                  LEDPattern flashPattern = buffer -> {
+                      if (flashState) {
+                          for (int i = 0; i < buffer.getLength(); i++) {
+                              buffer.setLED(i, flashColor);
+                          }
+                      } else {
+                          for (int i = 0; i < buffer.getLength(); i++) {
+                              buffer.setLED(i, Color.kBlack);
+                          }
+                      }
+                  };
+                  
+                  // Apply the pattern
+                  flashPattern.applyTo(tempBuffer);
+                  adjustBrightnessForPower();
+                  applyPatternWithBrightness();
+                  led.setData(buffer);
+                  
+                  // Log flash state
+                  SmartDashboard.putBoolean("Flash State", flashState);
+                  SmartDashboard.putNumber("Flash Cycle", flashCurrentCycles);
+              }
+          }
+          
+          // Skip the rest of periodic when flashing
+          return;
+      }
       
       // If distance-based breathing is enabled, update the pattern with current distance
       if (distanceBasedBreathingEnabled) {
@@ -410,6 +479,11 @@ public class LED extends SubsystemBase {
                         // Check if we've completed all required flashes
                         if (completedCycles >= flashCount) {
                             isComplete = true;
+                            // Return the pattern to normal immediately at the end
+                            if (normalPattern != null) {
+                                currentPattern = normalPattern;
+                                normalPattern = null;
+                            }
                             return;
                         }
                         
@@ -443,20 +517,21 @@ public class LED extends SubsystemBase {
      * @return Command that sets the pattern
      */
     public Command runPattern(String patternName) {
-        // Interrupt distance-based breathing
-        distanceBasedBreathingEnabled = false;
-        customPatternActive = false;
-        normalPattern = null;
-        
-        LEDPattern pattern = getPatternByName(patternName);
-        if (pattern != null) {
-            currentPattern = pattern;
-            pattern.applyTo(tempBuffer);
-            adjustBrightnessForPower();
-            applyPatternWithBrightness();
-            led.setData(buffer);
-        }
-        return Commands.none();
+        return Commands.runOnce(() -> {
+            // Interrupt distance-based breathing
+            distanceBasedBreathingEnabled = false;
+            customPatternActive = true;  // FIXED: Set to true instead of false
+            normalPattern = null;
+            
+            LEDPattern pattern = getPatternByName(patternName);
+            if (pattern != null) {
+                currentPattern = pattern;
+                pattern.applyTo(tempBuffer);
+                adjustBrightnessForPower();
+                applyPatternWithBrightness();
+                led.setData(buffer);
+            }
+        });
     }
     
     /**
@@ -466,32 +541,31 @@ public class LED extends SubsystemBase {
      * @return Command that runs the flash pattern
      */
     public Command runFlashPattern(String patternName) {
-        // Interrupt distance-based breathing
-        distanceBasedBreathingEnabled = false;
-        customPatternActive = false;
-        normalPattern = currentPattern;
-        
-        LEDPattern freshPattern = null;
         if ("LINED_UP_FLASH".equals(patternName)) {
-            freshPattern = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
+            // Use direct flashing for lined up
+            return flashLEDs(Color.kGreen, LEDConstants.linedUpFlashCount);
         } else {
-            freshPattern = getPatternByName(patternName);
+            // Use standard pattern
+            return Commands.runOnce(() -> {
+                // Interrupt distance-based breathing
+                distanceBasedBreathingEnabled = false;
+                customPatternActive = true;
+                normalPattern = currentPattern;
+                
+                // Get the pattern from the map
+                LEDPattern pattern = getPatternByName(patternName);
+                
+                if (pattern != null) {
+                    currentPattern = pattern;
+                    pattern.applyTo(tempBuffer);
+                    adjustBrightnessForPower();
+                    applyPatternWithBrightness();
+                    led.setData(buffer);
+                    
+                    SmartDashboard.putString("LED Pattern", patternName);
+                }
+            });
         }
-        if (freshPattern != null) {
-            currentPattern = freshPattern;
-        }
-        return Commands.none();
-    }
-    
-    /**
-     * Resets to default pattern behavior based on alliance
-     */
-    public Command resetToDefaultPattern() {
-        // Interrupt distance-based breathing
-        distanceBasedBreathingEnabled = false;
-        customPatternActive = false;
-        normalPattern = null;
-        return Commands.none();
     }
     
     /**
@@ -538,5 +612,69 @@ public class LED extends SubsystemBase {
         distancePatternTimer.start();
         currentPattern = createDistanceBreathePattern();
         return Commands.none();
+    }
+
+    /**
+     * Resets to alliance-based pattern
+     * @return Command that sets the pattern to alliance colors
+     */
+    public Command setAlliancePattern() {
+        return Commands.runOnce(() -> {
+            // Interrupt distance-based breathing
+            distanceBasedBreathingEnabled = false;
+            customPatternActive = false;
+            normalPattern = null;
+            
+            // Check if alliance information is available
+            var allianceOption = DriverStation.getAlliance();
+            
+            if (allianceOption.isPresent()) {
+                Alliance alliance = allianceOption.get();
+                // Use solid alliance colors
+                currentPattern = (alliance == Alliance.Blue) ? solidBlue : solidRed;
+            } else {
+                // No alliance information available, use gradient pattern
+                currentPattern = redBlueGradient;
+            }
+            
+            // Apply the pattern immediately
+            currentPattern.applyTo(tempBuffer);
+            adjustBrightnessForPower();
+            applyPatternWithBrightness();
+            led.setData(buffer);
+        });
+    }
+
+    /**
+     * Update the resetToDefaultPattern method to use the new setAlliancePattern
+     */
+    public Command resetToDefaultPattern() {
+        return setAlliancePattern();
+    }
+
+    /**
+     * Direct method to flash LEDs a specific number of times with a color
+     * @param color The color to flash
+     * @param count Number of times to flash
+     */
+    public Command flashLEDs(Color color, int count) {
+        return Commands.runOnce(() -> {
+            // Save current pattern
+            previousPattern = currentPattern;
+            
+            // Set up flash state
+            isFlashing = true;
+            flashColor = color;
+            flashState = true; // Start with ON
+            flashCurrentCycles = 0;
+            flashMaxCycles = count;
+            flashNextChangeTime = Timer.getFPGATimestamp() + LEDConstants.FLASH_ON_DURATION;
+            
+            customPatternActive = true;
+            distanceBasedBreathingEnabled = false;
+            
+            SmartDashboard.putString("LED Pattern", "Flashing");
+            SmartDashboard.putNumber("Flash Count", count);
+        });
     }
 }

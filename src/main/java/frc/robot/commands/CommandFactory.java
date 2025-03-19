@@ -21,8 +21,11 @@ public class CommandFactory {
    
     public static Command setIntakeCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter, RobotContainer robotContainer, LED led) {
       
-      Command command  = funnel.funnelHomeCommand()
-      .andThen(led.runPattern("INTAKE_PATTERN"))
+      // Run the LED pattern first as a separate command
+      Command ledCommand = led.runPattern("INTAKE_PATTERN");
+      
+      Command mainCommand = funnel.funnelHomeCommand()
+      // Remove the LED command from here since we'll combine it at the end
       .andThen(algaeArm.algaeArmStowUpCommand())
       .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
       .andThen(shooterArm.shooterArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger()))
@@ -38,6 +41,8 @@ public class CommandFactory {
       .andThen(new WaitCommand(.5))
       .andThen(shooter.shooterZeroSpeedCommand());
 
+      // Combine the LED command with the main command sequence
+      Command command = ledCommand.andThen(mainCommand);
 
       command.addRequirements(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter);
 
@@ -184,10 +189,10 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
 
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox)
-  .alongWith(drivebase.startDriveToPose(buttonBox, elevator));
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
+  .alongWith(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     
-    command.addRequirements(shooter, shooterArm, elevator);
+    command.addRequirements(shooter, shooterArm, elevator, drivebase);
     return command; 
 }
 
