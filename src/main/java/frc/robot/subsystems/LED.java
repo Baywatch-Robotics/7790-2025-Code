@@ -443,11 +443,13 @@ public class LED extends SubsystemBase {
      * @return Command that sets the pattern
      */
     public Command runPattern(String patternName) {
+        // Interrupt distance-based breathing
+        distanceBasedBreathingEnabled = false;
+        customPatternActive = false;
+        normalPattern = null;
+        
         LEDPattern pattern = getPatternByName(patternName);
         if (pattern != null) {
-            // Clear custom flag so that the new pattern is applied
-            customPatternActive = false;
-            normalPattern = null;
             currentPattern = pattern;
             pattern.applyTo(tempBuffer);
             adjustBrightnessForPower();
@@ -456,7 +458,7 @@ public class LED extends SubsystemBase {
         }
         return Commands.none();
     }
-
+    
     /**
      * Creates a flash pattern command that temporarily shows a pattern and then returns to normal
      *
@@ -464,8 +466,11 @@ public class LED extends SubsystemBase {
      * @return Command that runs the flash pattern
      */
     public Command runFlashPattern(String patternName) {
+        // Interrupt distance-based breathing
+        distanceBasedBreathingEnabled = false;
         customPatternActive = false;
         normalPattern = currentPattern;
+        
         LEDPattern freshPattern = null;
         if ("LINED_UP_FLASH".equals(patternName)) {
             freshPattern = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
@@ -482,6 +487,8 @@ public class LED extends SubsystemBase {
      * Resets to default pattern behavior based on alliance
      */
     public Command resetToDefaultPattern() {
+        // Interrupt distance-based breathing
+        distanceBasedBreathingEnabled = false;
         customPatternActive = false;
         normalPattern = null;
         return Commands.none();
