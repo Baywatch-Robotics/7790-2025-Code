@@ -9,6 +9,7 @@ import frc.robot.Constants.LEDConstants;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -410,26 +411,17 @@ public class LED extends SubsystemBase {
      * @return Command that sets the pattern
      */
     public Command runPattern(String patternName) {
-        return runOnce(() -> {
-            // Get the pattern from the map
-            LEDPattern pattern = getPatternByName(patternName);
-            if (pattern != null) {
-                // Clear flash state - important to ensure we're not stuck in a flashing pattern
-                normalPattern = null;
-                
-                // Set the flag to prevent periodic from changing our pattern
-                customPatternActive = true;
-                
-                // Set the new pattern as the current pattern
-                currentPattern = pattern;
-                
-                // Apply the pattern immediately to see instant results
-                pattern.applyTo(tempBuffer);
-                adjustBrightnessForPower();
-                applyPatternWithBrightness();
-                led.setData(buffer);
-            }
-        });
+        LEDPattern pattern = getPatternByName(patternName);
+        if (pattern != null) {
+            normalPattern = null;
+            customPatternActive = true;
+            currentPattern = pattern;
+            pattern.applyTo(tempBuffer);
+            adjustBrightnessForPower();
+            applyPatternWithBrightness();
+            led.setData(buffer);
+        }
+        return Commands.none();
     }
 
     /**
@@ -439,38 +431,27 @@ public class LED extends SubsystemBase {
      * @return Command that runs the flash pattern
      */
     public Command runFlashPattern(String patternName) {
-        return runOnce(() -> {
-            // Turn off custom pattern mode
-            customPatternActive = false;
-            
-            // Store current pattern to return to when flashing is done
-            normalPattern = currentPattern;
-            
-            // Create a fresh flash pattern every time to ensure it resets
-            LEDPattern freshPattern = null;
-            
-            if ("LINED_UP_FLASH".equals(patternName)) {
-                freshPattern = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
-            } else {
-                // Try to get the pattern from the map
-                freshPattern = getPatternByName(patternName);
-            }
-            
-            // Set the pattern if found
-            if (freshPattern != null) {
-                currentPattern = freshPattern;
-            }
-        });
+        customPatternActive = false;
+        normalPattern = currentPattern;
+        LEDPattern freshPattern = null;
+        if ("LINED_UP_FLASH".equals(patternName)) {
+            freshPattern = createFlashPattern(Color.kGreen, LEDConstants.linedUpFlashCount);
+        } else {
+            freshPattern = getPatternByName(patternName);
+        }
+        if (freshPattern != null) {
+            currentPattern = freshPattern;
+        }
+        return Commands.none();
     }
     
     /**
      * Resets to default pattern behavior based on alliance
      */
     public Command resetToDefaultPattern() {
-        return runOnce(() -> {
-            customPatternActive = false;
-            normalPattern = null;
-        });
+        customPatternActive = false;
+        normalPattern = null;
+        return Commands.none();
     }
     
     /**
@@ -490,115 +471,47 @@ public class LED extends SubsystemBase {
         return totalCurrentDraw / 1000.0; // Convert mA to A
     }
 
-    /**
-     * Creates a LEDPattern that breathes with a period based on distance.
-     * Closer distances yield a faster cycle.
-     * Uses the specified color for the breathing effect.
-     * 
-     * @param distance The distance to use for calculating breathing period
-     * @param color The color to use for the breathing pattern
-     * @return A distance-based breathing LEDPattern
-     */
-    private LEDPattern createDistanceBasedBreathingPattern(double distance, Color color) {
-        return new LEDPattern() {
-            private final Timer timer = new Timer();
-            {
-                timer.reset();
-                timer.start();
-            }
-            @Override
-            public void applyTo(AddressableLEDBuffer buffer) {
-                // Map distance to a breathing period
-                double d = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE, 
-                          Math.min(distance, LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE));
-                double period = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
-                    ((d - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
-                    (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
-                    * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
-                
-                double time = timer.get();
-                double phase = (time % period) / period;
-                double sinValue = (Math.sin(2 * Math.PI * phase) + 1) / 2;
-                double breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
-                    sinValue * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
-                
-                // Use the specified color for the breathing effect
-                for (int i = 0; i < buffer.getLength(); i++) {
-                    Color breathColor = new Color(
-                        color.red * breathIntensity,
-                        color.green * breathIntensity,
-                        color.blue * breathIntensity
-                    );
-                    buffer.setLED(i, breathColor);
+    // New helper method that returns a distance-based breathing LEDPattern
+    private LEDPattern createDistanceBreathePattern(double distance) {
+        if(distance >= LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE) {
+            return solidReef;
+        } else {
+            double minPeriod = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD;
+            double maxPeriod = LEDConstants.DISTANCE_BREATHE_MAX_PERIOD;
+            double clampedDistance = Math.max(distance, LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE);
+            double period = minPeriod + ((clampedDistance - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
+                           (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
+                           * (maxPeriod - minPeriod);
+            return new LEDPattern() {
+                private final Timer dynamicTimer = new Timer();
+                {
+                    dynamicTimer.start();
                 }
-            }
-        };
+                @Override
+                public void applyTo(AddressableLEDBuffer buffer) {
+                    double time = dynamicTimer.get();
+                    double cyclePosition = (time % period) / period;
+                    
+                    // Calculate brightness using a sine wave
+                    double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
+                    breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
+                                      breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+                    for (int i = 0; i < buffer.getLength(); i++) {
+                        buffer.setLED(i, new Color(
+                            reefColor.red * breathIntensity, 
+                            reefColor.green * breathIntensity, 
+                            reefColor.blue * breathIntensity));
+                    }
+                }
+            };
+        }
     }
-
-    /**
-     * Overloaded method that uses white as default color
-     */
-    private LEDPattern createDistanceBasedBreathingPattern(double distance) {
-        return createDistanceBasedBreathingPattern(distance, Color.kWhite);
-    }
-
-    /**
-     * Enables distance-based breathing mode.
-     * Overrides other patterns until disabled.
-     */
-    public Command runDistanceBasedBreathingMode(double distance) {
-        return runOnce(() -> {
-            distanceBasedBreathingEnabled = true;
-            customPatternActive = true;
-            currentPattern = createDistanceBasedBreathingPattern(distance);
-            // Apply immediately
-            currentPattern.applyTo(tempBuffer);
-            adjustBrightnessForPower();
-            applyPatternWithBrightness();
-            led.setData(buffer);
-        });
-    }
-
-    /**
-     * Disables the distance-based breathing mode, allowing normal pattern updates.
-     */
-    public Command disableDistanceBasedBreathingMode() {
-        return runOnce(() -> {
-            distanceBasedBreathingEnabled = false;
-            customPatternActive = false;
-        });
-    }
-
-    /**
-     * Creates a distance-based breathing pattern to indicate coral is loaded.
-     * Uses reef color with breathing frequency based on distance.
-     * If distance exceeds max threshold, uses solid reef color.
-     * 
-     * @param distance The distance to the target
-     * @return Command that runs the appropriate pattern based on distance
-     */
+    
+    // Modified command to activate distance-based breathing using the helper method
     public Command runDistanceBasedPatternWhenLoaded(double distance) {
-        return runOnce(() -> {
-            if (distance > LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE) {
-                // If beyond max distance, use solid reef color
-                customPatternActive = true;
-                currentPattern = solidReef;
-                // Apply immediately
-                currentPattern.applyTo(tempBuffer);
-                adjustBrightnessForPower();
-                applyPatternWithBrightness();
-                led.setData(buffer);
-            } else {
-                // Within range, use distance-based breathing with reef color
-                distanceBasedBreathingEnabled = true;
-                customPatternActive = true;
-                currentPattern = createDistanceBasedBreathingPattern(distance, reefColor);
-                // Apply immediately
-                currentPattern.applyTo(tempBuffer);
-                adjustBrightnessForPower();
-                applyPatternWithBrightness();
-                led.setData(buffer);
-            }
-        });
+        customPatternActive = true;
+        distanceBasedBreathingEnabled = true;
+        currentPattern = createDistanceBreathePattern(distance);
+        return Commands.none();
     }
 }
