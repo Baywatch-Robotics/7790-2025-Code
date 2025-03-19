@@ -445,8 +445,9 @@ public class LED extends SubsystemBase {
     public Command runPattern(String patternName) {
         LEDPattern pattern = getPatternByName(patternName);
         if (pattern != null) {
+            // Clear custom flag so that the new pattern is applied
+            customPatternActive = false;
             normalPattern = null;
-            customPatternActive = true;
             currentPattern = pattern;
             pattern.applyTo(tempBuffer);
             adjustBrightnessForPower();
@@ -506,12 +507,6 @@ public class LED extends SubsystemBase {
     // Updated helper method using distancePhase (modulo 1) as phase
     private LEDPattern createDistanceBreathePattern() {
         return buffer -> {
-            double lockedPeriod = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
-                ((currentDistanceToTarget - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
-                (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
-                * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
-            double period = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_PERIOD,
-                             Math.min(lockedPeriod, LEDConstants.DISTANCE_BREATHE_MAX_PERIOD));
             // Instead of using elapsed time, use our integrated phase value (mod 1)
             double cyclePosition = distancePhase % 1.0;
             double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
