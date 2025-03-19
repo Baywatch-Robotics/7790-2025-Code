@@ -64,6 +64,8 @@ public class LED extends SubsystemBase {
         }
     }
 
+    private final Timer distanceBreathingTimer = new Timer();
+
     public LED() {
 
       led = new AddressableLED(LEDConstants.port);
@@ -72,6 +74,8 @@ public class LED extends SubsystemBase {
       led.setLength(LEDConstants.length);
       led.start();
       
+      distanceBreathingTimer.reset();
+      distanceBreathingTimer.start();
 
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
@@ -118,6 +122,9 @@ public class LED extends SubsystemBase {
     
     // Add this flag to prevent periodic from overriding custom patterns
     private boolean customPatternActive = false;
+    
+    // Add a class variable to track the current distance
+    private double currentDistanceToTarget = 0.0;
   
     @Override
     public void periodic() {
@@ -127,8 +134,13 @@ public class LED extends SubsystemBase {
       // Check if alliance information is available
       var allianceOption = DriverStation.getAlliance();
       
-      // Select the appropriate pattern based on conditions
-      if (!distanceBasedBreathingEnabled && normalPattern == null && !customPatternActive) { // Only change pattern if not flashing or using a custom pattern
+      // If distance-based breathing is enabled, update the pattern with current distance
+      if (distanceBasedBreathingEnabled) {
+        currentPattern = createDistanceBreathePattern(currentDistanceToTarget);
+      }
+      // Select the appropriate pattern based on conditions (only if not in distance breathing mode)
+      else if (normalPattern == null && !customPatternActive) {
+        // ...existing pattern selection code...
         if (allianceOption.isPresent()) {
           Alliance alliance = allianceOption.get();
           
@@ -473,45 +485,49 @@ public class LED extends SubsystemBase {
 
     // New helper method that returns a distance-based breathing LEDPattern
     private LEDPattern createDistanceBreathePattern(double distance) {
-        if(distance >= LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE) {
-            return solidReef;
-        } else {
-            double minPeriod = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD;
-            double maxPeriod = LEDConstants.DISTANCE_BREATHE_MAX_PERIOD;
-            double clampedDistance = Math.max(distance, LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE);
-            double period = minPeriod + ((clampedDistance - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
-                           (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
-                           * (maxPeriod - minPeriod);
-            return new LEDPattern() {
-                private final Timer dynamicTimer = new Timer();
-                {
-                    dynamicTimer.start();
-                }
-                @Override
-                public void applyTo(AddressableLEDBuffer buffer) {
-                    double time = dynamicTimer.get();
-                    double cyclePosition = (time % period) / period;
-                    
-                    // Calculate brightness using a sine wave
-                    double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
-                    breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
-                                      breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setLED(i, new Color(
-                            reefColor.red * breathIntensity, 
-                            reefColor.green * breathIntensity, 
-                            reefColor.blue * breathIntensity));
-                    }
-                }
-            };
-        }
+        // Clamp the distance to the allowed range for calculation
+        double effectiveDistance = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE, distance);
+        
+        // Compute period: at min distance -> faster breathing (minPeriod), at max -> slower (maxPeriod)
+        double period = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
+                        ((effectiveDistance - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
+                        (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
+                        * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
+        
+        return buffer -> {
+            double time = distanceBreathingTimer.get();
+            double cyclePosition = (time % period) / period;
+            
+            // Calculate brightness using a sine wave
+            double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
+            breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
+                          breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+            
+            // Apply to all LEDs
+            for (int i = 0; i < buffer.getLength(); i++) {
+                buffer.setLED(i, new Color(
+                    reefColor.red * breathIntensity,
+                    reefColor.green * breathIntensity,
+                    reefColor.blue * breathIntensity));
+            }
+        };
     }
     
-    // Modified command to activate distance-based breathing using the helper method
+    // Modified command to activate and update distance-based breathing
     public Command runDistanceBasedPatternWhenLoaded(double distance) {
         customPatternActive = true;
         distanceBasedBreathingEnabled = true;
+        currentDistanceToTarget = distance;
+        // Initial pattern setup
         currentPattern = createDistanceBreathePattern(distance);
+        return Commands.none();
+    }
+    
+    // Add a method to update the distance without recreating the whole pattern
+    public Command updateDistanceForBreathing(double distance) {
+        if (distanceBasedBreathingEnabled) {
+            currentDistanceToTarget = distance;
+        }
         return Commands.none();
     }
 }
