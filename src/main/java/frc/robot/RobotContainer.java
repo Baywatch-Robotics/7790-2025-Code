@@ -69,6 +69,8 @@ public class RobotContainer {
   private boolean isApproaching = false;
   private boolean isLinedUp = false;
 
+  private boolean loadedSingleTime = false;
+
   // Add constants for proximity thresholds
   // private static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
   // private static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
@@ -548,12 +550,25 @@ public class RobotContainer {
 
         drivebase.visualizeTargetPose(allianceRelativeTarget);
       }
+
+      if(loadedSingleTime == false){
+        loadedSingleTime = shooter.coralLoadedTrigger().getAsBoolean();
+      }
+
+      loadedSingleTime = true;
+
+      // If coral is loaded and we're approaching the target, update LED pattern based on distance
+      if (loadedSingleTime && currentTarget != null) {
+        led.runDistanceBasedPatternWhenLoaded(distance);
+      }
     } else {
       // No target, all triggers are false
       isApproaching = false;
       isClose = false;
       isVeryClose = false;
       isLinedUp = false;
+
+      loadedSingleTime = false;
 
       // Clear target visualization
       drivebase.clearTargetVisualization();

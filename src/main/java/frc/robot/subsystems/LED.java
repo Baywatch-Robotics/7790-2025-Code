@@ -30,11 +30,14 @@ public class LED extends SubsystemBase {
     private final LEDPattern solidBlue;
     private final LEDPattern solidHoldingAlgae;
     private final LEDPattern solidShoot;
-    private final LEDPattern solidintaken;
+    private final LEDPattern solidReef;  // Add solid reef color pattern
 
     private final LEDPattern blueBreathing;
     private final LEDPattern redBreathing;
     private final LEDPattern redBlueGradient; // New gradient pattern
+    
+    // Add coral loaded pattern
+    private final LEDPattern coralLoadedPattern;
     
     // Add default flash patterns
     
@@ -76,13 +79,15 @@ public class LED extends SubsystemBase {
       solidShoot = LEDPattern.solid(Color.kAqua);
 
       solidHoldingAlgae = LEDPattern.solid(algaeColor);
-      solidintaken = LEDPattern.solid(reefColor);
+      solidReef = LEDPattern.solid(reefColor);  // Initialize solid reef color
       
       // Create breathing patterns
       blueBreathing = createBreathingPattern(Color.kBlue);
       redBreathing = createBreathingPattern(Color.kRed);
       
-  
+      // Create coral loaded pattern - bright green pulsing
+      coralLoadedPattern = createBreathingPattern(Color.kGreen);
+      
       // Create red-blue gradient pattern
       redBlueGradient = createRedBlueGradientPattern();
       
@@ -90,12 +95,14 @@ public class LED extends SubsystemBase {
       patternMap.put("SOLID_RED", solidRed);
       patternMap.put("SOLID_BLUE", solidBlue);
       patternMap.put("SOLID_ALGAE", solidHoldingAlgae);
+      patternMap.put("SOLID_REEF", solidReef);  // Add solid reef to patterns
       patternMap.put("BLUE_BREATHING", blueBreathing);
       patternMap.put("RED_BREATHING", redBreathing);
       patternMap.put("RED_BLUE_GRADIENT", redBlueGradient);
       patternMap.put("INTAKE_PATTERN", redBlueGradient);
 
-      patternMap.put("INTAKEN_PATTERN", solidintaken);
+      // Replace INTAKEN_PATTERN with CORAL_LOADED_PATTERN
+      patternMap.put("CORAL_LOADED_PATTERN", coralLoadedPattern);
 
       patternMap.put("MANUAL_SHOOTING_PATTERN", solidShoot);
 
@@ -137,6 +144,10 @@ public class LED extends SubsystemBase {
         }
       }
       
+      if(!DriverStation.isDSAttached())
+        {
+            currentPattern = redBlueGradient;
+        }
       // Apply current pattern to temp buffer for power calculations
       currentPattern.applyTo(tempBuffer);
       
@@ -482,8 +493,13 @@ public class LED extends SubsystemBase {
     /**
      * Creates a LEDPattern that breathes with a period based on distance.
      * Closer distances yield a faster cycle.
+     * Uses the specified color for the breathing effect.
+     * 
+     * @param distance The distance to use for calculating breathing period
+     * @param color The color to use for the breathing pattern
+     * @return A distance-based breathing LEDPattern
      */
-    private LEDPattern createDistanceBasedBreathingPattern(double distance) {
+    private LEDPattern createDistanceBasedBreathingPattern(double distance, Color color) {
         return new LEDPattern() {
             private final Timer timer = new Timer();
             {
@@ -506,18 +522,24 @@ public class LED extends SubsystemBase {
                 double breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
                     sinValue * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
                 
-                // Use a default base color (e.g., white) for the breathing effect
-                Color baseColor = Color.kWhite;
+                // Use the specified color for the breathing effect
                 for (int i = 0; i < buffer.getLength(); i++) {
                     Color breathColor = new Color(
-                        baseColor.red * breathIntensity,
-                        baseColor.green * breathIntensity,
-                        baseColor.blue * breathIntensity
+                        color.red * breathIntensity,
+                        color.green * breathIntensity,
+                        color.blue * breathIntensity
                     );
                     buffer.setLED(i, breathColor);
                 }
             }
         };
+    }
+
+    /**
+     * Overloaded method that uses white as default color
+     */
+    private LEDPattern createDistanceBasedBreathingPattern(double distance) {
+        return createDistanceBasedBreathingPattern(distance, Color.kWhite);
     }
 
     /**
@@ -544,6 +566,39 @@ public class LED extends SubsystemBase {
         return runOnce(() -> {
             distanceBasedBreathingEnabled = false;
             customPatternActive = false;
+        });
+    }
+
+    /**
+     * Creates a distance-based breathing pattern to indicate coral is loaded.
+     * Uses reef color with breathing frequency based on distance.
+     * If distance exceeds max threshold, uses solid reef color.
+     * 
+     * @param distance The distance to the target
+     * @return Command that runs the appropriate pattern based on distance
+     */
+    public Command runDistanceBasedPatternWhenLoaded(double distance) {
+        return runOnce(() -> {
+            if (distance > LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE) {
+                // If beyond max distance, use solid reef color
+                customPatternActive = true;
+                currentPattern = solidReef;
+                // Apply immediately
+                currentPattern.applyTo(tempBuffer);
+                adjustBrightnessForPower();
+                applyPatternWithBrightness();
+                led.setData(buffer);
+            } else {
+                // Within range, use distance-based breathing with reef color
+                distanceBasedBreathingEnabled = true;
+                customPatternActive = true;
+                currentPattern = createDistanceBasedBreathingPattern(distance, reefColor);
+                // Apply immediately
+                currentPattern.applyTo(tempBuffer);
+                adjustBrightnessForPower();
+                applyPatternWithBrightness();
+                led.setData(buffer);
+            }
         });
     }
 }

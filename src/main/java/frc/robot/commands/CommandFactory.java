@@ -33,7 +33,7 @@ public class CommandFactory {
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
-      .andThen(led.runPattern("INTAKEN_PATTERN"))
+      .andThen(led.runPattern("CORAL_LOADED_PATTERN")) // Replace with new pattern name
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(new WaitCommand(.5))
