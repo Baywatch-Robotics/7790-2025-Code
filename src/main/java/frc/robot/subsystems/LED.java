@@ -43,6 +43,8 @@ public class LED extends SubsystemBase {
     
     private double currentBrightness = LEDConstants.DEFAULT_BRIGHTNESS;
 
+    private boolean distanceBasedBreathingEnabled = false;
+
     // Define our own LEDPattern interface since it's not standard in WPILib
     private interface LEDPattern {
         void applyTo(AddressableLEDBuffer buffer);
@@ -118,7 +120,7 @@ public class LED extends SubsystemBase {
       var allianceOption = DriverStation.getAlliance();
       
       // Select the appropriate pattern based on conditions
-      if (normalPattern == null && !customPatternActive) { // Only change pattern if not flashing or using a custom pattern
+      if (!distanceBasedBreathingEnabled && normalPattern == null && !customPatternActive) { // Only change pattern if not flashing or using a custom pattern
         if (allianceOption.isPresent()) {
           Alliance alliance = allianceOption.get();
           
@@ -475,5 +477,73 @@ public class LED extends SubsystemBase {
         }
         
         return totalCurrentDraw / 1000.0; // Convert mA to A
+    }
+
+    /**
+     * Creates a LEDPattern that breathes with a period based on distance.
+     * Closer distances yield a faster cycle.
+     */
+    private LEDPattern createDistanceBasedBreathingPattern(double distance) {
+        return new LEDPattern() {
+            private final Timer timer = new Timer();
+            {
+                timer.reset();
+                timer.start();
+            }
+            @Override
+            public void applyTo(AddressableLEDBuffer buffer) {
+                // Map distance to a breathing period
+                double d = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE, 
+                          Math.min(distance, LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE));
+                double period = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
+                    ((d - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
+                    (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
+                    * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
+                
+                double time = timer.get();
+                double phase = (time % period) / period;
+                double sinValue = (Math.sin(2 * Math.PI * phase) + 1) / 2;
+                double breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
+                    sinValue * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+                
+                // Use a default base color (e.g., white) for the breathing effect
+                Color baseColor = Color.kWhite;
+                for (int i = 0; i < buffer.getLength(); i++) {
+                    Color breathColor = new Color(
+                        baseColor.red * breathIntensity,
+                        baseColor.green * breathIntensity,
+                        baseColor.blue * breathIntensity
+                    );
+                    buffer.setLED(i, breathColor);
+                }
+            }
+        };
+    }
+
+    /**
+     * Enables distance-based breathing mode.
+     * Overrides other patterns until disabled.
+     */
+    public Command runDistanceBasedBreathingMode(double distance) {
+        return runOnce(() -> {
+            distanceBasedBreathingEnabled = true;
+            customPatternActive = true;
+            currentPattern = createDistanceBasedBreathingPattern(distance);
+            // Apply immediately
+            currentPattern.applyTo(tempBuffer);
+            adjustBrightnessForPower();
+            applyPatternWithBrightness();
+            led.setData(buffer);
+        });
+    }
+
+    /**
+     * Disables the distance-based breathing mode, allowing normal pattern updates.
+     */
+    public Command disableDistanceBasedBreathingMode() {
+        return runOnce(() -> {
+            distanceBasedBreathingEnabled = false;
+            customPatternActive = false;
+        });
     }
 }

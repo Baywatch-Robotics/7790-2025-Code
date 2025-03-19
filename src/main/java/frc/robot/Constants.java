@@ -384,6 +384,11 @@ public final class Constants
     public static final double BREATHING_MAX_INTENSITY = 0.8; // Maximum brightness in breath cycle
     public static final int BREATHING_STEPS = 50; // Number of steps per breath (smoother = more steps)
     
+    // New constants for distance-based breathing mode
+    public static final double DISTANCE_BREATHE_MIN_DISTANCE = 0.5;  // Minimum distance (meters)
+    public static final double DISTANCE_BREATHE_MAX_DISTANCE = 5.0;  // Maximum distance (meters)
+    public static final double DISTANCE_BREATHE_MIN_PERIOD   = 0.75; // Fast cycle for close targets (seconds)
+    public static final double DISTANCE_BREATHE_MAX_PERIOD   = 2.0;  // Slow cycle for far targets (seconds)
   }
   
   public static final class ScopeConstants{
