@@ -387,7 +387,7 @@ public final class Constants
     // New constants for distance-based breathing mode
     public static final double DISTANCE_BREATHE_MIN_DISTANCE = 0.2;  // Minimum distance (meters)
     public static final double DISTANCE_BREATHE_MAX_DISTANCE = 5.0;  // Maximum distance (meters)
-    public static final double DISTANCE_BREATHE_MIN_PERIOD   = 1.0; // Fast cycle for close targets (seconds)
+    public static final double DISTANCE_BREATHE_MIN_PERIOD   = .25; // Fast cycle for close targets (seconds)
     public static final double DISTANCE_BREATHE_MAX_PERIOD   = 2.0;  // Slow cycle for far targets (seconds)
   }
   

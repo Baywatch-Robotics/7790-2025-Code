@@ -65,6 +65,14 @@ public class LED extends SubsystemBase {
     }
 
     private final Timer distanceBreathingTimer = new Timer();
+    // Add a new timer for distance-based mode
+    private Timer distancePatternTimer = new Timer();
+
+    // Add fields for continuous phase updating
+    private double distancePhase = 0.0;
+    private double lastDistanceUpdateTime = 0.0;
+
+    // Remove smoothedDistance and DISTANCE_SMOOTHING_ALPHA
 
     public LED() {
 
@@ -76,6 +84,7 @@ public class LED extends SubsystemBase {
       
       distanceBreathingTimer.reset();
       distanceBreathingTimer.start();
+      lastDistanceUpdateTime = Timer.getFPGATimestamp();
 
       // Create solid alliance color patterns
       solidRed = LEDPattern.solid(Color.kRed);
@@ -136,7 +145,18 @@ public class LED extends SubsystemBase {
       
       // If distance-based breathing is enabled, update the pattern with current distance
       if (distanceBasedBreathingEnabled) {
-        currentPattern = createDistanceBreathePattern(currentDistanceToTarget);
+          // Update phase using integration dt/period
+          double currentTime = Timer.getFPGATimestamp();
+          double dt = currentTime - lastDistanceUpdateTime;
+          lastDistanceUpdateTime = currentTime;
+          double lockedPeriod = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
+              ((currentDistanceToTarget - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
+              (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
+              * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
+          double period = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_PERIOD,
+                             Math.min(lockedPeriod, LEDConstants.DISTANCE_BREATHE_MAX_PERIOD));
+          // Increment phase by dt/period so that phase mod 1 gives correct cycle position
+          distancePhase += dt / period;
       }
       // Select the appropriate pattern based on conditions (only if not in distance breathing mode)
       else if (normalPattern == null && !customPatternActive) {
@@ -483,27 +503,21 @@ public class LED extends SubsystemBase {
         return totalCurrentDraw / 1000.0; // Convert mA to A
     }
 
-    // New helper method that returns a distance-based breathing LEDPattern
-    private LEDPattern createDistanceBreathePattern(double distance) {
-        // Clamp the distance to the allowed range for calculation
-        double effectiveDistance = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE, distance);
-        
-        // Compute period: at min distance -> faster breathing (minPeriod), at max -> slower (maxPeriod)
-        double period = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
-                        ((effectiveDistance - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
-                        (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
-                        * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
-        
+    // Updated helper method using distancePhase (modulo 1) as phase
+    private LEDPattern createDistanceBreathePattern() {
         return buffer -> {
-            double time = distanceBreathingTimer.get();
-            double cyclePosition = (time % period) / period;
-            
-            // Calculate brightness using a sine wave
+            double lockedPeriod = LEDConstants.DISTANCE_BREATHE_MIN_PERIOD +
+                ((currentDistanceToTarget - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE) /
+                (LEDConstants.DISTANCE_BREATHE_MAX_DISTANCE - LEDConstants.DISTANCE_BREATHE_MIN_DISTANCE))
+                * (LEDConstants.DISTANCE_BREATHE_MAX_PERIOD - LEDConstants.DISTANCE_BREATHE_MIN_PERIOD);
+            double period = Math.max(LEDConstants.DISTANCE_BREATHE_MIN_PERIOD,
+                             Math.min(lockedPeriod, LEDConstants.DISTANCE_BREATHE_MAX_PERIOD));
+            // Instead of using elapsed time, use our integrated phase value (mod 1)
+            double cyclePosition = distancePhase % 1.0;
             double breathIntensity = (Math.sin(2 * Math.PI * cyclePosition) + 1) / 2;
             breathIntensity = LEDConstants.BREATHING_MIN_INTENSITY +
-                          breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
+                breathIntensity * (LEDConstants.BREATHING_MAX_INTENSITY - LEDConstants.BREATHING_MIN_INTENSITY);
             
-            // Apply to all LEDs
             for (int i = 0; i < buffer.getLength(); i++) {
                 buffer.setLED(i, new Color(
                     reefColor.red * breathIntensity,
@@ -518,16 +532,9 @@ public class LED extends SubsystemBase {
         customPatternActive = true;
         distanceBasedBreathingEnabled = true;
         currentDistanceToTarget = distance;
-        // Initial pattern setup
-        currentPattern = createDistanceBreathePattern(distance);
-        return Commands.none();
-    }
-    
-    // Add a method to update the distance without recreating the whole pattern
-    public Command updateDistanceForBreathing(double distance) {
-        if (distanceBasedBreathingEnabled) {
-            currentDistanceToTarget = distance;
-        }
+        distancePatternTimer.reset();
+        distancePatternTimer.start();
+        currentPattern = createDistanceBreathePattern();
         return Commands.none();
     }
 }
