@@ -251,7 +251,7 @@ public class SwerveSubsystem extends SubsystemBase
     return this.pathCanceled;
   }
   
-public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
+  public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     return new Command() {
         private Command pathCommand;
         private PathConstraints lastConstraints = null;
@@ -277,12 +277,13 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
                 Rotation2d.fromRadians(target.getZ())
             );
             Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
-
+            
             double baseVelocity, baseAcceleration;
             
           
             baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
             baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
+            
             
             // Create the PathConstraints with the computed values
             PathConstraints currentConstraints = new PathConstraints(
@@ -328,6 +329,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
         }
     };
 }
+
 
   /**
    * Command to characterize the robot drive motors using SysId

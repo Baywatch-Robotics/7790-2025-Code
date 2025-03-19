@@ -538,6 +538,8 @@ public class RobotContainer {
         drivebase.clearTargetVisualization();
         // Optional: provide haptic feedback or logging
 
+        loadedSingleTime = false;
+
         led.runFlashPattern("LINED_UP_FLASH");
 
         driverXbox.getHID().setRumble(RumbleType.kBothRumble, 0.5);
@@ -554,8 +556,6 @@ public class RobotContainer {
       if(loadedSingleTime == false){
         loadedSingleTime = shooter.coralLoadedTrigger().getAsBoolean();
       }
-
-      loadedSingleTime = true;
 
       // If coral is loaded and we're approaching the target, update LED pattern based on distance
       if (loadedSingleTime && currentTarget != null) {
