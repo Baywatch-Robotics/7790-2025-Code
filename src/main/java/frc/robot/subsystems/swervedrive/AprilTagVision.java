@@ -76,37 +76,77 @@ public class AprilTagVision extends SubsystemBase {
     */
     
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
-        List<Pose3d> validPoses = new ArrayList<>();
+        // First try to get multi-tag results (more accurate)
+        List<Pose3d> multiTagPoses = getMultiTagPoses(prevEstimatedPose);
+        
+        if (!multiTagPoses.isEmpty()) {
+            // If we have multi-tag poses, use those (they're more reliable)
+            return Optional.of(averagePoses(multiTagPoses));
+        }
+        
+        // Fall back to single-tag results with ambiguity check
+        List<Pose3d> singleTagPoses = getSingleTagPoses(prevEstimatedPose);
+        
+        if (!singleTagPoses.isEmpty()) {
+            return Optional.of(averagePoses(singleTagPoses));
+        }
+        
+        return Optional.empty(); // No valid poses found
+    }
 
+    private static List<Pose3d> getMultiTagPoses(Pose2d prevEstimatedPose) {
+        List<Pose3d> multiTagPoses = new ArrayList<>();
+        
         Optional<EstimatedRobotPose> rightCamEstimate = getRightCamPose(prevEstimatedPose);
-        if (rightCamEstimate.isPresent()) {
+        if (rightCamEstimate.isPresent() && rightCamEstimate.get().targetsUsed.size() > 1) {
+            multiTagPoses.add(rightCamEstimate.get().estimatedPose);
+        }
+        
+        Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
+        if (leftCamEstimate.isPresent() && leftCamEstimate.get().targetsUsed.size() > 1) {
+            multiTagPoses.add(leftCamEstimate.get().estimatedPose);
+        }
+        
+        /*
+        Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
+        if (limelightEstimate.isPresent() && limelightEstimate.get().targetsUsed.size() > 1) {
+            multiTagPoses.add(limelightEstimate.get().estimatedPose);
+        }
+        */
+        
+        return multiTagPoses;
+    }
+
+    private static List<Pose3d> getSingleTagPoses(Pose2d prevEstimatedPose) {
+        List<Pose3d> singleTagPoses = new ArrayList<>();
+        
+        Optional<EstimatedRobotPose> rightCamEstimate = getRightCamPose(prevEstimatedPose);
+        if (rightCamEstimate.isPresent() && rightCamEstimate.get().targetsUsed.size() == 1) {
             EstimatedRobotPose estimate = rightCamEstimate.get();
             if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
-                validPoses.add(estimate.estimatedPose);
+                singleTagPoses.add(estimate.estimatedPose);
             }
         }
-
+        
         Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
-        if (leftCamEstimate.isPresent()) {
+        if (leftCamEstimate.isPresent() && leftCamEstimate.get().targetsUsed.size() == 1) {
             EstimatedRobotPose estimate = leftCamEstimate.get();
             if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
-                validPoses.add(estimate.estimatedPose);
+                singleTagPoses.add(estimate.estimatedPose);
             }
         }
+        
         /*
-                Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
-        if (limelightEstimate.isPresent()) {
+        Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
+        if (limelightEstimate.isPresent() && limelightEstimate.get().targetsUsed.size() == 1) {
             EstimatedRobotPose estimate = limelightEstimate.get();
             if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold) {
-                validPoses.add(estimate.estimatedPose);
+                singleTagPoses.add(estimate.estimatedPose);
             }
         }
         */
-        if (validPoses.isEmpty()) {
-            return Optional.empty(); // No valid poses found
-        }
-
-        return Optional.of(averagePoses(validPoses));
+        
+        return singleTagPoses;
     }
 
     private static Pose3d averagePoses(List<Pose3d> poses) {
