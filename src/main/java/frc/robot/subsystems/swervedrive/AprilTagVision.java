@@ -12,16 +12,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AprilTagVisionConstants;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 public class AprilTagVision extends SubsystemBase {
@@ -49,10 +47,12 @@ public class AprilTagVision extends SubsystemBase {
     private static PhotonPoseEstimator leftPoseEstimator;
     //private static PhotonPoseEstimator limelightPoseEstimator;
 
-    // Using a HashSet for efficient lookup when filtering tags
-    private static Set<Integer> allowedTagIds = new HashSet<>();
-    
-    // Remove the static Alliance field and only use it locally in methods
+    // Store last camera results
+    private static Optional<EstimatedRobotPose> lastRightCamResult = Optional.empty();
+    private static Optional<EstimatedRobotPose> lastLeftCamResult = Optional.empty();
+
+    // Set of valid tag IDs (for O(1) lookup)
+    private static Set<Integer> validTagIds;
 
     static {
         rightPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCamToRobot);
@@ -62,88 +62,91 @@ public class AprilTagVision extends SubsystemBase {
         rightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         leftPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //limelightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
-        updateAllowedTags(); // Initialize with current alliance
-    }
-
-    @Override
-    public void periodic() {
-        // Check if alliance has changed - use the Optional pattern like in LED class
-        var allianceOption = DriverStation.getAlliance();
-        Alliance newAlliance = null;
         
-        if (allianceOption.isPresent()) {
-            newAlliance = allianceOption.get();
-        }
-        
-        // Only update tags if alliance has changed
-        if (newAlliance != null && !newAlliance.equals(DriverStation.getAlliance().orElse(null))) {
-            updateAllowedTags();
-        }
+        // Create set of valid tag IDs for faster lookup
+        validTagIds = new HashSet<>(Arrays.asList(AprilTagVisionConstants.VALID_TAG_IDS));
     }
 
     /**
-     * Updates the set of allowed AprilTag IDs based on current alliance.
-     */
-    private static void updateAllowedTags() {
-        allowedTagIds.clear();
-        
-        var allianceOption = DriverStation.getAlliance();
-        
-        if (allianceOption.isPresent()) {
-            Alliance alliance = allianceOption.get();
-            
-            if (alliance == Alliance.Blue) {
-                // Use blue alliance tags
-                allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.BLUE_ALLIANCE_TAGS));
-            } else if (alliance == Alliance.Red) {
-                // Use red alliance tags
-                allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.RED_ALLIANCE_TAGS));
-            }
-        } else {
-            // If alliance is unknown or not available, use all tags
-            allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.BLUE_ALLIANCE_TAGS));
-            allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.RED_ALLIANCE_TAGS));
-        }
-    }
-
-    /**
-     * Filters the estimated robot pose based on allowed tags.
+     * Filters the estimated robot pose based on tag distance and valid tag IDs.
+     * Rejects any tags that are too far away or have IDs in the disallowed range.
+     * 
      * @param estimate The original pose estimate
-     * @return Filtered pose estimate or empty if no allowed tags were used
+     * @param currentPose Current robot pose for distance calculation
+     * @return Filtered pose estimate or empty if all tags are invalid
      */
-    private static Optional<EstimatedRobotPose> filterByAllowedTags(Optional<EstimatedRobotPose> estimate) {
-        if (estimate.isEmpty() || allowedTagIds.isEmpty()) {
+    private static Optional<EstimatedRobotPose> filterByDistanceAndId(
+            Optional<EstimatedRobotPose> estimate, 
+            Pose2d currentPose) {
+        
+        if (estimate.isEmpty()) {
             return estimate;
         }
         
         EstimatedRobotPose pose = estimate.get();
         
-        // Check if any of the detected tags are in our allowed set
-        boolean hasAllowedTag = false;
+        // If no targets, return empty
+        if (pose.targetsUsed.isEmpty()) {
+            return Optional.empty();
+        }
+        
+        // For multi-tag detections, filter out invalid IDs
+        List<org.photonvision.targeting.PhotonTrackedTarget> validTargets = new ArrayList<>();
+        
         for (var target : pose.targetsUsed) {
-            if (allowedTagIds.contains(target.getFiducialId())) {
-                hasAllowedTag = true;
-                break;
+            int tagId = target.getFiducialId();
+            
+            // Check if tag ID is in valid list
+            if (!validTagIds.contains(tagId)) {
+                continue; // Skip invalid tag IDs
+            }
+            
+            // Get the tag position from the field layout
+            Optional<Pose3d> tagPose = fieldLayout.getTagPose(tagId);
+            
+            if (tagPose.isPresent()) {
+                // Calculate distance from robot to tag
+                double distance = tagPose.get().toPose2d().getTranslation()
+                    .getDistance(currentPose.getTranslation());
+                
+                // If the tag is within maximum distance, add it to valid targets
+                if (distance <= AprilTagVisionConstants.MAX_TAG_DISTANCE) {
+                    validTargets.add(target);
+                }
             }
         }
         
-        return hasAllowedTag ? estimate : Optional.empty();
+        // If no valid targets remain, return empty
+        if (validTargets.isEmpty()) {
+            return Optional.empty();
+        }
+        
+        // If this is a single-tag detection, or our original detection only had invalid tags,
+        // we need to return the original estimate if it's valid, or empty if not
+        if (validTargets.size() != pose.targetsUsed.size()) {
+            // Special handling for multi-tag cases would go here if needed
+            // For now, we'll just keep the original estimate if any valid tags remain
+            // This preserves the multi-tag calculation from PhotonVision
+        }
+        
+        return Optional.of(pose);
     }
 
-    // Add these methods to store and retrieve the last camera results
-    private static Optional<EstimatedRobotPose> lastRightCamResult = Optional.empty();
-    private static Optional<EstimatedRobotPose> lastLeftCamResult = Optional.empty();
-    
     public static Optional<EstimatedRobotPose> getRightCamPose(Pose2d prevEstimatedPose) {
         rightPoseEstimator.setReferencePose(prevEstimatedPose);
-        lastRightCamResult = filterByAllowedTags(rightPoseEstimator.update(rightCam.getLatestResult()));
+        lastRightCamResult = filterByDistanceAndId(
+            rightPoseEstimator.update(rightCam.getLatestResult()),
+            prevEstimatedPose
+        );
         return lastRightCamResult;
     }
     
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
-        lastLeftCamResult = filterByAllowedTags(leftPoseEstimator.update(leftCam.getLatestResult()));
+        lastLeftCamResult = filterByDistanceAndId(
+            leftPoseEstimator.update(leftCam.getLatestResult()),
+            prevEstimatedPose
+        );
         return lastLeftCamResult;
     }
     
@@ -156,13 +159,6 @@ public class AprilTagVision extends SubsystemBase {
         return lastLeftCamResult;
     }
 
-    /*
-    public static Optional<EstimatedRobotPose> getLimelightPose(Pose2d prevEstimatedPose) {
-        limelightPoseEstimator.setReferencePose(prevEstimatedPose);
-        return filterByAllowedTags(limelightPoseEstimator.update(limelight.getLatestResult()));
-    }
-    */
-    
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         // First try to get multi-tag results (more accurate)
         List<Pose3d> multiTagPoses = getMultiTagPoses(prevEstimatedPose);

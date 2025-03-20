@@ -397,6 +397,12 @@ public final class Constants
   public static final class AprilTagVisionConstants{
 
     public static final double ambiguityThreshold = 0.1;
+    
+    // Maximum distance to consider a tag valid (in meters)
+    public static final double MAX_TAG_DISTANCE = 8.0;
+    
+    // List of valid tag IDs (excluding tags 1-5 and 12-16)
+    public static final Integer[] VALID_TAG_IDS = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
@@ -440,11 +446,6 @@ public final class Constants
     
     // Minimum confidence value to prevent division by zero
     public static final double MIN_CONFIDENCE_VALUE = 0.05;
-    
-    
-    // April Tag IDs to use for each alliance (whitelist approach)
-    public static final Integer[] BLUE_ALLIANCE_TAGS = {17, 18, 19, 20, 21, 22}; // Blue alliance tags
-    public static final Integer[] RED_ALLIANCE_TAGS = {6, 7, 8, 9, 10, 11}; // Red alliance tags
     
     /*
     public static Integer[] getAllowedTags() {
