@@ -490,7 +490,7 @@ public final class Constants
 
     // Face 1 (0 degrees)
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);
-    public static final float zValueC11X = (float)Units.degreesToRadians(180);
+    public static final float zValueC10X = (float)Units.degreesToRadians(180);
     
     // Flip right/left offset directions
     public static final float xValueC1X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC1XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC1XX + Math.PI);
@@ -508,7 +508,7 @@ public final class Constants
 
     // Face 2 (60 degrees)
     public static final float zValueC2XX = (float)Units.degreesToRadians(60);
-    public static final float zValueC21X = (float)Units.degreesToRadians(240);
+    public static final float zValueC20X = (float)Units.degreesToRadians(240);
     
     public static final float xValueC2X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC2XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC2XX + Math.PI);
     public static final float yValueC2X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC2XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC2XX + Math.PI);
@@ -525,7 +525,7 @@ public final class Constants
 
     // Face 3 (120 degrees)
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
-    public static final float zValueC31X = (float)Units.degreesToRadians(300);
+    public static final float zValueC30X = (float)Units.degreesToRadians(300);
     
     public static final float xValueC3X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
     public static final float yValueC3X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
@@ -542,7 +542,7 @@ public final class Constants
 
     // Face 4 (180 degrees)
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
-    public static final float zValueC41X = (float)Units.degreesToRadians(0);
+    public static final float zValueC40X = (float)Units.degreesToRadians(0);
     
     public static final float xValueC4X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
     public static final float yValueC4X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
@@ -559,7 +559,7 @@ public final class Constants
 
     // Face 5 (240 degrees)
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
-    public static final float zValueC51X = (float)Units.degreesToRadians(60);
+    public static final float zValueC50X = (float)Units.degreesToRadians(60);
     
     public static final float xValueC5X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
     public static final float yValueC5X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
@@ -576,7 +576,7 @@ public final class Constants
 
     // Face 6 (300 degrees)
     public static final float zValueC6XX = (float)Units.degreesToRadians(300);
-    public static final float zValueC61X = (float)Units.degreesToRadians(120);
+    public static final float zValueC60X = (float)Units.degreesToRadians(120);
     
     public static final float xValueC6X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC6XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC6XX + Math.PI);
     public static final float yValueC6X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC6XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC6XX + Math.PI);
