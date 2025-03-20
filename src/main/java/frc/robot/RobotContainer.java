@@ -274,6 +274,11 @@ public class RobotContainer {
 
   private void configureBindings() {
 
+
+
+
+
+    
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     // algaeArm.setDefaultCommand(new RunCommand(() ->
