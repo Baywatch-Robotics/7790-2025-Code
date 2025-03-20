@@ -19,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class AprilTagVision extends SubsystemBase {
@@ -53,6 +55,10 @@ public class AprilTagVision extends SubsystemBase {
 
     // Set of valid tag IDs (for O(1) lookup)
     private static Set<Integer> validTagIds;
+
+    // Track over-distance counts per tag ID
+    private static final Map<Integer, Integer> tagOverDistanceCount = new HashMap<>();
+    private static final int MAX_CONSECUTIVE_OVER_DISTANCE = 3; // Less restrictive than before
 
     static {
         rightPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCamToRobot);
@@ -109,9 +115,20 @@ public class AprilTagVision extends SubsystemBase {
                 double distance = tagPose.get().toPose2d().getTranslation()
                     .getDistance(currentPose.getTranslation());
                 
-                // If the tag is within maximum distance, add it to valid targets
+                // Track over-distance counts per tag
                 if (distance <= AprilTagVisionConstants.MAX_TAG_DISTANCE) {
+                    // Tag is within range, reset its counter
+                    tagOverDistanceCount.put(tagId, 0);
                     validTargets.add(target);
+                } else {
+                    // Tag is over distance, increment counter
+                    int count = tagOverDistanceCount.getOrDefault(tagId, 0) + 1;
+                    tagOverDistanceCount.put(tagId, count);
+                    
+                    // Accept tag if we've seen it consistently
+                    if (count >= MAX_CONSECUTIVE_OVER_DISTANCE) {
+                        validTargets.add(target);
+                    }
                 }
             }
         }
@@ -121,14 +138,7 @@ public class AprilTagVision extends SubsystemBase {
             return Optional.empty();
         }
         
-        // If this is a single-tag detection, or our original detection only had invalid tags,
-        // we need to return the original estimate if it's valid, or empty if not
-        if (validTargets.size() != pose.targetsUsed.size()) {
-            // Special handling for multi-tag cases would go here if needed
-            // For now, we'll just keep the original estimate if any valid tags remain
-            // This preserves the multi-tag calculation from PhotonVision
-        }
-        
+        // Return original pose since we have valid targets
         return Optional.of(pose);
     }
 
@@ -160,22 +170,76 @@ public class AprilTagVision extends SubsystemBase {
     }
 
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
-        // First try to get multi-tag results (more accurate)
-        List<Pose3d> multiTagPoses = getMultiTagPoses(prevEstimatedPose);
+        List<Pose3d> validPoses = new ArrayList<>();
         
-        if (!multiTagPoses.isEmpty()) {
-            // If we have multi-tag poses, use those (they're more reliable)
-            return Optional.of(averagePoses(multiTagPoses));
+        // Process right camera
+        Optional<EstimatedRobotPose> rightCamEstimate = getRightCamPose(prevEstimatedPose);
+        if (rightCamEstimate.isPresent()) {
+            if (rightCamEstimate.get().targetsUsed.size() > 1) {
+                // Multi-tag detection from right camera (high priority)
+                validPoses.add(rightCamEstimate.get().estimatedPose);
+            } else if (rightCamEstimate.get().targetsUsed.size() == 1) {
+                // Single-tag detection - use dynamic ambiguity threshold
+                double ambiguityThreshold = calculateDynamicAmbiguityThreshold(
+                    rightCamEstimate.get().targetsUsed.get(0), prevEstimatedPose);
+                
+                if (rightCamEstimate.get().targetsUsed.get(0).getPoseAmbiguity() <= ambiguityThreshold) {
+                    validPoses.add(rightCamEstimate.get().estimatedPose);
+                }
+            }
         }
         
-        // Fall back to single-tag results with ambiguity check
-        List<Pose3d> singleTagPoses = getSingleTagPoses(prevEstimatedPose);
+        // Process left camera
+        Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
+        if (leftCamEstimate.isPresent()) {
+            if (leftCamEstimate.get().targetsUsed.size() > 1) {
+                // Multi-tag detection from left camera
+                validPoses.add(leftCamEstimate.get().estimatedPose);
+            } else if (leftCamEstimate.get().targetsUsed.size() == 1) {
+                // Single-tag detection - use dynamic ambiguity threshold
+                double ambiguityThreshold = calculateDynamicAmbiguityThreshold(
+                    leftCamEstimate.get().targetsUsed.get(0), prevEstimatedPose);
+                
+                if (leftCamEstimate.get().targetsUsed.get(0).getPoseAmbiguity() <= ambiguityThreshold) {
+                    validPoses.add(leftCamEstimate.get().estimatedPose);
+                }
+            }
+        }
         
-        if (!singleTagPoses.isEmpty()) {
-            return Optional.of(averagePoses(singleTagPoses));
+        // If we have valid poses, average them
+        if (!validPoses.isEmpty()) {
+            return Optional.of(averagePoses(validPoses));
         }
         
         return Optional.empty(); // No valid poses found
+    }
+    
+    /**
+     * Calculates a dynamic ambiguity threshold based on tag distance.
+     * Closer tags can have stricter (lower) thresholds, farther tags get more lenient thresholds.
+     */
+    private static double calculateDynamicAmbiguityThreshold(
+            org.photonvision.targeting.PhotonTrackedTarget target, 
+            Pose2d currentPose) {
+        
+        // Get the tag position
+        Optional<Pose3d> tagPose = fieldLayout.getTagPose(target.getFiducialId());
+        if (tagPose.isEmpty()) {
+            return AprilTagVisionConstants.ambiguityThreshold; // Default
+        }
+        
+        // Calculate distance to tag
+        double distance = tagPose.get().toPose2d().getTranslation()
+            .getDistance(currentPose.getTranslation());
+        
+        // Scale ambiguity threshold with distance
+        // Close tags (0-2m): strict threshold (0.1)
+        // Far tags (>5m): more lenient threshold (0.3)
+        double minThreshold = 0.1;
+        double maxThreshold = 0.3;
+        double scaleFactor = Math.min(1.0, Math.max(0.0, (distance - 2.0) / 3.0));
+        
+        return minThreshold + (scaleFactor * (maxThreshold - minThreshold));
     }
 
     private static List<Pose3d> getMultiTagPoses(Pose2d prevEstimatedPose) {
