@@ -11,6 +11,8 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -123,6 +125,8 @@ public class RobotContainer {
 
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
+
+  private Supplier<Pose2d> target;
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -275,10 +279,26 @@ public class RobotContainer {
   private void configureBindings() {
 
 
-
-
-
     
+
+    // Modified driveToPose binding to check for target null pointer
+    driveAngularVelocity.driveToPose(() -> (target != null ? target.get() : drivebase.getPose()),
+                                   new ProfiledPIDController(2,
+                                                             0,
+                                                             0,
+                                                             new Constraints(.1, .1)),
+                                   new ProfiledPIDController(2
+                                   ,
+                                                             0,
+                                                             0,
+                                                             new Constraints(Units.degreesToRadians(180),
+                                                                             Units.degreesToRadians(180))
+                                   ));
+                                           
+      driverXbox.rightBumper().whileTrue(Commands.runEnd(() -> driveAngularVelocity.driveToPoseEnabled(true),
+                                                     () -> driveAngularVelocity.driveToPoseEnabled(false)));
+
+
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
     // algaeArm.setDefaultCommand(new RunCommand(() ->
@@ -409,7 +429,7 @@ public class RobotContainer {
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
-    driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
+    //driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
 
@@ -516,6 +536,8 @@ public class RobotContainer {
 
       // Convert to alliance-relative coordinates
       Pose2d allianceRelativeTarget = TargetClass.toPose2d(targetPose);
+
+      target = () -> allianceRelativeTarget;
 
       // Calculate distance to target
       double distance = Math.sqrt(
