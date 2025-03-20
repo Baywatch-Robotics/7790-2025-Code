@@ -62,11 +62,14 @@ public class SwerveSubsystem extends SubsystemBase
 
   private boolean pathCanceled = false;
 
-  // Parameters for vision integration
-  private int goodMeasurementCounter = 0;
-  private Pose2d lastVisionPose = null;
-  private double lastVisionTimestamp = 0;
-  private int visionMeasurementCounter = 0;
+  // Add these fields to track drift and recalibration
+  private int driftDetectionCounter = 0;
+  private static final int DRIFT_DETECTION_THRESHOLD = 5; // Number of consecutive cycles with large drift before recalibration
+  private static final double SEVERE_DRIFT_THRESHOLD = 1.0; // Distance in meters considered severe drift
+  private static final double POSITION_JUMP_LIMIT = 0.1; // Max position change in meters per cycle to prevent jumps
+  private static final double ROTATION_JUMP_LIMIT = Math.toRadians(5); // Max rotation change in radians per cycle
+  private Pose2d lastAppliedPose = null;
+  private boolean forceRecalibrationMode = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -122,8 +125,9 @@ public class SwerveSubsystem extends SubsystemBase
     if(!isClose){
       addVisionMeasurementInitial();
     }
-    else{
-      addVisionMeasurement();
+    else {
+      // Modified to handle drift detection and recalibration
+      integrateVisionMeasurements();
     }
   SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
   SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
@@ -632,122 +636,154 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
-  public void addVisionMeasurement() {
-
-    //boolean newMode;
-
-    
-    //newMode = DriverStation.isDisabled();
-
-    
-    
-    //newMode = isOldMode;
-    
-    
-
-      if(DriverStation.isDisabled()){
+  // Replace the existing addVisionMeasurement with this improved vision integration method
+  private void integrateVisionMeasurements() {
+    if (DriverStation.isDisabled()) {
+      // Reset drift detection in disabled mode since we're using more aggressive corrections
+      driftDetectionCounter = 0;
+      forceRecalibrationMode = false;
       
+      // Original disabled mode logic (simplified)
       Pose2d robotPose = swerveDrive.getPose();
-  
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-  
+      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose);
+      
       if (estimatedPose3d.isPresent()) {
-          Pose2d newPose = estimatedPose3d.get().toPose2d();
-          double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-          if (distance <= .5) {
-            
-              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-            }
-            else{
-  
-              visionMeasurementCounter++;
-  
-              if(visionMeasurementCounter >= 3){
-  
-                swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-                visionMeasurementCounter = 0;
-                //backup incase it gets too far off
-              }
-  
-            }
-           }
-          }
-
-
-
-
-        else{
+        Pose2d newPose = estimatedPose3d.get().toPose2d();
+        swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+      }
+      return;
+    }
     
-          Pose2d robotPose = swerveDrive.getPose();
-    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
+    // ENABLED mode - more careful integration
+    Pose2d robotPose = swerveDrive.getPose();
+    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose);
+    
     if (!estimatedPose3d.isPresent()) {
-      // Reset counter when no vision measurements available
-      goodMeasurementCounter = 0;
+      // No vision - increment drift counter if we were in recalibration mode
+      if (forceRecalibrationMode) {
+        driftDetectionCounter++;
+        // Exit recalibration mode if we have no vision for too long
+        if (driftDetectionCounter > DRIFT_DETECTION_THRESHOLD * 2) {
+          forceRecalibrationMode = false;
+          driftDetectionCounter = 0;
+        }
+      }
       return;
     }
     
     Pose2d visionPose = estimatedPose3d.get().toPose2d();
     double timestamp = Timer.getFPGATimestamp();
-    
-    // Calculate difference between odometry and vision
     double distance = visionPose.getTranslation().getDistance(robotPose.getTranslation());
-    double angleDiff = Math.abs(visionPose.getRotation().getDegrees() - robotPose.getRotation().getDegrees());
-    // Normalize the angle difference to -180 to 180
-    if (angleDiff > 180) {
-      angleDiff = 360 - angleDiff;
-    }
     
-    // Log data for debugging
-    SmartDashboard.putNumber("Vision/Distance Error", distance);
-    SmartDashboard.putNumber("Vision/Angle Error", angleDiff);
+    // Log metrics
+    SmartDashboard.putNumber("Vision/Pose Error", distance);
+    SmartDashboard.putBoolean("Vision/Recalibration Mode", forceRecalibrationMode);
+    SmartDashboard.putNumber("Vision/Drift Counter", driftDetectionCounter);
     
-    // Check if this measurement is potentially an outlier
-    boolean isPossibleOutlier = false;
-    if (lastVisionPose != null) {
-      double timeDelta = timestamp - lastVisionTimestamp;
-      // If the new measurement is too far from the last one given the time difference
-      if (timeDelta < 0.5) { // Only check for quick jumps (within 0.5 seconds)
-        double jumpDistance = visionPose.getTranslation().getDistance(lastVisionPose.getTranslation()) / timeDelta;
-        double jumpAngle = Math.abs(visionPose.getRotation().getDegrees() - lastVisionPose.getRotation().getDegrees()) / timeDelta;
-        
-        // If robot appears to move too fast, it might be an outlier
-        isPossibleOutlier = (jumpDistance > AprilTagVisionConstants.OUTLIER_JUMP_DISTANCE) || 
-                            (jumpAngle > AprilTagVisionConstants.OUTLIER_JUMP_ANGLE);
-        
-        SmartDashboard.putBoolean("Vision/Possible Outlier", isPossibleOutlier);
-        SmartDashboard.putNumber("Vision/Jump Distance", jumpDistance);
-        SmartDashboard.putNumber("Vision/Jump Angle", jumpAngle);
+    // Check for severe drift - if detected, increment counter
+    if (distance > SEVERE_DRIFT_THRESHOLD) {
+      driftDetectionCounter++;
+      SmartDashboard.putString("Vision/Status", "Potential Drift Detected");
+      
+      if (driftDetectionCounter >= DRIFT_DETECTION_THRESHOLD) {
+        // Enter recalibration mode after consecutive drift detections
+        forceRecalibrationMode = true;
+      }
+    } else {
+      // Reset drift counter when measurements are close
+      driftDetectionCounter = 0;
+      if (forceRecalibrationMode) {
+        // Exit recalibration mode once we're close again
+        forceRecalibrationMode = false;
       }
     }
     
-    // Calculate confidence based on distance and angle difference
-    double distanceConfidence = 0;
-    double angleConfidence = 0;
+    // Different integration strategy based on mode
+    if (forceRecalibrationMode) {
+      // In recalibration mode - do a partial reset toward vision measurement
+      // This helps avoid sudden jumps while still moving toward correct position
+      double blendFactor = 0.3; // Adjust toward vision by 30% each cycle
+      Translation2d blendedTranslation = robotPose.getTranslation().interpolate(
+          visionPose.getTranslation(), blendFactor);
+      
+      // Blend rotation more carefully to avoid spinning
+      double angleDiff = visionPose.getRotation().minus(robotPose.getRotation()).getRadians();
+      // Normalize to [-π, π]
+      while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+      while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+      
+      // Limit rotation change per cycle
+      double rotationChange = Math.signum(angleDiff) * Math.min(Math.abs(angleDiff) * blendFactor, ROTATION_JUMP_LIMIT);
+      Rotation2d blendedRotation = robotPose.getRotation().plus(new Rotation2d(rotationChange));
+      
+      // Create blended pose and apply
+      Pose2d blendedPose = new Pose2d(blendedTranslation, blendedRotation);
+      SmartDashboard.putString("Vision/Status", "Recalibrating");
+      
+      // Apply the blended measurement
+      swerveDrive.addVisionMeasurement(blendedPose, timestamp);
+      lastAppliedPose = blendedPose;
+    } else {
+      // Normal integration mode with confidence-based standard deviations
+      // This is similar to the original code but with added jump protection
+      
+      // Calculate confidence based on distance
+      double confidence = calculateConfidence(distance);
+      
+      // Create the standard deviation matrix
+      Matrix<N3, N1> stdDevs = createStdDevMatrix(confidence);
+      
+      // Apply the measurement if it's not a jump and has reasonable confidence
+      if (confidence > 0.1 && !wouldCauseJump(robotPose, visionPose)) {
+        swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
+        lastAppliedPose = visionPose;
+        SmartDashboard.putString("Vision/Status", "Normal Integration");
+      } else {
+        SmartDashboard.putString("Vision/Status", "Measurement Rejected");
+      }
+    }
+  }
+  
+  // Helper method to check if applying a vision measurement would cause a jump
+  private boolean wouldCauseJump(Pose2d currentPose, Pose2d newPose) {
+    if (lastAppliedPose == null) {
+      return false; // First measurement, can't be a jump
+    }
     
+    // Check position jump
+    double positionChange = newPose.getTranslation().getDistance(currentPose.getTranslation());
+    if (positionChange > POSITION_JUMP_LIMIT) {
+      return true;
+    }
+    
+    // Check rotation jump
+    double rotationChange = Math.abs(newPose.getRotation().minus(currentPose.getRotation()).getRadians());
+    // Normalize to [0, π]
+    while (rotationChange > Math.PI) rotationChange -= 2 * Math.PI;
+    rotationChange = Math.abs(rotationChange);
+    
+    return rotationChange > ROTATION_JUMP_LIMIT;
+  }
+  
+  // Helper method to calculate confidence based on distance between odometry and vision
+  private double calculateConfidence(double distance) {
     if (distance <= AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED) {
-      distanceConfidence = 1.0;
+      return 1.0;
     } else if (distance <= AprilTagVisionConstants.MAX_VISION_DISTANCE_CONSIDERED) {
-      distanceConfidence = 1.0 - ((distance - AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED) 
+      return 1.0 - ((distance - AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED) 
           / (AprilTagVisionConstants.MAX_VISION_DISTANCE_CONSIDERED - AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED));
     }
+    return 0.0;
+  }
+  
+  // Helper method to create standard deviation matrix based on confidence
+  private Matrix<N3, N1> createStdDevMatrix(double confidence) {
+    // Adjust minimum confidence to avoid division by zero
+    confidence = Math.max(AprilTagVisionConstants.MIN_CONFIDENCE_VALUE, confidence);
     
-    if (angleDiff <= AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED) {
-      angleConfidence = 1.0;
-    } else if (angleDiff <= AprilTagVisionConstants.MAX_VISION_ANGLE_CONSIDERED) {
-      angleConfidence = 1.0 - ((angleDiff - AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED) 
-          / (AprilTagVisionConstants.MAX_VISION_ANGLE_CONSIDERED - AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED));
-    }
-    
-    // Combined confidence (using the minimum of the two)
-    double confidence = Math.min(distanceConfidence, angleConfidence);
-    SmartDashboard.putNumber("Vision/Confidence", confidence);
-    
-    // Scale standard deviations inversely with confidence (higher confidence = lower std dev)
-    double xyStdDev = AprilTagVisionConstants.BASE_XY_STD_DEV / 
-                      Math.max(AprilTagVisionConstants.MIN_CONFIDENCE_VALUE, distanceConfidence);
-    double rotStdDev = AprilTagVisionConstants.BASE_ROT_STD_DEV / 
-                       Math.max(AprilTagVisionConstants.MIN_CONFIDENCE_VALUE, angleConfidence);
+    // Scale standard deviations inversely with confidence
+    double xyStdDev = AprilTagVisionConstants.BASE_XY_STD_DEV / confidence;
+    double rotStdDev = AprilTagVisionConstants.BASE_ROT_STD_DEV / confidence;
     
     // Create the standard deviation matrix
     Matrix<N3, N1> stdDevs = new Matrix<>(N3.instance, N1.instance);
@@ -755,58 +791,52 @@ public class SwerveSubsystem extends SubsystemBase
     stdDevs.set(1, 0, xyStdDev);    // Y standard deviation 
     stdDevs.set(2, 0, rotStdDev);   // Rotation standard deviation
     
-    // Log the standard deviations
-    SmartDashboard.putNumber("Vision/X_Y_StdDev", xyStdDev);
-    SmartDashboard.putNumber("Vision/Rot_StdDev", rotStdDev);
+    return stdDevs;
+  }
+  
+  // Modify the existing addVisionMeasurementInitial method for more robustness
+  public void addVisionMeasurementInitial() {
+    Pose2d robotPose = swerveDrive.getPose();
+    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose);
     
-    // Decision logic for applying the measurement
-    if (!isPossibleOutlier && confidence > 0) {
-      if (confidence > 0.8) {
-        // High confidence - apply immediately
-        swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
-        goodMeasurementCounter = 0; // Reset counter as we've applied a measurement
-        isClose = true;
-      } else {
-        // Lower confidence - require consecutive good measurements
-        goodMeasurementCounter++;
-        if (goodMeasurementCounter >= AprilTagVisionConstants.MIN_CONSECUTIVE_GOOD_MEASUREMENTS) {
-          swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
-          goodMeasurementCounter = 0; // Reset counter after applying
-          isClose = true;
-        }
+    if (estimatedPose3d.isPresent()) {
+      Pose2d newPose = estimatedPose3d.get().toPose2d();
+      double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
+      
+      // Check if we have a multi-tag detection or high confidence single tag
+      boolean isMultiTag = false;
+      boolean isLowAmbiguity = false;
+      
+      // Get the most recent camera results to check tag count
+      var rightResult = AprilTagVision.getLastRightCamResult();
+      var leftResult = AprilTagVision.getLastLeftCamResult();
+      
+      if (rightResult.isPresent() && rightResult.get().targetsUsed.size() > 1) {
+        isMultiTag = true;
+      } else if (leftResult.isPresent() && leftResult.get().targetsUsed.size() > 1) {
+        isMultiTag = true;
+      } else if (rightResult.isPresent() && rightResult.get().targetsUsed.size() == 1 && 
+                 rightResult.get().targetsUsed.get(0).getPoseAmbiguity() < 0.05) {
+        isLowAmbiguity = true;
+      } else if (leftResult.isPresent() && leftResult.get().targetsUsed.size() == 1 && 
+                 leftResult.get().targetsUsed.get(0).getPoseAmbiguity() < 0.05) {
+        isLowAmbiguity = true;
       }
       
-      // Store the measurement for outlier detection
-      lastVisionPose = visionPose;
-      lastVisionTimestamp = timestamp;
-    } else {
-      // Reset counter for rejected measurements
-      goodMeasurementCounter = 0;
-        }
-    }
-  }
-
-  public void addVisionMeasurementInitial() {
-
-      Pose2d robotPose = swerveDrive.getPose();
-
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-
-      if (estimatedPose3d.isPresent()) {
-        Pose2d newPose = estimatedPose3d.get().toPose2d();
-        
-        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-    // Only add the measurement if it's within 1 meter of the current pose
-    if (distance >= .5) {
+      // Only reset odometry if we have high confidence in the vision measurements
+      if (distance >= 0.5 && (isMultiTag || isLowAmbiguity)) {
+        SmartDashboard.putString("Vision/Init Status", "Resetting Odometry");
         swerveDrive.resetOdometry(newPose);
-    }
-    else{
-      isClose = true;
+        lastAppliedPose = newPose;
+      } else if (distance < 0.5) {
+        isClose = true;
+        SmartDashboard.putString("Vision/Init Status", "Switching to Normal Mode");
+      } else {
+        SmartDashboard.putString("Vision/Init Status", "Waiting for Confident Measurement");
+      }
     }
   }
- }
-    
+
     /**
      * Visualize the target pose on the field
      * @param targetPose The pose to visualize

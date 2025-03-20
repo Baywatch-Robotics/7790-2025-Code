@@ -12,13 +12,17 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AprilTagVisionConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Set;
 
 public class AprilTagVision extends SubsystemBase {
     
@@ -45,7 +49,10 @@ public class AprilTagVision extends SubsystemBase {
     private static PhotonPoseEstimator leftPoseEstimator;
     //private static PhotonPoseEstimator limelightPoseEstimator;
 
-
+    // Using a HashSet for efficient lookup when filtering tags
+    private static Set<Integer> allowedTagIds = new HashSet<>();
+    
+    // Remove the static Alliance field and only use it locally in methods
 
     static {
         rightPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCamToRobot);
@@ -55,23 +62,104 @@ public class AprilTagVision extends SubsystemBase {
         rightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         leftPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //limelightPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        updateAllowedTags(); // Initialize with current alliance
     }
 
+    @Override
+    public void periodic() {
+        // Check if alliance has changed - use the Optional pattern like in LED class
+        var allianceOption = DriverStation.getAlliance();
+        Alliance newAlliance = null;
+        
+        if (allianceOption.isPresent()) {
+            newAlliance = allianceOption.get();
+        }
+        
+        // Only update tags if alliance has changed
+        if (newAlliance != null && !newAlliance.equals(DriverStation.getAlliance().orElse(null))) {
+            updateAllowedTags();
+        }
+    }
+
+    /**
+     * Updates the set of allowed AprilTag IDs based on current alliance.
+     */
+    private static void updateAllowedTags() {
+        allowedTagIds.clear();
+        
+        var allianceOption = DriverStation.getAlliance();
+        
+        if (allianceOption.isPresent()) {
+            Alliance alliance = allianceOption.get();
+            
+            if (alliance == Alliance.Blue) {
+                // Use blue alliance tags
+                allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.BLUE_ALLIANCE_TAGS));
+            } else if (alliance == Alliance.Red) {
+                // Use red alliance tags
+                allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.RED_ALLIANCE_TAGS));
+            }
+        } else {
+            // If alliance is unknown or not available, use all tags
+            allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.BLUE_ALLIANCE_TAGS));
+            allowedTagIds.addAll(Arrays.asList(AprilTagVisionConstants.RED_ALLIANCE_TAGS));
+        }
+    }
+
+    /**
+     * Filters the estimated robot pose based on allowed tags.
+     * @param estimate The original pose estimate
+     * @return Filtered pose estimate or empty if no allowed tags were used
+     */
+    private static Optional<EstimatedRobotPose> filterByAllowedTags(Optional<EstimatedRobotPose> estimate) {
+        if (estimate.isEmpty() || allowedTagIds.isEmpty()) {
+            return estimate;
+        }
+        
+        EstimatedRobotPose pose = estimate.get();
+        
+        // Check if any of the detected tags are in our allowed set
+        boolean hasAllowedTag = false;
+        for (var target : pose.targetsUsed) {
+            if (allowedTagIds.contains(target.getFiducialId())) {
+                hasAllowedTag = true;
+                break;
+            }
+        }
+        
+        return hasAllowedTag ? estimate : Optional.empty();
+    }
+
+    // Add these methods to store and retrieve the last camera results
+    private static Optional<EstimatedRobotPose> lastRightCamResult = Optional.empty();
+    private static Optional<EstimatedRobotPose> lastLeftCamResult = Optional.empty();
+    
     public static Optional<EstimatedRobotPose> getRightCamPose(Pose2d prevEstimatedPose) {
         rightPoseEstimator.setReferencePose(prevEstimatedPose);
-        return rightPoseEstimator.update(rightCam.getLatestResult());
+        lastRightCamResult = filterByAllowedTags(rightPoseEstimator.update(rightCam.getLatestResult()));
+        return lastRightCamResult;
     }
-
     
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
-        return leftPoseEstimator.update(leftCam.getLatestResult());
+        lastLeftCamResult = filterByAllowedTags(leftPoseEstimator.update(leftCam.getLatestResult()));
+        return lastLeftCamResult;
+    }
+    
+    // Methods to access the last camera results
+    public static Optional<EstimatedRobotPose> getLastRightCamResult() {
+        return lastRightCamResult;
+    }
+    
+    public static Optional<EstimatedRobotPose> getLastLeftCamResult() {
+        return lastLeftCamResult;
     }
 
     /*
     public static Optional<EstimatedRobotPose> getLimelightPose(Pose2d prevEstimatedPose) {
         limelightPoseEstimator.setReferencePose(prevEstimatedPose);
-        return limelightPoseEstimator.update(limelight.getLatestResult());
+        return filterByAllowedTags(limelightPoseEstimator.update(limelight.getLatestResult()));
     }
     */
     

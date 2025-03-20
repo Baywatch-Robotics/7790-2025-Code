@@ -414,6 +414,7 @@ public final class Constants
     public static final float leftCamPitch = (float)Units.degreesToRadians(-20.0);
     public static final float leftCamYaw = (float)Units.degreesToRadians(2.5);
 
+
     public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
     public static final float limelightZOffset = (float)Units.inchesToMeters(36.273);
@@ -440,10 +441,6 @@ public final class Constants
     // Minimum confidence value to prevent division by zero
     public static final double MIN_CONFIDENCE_VALUE = 0.05;
     
-    // Initial pose parameters
-    public static final double INITIAL_DISTANCE_THRESHOLD = 1.0;     // Distance above which we do full pose reset
-    public static final double INITIAL_XY_STD_DEV = 0.1;             // Initial XY standard deviation for close measurements
-    public static final double INITIAL_ROT_STD_DEV = 0.05;           // Initial rotation standard deviation for close measurements
     
     // April Tag IDs to use for each alliance (whitelist approach)
     public static final Integer[] BLUE_ALLIANCE_TAGS = {17, 18, 19, 20, 21, 22}; // Blue alliance tags
