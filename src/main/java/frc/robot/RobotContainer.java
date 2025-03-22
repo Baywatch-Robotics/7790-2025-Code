@@ -286,8 +286,7 @@ public class RobotContainer {
                                                              0,
                                                              0,
                                                              new Constraints(0, 0)),
-                                   new ProfiledPIDController(2
-                                   ,
+                                   new ProfiledPIDController(2,
                                                              0,
                                                              0,
                                                              new Constraints(Units.degreesToRadians(0),
@@ -453,6 +452,21 @@ public class RobotContainer {
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+
+
+    opXbox.start().onTrue(Commands.runOnce(() -> {
+      // First cancel any existing shake commands
+      drivebase.stopShakeCommand().schedule();
+      // Then start a new shake command
+      drivebase.shakeRobotCommand().schedule();
+    }));
+    
+    opXbox.back().onTrue(Commands.runOnce(() -> {
+      drivebase.stopShakeCommand().schedule();
+    }));
+
+
+
 
     chooser.addOption("Left", leftAuto);
     chooser.setDefaultOption("Right", rightAuto);
