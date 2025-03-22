@@ -14,6 +14,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -45,6 +46,13 @@ public class Elevator extends SubsystemBase {
 
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
+    // Add ElevatorFeedforward controller
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
+        ElevatorConstants.kS,
+        ElevatorConstants.kG,
+        ElevatorConstants.kV,
+        ElevatorConstants.kA
+    );
 
     private RelativeEncoder m_encoder;
     
@@ -454,9 +462,23 @@ public class Elevator extends SubsystemBase {
 
         m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
 
+        // Calculate feedforward using the motion profile's desired velocity and acceleration
+        double feedforwardOutput = m_feedforward.calculate(
+            m_setpoint.velocity,  // Velocity from motion profile
+            0                     // Acceleration (assumed to be zero for simplicity)
+        );
+        
+        // Log feedforward value to SmartDashboard
+        SmartDashboard.putNumber("Elevator Feedforward", feedforwardOutput);
 
-
-        elevatorClosedLoopController.setReference(m_setpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ElevatorConstants.FFPercent, ArbFFUnits.kPercentOut);
+        // Apply PID control with the feedforward
+        elevatorClosedLoopController.setReference(
+            m_setpoint.position,      // Position setpoint from motion profile
+            ControlType.kPosition,    // Position control mode 
+            ClosedLoopSlot.kSlot0,    // PID slot
+            feedforwardOutput,        // Use calculated feedforward instead of constant value
+            ArbFFUnits.kVoltage       // Use voltage units for feedforward
+        );
         
     }
     
