@@ -234,8 +234,7 @@ public class RobotContainer {
   // Create drive commands
   public Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-  // public Command driveFieldOrientedDriveToPose =
-  // drivebase.driveFieldOriented(driveToPoseStream);
+
 
   public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
   public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
@@ -286,64 +285,29 @@ public class RobotContainer {
                                    new ProfiledPIDController(2,
                                                              0,
                                                              0,
-                                                             new Constraints(.1, .1)),
+                                                             new Constraints(0, 0)),
                                    new ProfiledPIDController(2
                                    ,
                                                              0,
                                                              0,
-                                                             new Constraints(Units.degreesToRadians(180),
-                                                                             Units.degreesToRadians(180))
+                                                             new Constraints(Units.degreesToRadians(0),
+                                                                             Units.degreesToRadians(0))
                                    ));
                                            
-      driverXbox.rightBumper().whileTrue(Commands.runEnd(() -> driveAngularVelocity.driveToPoseEnabled(true),
-                                                     () -> driveAngularVelocity.driveToPoseEnabled(false)));
+      driverXbox.rightBumper().onTrue(enableDriveToPose());
+      driverXbox.rightBumper().onFalse(disableDriveToPose());
+
 
 
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    //elevator.setDefaultCommand(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
-    // algaeArm.setDefaultCommand(new RunCommand(() ->
-    // algaeArm.moveTrigger(algaeArmTrigger.getAsDouble()), algaeArm)); // Updated
-
-
-
-
-    // to use moveTrigger
-    //shooterArm.setDefaultCommand(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
     opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
-    // Add default command for funnel manual control
-    //funnel.setDefaultCommand(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
-
     opXbox.axisMagnitudeGreaterThan(2, 0.2).or(opXbox.axisMagnitudeGreaterThan(3, 0.2)).whileTrue(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
 
-    // climber.setDefaultCommand(new RunCommand(() ->
-    // climber.moveAmount(elevatorUpDown.getAsDouble()), climber));
 
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-    // Updated default command for AlgaeShooter using suppliers
-    /* 
-    algaeShooter.setDefaultCommand(new RunCommand(() -> {
-      // Get trigger values from the suppliers
-      double leftTrigger = algaeShooterIntake.getAsDouble();
-      double rightTrigger = algaeShooterOutake.getAsDouble();
-
-      // Control logic for the algae shooter based on triggers
-      if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
-        // Left trigger controls intake (forward) at variable speed
-        double speed = leftTrigger * AlgaeShooterConstants.maxTriggerIntake;
-        algaeShooter.setSpeed(speed);
-      } else if (rightTrigger > AlgaeShooterConstants.triggerThreshold) {
-        // Right trigger controls outake (reverse) at variable speed
-        double speed = rightTrigger * AlgaeShooterConstants.maxTriggerOutake;
-        algaeShooter.setSpeed(speed);
-      } else {
-        // If both triggers are below threshold, stop the motor
-        algaeShooter.setSpeed(0);
-      }
-    }, algaeShooter));
-    */
 
     driverXbox.axisMagnitudeGreaterThan(2, 0.2).or(driverXbox.axisMagnitudeGreaterThan(3, 0.2))
     .whileTrue(new RunCommand(() -> {
@@ -366,6 +330,9 @@ public class RobotContainer {
       }
     }, algaeShooter))
     .onFalse(new InstantCommand(() -> algaeShooter.setSpeed(0), algaeShooter));
+
+
+
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -421,6 +388,8 @@ public class RobotContainer {
     buttonBox1.button(8).and(buttonBox2.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
+
+
     // buttonBox1.button(4).onTrue(new InstantCommand(() ->
     // buttonBox.addTarget("SR")));
 
@@ -436,7 +405,8 @@ public class RobotContainer {
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
-    // Use alongWith to combine the LED pattern with the shooter command
+    
+
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
@@ -452,14 +422,6 @@ public class RobotContainer {
 
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
-
-    
-    // Cancel drive-to-pose when driver provides manual input
-    driverXbox.axisMagnitudeGreaterThan(0, 0.1)
-        .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
-        .or(driverXbox.axisMagnitudeGreaterThan(4, .1))
-        .or(driverXbox.axisMagnitudeGreaterThan(5, .1))
-        .onTrue(Commands.runOnce(() -> drivebase.setCancel(true)));
 
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel, climber));
@@ -857,5 +819,13 @@ public class RobotContainer {
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
+  }
+
+  public Command enableDriveToPose() {
+    return new InstantCommand(() -> driveAngularVelocity.driveToPoseEnabled(true));
+  }
+
+  public Command disableDriveToPose() {
+    return new InstantCommand(() -> driveAngularVelocity.driveToPoseEnabled(false));
   }
 }
