@@ -695,4 +695,28 @@ public final class Constants
     public static final double MAX_ANGULAR_VEL = Units.degreesToRadians(240);
     public static final double MAX_ANGULAR_ACCEL = Units.degreesToRadians(120);
   }
+
+  public static final class ShakeModeConstants {
+    // How far to oscillate in each direction (meters)
+    public static final double SHAKE_AMPLITUDE_X = 0.15;  // Increased from 0.08
+    public static final double SHAKE_AMPLITUDE_Y = 0.15;  // Increased from 0.08
+    
+    // Frequency of shake oscillation (Hz)
+    public static final double SHAKE_FREQUENCY = 4.0;     // Increased from 2.0
+    
+    // Rotation shake parameters (radians)
+    public static final double ANGULAR_SHAKE_AMPLITUDE = Math.toRadians(15.0);  // Increased from 5.0
+    
+    // Phase shifts to create more complex motion
+    public static final double Y_PHASE_SHIFT = Math.PI/2;
+    public static final double ROTATION_PHASE_SHIFT = Math.PI/4;
+    
+    // Pattern selection - true = enable axis
+    public static final boolean DEFAULT_SHAKE_X = true;
+    public static final boolean DEFAULT_SHAKE_Y = true; 
+    public static final boolean DEFAULT_SHAKE_ROTATION = true;
+    
+    // Use open-loop control for more aggressive response
+    public static final boolean USE_OPEN_LOOP = true;
+  }
 }

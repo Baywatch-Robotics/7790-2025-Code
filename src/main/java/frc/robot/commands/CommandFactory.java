@@ -308,4 +308,12 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     command.addRequirements(shooter, shooterArm, elevator, funnel);
     return command; 
 }
+
+public static Command robotShakeCommand(SwerveSubsystem drivebase) {
+    return drivebase.shakeRobotCommand();
+}
+
+public static Command stopShakeCommand(SwerveSubsystem drivebase) {
+    return drivebase.stopShakeCommand();
+}
 }

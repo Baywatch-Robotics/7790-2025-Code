@@ -68,6 +68,10 @@ public class SwerveSubsystem extends SubsystemBase
   private double lastVisionTimestamp = 0;
   private int visionMeasurementCounter = 0;
 
+  private boolean isShaking = false;
+  private double shakeStartTime = 0;
+  private Command currentShakeCommand = null; // Track the current shake command
+
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
    *
@@ -128,6 +132,11 @@ public class SwerveSubsystem extends SubsystemBase
   SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
   SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
+    // Log shake status to SmartDashboard
+    SmartDashboard.putBoolean("Shake Mode Active", isShaking);
+    if (isShaking) {
+      SmartDashboard.putNumber("Shake Time Running", Timer.getFPGATimestamp() - shakeStartTime);
+    }
   }
 
   @Override
@@ -878,4 +887,171 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
             driveToPose(buttonBox, elevator).schedule();
         });
     }
+
+  /**
+   * Generates shake motion based on current time to create oscillating velocities
+   * 
+   * @param xShake Whether to shake along X axis
+   * @param yShake Whether to shake along Y axis
+   * @param rotationShake Whether to perform rotational shaking
+   * @return ChassisSpeeds with appropriate oscillating values
+   */
+  private ChassisSpeeds getShakeMotion(boolean xShake, boolean yShake, boolean rotationShake) {
+    double time = Timer.getFPGATimestamp() - shakeStartTime;
+    
+    // Calculate oscillating values using sine waves with different phases
+    double xVelocity = xShake ? 
+        Constants.ShakeModeConstants.SHAKE_AMPLITUDE_X * 
+        Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
+        Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time) : 0;
+    
+    double yVelocity = yShake ? 
+        Constants.ShakeModeConstants.SHAKE_AMPLITUDE_Y * 
+        Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
+        Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time + 
+                Constants.ShakeModeConstants.Y_PHASE_SHIFT) : 0;
+    
+    double rotationalVelocity = rotationShake ? 
+        Constants.ShakeModeConstants.ANGULAR_SHAKE_AMPLITUDE * 
+        Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
+        Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time + 
+                Constants.ShakeModeConstants.ROTATION_PHASE_SHIFT) : 0;
+
+    // Log shake values to SmartDashboard for debugging
+    SmartDashboard.putNumber("Shake X Velocity", xVelocity);
+    SmartDashboard.putNumber("Shake Y Velocity", yVelocity);
+    SmartDashboard.putNumber("Shake Rotation Velocity", rotationalVelocity);
+    
+    return new ChassisSpeeds(xVelocity, yVelocity, rotationalVelocity);
+  }
+
+  /**
+   * Command to shake the robot to dislodge stuck coral
+   * 
+   * @param xShake Enable shaking along the X axis
+   * @param yShake Enable shaking along the Y axis
+   * @param rotationShake Enable rotational shaking
+   * @return Command that shakes the robot until stopped
+   */
+  public Command shakeRobotCommand(boolean xShake, boolean yShake, boolean rotationShake) {
+    return Commands.sequence(
+      // First, initialize the shake state
+      Commands.runOnce(() -> {
+        isShaking = true;
+        shakeStartTime = Timer.getFPGATimestamp();
+        System.out.println("Starting shake motion!");
+      }),
+      
+      // Run the shake continuously until command is manually canceled
+      Commands.run(() -> {
+        // Get shake motion speeds and apply them
+        ChassisSpeeds shakeMotion = getShakeMotion(xShake, yShake, rotationShake);
+        
+        // Use direct module states for more aggressive shaking if configured
+        if (Constants.ShakeModeConstants.USE_OPEN_LOOP) {
+          swerveDrive.drive(
+            new Translation2d(shakeMotion.vxMetersPerSecond, shakeMotion.vyMetersPerSecond),
+            shakeMotion.omegaRadiansPerSecond, 
+            false,  // Robot-relative mode
+            true    // Open-loop control
+          );
+        } else {
+          setChassisSpeeds(shakeMotion);
+        }
+      }),
+      
+      // Always stop when command is canceled or ended
+      Commands.runOnce(this::stopShaking)
+    );
+  }
+
+  /**
+   * Default shake command using all axes
+   * 
+   * @return Command that shakes the robot until stopped
+   */
+  public Command shakeRobotCommand() {
+    Command shakeCmd = shakeRobotCommand(
+      Constants.ShakeModeConstants.DEFAULT_SHAKE_X,
+      Constants.ShakeModeConstants.DEFAULT_SHAKE_Y,
+      Constants.ShakeModeConstants.DEFAULT_SHAKE_ROTATION
+    );
+    
+    // Store the command reference for later cancellation
+    currentShakeCommand = shakeCmd;
+    return shakeCmd;
+  }
+
+  /**
+   * Command specifically for testing shake functionality
+   * This command uses a brief shake and then stops automatically
+   * 
+   * @return Command that briefly shakes the robot
+   */
+  public Command testShakeCommand() {
+    return Commands.sequence(
+      // Notify that test is starting
+      Commands.runOnce(() -> {
+        System.out.println("TESTING SHAKE: Starting test shake...");
+      }),
+      
+      // Run a brief shake (with timeout)
+      shakeRobotCommand(true, true, true).withTimeout(2.0),
+      
+      // Notify when test is complete
+      Commands.runOnce(() -> {
+        System.out.println("TESTING SHAKE: Test complete");
+      })
+    );
+  }
+
+  /**
+   * Immediately stops any shake motion and sets chassis speeds to zero
+   */
+  public void stopShaking() {
+    if (isShaking) {
+      System.out.println("Stopping shake motion!");
+      isShaking = false;
+      setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+      
+      // Cancel any ongoing shake command (important!)
+      if (currentShakeCommand != null) {
+        currentShakeCommand.cancel();
+        currentShakeCommand = null;
+      }
+    }
+  }
+
+  /**
+   * Command to stop robot shake motion 
+   * 
+   * @return Command that stops robot shaking
+   */
+  public Command stopShakeCommand() {
+    return Commands.runOnce(() -> {
+      System.out.println("Stop shake command executed");
+      
+      // Set chassis speeds to zero
+      setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+      
+      // Cancel the current shake command if it exists
+      if (currentShakeCommand != null) {
+        System.out.println("Cancelling current shake command");
+        currentShakeCommand.cancel();
+        currentShakeCommand = null;
+      }
+      
+      // Always reset the shake state
+      isShaking = false;
+    });
+  }
+
+  /**
+   * Check if the robot is currently executing a shake motion
+   * 
+   * @return true if shaking, false otherwise
+   */
+  public boolean isShaking() {
+    return isShaking;
+  }
 }
