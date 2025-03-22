@@ -698,25 +698,28 @@ public final class Constants
 
   public static final class ShakeModeConstants {
     // How far to oscillate in each direction (meters)
-    public static final double SHAKE_AMPLITUDE_X = 5.5;  
-    public static final double SHAKE_AMPLITUDE_Y = 0.15;
+    public static final double SHAKE_AMPLITUDE_X = 0.1;  // Keeping small for stability
+    public static final double SHAKE_AMPLITUDE_Y = 0.1;   // More aggressive Y-axis shake
     
-    // Frequency of shake oscillation (Hz)
-    public static final double SHAKE_FREQUENCY = 2.0;
+    // Direct speed control (meters per second) - MUCH higher for more aggressive motion
+    public static final double SHAKE_SPEED_Y = 5.0;   // Very aggressive Y-axis speed
+    
+    // Frequency of shake oscillation (Hz) - Controls how quickly direction changes
+    public static final double SHAKE_FREQUENCY = 5.0;
     
     // Rotation shake parameters (radians)
-    public static final double ANGULAR_SHAKE_AMPLITUDE = Math.toRadians(15.0);  // Increased from 5.0
+    public static final double ANGULAR_SHAKE_AMPLITUDE = Math.toRadians(10.0);
     
     // Phase shifts to create more complex motion
-    public static final double Y_PHASE_SHIFT = Math.PI/2;
-    public static final double ROTATION_PHASE_SHIFT = Math.PI/4;
+    public static final double Y_PHASE_SHIFT = 0;
+    public static final double ROTATION_PHASE_SHIFT = 0;
     
-    // Pattern selection - true = enable axis
-    public static final boolean DEFAULT_SHAKE_X = false;
-    public static final boolean DEFAULT_SHAKE_Y = true; 
-    public static final boolean DEFAULT_SHAKE_ROTATION = false;
+    // Pattern selection - FOCUS on Y-axis only
+    public static final boolean DEFAULT_SHAKE_X = false;    // Disabled X-axis
+    public static final boolean DEFAULT_SHAKE_Y = true;     // Enabled Y-axis
+    public static final boolean DEFAULT_SHAKE_ROTATION = false; // Disabled rotation
     
-    // Use open-loop control for more aggressive response
-    public static final boolean USE_OPEN_LOOP = false;
+    // Use open-loop control for maximum power and direct motor response
+    public static final boolean USE_OPEN_LOOP = true;
   }
 }

@@ -889,7 +889,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     }
 
   /**
-   * Generates shake motion based on current time to create oscillating velocities
+   * Generates shake motion with direct speed control for more aggressive shaking
    * 
    * @param xShake Whether to shake along X axis
    * @param yShake Whether to shake along Y axis
@@ -899,18 +899,18 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
   private ChassisSpeeds getShakeMotion(boolean xShake, boolean yShake, boolean rotationShake) {
     double time = Timer.getFPGATimestamp() - shakeStartTime;
     
-    // Calculate oscillating values using sine waves with different phases
+    // Calculate X velocity if enabled (using traditional sine)
     double xVelocity = xShake ? 
         Constants.ShakeModeConstants.SHAKE_AMPLITUDE_X * 
         Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
         Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time) : 0;
     
-    double yVelocity = yShake ? 
-        Constants.ShakeModeConstants.SHAKE_AMPLITUDE_Y * 
-        Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
-        Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time + 
-                Constants.ShakeModeConstants.Y_PHASE_SHIFT) : 0;
+    // Use simpler square wave with direct speed values for Y
+    // This creates a more aggressive back-and-forth motion
+    double yDirection = Math.sin(2 * Math.PI * Constants.ShakeModeConstants.SHAKE_FREQUENCY * time) >= 0 ? 1.0 : -1.0;
+    double yVelocity = yShake ? yDirection * Constants.ShakeModeConstants.SHAKE_SPEED_Y : 0;
     
+    // Calculate rotation velocity if enabled
     double rotationalVelocity = rotationShake ? 
         Constants.ShakeModeConstants.ANGULAR_SHAKE_AMPLITUDE * 
         Constants.ShakeModeConstants.SHAKE_FREQUENCY * 
@@ -920,6 +920,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     // Log shake values to SmartDashboard for debugging
     SmartDashboard.putNumber("Shake X Velocity", xVelocity);
     SmartDashboard.putNumber("Shake Y Velocity", yVelocity);
+    SmartDashboard.putNumber("Shake Direction", yDirection);
     SmartDashboard.putNumber("Shake Rotation Velocity", rotationalVelocity);
     
     return new ChassisSpeeds(xVelocity, yVelocity, rotationalVelocity);
