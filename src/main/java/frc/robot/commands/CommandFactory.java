@@ -39,7 +39,8 @@ public class CommandFactory {
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(new WaitCommand(.5))
-      .andThen(shooter.shooterZeroSpeedCommand());
+      .andThen(shooter.shooterZeroSpeedCommand())
+      .andThen(shooterArm.shooterArmScoreLOWCommand());
 
       // Combine the LED command with the main command sequence
       Command command = ledCommand.andThen(mainCommand);

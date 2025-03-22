@@ -631,9 +631,9 @@ public final class Constants
     public static final float BargeMaxY = (float)Units.inchesToMeters(320);
     
     // Speed multipliers for each zone
-    public static final float reefSpeedMultiplier = 0.4f;
-    public static final float coralStationMultiplier = 0.4f;
-    public static final float bargeMultiplier = 0.25f;
+    public static final float reefSpeedMultiplier = 0.5f;
+    public static final float coralStationMultiplier = 0.6f;
+    public static final float bargeMultiplier = 0.3f;
 
     public static final float speedSmoothingFactor = 0.1f; // Controls how quickly speed changes (0.0-1.0)
   }
@@ -644,7 +644,7 @@ public final class Constants
   public static final class SpeedConstants {
     
     // Default speed when elevator is lowered
-    public static final float elevatorLoweredSpeed = 0.8f;
+    public static final float elevatorLoweredSpeed = 1.0f;
     
     // New speed constants for different elevator heights
 
@@ -658,7 +658,7 @@ public final class Constants
     public static final float elevatorFullyRaisedSpeed = 0.2f;
     
     // Full speed when at intake position
-    public static final float intakePositionSpeed = 0.5f;
+    public static final float intakePositionSpeed = 1.0f;
 
     public static float fullSpeedOverride = 1.0f;
   }
