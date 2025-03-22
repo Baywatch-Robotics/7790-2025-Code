@@ -403,6 +403,13 @@ public final class Constants
     // List of valid tag IDs (excluding tags 1-5 and 12-16)
     public static final Integer[] VALID_TAG_IDS = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 
+    // Pose consistency tracking constants
+    public static final int REQUIRED_CONSISTENT_POSES = 10;
+    public static final double MAX_POSE_JUMP_DISTANCE = 1.0; // meters
+    public static final double MAX_POSE_JUMP_ANGLE_DEGREES = 15.0; // degrees
+    public static final double INITIAL_DISTANCE_MULTIPLIER = 0.6; // 60% of max distance when establishing consistency
+    public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
+
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
