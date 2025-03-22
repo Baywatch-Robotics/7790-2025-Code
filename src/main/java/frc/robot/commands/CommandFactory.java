@@ -59,7 +59,8 @@ public class CommandFactory {
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmLoadCommand())
     .andThen(shooter.shooterIntakeCommand())
-    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()));
+    .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+    .andThen(shooterArm.shooterArmScoreLOWCommand());
 
 
     command.addRequirements(shooter, shooterArm, elevator, funnel);
