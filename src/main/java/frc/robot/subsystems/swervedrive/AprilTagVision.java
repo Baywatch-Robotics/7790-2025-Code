@@ -190,13 +190,11 @@ public class AprilTagVision extends SubsystemBase {
         // Check if the new pose is consistent with previous poses
         if (isPoseConsistent(averagedPose)) {
             consecutiveValidPoses++;
-            System.out.println("Consecutive valid poses: " + consecutiveValidPoses);
             lastValidPose = averagedPose;
             return Optional.of(averagedPose);
         } else {
             // If we have a good track record, still use the pose but don't count it as consistent
             if (consecutiveValidPoses >= AprilTagVisionConstants.REQUIRED_CONSISTENT_POSES) {
-                System.out.println("Using inconsistent pose due to good history. Delta too large.");
                 lastValidPose = averagedPose;
                 return Optional.of(averagedPose);
             }
@@ -259,6 +257,5 @@ public class AprilTagVision extends SubsystemBase {
     public static void resetPoseConsistency() {
         consecutiveValidPoses = 0;
         lastValidPose = null;
-        System.out.println("AprilTag pose consistency tracking reset");
     }
 }

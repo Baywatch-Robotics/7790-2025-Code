@@ -940,7 +940,6 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
       Commands.runOnce(() -> {
         isShaking = true;
         shakeStartTime = Timer.getFPGATimestamp();
-        System.out.println("Starting shake motion!");
       }),
       
       // Run the shake continuously until command is manually canceled
@@ -983,35 +982,12 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     return shakeCmd;
   }
 
-  /**
-   * Command specifically for testing shake functionality
-   * This command uses a brief shake and then stops automatically
-   * 
-   * @return Command that briefly shakes the robot
-   */
-  public Command testShakeCommand() {
-    return Commands.sequence(
-      // Notify that test is starting
-      Commands.runOnce(() -> {
-        System.out.println("TESTING SHAKE: Starting test shake...");
-      }),
-      
-      // Run a brief shake (with timeout)
-      shakeRobotCommand(true, true, true).withTimeout(2.0),
-      
-      // Notify when test is complete
-      Commands.runOnce(() -> {
-        System.out.println("TESTING SHAKE: Test complete");
-      })
-    );
-  }
 
   /**
    * Immediately stops any shake motion and sets chassis speeds to zero
    */
   public void stopShaking() {
     if (isShaking) {
-      System.out.println("Stopping shake motion!");
       isShaking = false;
       setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
       
@@ -1030,14 +1006,12 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
    */
   public Command stopShakeCommand() {
     return Commands.runOnce(() -> {
-      System.out.println("Stop shake command executed");
       
       // Set chassis speeds to zero
       setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
       
       // Cancel the current shake command if it exists
       if (currentShakeCommand != null) {
-        System.out.println("Cancelling current shake command");
         currentShakeCommand.cancel();
         currentShakeCommand = null;
       }
