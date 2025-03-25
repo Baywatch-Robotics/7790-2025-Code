@@ -96,9 +96,6 @@ public class RobotContainer {
     return new Trigger(() -> heldOutsideReefZone);
   }
 
-  Supplier<ProfiledPIDController> xProfiledPID;
-  Supplier<ProfiledPIDController> rotProfiledPID;
-
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX() * .8;
   DoubleSupplier angSpeed;
 
@@ -147,12 +144,12 @@ public class RobotContainer {
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
 
 
-  // Make the controllers extremely restrictive with super low P gains
+
   private final ProfiledPIDController driveController = new ProfiledPIDController(
       2, 0, 0,
       new Constraints(0.05, 0.01)); // Even slower: 5cm/s max velocity, 1cm/s² max acceleration
 
-  // Set extremely restrictive rotation constraints too
+
   private final ProfiledPIDController rotationController = new ProfiledPIDController(
       2, 0, 0,
       new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180))); // 5 deg/s, 2 deg/s²
