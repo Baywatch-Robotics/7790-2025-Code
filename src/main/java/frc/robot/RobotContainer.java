@@ -74,14 +74,6 @@ public class RobotContainer {
 
   private boolean loadedSingleTime = false;
 
-  // Add constants for proximity thresholds
-  // private static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
-  // private static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
-  // private static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
-  // private static final double LINED_UP_ANGLE_THRESHOLD = Math.toRadians(5.0);
-  // // radians
-  // private static final double LINED_UP_POSITION_THRESHOLD = 0.1; // meters
-
   // Add zone status tracking
   private boolean isInReefZone = false;
   private boolean isInCoralStationLeftZone = false; // Consistent naming
@@ -147,14 +139,12 @@ public class RobotContainer {
 
   private final ProfiledPIDController driveController = new ProfiledPIDController(
       2, 0, 0,
-      new Constraints(0.05, 0.01)); // Even slower: 5cm/s max velocity, 1cm/s² max acceleration
+      new Constraints(0.05, 0.01));
 
 
   private final ProfiledPIDController rotationController = new ProfiledPIDController(
       2, 0, 0,
-      new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180))); // 5 deg/s, 2 deg/s²
-
-
+      new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180)));
 
   // Triggers for proximity detection
   public Trigger approachingTrigger() {
