@@ -34,10 +34,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
-import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
-import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Elevator;
 import frc.robot.Constants.AprilTagVisionConstants;
 
@@ -261,7 +259,8 @@ public class SwerveSubsystem extends SubsystemBase
     return this.pathCanceled;
   }
   
-public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
+  /*
+  public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     return new Command() {
         private Command pathCommand;
         private PathConstraints lastConstraints = null;
@@ -328,7 +327,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
               baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_VEL);
               baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
           }
-            */
+            
 
             // Apply elevator height-based multipliers
             double finalVelocity = baseVelocity;
@@ -378,23 +377,14 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
         }
     };
 }
+*/
 
-
-  public Command driveToPoseProfiled(ButtonBox buttonBox){
-
-    TargetClass target = buttonBox.peekNextTarget();
-
-    Pose2d targetPose = new Pose2d(
-      new Translation2d(target.getX(), target.getY()),
-      Rotation2d.fromRadians(target.getZ())
-    );
-
-    Pose2d correctedPose = TargetClass.toPose2d(targetPose);
-
-    Supplier<Pose2d> correctedPoseSupplier = () -> correctedPose;
-
-    return new ProfileToPose(this, correctedPoseSupplier);
+  public Command driveToPoseProfiled(ButtonBox buttonBox) {
+    // Simply pass the ButtonBox to the ProfileToPose command
+    // Let the command handle null targets internally
+    return new ProfileToPose(this, buttonBox);
   }
+
   /**
    * Command to characterize the robot drive motors using SysId
    *
@@ -901,7 +891,7 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
      */
     public Command startDriveToPose(ButtonBox buttonBox, Elevator elevator) {
         return Commands.runOnce(() -> {
-            driveToPose(buttonBox, elevator).schedule();
+          driveToPoseProfiled(buttonBox).schedule();
         });
     }
 

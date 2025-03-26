@@ -13,6 +13,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.ButtonBox;
+import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.GeomUtil;
 
@@ -34,6 +36,8 @@ public class ProfileToPose extends Command {
 
     private SwerveSubsystem swerve;
     private Supplier<Pose2d> target;
+    private ButtonBox buttonBox; // Added ButtonBox reference
+    private boolean useButtonBox = false; // Flag to determine which source to use
     
     private static final ProfiledPIDController driveController = new ProfiledPIDController(drivekP, 0, drivekD,
         new TrapezoidProfile.Constraints(driveMaxVelocity, driveMaxAcceleration));
@@ -47,32 +51,78 @@ public class ProfileToPose extends Command {
 
     private Supplier<Translation2d> linearFF = () -> Translation2d.kZero;
     private DoubleSupplier omegaFF = () -> 0.0;
-
+    
+    // Original constructor for backward compatibility
     public ProfileToPose(SwerveSubsystem swerve, Supplier<Pose2d> target) {
         this.swerve = swerve;
         this.target = target;
+        this.useButtonBox = false;
 
         SmartDashboard.putString("cons", target.get().toString()); // Diagnostic
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         addRequirements(swerve);
     }
+    
+    // New constructor that accepts ButtonBox directly
+    public ProfileToPose(SwerveSubsystem swerve, ButtonBox buttonBox) {
+        this.swerve = swerve;
+        this.buttonBox = buttonBox;
+        this.useButtonBox = true;
+        this.target = this::getTargetPose; // Use getTargetPose method as the supplier
+
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        addRequirements(swerve);
+    }
+    
+    // Helper method to get the target pose from the ButtonBox
+    private Pose2d getTargetPose() {
+        if (buttonBox == null) {
+            return new Pose2d(); // Return origin if buttonBox is null
+        }
+        
+        TargetClass target = buttonBox.peekNextTarget();
+        if (target != null) {
+            Pose2d targetPose = new Pose2d(
+                new Translation2d(target.getX(), target.getY()),
+                Rotation2d.fromRadians(target.getZ())
+            );
+            
+            SmartDashboard.putString("Drive Target", target.getName());
+            return TargetClass.toPose2d(targetPose);
+        } else {
+            SmartDashboard.putString("Drive Target", "NULL");
+            return swerve.getPose(); // Return current pose to effectively stop movement
+        }
+    }
 
     @Override
     public void initialize() {
-        SmartDashboard.putString("init", target.get().toString()); // Diagnostic
+        Pose2d targetPose = target.get();
+        SmartDashboard.putString("init", targetPose.toString()); // Diagnostic
+        
+        // Check if there's no valid target (when using ButtonBox and target is null)
+        if (useButtonBox && buttonBox.peekNextTarget() == null) {
+            SmartDashboard.putBoolean("Null Target Detected", true);
+            // Mark the command as complete immediately
+            running = false;
+            return;
+        }
+        SmartDashboard.putBoolean("Null Target Detected", false);
+        
+        // Normal initialization continues if target is valid
         Pose2d currentPose = robot.get();
         ChassisSpeeds fieldVelocity = swerve.getRobotVelocity();
         Translation2d linearFieldVelocity =
             new Translation2d(fieldVelocity.vxMetersPerSecond, fieldVelocity.vyMetersPerSecond);
         driveController.reset(
-            currentPose.getTranslation().getDistance(target.get().getTranslation()),
+            currentPose.getTranslation().getDistance(targetPose.getTranslation()),
             Math.min(
                 0.0,
                 -linearFieldVelocity
                     .rotateBy(
-                        target
-                            .get()
+                        targetPose
                             .getTranslation()
                             .minus(currentPose.getTranslation())
                             .getAngle()
@@ -81,12 +131,29 @@ public class ProfileToPose extends Command {
         thetaController.reset(
             currentPose.getRotation().getRadians(), fieldVelocity.omegaRadiansPerSecond);
         lastSetpointTranslation = currentPose.getTranslation();
+        running = true;
     }
 
     @Override
     public void execute() {
-        running = true;
-
+        // Skip execution completely if running is false (target was null)
+        if (!running) {
+            return;
+        }
+        
+        // Check if drive should be canceled due to joystick input
+        if (swerve.getCancel()) {
+            running = false;
+            return;
+        }
+        
+        // Check if using ButtonBox and target is now null (target changed during execution)
+        if (useButtonBox && buttonBox.peekNextTarget() == null) {
+            running = false;
+            return;
+        }
+        
+        // Regular execution continues
         // Get current pose and target pose
         Pose2d currentPose = robot.get();
         Pose2d targetPose = target.get();
@@ -151,7 +218,6 @@ public class ProfileToPose extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        swerve.lock();
         running = false;
     }
 
@@ -165,4 +231,19 @@ public class ProfileToPose extends Command {
             && Math.abs(thetaErrorAbs) < thetaTolerance.getRadians();
     }
 
+    @Override
+    public boolean isFinished() {
+        // If no valid target (when using ButtonBox and target is null)
+        if (useButtonBox && buttonBox.peekNextTarget() == null) {
+            return true;
+        }
+        
+        // Check if canceled by joystick movement
+        if (swerve.getCancel()) {
+            return true;
+        }
+        
+        // Otherwise use normal completion criteria
+        return !running || (running && driveController.atGoal() && thetaController.atGoal());
+    }
 }

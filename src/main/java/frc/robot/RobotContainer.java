@@ -448,6 +448,21 @@ public class RobotContainer {
     chooser.setDefaultOption("Right", rightAuto);
      
     SmartDashboard.putData(chooser);
+
+    // Add joystick movement detection to cancel drive commands
+    driverXbox.axisMagnitudeGreaterThan(0, 0.1)
+        .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
+        .or(driverXbox.axisMagnitudeGreaterThan(4, .1))
+        .or(driverXbox.axisMagnitudeGreaterThan(5, .1))
+        .onTrue(Commands.runOnce(() -> drivebase.setCancel(true)));
+        
+    // Reset cancel flag when joysticks return to neutral
+    driverXbox.axisMagnitudeGreaterThan(0, 0.1)
+        .or(driverXbox.axisMagnitudeGreaterThan(1, .1))
+        .or(driverXbox.axisMagnitudeGreaterThan(4, .1))
+        .or(driverXbox.axisMagnitudeGreaterThan(5, .1))
+        .negate()
+        .onTrue(Commands.runOnce(() -> drivebase.setCancel(false)));
   }
 
   /**
