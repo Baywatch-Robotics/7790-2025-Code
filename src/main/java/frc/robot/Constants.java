@@ -167,7 +167,7 @@ public final class Constants
     
     
     public static final float min = 0;  // Max extended position
-    public static final float max = 519.041748f;    // Fully retracted position
+    public static final float max = 540f;    // Fully retracted position
     
     // Predefined positions (reversed from previous values to match Neo motor behavior)
     public static final float retractedPosition = 0f;      // Fully retracted
