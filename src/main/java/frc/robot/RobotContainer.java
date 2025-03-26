@@ -6,13 +6,9 @@ package frc.robot;
 
 import java.io.File;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -96,9 +92,6 @@ public class RobotContainer {
     return new Trigger(() -> heldOutsideReefZone);
   }
 
-  Supplier<ProfiledPIDController> xProfiledPID;
-  Supplier<ProfiledPIDController> rotProfiledPID;
-
   DoubleSupplier headingXAng = () -> -driverXbox.getRightX() * .8;
   DoubleSupplier angSpeed;
 
@@ -126,8 +119,6 @@ public class RobotContainer {
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
 
-  private Supplier<Pose2d> target;
-
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
@@ -145,18 +136,6 @@ public class RobotContainer {
   private final LED led = new LED();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
-
-
-  // Make the controllers extremely restrictive with super low P gains
-  private final ProfiledPIDController driveController = new ProfiledPIDController(
-      2, 0, 0,
-      new Constraints(0.05, 0.01)); // Even slower: 5cm/s max velocity, 1cm/s² max acceleration
-
-  // Set extremely restrictive rotation constraints too
-  private final ProfiledPIDController rotationController = new ProfiledPIDController(
-      2, 0, 0,
-      new Constraints(Units.degreesToRadians(180), Units.degreesToRadians(180))); // 5 deg/s, 2 deg/s²
-
 
 
   // Triggers for proximity detection
@@ -290,20 +269,6 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-
-    
-
-    // Modified driveToPose binding to check for target null pointer
-    driveAngularVelocity.driveToPose(() -> (target != null ? target.get() : drivebase.getPose()), driveController, rotationController);
-    
-                                           
-      driverXbox.rightBumper().onTrue(enableDriveToPose());
-      driverXbox.rightBumper().onFalse(disableDriveToPose());
-
-      driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
-
-
-
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
 
     opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
@@ -404,7 +369,11 @@ public class RobotContainer {
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     //driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
+
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
+
+    driverXbox.rightBumper().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
 
 
 
@@ -519,8 +488,6 @@ public class RobotContainer {
 
       // Convert to alliance-relative coordinates
       Pose2d allianceRelativeTarget = TargetClass.toPose2d(targetPose);
-
-      target = () -> allianceRelativeTarget;
 
       // Calculate distance to target
       double distance = Math.sqrt(
@@ -840,13 +807,5 @@ public class RobotContainer {
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
-  }
-
-  public Command enableDriveToPose() {
-    return new InstantCommand(() -> driveAngularVelocity.driveToPoseEnabled(true));
-  }
-
-  public Command disableDriveToPose() {
-    return new InstantCommand(() -> driveAngularVelocity.driveToPoseEnabled(false));
   }
 }

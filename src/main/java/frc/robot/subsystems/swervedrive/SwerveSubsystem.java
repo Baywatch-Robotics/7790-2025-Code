@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveToPoseConstants;
+import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Elevator;
@@ -378,6 +379,22 @@ public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
     };
 }
 
+
+  public Command driveToPoseProfiled(ButtonBox buttonBox){
+
+    TargetClass target = buttonBox.peekNextTarget();
+
+    Pose2d targetPose = new Pose2d(
+      new Translation2d(target.getX(), target.getY()),
+      Rotation2d.fromRadians(target.getZ())
+    );
+
+    Pose2d correctedPose = TargetClass.toPose2d(targetPose);
+
+    Supplier<Pose2d> correctedPoseSupplier = () -> correctedPose;
+
+    return new ProfileToPose(this, correctedPoseSupplier);
+  }
   /**
    * Command to characterize the robot drive motors using SysId
    *
