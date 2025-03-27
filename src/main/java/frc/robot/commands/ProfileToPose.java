@@ -13,23 +13,28 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.GeomUtil;
 
 public class ProfileToPose extends Command {
-    private static final double drivekP = 0.9;
-    private static final double drivekD = 0.01;
-    private static final double thetakP = 4.0;
-    private static final double thetakD = 0.0;
+    // Use constants from DriveToPoseConstants
+    private static final double drivekP = DriveToPoseConstants.DRIVE_KP;
+    private static final double drivekD = DriveToPoseConstants.DRIVE_KD;
+    private static final double thetakP = DriveToPoseConstants.THETA_KP;
+    private static final double thetakD = DriveToPoseConstants.THETA_KD;
 
-    private static final double driveMaxVelocity = 0.7;
-    private static final double driveMaxAcceleration = 1;
-    private static final double thetaMaxVelocity = Units.degreesToRadians(720.0);
-    private static final double thetaMaxAcceleration = 10.0;
-    public static final double driveTolerance = 0.01;
-    public static final double thetaTolerance = Units.degreesToRadians(1.0);
+    // Default values - will be updated dynamically based on distance
+    private double driveMaxVelocity = DriveToPoseConstants.DRIVE_MAX_VELOCITY;
+    private double driveMaxAcceleration = DriveToPoseConstants.DRIVE_MAX_ACCELERATION;
+    private static final double thetaMaxVelocity = DriveToPoseConstants.THETA_MAX_VELOCITY;
+    private static final double thetaMaxAcceleration = DriveToPoseConstants.THETA_MAX_ACCELERATION;
+    
+    // Tolerance values
+    public static final double driveTolerance = DriveToPoseConstants.DRIVE_TOLERANCE;
+    public static final double thetaTolerance = DriveToPoseConstants.THETA_TOLERANCE;
     
     private static final double ffMinRadius = 0.02;
     private static final double ffMaxRadius = 0.08;
@@ -39,10 +44,10 @@ public class ProfileToPose extends Command {
     private ButtonBox buttonBox; // Added ButtonBox reference
     private boolean useButtonBox = false; // Flag to determine which source to use
     
-    private static final ProfiledPIDController driveController = new ProfiledPIDController(drivekP, 0, drivekD,
-        new TrapezoidProfile.Constraints(driveMaxVelocity, driveMaxAcceleration));
-    private static final ProfiledPIDController thetaController = new ProfiledPIDController(thetakP, 0, thetakD,
-        new TrapezoidProfile.Constraints(thetaMaxVelocity, thetaMaxAcceleration));
+    // Controllers are now instance variables instead of static to allow for dynamic constraint updates
+    private ProfiledPIDController driveController;
+    private ProfiledPIDController thetaController;
+    
     private Translation2d lastSetpointTranslation = Translation2d.kZero;
     private double driveErrorAbs = 0.0;
     private double thetaErrorAbs = 0.0;
@@ -57,10 +62,11 @@ public class ProfileToPose extends Command {
         this.swerve = swerve;
         this.target = target;
         this.useButtonBox = false;
+        
+        // Initialize controllers with default constraints
+        initializeControllers();
 
         SmartDashboard.putString("cons", target.get().toString()); // Diagnostic
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
         addRequirements(swerve);
     }
     
@@ -70,10 +76,23 @@ public class ProfileToPose extends Command {
         this.buttonBox = buttonBox;
         this.useButtonBox = true;
         this.target = this::getTargetPose; // Use getTargetPose method as the supplier
-
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
+        
+        // Initialize controllers with default constraints
+        initializeControllers();
+        
         addRequirements(swerve);
+    }
+    
+    // Helper method to initialize controllers
+    private void initializeControllers() {
+        // Initialize with default constraints
+        driveController = new ProfiledPIDController(drivekP, 0, drivekD,
+            new TrapezoidProfile.Constraints(driveMaxVelocity, driveMaxAcceleration));
+            
+        thetaController = new ProfiledPIDController(thetakP, 0, thetakD,
+            new TrapezoidProfile.Constraints(thetaMaxVelocity, thetaMaxAcceleration));
+            
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
     
     // Helper method to get the target pose from the ButtonBox
@@ -113,6 +132,10 @@ public class ProfileToPose extends Command {
         
         // Normal initialization continues if target is valid
         Pose2d currentPose = robot.get();
+        
+        // Calculate initial distance and set initial constraints
+        updateSpeedConstraints(currentPose, targetPose);
+        
         ChassisSpeeds fieldVelocity = swerve.getRobotVelocity();
         Translation2d linearFieldVelocity =
             new Translation2d(fieldVelocity.vxMetersPerSecond, fieldVelocity.vyMetersPerSecond);
@@ -132,6 +155,50 @@ public class ProfileToPose extends Command {
             currentPose.getRotation().getRadians(), fieldVelocity.omegaRadiansPerSecond);
         lastSetpointTranslation = currentPose.getTranslation();
         running = true;
+    }
+
+    /**
+     * Updates the speed constraints based on distance to target
+     */
+    private void updateSpeedConstraints(Pose2d currentPose, Pose2d targetPose) {
+        double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+        
+        // Select appropriate constraints based on distance
+        double newVelocity;
+        double newAcceleration;
+        
+        if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
+            // Far from target - use fastest speed
+            newVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
+            newAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
+            SmartDashboard.putString("Drive Speed Mode", "APPROACHING");
+        } 
+        else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
+            // Getting closer - use medium speed
+            newVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
+            newAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
+            SmartDashboard.putString("Drive Speed Mode", "CLOSE");
+        } 
+        else {
+            // Very close - use slowest speed for precision
+            newVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
+            newAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
+            SmartDashboard.putString("Drive Speed Mode", "VERY CLOSE");
+        }
+        
+        // Only update if the constraints have changed
+        if (newVelocity != driveMaxVelocity || newAcceleration != driveMaxAcceleration) {
+            driveMaxVelocity = newVelocity;
+            driveMaxAcceleration = newAcceleration;
+            
+            // Update the constraints on the controller
+            driveController.setConstraints(
+                new TrapezoidProfile.Constraints(driveMaxVelocity, driveMaxAcceleration));
+                
+            // Log the new values
+            SmartDashboard.putNumber("Drive Max Velocity", driveMaxVelocity);
+            SmartDashboard.putNumber("Drive Max Acceleration", driveMaxAcceleration);
+        }
     }
 
     @Override
@@ -157,6 +224,9 @@ public class ProfileToPose extends Command {
         // Get current pose and target pose
         Pose2d currentPose = robot.get();
         Pose2d targetPose = target.get();
+        
+        // Update constraints based on current distance
+        updateSpeedConstraints(currentPose, targetPose);
 
         // Calculate drive speed
         double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
@@ -214,6 +284,9 @@ public class ProfileToPose extends Command {
         // Command speeds (ROBOT RELATIVE)
         swerve.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
                 driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, currentPose.getRotation()));
+                
+        // Log current distance for debugging
+        SmartDashboard.putNumber("Distance to Target", currentDistance);
     }
 
     @Override

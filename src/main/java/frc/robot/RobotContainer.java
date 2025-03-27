@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -509,8 +510,8 @@ public class RobotContainer {
 
       // Check if lined up (both position and rotation are within thresholds)
       boolean wasLinedUp = isLinedUp; // Store previous state to detect changes
-      isLinedUp = distance <= DriveToPoseConstants.LINED_UP_POSITION_THRESHOLD &&
-          angleDifference <= DriveToPoseConstants.LINED_UP_ANGLE_THRESHOLD;
+      isLinedUp = distance <= 0.01 &&
+          angleDifference <= Units.degreesToRadians(1.0);x
 
       // If we just became lined up, clear the target visualization
       if (isLinedUp && !wasLinedUp) {
