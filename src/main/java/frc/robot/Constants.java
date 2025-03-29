@@ -689,7 +689,7 @@ public final class Constants
     
     // Distance thresholds in meters
     public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
-    public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
+    public static final double CLOSE_DISTANCE_THRESHOLD = .75; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
     
     // Visualization settings
@@ -697,14 +697,14 @@ public final class Constants
 
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
-    public static final double APPROACHING_MAX_VEL = 0.7; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 1.0; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_VEL = 6; // Same as DRIVE_MAX_VELOCITY
+    public static final double APPROACHING_MAX_ACCEL = 2; // Same as DRIVE_MAX_ACCELERATION
     
-    public static final double CLOSE_MAX_VEL = 0.5; // Slower for closer approach
-    public static final double CLOSE_MAX_ACCEL = 0.8; // Less acceleration when closer
+    public static final double CLOSE_MAX_VEL = 6; // Slower for closer approach
+    public static final double CLOSE_MAX_ACCEL = 2; // Less acceleration when closer
     
-    public static final double VERY_CLOSE_MAX_VEL = 0.3; // Slowest for final approach 
-    public static final double VERY_CLOSE_MAX_ACCEL = 0.5; // Least acceleration for precision
+    public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.0; // Least acceleration for precision
   }
 
   public static final class ShakeModeConstants {

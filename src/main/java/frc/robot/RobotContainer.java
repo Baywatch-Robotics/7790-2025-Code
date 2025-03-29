@@ -374,14 +374,14 @@ public class RobotContainer {
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
-    driverXbox.rightBumper().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
+    driverXbox.x().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
 
 
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
     
-    //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+    driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
@@ -510,8 +510,8 @@ public class RobotContainer {
 
       // Check if lined up (both position and rotation are within thresholds)
       boolean wasLinedUp = isLinedUp; // Store previous state to detect changes
-      isLinedUp = distance <= 0.01 &&
-          angleDifference <= Units.degreesToRadians(1.0);x
+      isLinedUp = distance <= 0.03 &&
+          angleDifference <= Units.degreesToRadians(3.0);
 
       // If we just became lined up, clear the target visualization
       if (isLinedUp && !wasLinedUp) {
