@@ -511,7 +511,7 @@ public class RobotContainer {
       // Check if lined up (both position and rotation are within thresholds)
       boolean wasLinedUp = isLinedUp; // Store previous state to detect changes
       isLinedUp = distance <= 0.01 &&
-          angleDifference <= Units.degreesToRadians(1.0);x
+          angleDifference <= Units.degreesToRadians(1.0);
 
       // If we just became lined up, clear the target visualization
       if (isLinedUp && !wasLinedUp) {
