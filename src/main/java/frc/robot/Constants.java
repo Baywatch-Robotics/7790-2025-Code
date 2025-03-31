@@ -746,7 +746,7 @@ public final class Constants
     // Reef avoidance parameters (using reef values from ZoneConstants)
     public static final double REEF_CENTER_X = ZoneConstants.reefCenterX;
     public static final double REEF_CENTER_Y = ZoneConstants.reefCenterY;
-    public static final double REEF_RADIUS = ZoneConstants.reefZoneRadius;
+    public static final double REEF_RADIUS = ZoneConstants.reefZoneRadius + OBSTACLE_CLEARANCE;
     
     // Waypoint generation parameters
     public static final int MAX_WAYPOINTS = 5; // Maximum number of waypoints to generate
