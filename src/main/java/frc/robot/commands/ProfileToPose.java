@@ -13,7 +13,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveToPoseConstants;
-import frc.robot.Constants.ObstacleAvoidanceConstants;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -43,12 +42,6 @@ public class ProfileToPose extends Command {
     private Supplier<Pose2d> target;
     private ButtonBox buttonBox; // Added ButtonBox reference
     private boolean useButtonBox = false; // Flag to determine which source to use
-    private boolean isFinalDestination = true; // Flag to indicate if this is the final destination
-    
-    // Obstacle avoidance flags and command reference
-    private boolean useObstacleAvoidance = true; // Enable by default
-    private ObstacleAvoidanceCommand obstacleAvoidanceCommand = null;
-    private boolean usingObstacleAvoidance = false;
     
     // Controllers are now instance variables instead of static to allow for dynamic constraint updates
     private ProfiledPIDController driveController;
@@ -65,42 +58,28 @@ public class ProfileToPose extends Command {
     
     // Original constructor for backward compatibility
     public ProfileToPose(SwerveSubsystem swerve, Supplier<Pose2d> target) {
-        this(swerve, target, true); // Default to treating as final destination
-    }
-    
-    // New constructor with isFinalDestination flag
-    public ProfileToPose(SwerveSubsystem swerve, Supplier<Pose2d> target, boolean isFinalDestination) {
         this.swerve = swerve;
         this.target = target;
         this.useButtonBox = false;
-        this.isFinalDestination = isFinalDestination;
         
         // Initialize controllers with default constraints
         initializeControllers();
 
         SmartDashboard.putString("cons", target.get().toString()); // Diagnostic
-        SmartDashboard.putBoolean("Is Final Destination", isFinalDestination);
         addRequirements(swerve);
     }
     
-    // ButtonBox constructor
+    // New constructor that accepts ButtonBox directly
     public ProfileToPose(SwerveSubsystem swerve, ButtonBox buttonBox) {
         this.swerve = swerve;
         this.buttonBox = buttonBox;
         this.useButtonBox = true;
-        this.isFinalDestination = true; // ButtonBox targets are always treated as final destinations
         this.target = this::getTargetPose; // Use getTargetPose method as the supplier
         
         // Initialize controllers with default constraints
         initializeControllers();
         
         addRequirements(swerve);
-    }
-    
-    // Method to disable obstacle avoidance if needed
-    public ProfileToPose withoutObstacleAvoidance() {
-        this.useObstacleAvoidance = false;
-        return this;
     }
     
     // Helper method to initialize controllers
@@ -135,44 +114,6 @@ public class ProfileToPose extends Command {
             return swerve.getPose(); // Return current pose to effectively stop movement
         }
     }
-    
-    /**
-     * Determines if obstacle avoidance is needed to reach the target
-     */
-    private boolean needsObstacleAvoidance(Pose2d start, Pose2d target) {
-        // Don't use obstacle avoidance if it's disabled or if this is a waypoint
-        if (!useObstacleAvoidance || !isFinalDestination) {
-            return false;
-        }
-        
-        // Check if direct path intersects with reef
-        Translation2d startPos = start.getTranslation();
-        Translation2d endPos = target.getTranslation();
-        
-        double pathLength = startPos.getDistance(endPos);
-        int numChecks = (int) Math.ceil(pathLength / ObstacleAvoidanceConstants.PATH_RESOLUTION);
-        
-        for (int i = 0; i <= numChecks; i++) {
-            double t = (double) i / numChecks;
-            Translation2d point = startPos.interpolate(endPos, t);
-            if (isInReef(point)) {
-                SmartDashboard.putString("Path Status", "Obstacle detected - using avoidance");
-                return true; // Path intersects with reef, need obstacle avoidance
-            }
-        }
-        
-        SmartDashboard.putString("Path Status", "Clear path");
-        return false; // Direct path is clear
-    }
-    
-    /**
-     * Checks if a point is inside the reef zone
-     */
-    private boolean isInReef(Translation2d point) {
-        return point.getDistance(
-            new Translation2d(ObstacleAvoidanceConstants.REEF_CENTER_X, ObstacleAvoidanceConstants.REEF_CENTER_Y)
-        ) < ObstacleAvoidanceConstants.REEF_RADIUS;
-    }
 
     @Override
     public void initialize() {
@@ -191,41 +132,28 @@ public class ProfileToPose extends Command {
         // Normal initialization continues if target is valid
         Pose2d currentPose = robot.get();
         
-        // Check if we need obstacle avoidance
-        if (needsObstacleAvoidance(currentPose, targetPose)) {
-            // Create and initialize obstacle avoidance command
-            obstacleAvoidanceCommand = new ObstacleAvoidanceCommand(swerve, () -> targetPose);
-            obstacleAvoidanceCommand.initialize();
-            usingObstacleAvoidance = true;
-            SmartDashboard.putBoolean("Using Obstacle Avoidance", true);
-        } else {
-            // Direct path navigation
-            usingObstacleAvoidance = false;
-            SmartDashboard.putBoolean("Using Obstacle Avoidance", false);
-            
-            // Calculate initial distance and set initial constraints
-            updateSpeedConstraints(currentPose, targetPose);
-            
-            ChassisSpeeds fieldVelocity = swerve.getRobotVelocity();
-            Translation2d linearFieldVelocity =
-                new Translation2d(fieldVelocity.vxMetersPerSecond, fieldVelocity.vyMetersPerSecond);
-            driveController.reset(
-                currentPose.getTranslation().getDistance(targetPose.getTranslation()),
-                Math.min(
-                    0.0,
-                    -linearFieldVelocity
-                        .rotateBy(
-                            targetPose
-                                .getTranslation()
-                                .minus(currentPose.getTranslation())
-                                .getAngle()
-                                .unaryMinus())
-                        .getX()));
-            thetaController.reset(
-                currentPose.getRotation().getRadians(), fieldVelocity.omegaRadiansPerSecond);
-            lastSetpointTranslation = currentPose.getTranslation();
-            running = true;
-        }
+        // Calculate initial distance and set initial constraints
+        updateSpeedConstraints(currentPose, targetPose);
+        
+        ChassisSpeeds fieldVelocity = swerve.getRobotVelocity();
+        Translation2d linearFieldVelocity =
+            new Translation2d(fieldVelocity.vxMetersPerSecond, fieldVelocity.vyMetersPerSecond);
+        driveController.reset(
+            currentPose.getTranslation().getDistance(targetPose.getTranslation()),
+            Math.min(
+                0.0,
+                -linearFieldVelocity
+                    .rotateBy(
+                        targetPose
+                            .getTranslation()
+                            .minus(currentPose.getTranslation())
+                            .getAngle()
+                            .unaryMinus())
+                    .getX()));
+        thetaController.reset(
+            currentPose.getRotation().getRadians(), fieldVelocity.omegaRadiansPerSecond);
+        lastSetpointTranslation = currentPose.getTranslation();
+        running = true;
     }
 
     /**
@@ -238,14 +166,7 @@ public class ProfileToPose extends Command {
         double newVelocity;
         double newAcceleration;
         
-        // If this is not the final destination, always use the fastest speed
-        if (!isFinalDestination) {
-            newVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-            newAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            SmartDashboard.putString("Drive Speed Mode", "WAYPOINT (FULL SPEED)");
-        }
-        // For final destination, use dynamic speed based on distance
-        else if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
+        if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
             // Far from target - use fastest speed
             newVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
             newAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
@@ -282,7 +203,7 @@ public class ProfileToPose extends Command {
     @Override
     public void execute() {
         // Skip execution completely if running is false (target was null)
-        if (!running && !usingObstacleAvoidance) {
+        if (!running) {
             return;
         }
         
@@ -298,13 +219,8 @@ public class ProfileToPose extends Command {
             return;
         }
         
-        // If using obstacle avoidance, delegate execution to it
-        if (usingObstacleAvoidance && obstacleAvoidanceCommand != null) {
-            obstacleAvoidanceCommand.execute();
-            return;
-        }
-        
-        // Direct path navigation code (existing execute logic)
+        // Regular execution continues
+        // Get current pose and target pose
         Pose2d currentPose = robot.get();
         Pose2d targetPose = target.get();
         
@@ -313,8 +229,6 @@ public class ProfileToPose extends Command {
 
         // Calculate drive speed
         double currentDistance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-        
-        // THE MISSING PART - THIS IS WHERE IT WAS CUTTING OFF:
         double ffScaler =
             MathUtil.clamp(
                 (currentDistance - ffMinRadius) / (ffMaxRadius - ffMinRadius),
@@ -376,26 +290,21 @@ public class ProfileToPose extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        // If using obstacle avoidance, end that as well
-        if (usingObstacleAvoidance && obstacleAvoidanceCommand != null) {
-            obstacleAvoidanceCommand.end(interrupted);
-        }
         running = false;
-        
-        
-        // Stop the robot when the command ends
-        swerve.drive(new ChassisSpeeds(0, 0, 0));
-         // Lock the swerve modules to prevent drifting when command ends
-         swerve.lock();
+    }
+
+    public boolean atGoal() {
+        return running && driveController.atGoal() && thetaController.atGoal();
+    }
+
+    public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
+        return running
+            && Math.abs(driveErrorAbs) < driveTolerance
+            && Math.abs(thetaErrorAbs) < thetaTolerance.getRadians();
     }
 
     @Override
     public boolean isFinished() {
-        // If using obstacle avoidance, delegate to its isFinished method
-        if (usingObstacleAvoidance && obstacleAvoidanceCommand != null) {
-            return obstacleAvoidanceCommand.isFinished();
-        }
-        
         // If no valid target (when using ButtonBox and target is null)
         if (useButtonBox && buttonBox.peekNextTarget() == null) {
             return true;
