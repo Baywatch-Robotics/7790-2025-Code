@@ -152,10 +152,15 @@ public class ProfileToPose extends Command {
         double pathLength = startPos.getDistance(endPos);
         int numChecks = (int) Math.ceil(pathLength / ObstacleAvoidanceConstants.PATH_RESOLUTION);
         
+        // Get alliance-aware reef center position
+        Translation2d reefCenter = TargetClass.toTranslation2d(
+            new Translation2d(ObstacleAvoidanceConstants.REEF_CENTER_X, ObstacleAvoidanceConstants.REEF_CENTER_Y)
+        );
+        
         for (int i = 0; i <= numChecks; i++) {
             double t = (double) i / numChecks;
             Translation2d point = startPos.interpolate(endPos, t);
-            if (isInReef(point)) {
+            if (isInReef(point, reefCenter)) {
                 SmartDashboard.putString("Path Status", "Obstacle detected - using avoidance");
                 return true; // Path intersects with reef, need obstacle avoidance
             }
@@ -166,12 +171,10 @@ public class ProfileToPose extends Command {
     }
     
     /**
-     * Checks if a point is inside the reef zone
+     * Checks if a point is inside the reef zone with alliance-aware coordinates
      */
-    private boolean isInReef(Translation2d point) {
-        return point.getDistance(
-            new Translation2d(ObstacleAvoidanceConstants.REEF_CENTER_X, ObstacleAvoidanceConstants.REEF_CENTER_Y)
-        ) < ObstacleAvoidanceConstants.REEF_RADIUS;
+    private boolean isInReef(Translation2d point, Translation2d reefCenter) {
+        return point.getDistance(reefCenter) < ObstacleAvoidanceConstants.REEF_RADIUS;
     }
 
     @Override

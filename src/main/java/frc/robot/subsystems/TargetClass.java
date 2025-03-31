@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.TargetClassConstants;
 
@@ -581,6 +582,16 @@ public class TargetClass {
         
         Pose2d currentPose = new Pose2d(currentTarget.getX(), currentTarget.getY(), new Rotation2d(currentTarget.getZ()));
         return () -> toPose2d(currentPose);
+    }
+    
+    public static Translation2d toTranslation2d(Translation2d currentTranslation) {
+        
+        if (DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red) {
+            double mirroredX = FIELD_WIDTH - currentTranslation.getX();
+            double mirroredY = FIELD_LENGTH - currentTranslation.getY();
+            return new Translation2d(mirroredX, mirroredY);
+        }
+        return currentTranslation;
     }
     
     @Override
