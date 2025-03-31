@@ -673,7 +673,7 @@ public final class Constants
     public static final double DRIVE_KD = 0.01;
     
     // PID values for theta (rotation) controller
-    public static final double THETA_KP = 4.0;
+    public static final double THETA_KP = 5.0;
     public static final double THETA_KI = 0.0;
     public static final double THETA_KD = 0.0;
     
@@ -697,14 +697,14 @@ public final class Constants
 
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
-    public static final double APPROACHING_MAX_VEL = 0.7; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 1.0; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_VEL = 6.0; // Same as DRIVE_MAX_VELOCITY
+    public static final double APPROACHING_MAX_ACCEL = 2.0; // Same as DRIVE_MAX_ACCELERATION
     
-    public static final double CLOSE_MAX_VEL = 0.5; // Slower for closer approach
-    public static final double CLOSE_MAX_ACCEL = 0.8; // Less acceleration when closer
+    public static final double CLOSE_MAX_VEL = 3.0; // Slower for closer approach
+    public static final double CLOSE_MAX_ACCEL = 1.5; // Less acceleration when closer
     
-    public static final double VERY_CLOSE_MAX_VEL = 0.3; // Slowest for final approach 
-    public static final double VERY_CLOSE_MAX_ACCEL = 0.5; // Least acceleration for precision
+    public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.0; // Least acceleration for precision
   }
 
   public static final class ShakeModeConstants {
@@ -732,5 +732,31 @@ public final class Constants
     
     // Use open-loop control for maximum power and direct motor response
     public static final boolean USE_OPEN_LOOP = true;
+  }
+
+  /**
+   * Constants for obstacle avoidance behavior
+   */
+  public static final class ObstacleAvoidanceConstants {
+    // Distance parameters
+    public static final double OBSTACLE_CLEARANCE = 0.5; // Distance to maintain from obstacles (meters)
+    public static final double WAYPOINT_SPACING = 1.0; // Spacing between generated waypoints (meters)
+    public static final double PATH_RESOLUTION = 0.2; // Resolution for checking if path is clear (meters)
+    
+    // Reef avoidance parameters (using reef values from ZoneConstants)
+    public static final double REEF_CENTER_X = ZoneConstants.reefCenterX;
+    public static final double REEF_CENTER_Y = ZoneConstants.reefCenterY;
+    public static final double REEF_RADIUS = ZoneConstants.reefZoneRadius + OBSTACLE_CLEARANCE;
+    
+    // Waypoint generation parameters
+    public static final int MAX_WAYPOINTS = 5; // Maximum number of waypoints to generate
+    public static final double TANGENT_POINT_BUFFER = 0.15; // Extra buffer for tangent points (meters)
+    
+    // Path follow settings
+    public static final double WAYPOINT_TOLERANCE = 0.3; // Distance to consider waypoint reached (meters)
+    public static final double FINAL_WAYPOINT_TOLERANCE = 0.1; // Tighter tolerance for final waypoint
+    
+    // Debug mode - when true will publish visualization data
+    public static final boolean DEBUG_MODE = true;
   }
 }
