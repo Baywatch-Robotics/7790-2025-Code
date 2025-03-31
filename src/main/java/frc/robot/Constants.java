@@ -754,6 +754,7 @@ public final class Constants
     
     // Path follow settings
     public static final double WAYPOINT_TOLERANCE = 0.3; // Distance to consider waypoint reached (meters)
+    public static final double FINAL_WAYPOINT_TOLERANCE = 0.1; // Tighter tolerance for final waypoint
     
     // Debug mode - when true will publish visualization data
     public static final boolean DEBUG_MODE = true;

@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ObstacleAvoidanceConstants;
 import frc.robot.Constants.ZoneConstants;
-import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import java.util.ArrayList;
@@ -57,20 +56,6 @@ public class ObstacleAvoidanceCommand extends Command {
      */
     public ObstacleAvoidanceCommand(SwerveSubsystem swerve, Pose2d targetPose) {
         this(swerve, () -> targetPose);
-    }
-    
-    /**
-     * Gets the alliance-aware reef center position
-     */
-    private Translation2d getReefCenter() {
-        // Create a Translation2d for the reef center
-        Translation2d reefCenter = new Translation2d(
-            ZoneConstants.reefCenterX,
-            ZoneConstants.reefCenterY
-        );
-        
-        // Use TargetClass's alliance-aware transformation
-        return TargetClass.toTranslation2d(reefCenter);
     }
     
     @Override
@@ -138,17 +123,20 @@ public class ObstacleAvoidanceCommand extends Command {
      * Checks if a point is inside the reef zone
      */
     private boolean isInReef(Translation2d point) {
-        // Use the alliance-aware reef center
-        Translation2d reefCenter = getReefCenter();
-        return point.getDistance(reefCenter) < ObstacleAvoidanceConstants.REEF_RADIUS;
+        return point.getDistance(
+            new Translation2d(ObstacleAvoidanceConstants.REEF_CENTER_X, ObstacleAvoidanceConstants.REEF_CENTER_Y)
+        ) < ObstacleAvoidanceConstants.REEF_RADIUS;
     }
     
     /**
      * Generates waypoints to navigate around the reef
      */
     private void generateWaypointsAroundReef(Translation2d start, Translation2d end) {
-        // Get the alliance-aware reef center
-        Translation2d reefCenter = getReefCenter();
+        Translation2d reefCenter = new Translation2d(
+            ObstacleAvoidanceConstants.REEF_CENTER_X, 
+            ObstacleAvoidanceConstants.REEF_CENTER_Y
+        );
+        
         double reefRadius = ObstacleAvoidanceConstants.REEF_RADIUS;
         
         // Calculate tangent points from both start and end positions to reef
@@ -254,30 +242,18 @@ public class ObstacleAvoidanceCommand extends Command {
     }
     
     /**
-     * Calculate the length of an arc between two points on a circle
+     * Calculate the arc length between two points on the circle
      */
-    private double calculateArcLength(Translation2d point1, Translation2d point2, 
-                                    Translation2d center, double radius) {
+    private double calculateArcLength(Translation2d p1, Translation2d p2, Translation2d center, double radius) {
         // Calculate vectors from center to points
-        Translation2d v1 = point1.minus(center);
-        Translation2d v2 = point2.minus(center);
+        Translation2d v1 = p1.minus(center);
+        Translation2d v2 = p2.minus(center);
         
-        // Normalize the vectors to ensure they are on the circle
-        Translation2d v1Normalized = v1.times(radius / v1.getNorm());
-        Translation2d v2Normalized = v2.times(radius / v2.getNorm());
+        // Calculate the angle between vectors
+        double dot = v1.getX() * v2.getX() + v1.getY() * v2.getY();
+        double angle = Math.acos(dot / (v1.getNorm() * v2.getNorm()));
         
-        // Calculate the dot product and angle between the vectors
-        double dot = v1Normalized.getX() * v2Normalized.getX() + v1Normalized.getY() * v2Normalized.getY();
-        double angle = Math.acos(Math.max(-1.0, Math.min(1.0, dot / (radius * radius))));
-        
-        // Calculate the cross product to determine direction
-        double cross = v1.getX() * v2.getY() - v1.getY() * v2.getX();
-        
-        // If cross product is negative, we need to take the longer arc
-        if (cross < 0) {
-            angle = 2 * Math.PI - angle;
-        }
-        
+        // Arc length = radius * angle
         return radius * angle;
     }
     
