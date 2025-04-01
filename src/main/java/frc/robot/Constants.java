@@ -410,6 +410,14 @@ public final class Constants
     public static final double INITIAL_DISTANCE_MULTIPLIER = 0.6; // 60% of max distance when establishing consistency
     public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
 
+    public static final float questXOffset = (float)Units.inchesToMeters(2.048);
+    public static final float questYOffset = (float)Units.inchesToMeters(8.92);
+    public static final float questZOffset = (float)Units.inchesToMeters(19.23);
+
+    public static final float questRoll = (float)Units.degreesToRadians(0.0);
+    public static final float questPitch = (float)Units.degreesToRadians(90.0);
+    public static final float questYaw = (float)Units.degreesToRadians(0.0);
+
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
@@ -418,14 +426,13 @@ public final class Constants
     public static final float rightCamPitch = (float)Units.degreesToRadians(15.0);
     public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
 
-    public static final float leftCamXOffset = (float)Units.inchesToMeters(4.375);
-    public static final float leftCamYOffset = (float)Units.inchesToMeters(10.5);
-    public static final float leftCamZOffset = (float)Units.inchesToMeters(5);
+    public static final float leftCamXOffset = (float)Units.inchesToMeters(5.672);
+    public static final float leftCamYOffset = (float)Units.inchesToMeters(-7.956);
+    public static final float leftCamZOffset = (float)Units.inchesToMeters(34.184);
 
     public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
-    public static final float leftCamPitch = (float)Units.degreesToRadians(-20.0);
-    public static final float leftCamYaw = (float)Units.degreesToRadians(2.5);
-
+    public static final float leftCamPitch = (float)Units.degreesToRadians(30.0);
+    public static final float leftCamYaw = (float)Units.degreesToRadians(15.0);
 
     public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
