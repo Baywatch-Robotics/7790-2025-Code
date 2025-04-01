@@ -515,6 +515,9 @@ public final class Constants
 
     public static final float xValueC131 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC1XX + Math.PI) - RightOffset * (float)Math.sin(zValueC1XX + Math.PI);
     public static final float yValueC131 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC1XX + Math.PI) + RightOffset * (float)Math.cos(zValueC1XX + Math.PI);
+
+    public static final float xValueA1XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC1XX + Math.PI);
+    public static final float yValueA1XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC1XX + Math.PI);
     public static final int faceValueC1XX = 1;
 
     // Face 2 (60 degrees)
@@ -532,6 +535,9 @@ public final class Constants
 
     public static final float xValueC231 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC2XX + Math.PI) - RightOffset * (float)Math.sin(zValueC2XX + Math.PI);
     public static final float yValueC231 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC2XX + Math.PI) + RightOffset * (float)Math.cos(zValueC2XX + Math.PI);
+
+    public static final float xValueA2XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC2XX + Math.PI);
+    public static final float yValueA2XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC2XX + Math.PI);
     public static final int faceValueC2XX = 2;
 
     // Face 3 (120 degrees)
@@ -549,6 +555,9 @@ public final class Constants
 
     public static final float xValueC331 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
     public static final float yValueC331 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
+
+    public static final float xValueA3XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float yValueA3XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI);
     public static final int faceValueC3XX = 3;
 
     // Face 4 (180 degrees)
@@ -566,6 +575,9 @@ public final class Constants
 
     public static final float xValueC431 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
     public static final float yValueC431 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
+
+    public static final float xValueA4XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float yValueA4XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI);
     public static final int faceValueC4XX = 4;
 
     // Face 5 (240 degrees)
@@ -583,6 +595,9 @@ public final class Constants
 
     public static final float xValueC531 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
     public static final float yValueC531 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
+
+    public static final float xValueA5XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float yValueA5XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI);
     public static final int faceValueC5XX = 5;
 
     // Face 6 (300 degrees)
@@ -600,6 +615,9 @@ public final class Constants
     
     public static final float xValueC631 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC6XX + Math.PI) - RightOffset * (float)Math.sin(zValueC6XX + Math.PI);
     public static final float yValueC631 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC6XX + Math.PI) + RightOffset * (float)Math.cos(zValueC6XX + Math.PI);
+
+    public static final float xValueA6XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC6XX + Math.PI);
+    public static final float yValueA6XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC6XX + Math.PI);
     public static final int faceValueC6XX = 6;
 
     public static final int heightCX0X = 0;
