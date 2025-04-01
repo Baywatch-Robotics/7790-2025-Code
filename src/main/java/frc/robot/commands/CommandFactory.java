@@ -335,5 +335,4 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
   command.addRequirements(shooter, shooterArm, elevator, funnel);
   return command; 
 }
-
 }
