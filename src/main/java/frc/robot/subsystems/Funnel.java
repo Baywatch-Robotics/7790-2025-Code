@@ -343,6 +343,9 @@ public class Funnel extends SubsystemBase {
         SmartDashboard.putBoolean("Funnel Coral Detected", coralDetected);
         SmartDashboard.putBoolean("Funnel Monitoring For Coral", isMonitoringForCoral);
         SmartDashboard.putNumber("Funnel Profile Velocity", m_setpoint.velocity);
+
+        
+        SmartDashboard.putNumber("Funnel Feedforward", feedforwardOutput);
         
         
                 // Calculate next setpoint - but skip this when shaking with bypass enabled

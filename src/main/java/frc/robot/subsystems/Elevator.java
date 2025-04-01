@@ -476,7 +476,7 @@ public class Elevator extends SubsystemBase {
             m_setpoint.position,      // Position setpoint from motion profile
             ControlType.kPosition,    // Position control mode 
             ClosedLoopSlot.kSlot0,    // PID slot
-            feedforwardOutput,        // Use calculated feedforward instead of constant value
+            -feedforwardOutput,        // Use calculated feedforward instead of constant value
             ArbFFUnits.kVoltage       // Use voltage units for feedforward
         );
         

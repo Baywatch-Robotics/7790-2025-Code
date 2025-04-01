@@ -257,6 +257,9 @@ public class AlgaeArm extends SubsystemBase {
         SmartDashboard.putNumber("Algae Arm Position (rad)", currentPositionRad);
         SmartDashboard.putNumber("Algae Arm Velocity (rad/s)", currentVelocityRad);
         
+        
+        SmartDashboard.putNumber("Algae Arm Feedforward", feedforwardOutput);
+
         // Set motor position using the profile's position and feedforward
         algaeArmController.setReference(
             m_setpoint.position, 

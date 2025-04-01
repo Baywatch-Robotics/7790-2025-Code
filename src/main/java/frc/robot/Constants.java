@@ -55,7 +55,7 @@ public final class Constants
     public static final float manualMultiplier = 0.01f;
 
 
-    public static final float P = 2f;
+    public static final float P = 1.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 50;
@@ -66,10 +66,10 @@ public final class Constants
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 0.0f;  // Gravity compensation (tune based on arm mass)
+    public static final float kG = 0.3f;  // Gravity compensation (tune based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
-    public static final float feedforwardOffset = 0.0f; // Offset for zero position
+    public static final float feedforwardOffset = 0.75f; // Offset for zero position
   }
 
     public static final class AlgaeShooterConstants{
@@ -232,7 +232,7 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = 0.75f;
+    public static final float P = 0.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
@@ -248,8 +248,8 @@ public final class Constants
     public static final float L1ScoreHeight = -34.8769264f;
     
     // Feedforward constants for ElevatorFeedforward
-    public static final float kS = 0.0f;    // Static friction compensation (voltage)
-    public static final float kG = 0.0f;   // Gravity compensation (voltage)
+    public static final float kS = 0.0f;
+    public static final float kG = 0.4f;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }
@@ -278,7 +278,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 5.0f;
+    public static final float P = 1.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -288,11 +288,11 @@ public final class Constants
     public static final float allowedClosedLoopError = 0.005f;
     
     // New feedforward constants
-    public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 0.0f;  // Gravity compensation
+    public static final float kS = 0.5f;  // Static friction compensation
+    public static final float kG = 1.1f;  // Gravity compensation
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
-    public static final float feedforwardOffset = 0.0f; // Offset for zero position
+    public static final float feedforwardOffset = 0.5f; // Offset for zero position
     
     // Pre-intake position for coral detection
     public static final float preIntakePosition = 0.42f; // Slightly raised from home position
