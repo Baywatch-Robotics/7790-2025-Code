@@ -313,11 +313,27 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     return command; 
 }
 
-public static Command robotShakeCommand(SwerveSubsystem drivebase) {
-    return drivebase.shakeRobotCommand();
+public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("C431"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  .andThen(shooterArm.shooterArmScoreLOWCommand())
+  .andThen(elevator.setElevatorPickupCommand());
+  
+  command.addRequirements(shooter, shooterArm, elevator, funnel);
+  return command; 
+}
+public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("C430"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  .andThen(shooterArm.shooterArmScoreLOWCommand())
+  .andThen(elevator.setElevatorPickupCommand());
+  
+  command.addRequirements(shooter, shooterArm, elevator, funnel);
+  return command; 
 }
 
-public static Command stopShakeCommand(SwerveSubsystem drivebase) {
-    return drivebase.stopShakeCommand();
-}
 }

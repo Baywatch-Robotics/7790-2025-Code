@@ -99,6 +99,8 @@ public class Robot extends TimedRobot
       m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
     }
+
+    m_robotContainer.initializeRobotPoseForAuto();
   }
 
   /**

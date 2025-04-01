@@ -230,9 +230,17 @@ public class RobotContainer {
 
 
   public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+
+  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+
   public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
+
+  // Add tracking variables for autonomous pose initialization
+  private String lastSelectedAuto = "";
+  private boolean poseInitialized = false;
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -252,6 +260,9 @@ public class RobotContainer {
     
     //camera.setResolution(240, 240);
     //camera.setFPS(20);
+
+    // Initial pose setup based on default selection
+    initializeRobotPoseForAuto();
   }
 
   /**
@@ -446,6 +457,8 @@ public class RobotContainer {
 
 
     chooser.addOption("Left", leftAuto);
+    chooser.addOption("Left Center", leftCenterAuto);
+    chooser.addOption("Right Center", rightCenterAuto);
     chooser.setDefaultOption("Right", rightAuto);
      
     SmartDashboard.putData(chooser);
@@ -797,11 +810,98 @@ public class RobotContainer {
   }
 
   /**
+   * Checks the current autonomous selection and sets the robot's initial pose accordingly.
+   * Only updates the pose if the selection has changed or pose hasn't been initialized yet.
+   */
+  public void initializeRobotPoseForAuto() {
+    Command selectedCommand = chooser.getSelected();
+    String currentSelection;
+    
+    // Determine which auto is selected
+    if (selectedCommand == leftAuto) {
+      currentSelection = "Left";
+    } else if (selectedCommand == leftCenterAuto) {
+      currentSelection = "LeftCenter";
+    } else if (selectedCommand == rightCenterAuto) {
+      currentSelection = "RightCenter";
+    } else if (selectedCommand == rightAuto) {
+      currentSelection = "Right";
+    } else {
+      currentSelection = "Unknown";
+    }
+    
+    // Only set the pose if the selection changed or pose not initialized yet
+    if (!currentSelection.equals(lastSelectedAuto) || !poseInitialized) {
+      if (currentSelection.equals("Left")) {
+        // Set pose for Left autonomous using constants
+        Pose2d leftStartPose = new Pose2d(
+            Constants.TargetClassConstants.LeftStartX,
+            Constants.TargetClassConstants.LeftStartY,
+            new Rotation2d(Constants.TargetClassConstants.LeftStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeLeftPose = TargetClass.toPose2d(leftStartPose);
+        drivebase.resetOdometry(allianceRelativeLeftPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Left Start Position");
+      } else if (currentSelection.equals("LeftCenter")) {
+        // Set pose for Left Center autonomous
+        Pose2d leftCenterStartPose = new Pose2d(
+            Constants.TargetClassConstants.CenterStartX,
+            Constants.TargetClassConstants.CenterStartY,
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using left rotation for left center
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeLeftCenterPose = TargetClass.toPose2d(leftCenterStartPose);
+        drivebase.resetOdometry(allianceRelativeLeftCenterPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Left Center Start Position");
+      } else if (currentSelection.equals("RightCenter")) {
+        // Set pose for Right Center autonomous
+        Pose2d rightCenterStartPose = new Pose2d(
+            Constants.TargetClassConstants.CenterStartX,
+            Constants.TargetClassConstants.CenterStartY,
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using right rotation for right center
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightCenterPose = TargetClass.toPose2d(rightCenterStartPose);
+        drivebase.resetOdometry(allianceRelativeRightCenterPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Right Center Start Position");
+      } else {
+        // Default to Right autonomous pose
+        Pose2d rightStartPose = new Pose2d(
+            Constants.TargetClassConstants.RightStartX,
+            Constants.TargetClassConstants.RightStartY,
+            new Rotation2d(Constants.TargetClassConstants.RightStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightPose = TargetClass.toPose2d(rightStartPose);
+        drivebase.resetOdometry(allianceRelativeRightPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
+      }
+      
+      // Update tracking variables
+      lastSelectedAuto = currentSelection;
+      poseInitialized = true;
+    }
+  }
+  
+  // Add method to reset pose initialization flag (call this when a new match starts)
+  public void resetPoseInitialization() {
+    poseInitialized = false;
+    lastSelectedAuto = "";
+  }
+
+  /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    // Ensure pose is initialized before returning autonomous command
+    initializeRobotPoseForAuto();
     // Return the selected autonomous command
     return chooser.getSelected();
   }
