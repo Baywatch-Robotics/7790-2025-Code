@@ -87,10 +87,10 @@ public final class Constants
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
-    public static final float intake = 0.15f;
+    public static final float intake = 0.30f;
     public static final float outake = -.50f;
     public static final float currentThreshold = 15;
-    public static final float DEBOUNCE_TIME = 0.25f; // Time to debounce current threshold (seconds)
+    public static final float DEBOUNCE_TIME = 0.1f; // Time to debounce current threshold (seconds)
   }
 
   public static final class ShooterArmConstants{
@@ -269,7 +269,7 @@ public final class Constants
     public static final float max = .555f;
     
     // Safety threshold - minimum algae arm position that allows funnel movement
-    public static final float SAFE_ALGAE_ARM_POSITION = 0.32f;
+    public static final float SAFE_ALGAE_ARM_POSITION = 0.3f;
     
     // Manual control multiplier
     public static final float manualMultiplier = 0.005f;
@@ -412,7 +412,7 @@ public final class Constants
 
     public static final double ambiguityThreshold = 0.1;
     
-    // Maximum distance to consider a tag valid (in meters)
+    // Maximum distance to consider a tag valid (in meters)[\]
     public static final double MAX_TAG_DISTANCE = 8.0;
     
     // List of valid tag IDs (excluding tags 1-5 and 12-16)

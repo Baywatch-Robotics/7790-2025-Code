@@ -152,9 +152,9 @@
           },
           {
             "title": "Robot",
-            "x": 1088.0,
+            "x": 1472.0,
             "y": 768.0,
-            "width": 832.0,
+            "width": 448.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -175,20 +175,6 @@
               "topic": "/CameraPublisher/photonvision_Port_1181_Input_MJPEG_Server",
               "period": 0.06,
               "rotation_turns": 2
-            }
-          },
-          {
-            "title": "Actual Drive Speed",
-            "x": 192.0,
-            "y": 320.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Actual Drive Speed",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
             }
           },
           {
@@ -248,6 +234,79 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "robot_to_quest",
+            "x": 512.0,
+            "y": 768.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/heartbeat/robot_to_quest",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Quest Status",
+            "x": 768.0,
+            "y": 640.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Quest Status",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Battery",
+            "x": 704.0,
+            "y": 768.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Quest/Battery",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Connected",
+            "x": 832.0,
+            "y": 768.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Quest/Connected",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "position",
+            "x": 960.0,
+            "y": 768.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/position",
+              "period": 0.06,
+              "data_type": "float[]",
+              "show_submit_button": false
             }
           }
         ]
