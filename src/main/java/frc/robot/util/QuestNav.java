@@ -290,4 +290,29 @@ public class QuestNav {
     
     return robotPose;
   }
+
+  /**
+   * Set the Quest heading to match a desired rotation
+   * Use this instead of zeroHeading() when you want to preserve a specific angle
+   * @param desiredRotation The rotation we want the Quest to report
+   */
+  public void setHeadingOffset(Rotation2d desiredRotation) {
+    float[] eulerAngles = questEulerAngles.get();
+    // Calculate the offset needed to make current physical angle report the desired angle
+    float currentRawYaw = eulerAngles[1];
+    float desiredDegrees = (float)desiredRotation.getDegrees();
+    
+    // Normalize to 0-360 range if needed
+    while (desiredDegrees < 0) {
+      desiredDegrees += 360;
+    }
+    desiredDegrees %= 360;
+    
+    // Set offset so current physical angle will report the desired angle
+    yaw_offset = currentRawYaw - desiredDegrees;
+    
+    SmartDashboard.putNumber("Quest/Set Heading To", desiredDegrees);
+    SmartDashboard.putNumber("Quest/Raw Yaw", currentRawYaw);
+    SmartDashboard.putNumber("Quest/Yaw Offset", yaw_offset);
+  }
 }

@@ -218,10 +218,14 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Force a full recalibration of Quest
-   * Should be called when autonomous position changes in RobotContainer
+   * Force a full recalibration of Quest while preserving desired heading
+   * This version preserves the current robot heading rather than resetting to 0
    */
   public void forceFullRecalibration() {
+    // Save current pose before recalibration
+    Pose2d currentPose = getPose();
+    Rotation2d desiredHeading = currentPose.getRotation();
+    
     // Reset calibration state
     initialSetupComplete = false;
     goodVisionMeasurementCount = 0;
@@ -232,17 +236,18 @@ public class SwerveSubsystem extends SubsystemBase
       questNav.clearCalibration();
     }
     
-    // Completely re-zero the Quest for maximum accuracy
+    // Recalibrate the Quest for maximum accuracy while preserving heading
     if (questNav.connected()) {
-      // Zero both heading and position
-      questNav.zeroHeading();
+      // Only zero position, not heading
       questNav.zeroPosition();
+      
+      // Set the heading offset to match our desired heading instead of zeroing
+      questNav.setHeadingOffset(desiredHeading);
       
       // Reset zeroing flag to false - we'll wait for the standard delay
       isQuestZeroed = false;
       
-      SmartDashboard.putString("Quest Status", "Forced full recalibration initiated with re-zeroing");
-      
+      SmartDashboard.putString("Quest Status", "Forced recalibration with heading " + desiredHeading.getDegrees());
     } else {
       SmartDashboard.putString("Quest Status", "Recalibration attempted but Quest not connected");
     }

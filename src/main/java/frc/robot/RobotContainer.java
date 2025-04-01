@@ -848,58 +848,50 @@ public class RobotContainer {
       boolean needsRecalibration = !poseInitialized || 
                                  (poseInitialized && !currentSelection.equals(lastSelectedAuto));
       
+      Pose2d startPose;
       if (currentSelection.equals("Left")) {
         // Set pose for Left autonomous using constants
-        Pose2d leftStartPose = new Pose2d(
+        startPose = new Pose2d(
             Constants.TargetClassConstants.LeftStartX,
             Constants.TargetClassConstants.LeftStartY,
             new Rotation2d(Constants.TargetClassConstants.LeftStartZ));
         
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeLeftPose = TargetClass.toPose2d(leftStartPose);
-        drivebase.resetOdometry(allianceRelativeLeftPose);
-        
         SmartDashboard.putString("Auto Pose Initialized", "Left Start Position");
       } else if (currentSelection.equals("LeftCenter")) {
         // Set pose for Left Center autonomous
-        Pose2d leftCenterStartPose = new Pose2d(
+        startPose = new Pose2d(
             Constants.TargetClassConstants.CenterStartX,
             Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using left rotation for left center
-        
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeLeftCenterPose = TargetClass.toPose2d(leftCenterStartPose);
-        drivebase.resetOdometry(allianceRelativeLeftCenterPose);
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); 
         
         SmartDashboard.putString("Auto Pose Initialized", "Left Center Start Position");
       } else if (currentSelection.equals("RightCenter")) {
         // Set pose for Right Center autonomous
-        Pose2d rightCenterStartPose = new Pose2d(
+        startPose = new Pose2d(
             Constants.TargetClassConstants.CenterStartX,
             Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using right rotation for right center
-        
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeRightCenterPose = TargetClass.toPose2d(rightCenterStartPose);
-        drivebase.resetOdometry(allianceRelativeRightCenterPose);
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); 
         
         SmartDashboard.putString("Auto Pose Initialized", "Right Center Start Position");
       } else {
         // Default to Right autonomous pose
-        Pose2d rightStartPose = new Pose2d(
+        startPose = new Pose2d(
             Constants.TargetClassConstants.RightStartX,
             Constants.TargetClassConstants.RightStartY,
             new Rotation2d(Constants.TargetClassConstants.RightStartZ));
         
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeRightPose = TargetClass.toPose2d(rightStartPose);
-        drivebase.resetOdometry(allianceRelativeRightPose);
-        
         SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
       }
       
-      // Force Quest recalibration on first initialization or when auto selection changes
+      // Convert to alliance-relative coordinates
+      Pose2d allianceRelativePose = TargetClass.toPose2d(startPose);
+      
+      // IMPORTANT: First set the odometry to ensure heading is preserved
+      drivebase.resetOdometry(allianceRelativePose);
+      
+      // Only force recalibration if needed, and it will now preserve the heading
       if (needsRecalibration) {
+        // This call will now preserve the heading we just set
         drivebase.forceFullRecalibration();
       }
       
