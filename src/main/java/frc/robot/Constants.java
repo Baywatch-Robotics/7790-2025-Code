@@ -423,6 +423,14 @@ public final class Constants
     public static final double INITIAL_DISTANCE_MULTIPLIER = 0.6; // 60% of max distance when establishing consistency
     public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
 
+    public static final float questXOffset = (float)Units.inchesToMeters(2.048);
+    public static final float questYOffset = (float)Units.inchesToMeters(8.92);
+    public static final float questZOffset = (float)Units.inchesToMeters(19.23);
+
+    public static final float questRoll = (float)Units.degreesToRadians(0.0);
+    public static final float questPitch = (float)Units.degreesToRadians(90.0);
+    public static final float questYaw = (float)Units.degreesToRadians(0.0);
+
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
     public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
@@ -431,14 +439,13 @@ public final class Constants
     public static final float rightCamPitch = (float)Units.degreesToRadians(15.0);
     public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
 
-    public static final float leftCamXOffset = (float)Units.inchesToMeters(4.375);
-    public static final float leftCamYOffset = (float)Units.inchesToMeters(10.5);
-    public static final float leftCamZOffset = (float)Units.inchesToMeters(5);
+    public static final float leftCamXOffset = (float)Units.inchesToMeters(5.672);
+    public static final float leftCamYOffset = (float)Units.inchesToMeters(-7.956);
+    public static final float leftCamZOffset = (float)Units.inchesToMeters(34.184);
 
     public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
-    public static final float leftCamPitch = (float)Units.degreesToRadians(-20.0);
-    public static final float leftCamYaw = (float)Units.degreesToRadians(2.5);
-
+    public static final float leftCamPitch = (float)Units.degreesToRadians(30.0);
+    public static final float leftCamYaw = (float)Units.degreesToRadians(15.0);
 
     public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
@@ -483,6 +490,16 @@ public final class Constants
   }
   public static final class TargetClassConstants{
 
+    public static final float LeftStartX = (float)Units.inchesToMeters(297.5);
+    public static final float LeftStartY = (float)Units.inchesToMeters(242.0);
+    public static final float LeftStartZ = (float)Units.degreesToRadians(240.0);
+    public static final float CenterStartX = (float)Units.inchesToMeters(297.5);
+    public static final float CenterStartY = (float)Units.inchesToMeters(158.5);
+    public static final float CenterStartZ = (float)Units.degreesToRadians(0);
+    public static final float RightStartX = (float)Units.inchesToMeters(297.5);
+    public static final float RightStartY = (float)Units.inchesToMeters(75.0);
+    public static final float RightStartZ = (float)Units.degreesToRadians(120.0);
+
     public static final float SLPositionX = (float)Units.inchesToMeters(43.5);
     public static final float SLPositionY = (float)Units.inchesToMeters(278.52);
     public static final float SLPositionZ = (float)Units.degreesToRadians(306);
@@ -521,6 +538,9 @@ public final class Constants
 
     public static final float xValueC131 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC1XX + Math.PI) - RightOffset * (float)Math.sin(zValueC1XX + Math.PI);
     public static final float yValueC131 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC1XX + Math.PI) + RightOffset * (float)Math.cos(zValueC1XX + Math.PI);
+
+    public static final float xValueA1XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC1XX + Math.PI);
+    public static final float yValueA1XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC1XX + Math.PI);
     public static final int faceValueC1XX = 1;
 
     // Face 2 (60 degrees)
@@ -538,6 +558,9 @@ public final class Constants
 
     public static final float xValueC231 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC2XX + Math.PI) - RightOffset * (float)Math.sin(zValueC2XX + Math.PI);
     public static final float yValueC231 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC2XX + Math.PI) + RightOffset * (float)Math.cos(zValueC2XX + Math.PI);
+
+    public static final float xValueA2XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC2XX + Math.PI);
+    public static final float yValueA2XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC2XX + Math.PI);
     public static final int faceValueC2XX = 2;
 
     // Face 3 (120 degrees)
@@ -555,6 +578,9 @@ public final class Constants
 
     public static final float xValueC331 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
     public static final float yValueC331 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
+
+    public static final float xValueA3XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float yValueA3XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI);
     public static final int faceValueC3XX = 3;
 
     // Face 4 (180 degrees)
@@ -572,6 +598,9 @@ public final class Constants
 
     public static final float xValueC431 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
     public static final float yValueC431 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
+
+    public static final float xValueA4XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float yValueA4XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI);
     public static final int faceValueC4XX = 4;
 
     // Face 5 (240 degrees)
@@ -589,6 +618,9 @@ public final class Constants
 
     public static final float xValueC531 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
     public static final float yValueC531 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
+
+    public static final float xValueA5XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float yValueA5XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI);
     public static final int faceValueC5XX = 5;
 
     // Face 6 (300 degrees)
@@ -606,6 +638,9 @@ public final class Constants
     
     public static final float xValueC631 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC6XX + Math.PI) - RightOffset * (float)Math.sin(zValueC6XX + Math.PI);
     public static final float yValueC631 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC6XX + Math.PI) + RightOffset * (float)Math.cos(zValueC6XX + Math.PI);
+
+    public static final float xValueA6XX = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC6XX + Math.PI);
+    public static final float yValueA6XX = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC6XX + Math.PI);
     public static final int faceValueC6XX = 6;
 
     public static final int heightCX0X = 0;
