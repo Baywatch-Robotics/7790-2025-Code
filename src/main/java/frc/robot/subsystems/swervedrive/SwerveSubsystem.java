@@ -74,7 +74,7 @@ public class SwerveSubsystem extends SubsystemBase
   // Vision measurement tracking for calibration
   private boolean initialSetupComplete = false;
   private int goodVisionMeasurementCount = 0;
-  private static final int REQUIRED_MEASUREMENTS_BEFORE_CALIBRATION = 15;
+  private static final int REQUIRED_MEASUREMENTS_BEFORE_CALIBRATION = 200;
   private boolean isQuestZeroed = false;
 
   /**
