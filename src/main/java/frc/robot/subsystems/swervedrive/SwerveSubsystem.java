@@ -14,15 +14,12 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -37,7 +34,6 @@ import frc.robot.Constants;
 import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
-import frc.robot.Constants.AprilTagVisionConstants;
 
 import java.io.File;
 import java.util.Optional;
@@ -61,10 +57,6 @@ public class SwerveSubsystem extends SubsystemBase
 
   private boolean pathCanceled = false;
 
-  // Parameters for vision integration
-  private int goodMeasurementCounter = 0;
-  private Pose2d lastVisionPose = null;
-  private double lastVisionTimestamp = 0;
   private int visionMeasurementCounter = 0;
 
   private boolean isShaking = false;
