@@ -499,7 +499,7 @@ public final class Constants
     public static final float LeftStartZ = (float)Units.degreesToRadians(240.0);
     public static final float CenterStartX = (float)Units.inchesToMeters(297.5);
     public static final float CenterStartY = (float)Units.inchesToMeters(158.5);
-    public static final float CenterStartZ = (float)Units.degreesToRadians(0);
+    public static final float CenterStartZ = (float)Units.degreesToRadians(180);
     public static final float RightStartX = (float)Units.inchesToMeters(297.5);
     public static final float RightStartY = (float)Units.inchesToMeters(75.0);
     public static final float RightStartZ = (float)Units.degreesToRadians(120.0);

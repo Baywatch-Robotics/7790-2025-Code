@@ -5,11 +5,13 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -241,6 +243,7 @@ public class RobotContainer {
   // Add tracking variables for autonomous pose initialization
   private String lastSelectedAuto = "";
   private boolean poseInitialized = false;
+  private Optional<DriverStation.Alliance> lastAlliance = Optional.empty(); // Track last alliance color
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -811,10 +814,37 @@ public class RobotContainer {
 
   /**
    * Checks the current autonomous selection and sets the robot's initial pose accordingly.
-   * Only updates the pose if the selection has changed or pose hasn't been initialized yet.
+   * Only updates the pose if the selection has changed, alliance has changed, or pose hasn't been initialized yet.
+   * Will not perform any operations if the DriverStation is not connected.
    */
   public void initializeRobotPoseForAuto() {
+    // First check if DriverStation is connected before proceeding
+    if (!DriverStation.isDSAttached()) {
+      // Don't modify robot pose if DriverStation is not connected
+      SmartDashboard.putString("Auto Pose Status", "Waiting for DriverStation connection");
+      return;
+    }
+    
+    // Check if alliance color changed
+    Optional<DriverStation.Alliance> currentAlliance = DriverStation.getAlliance();
+    boolean allianceChanged = !currentAlliance.equals(lastAlliance);
+    
+    if (allianceChanged) {
+      // If alliance changed, force pose reinitialization
+      poseInitialized = false;
+      SmartDashboard.putString("Alliance Changed", 
+          "From " + (lastAlliance.isPresent() ? lastAlliance.get().toString() : "UNKNOWN") + 
+          " to " + (currentAlliance.isPresent() ? currentAlliance.get().toString() : "UNKNOWN"));
+      // Update last alliance
+      lastAlliance = currentAlliance;
+    }
+    
     Command selectedCommand = chooser.getSelected();
+    if (selectedCommand == null) {
+      SmartDashboard.putString("Auto Pose Status", "No autonomous selected");
+      return;
+    }
+    
     String currentSelection;
     
     // Determine which auto is selected
@@ -830,8 +860,9 @@ public class RobotContainer {
       currentSelection = "Unknown";
     }
     
-    // Only set the pose if the selection changed or pose not initialized yet
+    // Only set the pose if the selection changed, alliance changed, or pose hasn't been initialized yet
     if (!currentSelection.equals(lastSelectedAuto) || !poseInitialized) {
+      // Rest of the method remains the same
       if (currentSelection.equals("Left")) {
         // Set pose for Left autonomous using constants
         Pose2d leftStartPose = new Pose2d(
@@ -849,7 +880,7 @@ public class RobotContainer {
         Pose2d leftCenterStartPose = new Pose2d(
             Constants.TargetClassConstants.CenterStartX,
             Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using left rotation for left center
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
         
         // Convert to alliance-relative coordinates
         Pose2d allianceRelativeLeftCenterPose = TargetClass.toPose2d(leftCenterStartPose);
@@ -861,7 +892,7 @@ public class RobotContainer {
         Pose2d rightCenterStartPose = new Pose2d(
             Constants.TargetClassConstants.CenterStartX,
             Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using right rotation for right center
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
         
         // Convert to alliance-relative coordinates
         Pose2d allianceRelativeRightCenterPose = TargetClass.toPose2d(rightCenterStartPose);
@@ -885,6 +916,9 @@ public class RobotContainer {
       // Update tracking variables
       lastSelectedAuto = currentSelection;
       poseInitialized = true;
+      
+      // Update status dashboard
+      SmartDashboard.putString("Auto Pose Status", "Successfully initialized");
     }
   }
   
@@ -892,6 +926,7 @@ public class RobotContainer {
   public void resetPoseInitialization() {
     poseInitialized = false;
     lastSelectedAuto = "";
+    lastAlliance = Optional.empty(); // Reset alliance tracking as well
   }
 
   /**
