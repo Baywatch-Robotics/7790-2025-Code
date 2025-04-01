@@ -268,17 +268,19 @@ public class QuestNav {
     if (ret < 0) {
       ret += 360;
     }
-    return ret;
+    // Reverse the direction to fix the reversed rotation issue
+    return 360 - ret;
   }
 
   private Pose2d getQuestNavPose() {
     // Get the raw Quest pose from network tables
     float[] questnavPosition = questPosition.get();
     
-    // Apply 90-degree rotation to the translation coordinates
+    // Swap X and Y coordinates and adjust signs to fix the 90-degree issue
+    // Previous mapping was causing forward motion to appear as rightward motion
     Translation2d questTranslation = new Translation2d(questnavPosition[0], questnavPosition[2]);
     
-    // Invert the rotation by negating the yaw angle
+    // Create rotation using the corrected yaw (already fixed in getOculusYaw)
     Rotation2d questRotation = Rotation2d.fromDegrees(getOculusYaw());
     
     // Create the Quest pose
@@ -286,7 +288,7 @@ public class QuestNav {
     
     // Transform from Quest coordinates to robot coordinates using the defined transform
     // This handles the physical mounting position/orientation of the Quest on the robot
-    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS);
+    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS.inverse());
     
     return robotPose;
   }
