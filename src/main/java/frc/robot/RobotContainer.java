@@ -388,14 +388,14 @@ public class RobotContainer {
     driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
     driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
-    driverXbox.x().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
+    driverXbox.rightBumper().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
 
 
 
     driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
     
-    driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+    //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());

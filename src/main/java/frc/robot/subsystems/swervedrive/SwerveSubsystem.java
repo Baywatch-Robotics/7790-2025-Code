@@ -696,11 +696,6 @@ public class SwerveSubsystem extends SubsystemBase
     
     
     //newMode = isOldMode;
-    
-    
-
-      if(DriverStation.isDisabled()){
-      
       Pose2d robotPose = swerveDrive.getPose();
   
       Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
@@ -726,118 +721,6 @@ public class SwerveSubsystem extends SubsystemBase
   
             }
            }
-          }
-
-
-
-
-        else{
-    
-          Pose2d robotPose = swerveDrive.getPose();
-    Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-    if (!estimatedPose3d.isPresent()) {
-      // Reset counter when no vision measurements available
-      goodMeasurementCounter = 0;
-      return;
-    }
-    
-    Pose2d visionPose = estimatedPose3d.get().toPose2d();
-    double timestamp = Timer.getFPGATimestamp();
-    
-    // Calculate difference between odometry and vision
-    double distance = visionPose.getTranslation().getDistance(robotPose.getTranslation());
-    double angleDiff = Math.abs(visionPose.getRotation().getDegrees() - robotPose.getRotation().getDegrees());
-    // Normalize the angle difference to -180 to 180
-    if (angleDiff > 180) {
-      angleDiff = 360 - angleDiff;
-    }
-    
-    // Log data for debugging
-    SmartDashboard.putNumber("Vision/Distance Error", distance);
-    SmartDashboard.putNumber("Vision/Angle Error", angleDiff);
-    
-    // Check if this measurement is potentially an outlier
-    boolean isPossibleOutlier = false;
-    if (lastVisionPose != null) {
-      double timeDelta = timestamp - lastVisionTimestamp;
-      // If the new measurement is too far from the last one given the time difference
-      if (timeDelta < 0.5) { // Only check for quick jumps (within 0.5 seconds)
-        double jumpDistance = visionPose.getTranslation().getDistance(lastVisionPose.getTranslation()) / timeDelta;
-        double jumpAngle = Math.abs(visionPose.getRotation().getDegrees() - lastVisionPose.getRotation().getDegrees()) / timeDelta;
-        
-        // If robot appears to move too fast, it might be an outlier
-        isPossibleOutlier = (jumpDistance > AprilTagVisionConstants.OUTLIER_JUMP_DISTANCE) || 
-                            (jumpAngle > AprilTagVisionConstants.OUTLIER_JUMP_ANGLE);
-        
-        SmartDashboard.putBoolean("Vision/Possible Outlier", isPossibleOutlier);
-        SmartDashboard.putNumber("Vision/Jump Distance", jumpDistance);
-        SmartDashboard.putNumber("Vision/Jump Angle", jumpAngle);
-      }
-    }
-    
-    // Calculate confidence based on distance and angle difference
-    double distanceConfidence = 0;
-    double angleConfidence = 0;
-    
-    if (distance <= AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED) {
-      distanceConfidence = 1.0;
-    } else if (distance <= AprilTagVisionConstants.MAX_VISION_DISTANCE_CONSIDERED) {
-      distanceConfidence = 1.0 - ((distance - AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED) 
-          / (AprilTagVisionConstants.MAX_VISION_DISTANCE_CONSIDERED - AprilTagVisionConstants.MAX_VISION_DISTANCE_TRUSTED));
-    }
-    
-    if (angleDiff <= AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED) {
-      angleConfidence = 1.0;
-    } else if (angleDiff <= AprilTagVisionConstants.MAX_VISION_ANGLE_CONSIDERED) {
-      angleConfidence = 1.0 - ((angleDiff - AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED) 
-          / (AprilTagVisionConstants.MAX_VISION_ANGLE_CONSIDERED - AprilTagVisionConstants.MAX_VISION_ANGLE_TRUSTED));
-    }
-    
-    // Combined confidence (using the minimum of the two)
-    double confidence = Math.min(distanceConfidence, angleConfidence);
-    SmartDashboard.putNumber("Vision/Confidence", confidence);
-    
-    // Scale standard deviations inversely with confidence (higher confidence = lower std dev)
-    double xyStdDev = AprilTagVisionConstants.BASE_XY_STD_DEV / 
-                      Math.max(AprilTagVisionConstants.MIN_CONFIDENCE_VALUE, distanceConfidence);
-    double rotStdDev = AprilTagVisionConstants.BASE_ROT_STD_DEV / 
-                       Math.max(AprilTagVisionConstants.MIN_CONFIDENCE_VALUE, angleConfidence);
-    
-    // Create the standard deviation matrix
-    Matrix<N3, N1> stdDevs = new Matrix<>(N3.instance, N1.instance);
-    stdDevs.set(0, 0, xyStdDev);    // X standard deviation
-    stdDevs.set(1, 0, xyStdDev);    // Y standard deviation 
-    stdDevs.set(2, 0, rotStdDev);   // Rotation standard deviation
-    
-    // Log the standard deviations
-    SmartDashboard.putNumber("Vision/X_Y_StdDev", xyStdDev);
-    SmartDashboard.putNumber("Vision/Rot_StdDev", rotStdDev);
-    
-    // Decision logic for applying the measurement
-    if (!isPossibleOutlier && confidence > 0) {
-      if (confidence > 0.8) {
-        // High confidence - apply immediately
-        swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
-        goodMeasurementCounter = 0; // Reset counter as we've applied a measurement
-        isClose = true;
-      } else {
-        // Lower confidence - require consecutive good measurements
-        goodMeasurementCounter++;
-        if (goodMeasurementCounter >= AprilTagVisionConstants.MIN_CONSECUTIVE_GOOD_MEASUREMENTS) {
-          swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
-          goodMeasurementCounter = 0; // Reset counter after applying
-          isClose = true;
-        }
-      }
-      
-      // Store the measurement for outlier detection
-      lastVisionPose = visionPose;
-      lastVisionTimestamp = timestamp;
-    } else {
-      // Reset counter for rejected measurements
-      goodMeasurementCounter = 0;
-        }
-    }
   }
 
   public void addVisionMeasurementInitial() {

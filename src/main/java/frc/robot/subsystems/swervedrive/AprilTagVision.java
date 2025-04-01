@@ -49,7 +49,6 @@ public class AprilTagVision extends SubsystemBase {
 
     // Track pose consistency
     private static int consecutiveValidPoses = 0;
-    private static Pose3d lastValidPose = null;
 
     static {
         rightPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, rightCamToRobot);
@@ -118,33 +117,6 @@ public class AprilTagVision extends SubsystemBase {
         return true;
     }
     
-    /**
-     * Check if a new pose is consistent with our previous valid pose
-     */
-    private static boolean isPoseConsistent(Pose3d newPose) {
-        // If we don't have a previous pose, this is automatically consistent
-        if (lastValidPose == null) {
-            return true;
-        }
-        
-        // Check if the new pose is close to our last valid pose
-        double positionDelta = lastValidPose.getTranslation().getDistance(newPose.getTranslation());
-        double rotationDelta = Math.abs(lastValidPose.getRotation().getZ() - newPose.getRotation().getZ()) 
-                              * 180.0 / Math.PI; // convert to degrees
-        
-        // Adjust thresholds based on consistency level
-        double maxJumpDistance = AprilTagVisionConstants.MAX_POSE_JUMP_DISTANCE;
-        double maxJumpAngle = AprilTagVisionConstants.MAX_POSE_JUMP_ANGLE_DEGREES;
-        
-        // Be more lenient if we have a consistent track record
-        if (consecutiveValidPoses > AprilTagVisionConstants.REQUIRED_CONSISTENT_POSES) {
-            maxJumpDistance *= AprilTagVisionConstants.ESTABLISHED_DISTANCE_MULTIPLIER;
-            maxJumpAngle *= AprilTagVisionConstants.ESTABLISHED_DISTANCE_MULTIPLIER;
-        }
-        
-        return positionDelta < maxJumpDistance && rotationDelta < maxJumpAngle;
-    }
-    
     public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
         List<Pose3d> validPoses = new ArrayList<>();
 
@@ -180,29 +152,12 @@ public class AprilTagVision extends SubsystemBase {
         }
         */
         if (validPoses.isEmpty()) {
-            // Reset consistency counter when we have no valid poses
-            consecutiveValidPoses = 0;
             return Optional.empty(); // No valid poses found
         }
 
         Pose3d averagedPose = averagePoses(validPoses);
         
-        // Check if the new pose is consistent with previous poses
-        if (isPoseConsistent(averagedPose)) {
-            consecutiveValidPoses++;
-            lastValidPose = averagedPose;
             return Optional.of(averagedPose);
-        } else {
-            // If we have a good track record, still use the pose but don't count it as consistent
-            if (consecutiveValidPoses >= AprilTagVisionConstants.REQUIRED_CONSISTENT_POSES) {
-                lastValidPose = averagedPose;
-                return Optional.of(averagedPose);
-            }
-            
-            // Otherwise reset our counter and reject the pose
-            consecutiveValidPoses = 0;
-            return Optional.empty();
-        }
     }
 
     private static Pose3d averagePoses(List<Pose3d> poses) {
@@ -248,14 +203,5 @@ public class AprilTagVision extends SubsystemBase {
             new edu.wpi.first.math.geometry.Quaternion(qw, qx, qy, qz));
         
         return new Pose3d(avgTranslation, avgRotation);
-    }
-
-    /**
-     * Reset our consistency tracking - call this when you know the robot has been moved
-     * or when you're initializing a new position
-     */
-    public static void resetPoseConsistency() {
-        consecutiveValidPoses = 0;
-        lastValidPose = null;
     }
 }
