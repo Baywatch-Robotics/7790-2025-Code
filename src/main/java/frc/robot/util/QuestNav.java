@@ -106,7 +106,7 @@ public class QuestNav {
     // Calculate the offset between camera pose and Quest pose
     Pose2d questPose = getPose();
     Translation2d offsetTranslation = cameraPose.getTranslation().minus(questPose.getTranslation());
-    cameraOffsetPose = new Pose2d(offsetTranslation, new Rotation2d());
+    cameraOffsetPose = new Pose2d(offsetTranslation, cameraPose.getRotation());
     
     isCalibrated = true;
     lastCalibrationTime = Timer.getFPGATimestamp();
@@ -279,14 +279,14 @@ public class QuestNav {
     Translation2d questTranslation = new Translation2d(questnavPosition[0], questnavPosition[2]);
     
     // Invert the rotation by negating the yaw angle
-    Rotation2d questRotation = Rotation2d.fromDegrees(-getOculusYaw());
+    Rotation2d questRotation = Rotation2d.fromDegrees(getOculusYaw());
     
     // Create the Quest pose
     Pose2d oculusPose = new Pose2d(questTranslation, questRotation);
     
     // Transform from Quest coordinates to robot coordinates using the defined transform
     // This handles the physical mounting position/orientation of the Quest on the robot
-    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS.inverse());
+    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS);
     
     return robotPose;
   }

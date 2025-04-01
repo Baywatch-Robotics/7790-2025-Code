@@ -242,6 +242,7 @@ public class SwerveSubsystem extends SubsystemBase
       isQuestZeroed = false;
       
       SmartDashboard.putString("Quest Status", "Forced full recalibration initiated with re-zeroing");
+      
     } else {
       SmartDashboard.putString("Quest Status", "Recalibration attempted but Quest not connected");
     }
