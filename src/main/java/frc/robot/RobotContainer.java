@@ -378,7 +378,7 @@ public class RobotContainer {
     // Modified: combine zero gyro with full speed toggle
     //driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
-    driverXbox.back().onTrue(drivebase.recalibrateQuestCommand());
+    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.attemptQuestCalibration()));
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
@@ -812,6 +812,14 @@ public class RobotContainer {
   }
 
   /**
+   * Zero the Quest navigation system
+   * Called by Robot.java during robotInit
+   */
+  public void zeroQuestNow() {
+    drivebase.zeroQuestCommand().schedule();
+  }
+
+  /**
    * Checks the current autonomous selection and sets the robot's initial pose accordingly.
    * Only updates the pose if the selection has changed or pose hasn't been initialized yet.
    */
@@ -832,8 +840,14 @@ public class RobotContainer {
       currentSelection = "Unknown";
     }
     
-    // Only set the pose if the selection changed or pose not initialized yet
+    // Only set the pose if the selection changed or pose hasn't been initialized yet
     if (!currentSelection.equals(lastSelectedAuto) || !poseInitialized) {
+      // Determine when recalibration is needed:
+      // 1. First initialization (!poseInitialized) OR
+      // 2. When auto selection changes (poseInitialized && !currentSelection.equals(lastSelectedAuto))
+      boolean needsRecalibration = !poseInitialized || 
+                                 (poseInitialized && !currentSelection.equals(lastSelectedAuto));
+      
       if (currentSelection.equals("Left")) {
         // Set pose for Left autonomous using constants
         Pose2d leftStartPose = new Pose2d(
@@ -851,7 +865,7 @@ public class RobotContainer {
         Pose2d leftCenterStartPose = new Pose2d(
             Constants.TargetClassConstants.CenterStartX,
             Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ)); // Using left rotation for left center
+            new Rotation2d(Constants.TargetClassConstants.LeftStartZ)); // Using left rotation for left center
         
         // Convert to alliance-relative coordinates
         Pose2d allianceRelativeLeftCenterPose = TargetClass.toPose2d(leftCenterStartPose);
@@ -882,6 +896,11 @@ public class RobotContainer {
         drivebase.resetOdometry(allianceRelativeRightPose);
         
         SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
+      }
+      
+      // Force Quest recalibration on first initialization or when auto selection changes
+      if (needsRecalibration) {
+        drivebase.forceFullRecalibration();
       }
       
       // Update tracking variables

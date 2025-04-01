@@ -70,7 +70,12 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean questCalibrationInProgress = false;
   private double questCalibrationStartTime = 0;
   private static final double QUEST_CALIBRATION_TIMEOUT = 2.0;
+  
+  // Vision measurement tracking for calibration
   private boolean initialSetupComplete = false;
+  private int goodVisionMeasurementCount = 0;
+  private static final int REQUIRED_MEASUREMENTS_BEFORE_CALIBRATION = 15;
+  private boolean isQuestZeroed = false;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided and QuestNav.
@@ -157,16 +162,29 @@ public class SwerveSubsystem extends SubsystemBase
       SmartDashboard.putString("Quest Status", "Calibration timed out");
     }
     
-    // Initial setup with cameras if not already done
-    if (!initialSetupComplete) {
-      addVisionMeasurementInitial();
+    // First, make sure Quest is zeroed (but don't auto-zero)
+    checkQuestZeroed();
+    
+    // If Quest is zeroed, collect vision measurements
+    if (isQuestZeroed && !initialSetupComplete) {
+      addVisionMeasurement();
+      goodVisionMeasurementCount++;
+      
+      // Log the measurement count during calibration
+      SmartDashboard.putNumber("Quest/Vision Measurement Count", goodVisionMeasurementCount);
+      
+      // After collecting enough measurements, attempt calibration
+      if (goodVisionMeasurementCount >= REQUIRED_MEASUREMENTS_BEFORE_CALIBRATION) {
+        attemptQuestCalibration();
+        initialSetupComplete = true;
+      }
     }
-    // If initial setup is complete but Quest is not calibrated yet, try to calibrate
-    else if (!questNav.isCalibrated() && !questCalibrationInProgress) {
+    // If initial setup is complete but Quest is not calibrated yet, continue trying to calibrate
+    else if (isQuestZeroed && !questNav.isCalibrated() && !questCalibrationInProgress && initialSetupComplete) {
       attemptQuestCalibration();
     }
     // Once Quest is calibrated, use it as the primary source
-    else if (questNav.isCalibrated()) {
+    else if (isQuestZeroed && questNav.isCalibrated()) {
       updateQuestNavPose();
     }
     // Fallback to camera-based measurements if Quest isn't ready
@@ -181,11 +199,51 @@ public class SwerveSubsystem extends SubsystemBase
     // Log Quest integration status
     SmartDashboard.putBoolean("Quest/Is Primary", useQuestForPrimary);
     SmartDashboard.putBoolean("Quest/Initial Setup Complete", initialSetupComplete);
+    SmartDashboard.putBoolean("Quest/Is Zeroed", isQuestZeroed);
+    SmartDashboard.putNumber("Quest/Vision Measurements", goodVisionMeasurementCount);
     
     // Log shake status to SmartDashboard
     SmartDashboard.putBoolean("Shake Mode Active", isShaking);
     if (isShaking) {
       SmartDashboard.putNumber("Shake Time Running", Timer.getFPGATimestamp() - shakeStartTime);
+    }
+  }
+
+  /**
+   * Check if Quest has been zeroed
+   */
+  private void checkQuestZeroed() {
+    isQuestZeroed = questNav.isZeroingComplete();
+    SmartDashboard.putBoolean("Quest/Is Zeroed", isQuestZeroed);
+  }
+
+  /**
+   * Force a full recalibration of Quest
+   * Should be called when autonomous position changes in RobotContainer
+   */
+  public void forceFullRecalibration() {
+    // Reset calibration state
+    initialSetupComplete = false;
+    goodVisionMeasurementCount = 0;
+    questCalibrationInProgress = false;
+    
+    // Clear existing calibration
+    if (questNav.isCalibrated()) {
+      questNav.clearCalibration();
+    }
+    
+    // Completely re-zero the Quest for maximum accuracy
+    if (questNav.connected()) {
+      // Zero both heading and position
+      questNav.zeroHeading();
+      questNav.zeroPosition();
+      
+      // Reset zeroing flag to false - we'll wait for the standard delay
+      isQuestZeroed = false;
+      
+      SmartDashboard.putString("Quest Status", "Forced full recalibration initiated with re-zeroing");
+    } else {
+      SmartDashboard.putString("Quest Status", "Recalibration attempted but Quest not connected");
     }
   }
 
@@ -217,7 +275,7 @@ public class SwerveSubsystem extends SubsystemBase
   /**
    * Attempt to calibrate the QuestNav using the current robot pose from vision
    */
-  private void attemptQuestCalibration() {
+  public void attemptQuestCalibration() {
     if (questNav.isZeroingComplete() && questNav.connected() && questNav.getTrackingStatus()) {
       Pose2d currentPose = getPose();
       
@@ -249,43 +307,13 @@ public class SwerveSubsystem extends SubsystemBase
         questNav.zeroHeading();
         questNav.zeroPosition();
         
+        isQuestZeroed = true;
+        initialSetupComplete = false;
+        goodVisionMeasurementCount = 0;
+        
         SmartDashboard.putString("Quest Status", "Zeroed position and heading");
       } else {
         SmartDashboard.putString("Quest Status", "Zero failed - Quest not connected");
-      }
-    });
-  }
-  
-  /**
-   * Command to recalibrate Quest during a match using the current known position
-   * This keeps the Quest's internal coordinate system but adjusts the offset
-   */
-  public Command recalibrateQuestCommand() {
-    return Commands.runOnce(() -> {
-      if (questNav.connected() && questNav.getTrackingStatus() && questNav.isZeroingComplete()) {
-        // Get current pose from odometry
-        Pose2d currentPose = getPose();
-        
-        // Recalibrate Quest with this reference pose
-        questNav.recalibrate(currentPose);
-        
-        SmartDashboard.putString("Quest Status", "Recalibrated");
-      } else {
-        SmartDashboard.putString("Quest Status", "Recalibration failed");
-      }
-    });
-  }
-
-  /**
-   * Command to clear any Quest calibration and return to using just the zeroed pose
-   */
-  public Command clearQuestCalibrationCommand() {
-    return Commands.runOnce(() -> {
-      if (questNav.connected()) {
-        questNav.clearCalibration();
-        SmartDashboard.putString("Quest Status", "Calibration cleared");
-      } else {
-        SmartDashboard.putString("Quest Status", "Clear calibration failed - Quest not connected");
       }
     });
   }
@@ -874,24 +902,6 @@ public class SwerveSubsystem extends SubsystemBase
            }
           }
   }
-
-  public void addVisionMeasurementInitial() {
-
-      Pose2d robotPose = swerveDrive.getPose();
-
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-
-      if (estimatedPose3d.isPresent()) {
-        Pose2d newPose = estimatedPose3d.get().toPose2d();
-        
-        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-    // Only add the measurement if it's within 1 meter of the current pose
-    if (distance >= .5) {
-        swerveDrive.resetOdometry(newPose);
-    }
-  }
- }
     
     /**
      * Visualize the target pose on the field
