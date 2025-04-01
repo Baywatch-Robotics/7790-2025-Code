@@ -409,15 +409,17 @@ public final class Constants
     
   }
   public static final class AprilTagVisionConstants{
-
-    public static final double ambiguityThreshold = 0.1;
-    
-    // Maximum distance to consider a tag valid (in meters)
-    public static final double MAX_TAG_DISTANCE = 8.0;
     
     // List of valid tag IDs (excluding tags 1-5 and 12-16)
     public static final Integer[] VALID_TAG_IDS = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
 
+    public static final double ambiguityThreshold = 0.05;
+    
+    // Maximum distance to consider a tag valid (in meters)
+    public static final double MAX_TAG_DISTANCE = 8.0;
+    // Maximum distance for single-tag results (6 feet in meters)
+    public static final double MAX_SINGLE_TAG_DISTANCE = 1.8288; // 6 feet in meters
+    
     // Pose consistency tracking constants
     public static final int REQUIRED_CONSISTENT_POSES = 10;
     public static final double MAX_POSE_JUMP_DISTANCE = 1.0; // meters

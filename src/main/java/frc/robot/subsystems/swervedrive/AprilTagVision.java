@@ -96,6 +96,9 @@ public class AprilTagVision extends SubsystemBase {
             maxAllowedDistance = AprilTagVisionConstants.MAX_TAG_DISTANCE * AprilTagVisionConstants.INITIAL_DISTANCE_MULTIPLIER;
         }
         
+        // Check if this is a single-tag result
+        boolean isSingleTag = pose.targetsUsed.size() == 1;
+        
         // Check that all targets used are in our valid tag list
         for (PhotonTrackedTarget target : pose.targetsUsed) {
             int tagId = target.getFiducialId();
@@ -105,8 +108,15 @@ public class AprilTagVision extends SubsystemBase {
                 return false;
             }
             
-            // Check if the tag is too far away
+            // Check distance requirements
             double distanceMeters = target.getBestCameraToTarget().getTranslation().getNorm();
+            
+            // If it's a single tag, apply the stricter distance limit
+            if (isSingleTag && distanceMeters > AprilTagVisionConstants.MAX_SINGLE_TAG_DISTANCE) {
+                return false;
+            }
+            
+            // Otherwise apply the standard distance check
             if (distanceMeters > maxAllowedDistance) {
                 // For tags that are far away, we'll be more lenient if we have established a consistent position
                 if (consecutiveValidPoses < AprilTagVisionConstants.REQUIRED_CONSISTENT_POSES) {
