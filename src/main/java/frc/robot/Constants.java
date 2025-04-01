@@ -63,6 +63,13 @@ public final class Constants
     public static final float allowedClosedLoopError = .005f;
 
     public static final float L1ScoreAngle = 0.33f;
+    
+    // New feedforward constants
+    public static final float kS = 0.0f;  // Static friction compensation
+    public static final float kG = 0.0f;  // Gravity compensation (tune based on arm mass)
+    public static final float kV = 0.0f;  // Velocity feedforward
+    public static final float kA = 0.0f;  // Acceleration feedforward
+    public static final float feedforwardOffset = 0.0f; // Offset for zero position
   }
 
     public static final class AlgaeShooterConstants{
@@ -280,6 +287,12 @@ public final class Constants
     public static final float maxAcceleration = 6;
     public static final float allowedClosedLoopError = 0.005f;
     
+    // New feedforward constants
+    public static final float kS = 0.0f;  // Static friction compensation
+    public static final float kG = 0.0f;  // Gravity compensation
+    public static final float kV = 0.0f;  // Velocity feedforward
+    public static final float kA = 0.0f;  // Acceleration feedforward
+    public static final float feedforwardOffset = 0.0f; // Offset for zero position
     
     // Pre-intake position for coral detection
     public static final float preIntakePosition = 0.42f; // Slightly raised from home position

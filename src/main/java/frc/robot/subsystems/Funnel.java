@@ -2,13 +2,16 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,6 +34,20 @@ public class Funnel extends SubsystemBase {
     private SparkMax funnelMotor = new SparkMax(FunnelConstants.ID, MotorType.kBrushless);
     private SparkClosedLoopController funnelController = funnelMotor.getClosedLoopController();
     private AbsoluteEncoder funnelEncoder = funnelMotor.getAbsoluteEncoder();
+    
+    // Add ArmFeedforward controller
+    private final ArmFeedforward armFeedforward = new ArmFeedforward(
+        FunnelConstants.kS, 
+        FunnelConstants.kG,
+        FunnelConstants.kV,
+        FunnelConstants.kA
+    );
+    
+    // Conversion factors to convert between encoder units and radians
+    private final double kEncoderToRadians = 2.0 * Math.PI; // Adjust based on encoder's range
+    
+    // Reference angle for zero position (in radians)
+    private final double kHorizontalReferenceRad = Math.PI / 2.0; // 90 degrees, adjust based on setup
     
     // Variables for coral detection and shaking
     private boolean isShaking = false;
@@ -305,11 +322,28 @@ public class Funnel extends SubsystemBase {
         // Set goal for motion profile
         m_goal = new TrapezoidProfile.State(funnelDesiredAngle, 0);
         
+        // Convert positions to radians for feedforward
+        double currentPositionRad = encoderToFeedforwardRadians(funnelEncoder.getPosition() - FunnelConstants.feedforwardOffset);
+        double currentVelocityRad = funnelMotor.getEncoder().getVelocity() * kEncoderToRadians;
+        
+        // Calculate the feedforward output using radians
+        double feedforwardOutput = armFeedforward.calculate(
+            currentPositionRad,    // Position in radians (0 = horizontal)
+            currentVelocityRad,    // Velocity in radians/second
+            0                      // Zero acceleration for now
+        );
+        
         // Calculate next setpoint - but skip this when shaking with bypass enabled
         if (!bypassProfilerForShaking) {
             m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
-            // Set the motor position to the trapezoidal profile setpoint
-            funnelController.setReference(m_setpoint.position, ControlType.kPosition);
+            // Set the motor position to the trapezoidal profile setpoint with feedforward
+            funnelController.setReference(
+                m_setpoint.position, 
+                ControlType.kPosition,
+                ClosedLoopSlot.kSlot0, // slot 0 for PID
+                feedforwardOutput,
+                ArbFFUnits.kVoltage
+            );
         } else {
             // For intense shaking, bypass the profiler and set position directly
             funnelController.setReference(funnelDesiredAngle, ControlType.kPosition);
@@ -364,5 +398,21 @@ public class Funnel extends SubsystemBase {
                 // Just ensuring shaking is started, though it should already be from preIntake
                 startShaking();
             });
+    }
+    
+    /**
+     * Converts from encoder units to radians
+     */
+    private double encoderToRadians(double encoderPosition) {
+        return encoderPosition * kEncoderToRadians;
+    }
+    
+    /**
+     * Converts from encoder position to radians used by feedforward
+     * (typically 0 = horizontal, positive = above horizontal)
+     */
+    private double encoderToFeedforwardRadians(double encoderPosition) {
+        // Convert to radians then adjust for the coordinate system
+        return encoderToRadians(encoderPosition) - kHorizontalReferenceRad;
     }
 }

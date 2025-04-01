@@ -2,13 +2,16 @@ package frc.robot.subsystems.Algae;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +46,20 @@ public class AlgaeArm extends SubsystemBase {
 
     private AbsoluteEncoder algaeArmEncoder = algaeArmMotor.getAbsoluteEncoder();
     
+    // Add ArmFeedforward controller
+    private final ArmFeedforward armFeedforward = new ArmFeedforward(
+        AlgaeArmConstants.kS, 
+        AlgaeArmConstants.kG,
+        AlgaeArmConstants.kV,
+        AlgaeArmConstants.kA
+    );
+    
+    // Conversion factors to convert between encoder units and radians
+    private final double kEncoderToRadians = 2.0 * Math.PI; // Adjust based on encoder's range
+    
+    // Reference angle for zero position (in radians)
+    private final double kHorizontalReferenceRad = Math.PI / 2.0; // 90 degrees, adjust based on setup
+    
     // Trapezoidal motion profile objects
     private final TrapezoidProfile m_profile = new TrapezoidProfile(
         new TrapezoidProfile.Constraints(
@@ -55,6 +72,22 @@ public class AlgaeArm extends SubsystemBase {
 
     public AlgaeArm() {
         algaeArmMotor.configure(Configs.AlgaeArm.algaeArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    /**
+     * Converts from encoder units to radians
+     */
+    private double encoderToRadians(double encoderPosition) {
+        return encoderPosition * kEncoderToRadians;
+    }
+    
+    /**
+     * Converts from encoder position to radians used by feedforward
+     * (typically 0 = horizontal, positive = above horizontal)
+     */
+    private double encoderToFeedforwardRadians(double encoderPosition) {
+        // Convert to radians then adjust for the coordinate system
+        return encoderToRadians(encoderPosition) - kHorizontalReferenceRad;
     }
 
     // Method to get the current draw from the motor
@@ -202,6 +235,17 @@ public class AlgaeArm extends SubsystemBase {
         // Calculate next setpoint
         m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
         
+        // Convert positions to radians for feedforward
+        double currentPositionRad = encoderToFeedforwardRadians(algaeArmEncoder.getPosition() - AlgaeArmConstants.feedforwardOffset);
+        double currentVelocityRad = algaeArmEncoder.getVelocity() * kEncoderToRadians;
+        
+        // Calculate the feedforward output using radians
+        double feedforwardOutput = armFeedforward.calculate(
+            currentPositionRad,    // Position in radians (0 = horizontal)
+            currentVelocityRad,    // Velocity in radians/second
+            0                      // Zero acceleration for now
+        );
+        
         SmartDashboard.putNumber("Algae Arm Desired Angle", algaeArmDesiredAngle);
         SmartDashboard.putNumber("Algae Arm Current Angle", algaeArmEncoder.getPosition());
         SmartDashboard.putNumber("Algae Arm Current Draw", getCurrentDraw());
@@ -209,8 +253,17 @@ public class AlgaeArm extends SubsystemBase {
         SmartDashboard.putBoolean("Safe For Funnel", isSafeForFunnelExtension());
         SmartDashboard.putNumber("Algae Arm Profile Position", m_setpoint.position);
         SmartDashboard.putNumber("Algae Arm Profile Velocity", m_setpoint.velocity);
+        SmartDashboard.putNumber("Algae Arm Feedforward", feedforwardOutput);
+        SmartDashboard.putNumber("Algae Arm Position (rad)", currentPositionRad);
+        SmartDashboard.putNumber("Algae Arm Velocity (rad/s)", currentVelocityRad);
         
-        // Set motor position using the profile's position
-        algaeArmController.setReference(m_setpoint.position, ControlType.kPosition);
+        // Set motor position using the profile's position and feedforward
+        algaeArmController.setReference(
+            m_setpoint.position, 
+            ControlType.kPosition, 
+            ClosedLoopSlot.kSlot0,  // slot 0 for PID
+            feedforwardOutput,
+            ArbFFUnits.kVoltage
+        );
     }
 }
