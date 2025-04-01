@@ -103,45 +103,15 @@ public class QuestNav {
       return;
     }
     
-    // Calculate the offset between camera pose and Quest pose
-    Pose2d questPose = getPose();
-    Translation2d offsetTranslation = cameraPose.getTranslation().minus(questPose.getTranslation());
-    
     // Store the position offset
-    cameraOffsetPose = new Pose2d(offsetTranslation, cameraPose.getRotation());
+    cameraOffsetPose = new Pose2d(cameraPose.getTranslation(), cameraPose.getRotation());
+    
     
     
     isCalibrated = true;
     lastCalibrationTime = Timer.getFPGATimestamp();
-    
-    SmartDashboard.putNumber("Quest/Calibration X Offset", offsetTranslation.getX());
-    SmartDashboard.putNumber("Quest/Calibration Y Offset", offsetTranslation.getY());
     SmartDashboard.putNumber("Quest/Calibration Heading", cameraPose.getRotation().getDegrees());
     SmartDashboard.putString("Quest Calibration", "Success at " + lastCalibrationTime);
-  }
-
-  /**
-   * Recalibrate the Quest offset without zeroing
-   * Use this to correct drift during a match
-   * @param referencePose The known pose to calibrate against
-   */
-  public void recalibrate(Pose2d referencePose) {
-    // Instead of compounding offsets, we'll calculate a direct mapping
-    // from raw Quest pose (after zeroing) to desired reference pose
-    
-    // Get raw Quest pose after zeroing but before any calibration
-    Pose2d rawQuestPose = getPose(); // This already has zeroing applied
-    
-    // Calculate the direct offset from raw Quest pose to reference pose
-    Translation2d offsetTranslation = referencePose.getTranslation().minus(rawQuestPose.getTranslation());
-    cameraOffsetPose = new Pose2d(offsetTranslation, new Rotation2d());
-    
-    isCalibrated = true;
-    lastCalibrationTime = Timer.getFPGATimestamp();
-    
-    SmartDashboard.putNumber("Quest/Recalibration X Offset", offsetTranslation.getX());
-    SmartDashboard.putNumber("Quest/Recalibration Y Offset", offsetTranslation.getY());
-    SmartDashboard.putString("Quest Calibration", "Recalibrated at " + lastCalibrationTime);
   }
 
   /**
@@ -303,9 +273,6 @@ public class QuestNav {
    * @param desiredRotation The rotation we want the Quest to report
    */
   public void setHeadingOffset(Rotation2d desiredRotation) {
-    float[] eulerAngles = questEulerAngles.get();
-    // Calculate the offset needed to make current physical angle report the desired angle
-    float currentRawYaw = eulerAngles[1];
     float desiredDegrees = (float)desiredRotation.getDegrees();
     
     // Normalize to 0-360 range if needed
@@ -318,7 +285,6 @@ public class QuestNav {
     yaw_offset = desiredDegrees;
     
     SmartDashboard.putNumber("Quest/Set Heading To", desiredDegrees);
-    SmartDashboard.putNumber("Quest/Raw Yaw", currentRawYaw);
     SmartDashboard.putNumber("Quest/Yaw Offset", yaw_offset);
   }
 }

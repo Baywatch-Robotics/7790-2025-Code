@@ -287,7 +287,10 @@ public class SwerveSubsystem extends SubsystemBase
       if (currentPose.getX() == 0 && currentPose.getY() == 0) {
         return;
       }
-      
+      if (questNav.isCalibrated()) {
+        questNav.clearCalibration();
+      }
+
       questCalibrationInProgress = true;
       questCalibrationStartTime = Timer.getFPGATimestamp();
       
@@ -295,6 +298,7 @@ public class SwerveSubsystem extends SubsystemBase
       questNav.calibrateWithCamera(currentPose);
       
       questNav.setHeadingOffset(currentPose.getRotation());
+
 
       SmartDashboard.putString("Quest Status", "Calibrated with vision");
       SmartDashboard.putNumber("Quest/Calibration Time", questCalibrationStartTime);
@@ -874,10 +878,6 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void addVisionMeasurement() {
 
-   
-    
-
-      if(DriverStation.isDisabled()){
       
       Pose2d robotPose = swerveDrive.getPose();
   
@@ -893,12 +893,13 @@ public class SwerveSubsystem extends SubsystemBase
           if (distance <= .5 && rotationDifference.getDegrees() < 5) {
             
               swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
+              visionMeasurementCounter = 0;
             }
             else{
   
               visionMeasurementCounter++;
   
-              if(visionMeasurementCounter >= 5){
+              if(visionMeasurementCounter >= 3){
   
                 swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
                 visionMeasurementCounter = 0;
@@ -907,7 +908,6 @@ public class SwerveSubsystem extends SubsystemBase
             }
            }
           }
-  }
     
     /**
      * Visualize the target pose on the field

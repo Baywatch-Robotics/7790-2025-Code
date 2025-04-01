@@ -428,9 +428,12 @@ public final class Constants
     public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
 
     
-    public static final float questXOffset = (float)Units.inchesToMeters(2.048);
-    public static final float questYOffset = (float)Units.inchesToMeters(8.92);
+    //public static final float questXOffset = (float)Units.inchesToMeters(2.048);
+    //public static final float questYOffset = (float)Units.inchesToMeters(8.92);
+    public static final float questXOffset = (float)Units.inchesToMeters(0);
+    public static final float questYOffset = (float)Units.inchesToMeters(0);
     public static final float questYaw = (float)Units.degreesToRadians(90.0);
+
 
     public static final Transform2d ROBOT_TO_OCULUS = new Transform2d(questXOffset, questYOffset, new Rotation2d(questYaw));
 
