@@ -890,9 +890,7 @@ public class SwerveSubsystem extends SubsystemBase
      * @return A command that starts the drive process and completes immediately
      */
     public Command startDriveToPose(ButtonBox buttonBox, Elevator elevator) {
-        return Commands.runOnce(() -> {
-          driveToPoseProfiled(buttonBox).schedule();
-        });
+        return ProfileToPose.startAndReturnCommand(this, buttonBox);
     }
 
   /**

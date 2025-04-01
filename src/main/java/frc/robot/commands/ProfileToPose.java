@@ -291,6 +291,7 @@ public class ProfileToPose extends Command {
     @Override
     public void end(boolean interrupted) {
         running = false;
+        swerve.lock();
     }
 
     public boolean atGoal() {
@@ -318,4 +319,13 @@ public class ProfileToPose extends Command {
         // Otherwise use normal completion criteria
         return !running || (running && driveController.atGoal() && thetaController.atGoal());
     }
+
+        // New static method that creates, schedules and returns immediately
+        public static Command startAndReturnCommand(SwerveSubsystem swerve, ButtonBox buttonBox) {
+            return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
+                // Create the command and schedule it
+                ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+                command.schedule();
+            });
+        }
 }

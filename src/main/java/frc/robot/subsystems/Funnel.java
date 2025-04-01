@@ -53,7 +53,6 @@ public class Funnel extends SubsystemBase {
     private boolean isShaking = false;
     private boolean coralDetected = false;
     private boolean isMonitoringForCoral = false;
-    private double lastVelocity = 0;
     private double shakeStartTime = 0;
     private double baseShakePosition = 0;
     private double coralDetectionTime = 0;
@@ -210,44 +209,27 @@ public class Funnel extends SubsystemBase {
     }
     
     /**
-     * Detect coral impact by monitoring motor velocity and current
-     * This method is now only used when manually monitoring is enabled
+     * Detect coral impact by monitoring motor current spikes.
+     * This method is now used when manually monitoring is enabled.
      */
     private void detectCoralImpact() {
         if (!isMonitoringForCoral || isShaking || coralDetected) return;
         
-        // Get current velocity and current
-        double currentVelocity = funnelMotor.getEncoder().getVelocity();
+        // Get current motor output current
+        double current = funnelMotor.getOutputCurrent();
         
-        boolean velocityImpactDetected = false;
-        
-        // Check for sudden velocity change if enabled
-        if (FunnelConstants.USE_VELOCITY_DETECTION) {
-            // Look for a sudden drop in velocity that exceeds threshold
-            double velocityDelta = Math.abs(currentVelocity - lastVelocity);
-            velocityImpactDetected = velocityDelta > FunnelConstants.velocityThreshold;
-        }
-
-        // If either detection method triggers
-        if (velocityImpactDetected) {
-            // If first detection, record the time
+        // Check for current spike detection logic
+        if (current > FunnelConstants.currentThreshold) {
             if (coralDetectionTime == 0) {
                 coralDetectionTime = Timer.getFPGATimestamp();
             }
-            
-            // Check if detection has persisted long enough
-            if (Timer.getFPGATimestamp() - coralDetectionTime >= FunnelConstants.coralDetectionTime) {
-                // Coral impact detected - start shaking
+            if (Timer.getFPGATimestamp() - coralDetectionTime >= FunnelConstants.currentSpikeDuration) {
                 coralDetected = true;
                 startShaking();
             }
         } else {
-            // Reset detection timer if no detection in this cycle
-            coralDetectionTime = 0;
+            coralDetectionTime = 0; // reset if spike not sustained
         }
-        
-        // Store values for next cycle
-        lastVelocity = currentVelocity;
     }
     
     // Manual control method with safety check

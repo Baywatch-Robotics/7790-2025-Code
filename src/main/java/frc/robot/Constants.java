@@ -297,9 +297,11 @@ public final class Constants
     // Pre-intake position for coral detection
     public static final float preIntakePosition = 0.42f; // Slightly raised from home position
     
-    // Coral detection parameters - reduced threshold and debounce time
-    public static final float velocityThreshold = 250f; // Lower threshold to detect smaller impacts
-    public static final float coralDetectionTime = 0.05f; // Reduced time to confirm detection (seconds)
+    
+    // New current detection parameters
+    public static final float currentThreshold = 3.0f;  // Current spike threshold (amps)
+    public static final float currentNormalLevel = 0.25f; // Normal operating current (for comparison)
+    public static final float currentSpikeDuration = 0.05f; // How long a spike needs to last (seconds)
     
     // Shaking parameters
     public static final float shakingAmplitude = 0.03f; // How far to move when shaking
@@ -721,7 +723,7 @@ public final class Constants
     public static final double DRIVE_KD = 0.01;
     
     // PID values for theta (rotation) controller
-    public static final double THETA_KP = 4.0;
+    public static final double THETA_KP = 5.0;
     public static final double THETA_KI = 0.0;
     public static final double THETA_KD = 0.0;
     
@@ -732,8 +734,8 @@ public final class Constants
     public static final double THETA_MAX_ACCELERATION = 10.0;
     
     // Position and angle tolerances
-    public static final double DRIVE_TOLERANCE = 0.01;
-    public static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
+    public static final double DRIVE_TOLERANCE = 0.015;
+    public static final double THETA_TOLERANCE = Units.degreesToRadians(1.5);
     
     // Distance thresholds in meters
     public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
@@ -745,14 +747,14 @@ public final class Constants
 
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
-    public static final double APPROACHING_MAX_VEL = 0.7; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 1.0; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_VEL = 6.0; // Same as DRIVE_MAX_VELOCITY
+    public static final double APPROACHING_MAX_ACCEL = 3.0; // Same as DRIVE_MAX_ACCELERATION
     
-    public static final double CLOSE_MAX_VEL = 0.5; // Slower for closer approach
-    public static final double CLOSE_MAX_ACCEL = 0.8; // Less acceleration when closer
+    public static final double CLOSE_MAX_VEL = 3.0; // Slower for closer approach
+    public static final double CLOSE_MAX_ACCEL = 1.5; // Less acceleration when closer
     
-    public static final double VERY_CLOSE_MAX_VEL = 0.3; // Slowest for final approach 
-    public static final double VERY_CLOSE_MAX_ACCEL = 0.5; // Least acceleration for precision
+    public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
+    public static final double VERY_CLOSE_MAX_ACCEL = 1.0; // Least acceleration for precision
   }
 
   public static final class ShakeModeConstants {
