@@ -38,6 +38,7 @@ import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.Constants.AprilTagVisionConstants;
+import frc.robot.util.QuestNav;
 
 import java.io.File;
 import java.util.Optional;
@@ -50,14 +51,13 @@ import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+
 public class SwerveSubsystem extends SubsystemBase
 {
-
   /**
    * Swerve drive object.
    */
-  private final SwerveDrive         swerveDrive;
-  private boolean isClose = false;
+  private final SwerveDrive swerveDrive;
 
   private boolean pathCanceled = false;
 
@@ -70,16 +70,29 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean isShaking = false;
   private double shakeStartTime = 0;
   private Command currentShakeCommand = null; // Track the current shake command
+  
+  // Quest navigation integration
+  private final QuestNav questNav;
+  private boolean useQuestForPrimary = false;
+  private boolean questCalibrationInProgress = false;
+  private double questCalibrationStartTime = 0;
+  private static final double QUEST_CALIBRATION_TIMEOUT = 3.0; // 3 seconds timeout for calibration
+  private boolean initialSetupComplete = false;
 
   /**
-   * Initialize {@link SwerveDrive} with the directory provided.
+   * Initialize {@link SwerveDrive} with the directory provided and QuestNav.
    *
    * @param directory Directory of swerve drive config files.
+   * @param questNavInstance QuestNav instance to use for positioning
    */
-  public SwerveSubsystem(File directory)
+  public SwerveSubsystem(File directory, QuestNav questNavInstance)
   {
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    
+    // Store QuestNav reference
+    this.questNav = questNavInstance;
+    
     try
     {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED,
@@ -104,38 +117,184 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Fallback constructor for backward compatibility
+   * 
+   * @param directory Directory of swerve drive config files.
+   */
+  public SwerveSubsystem(File directory) {
+    this(directory, new QuestNav());
+  }
+
+  /**
    * Construct the swerve drive.
    *
    * @param driveCfg      SwerveDriveConfiguration for the swerve.
-   * @param controllerCfdrig Swerve Controller.
+   * @param controllerCfg Swerve Controller.
+   * @param questNavInstance QuestNav instance to use for positioning
    */
-  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
+  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg, QuestNav questNavInstance)
   {
+    this.questNav = questNavInstance;
+    
     swerveDrive = new SwerveDrive(driveCfg,
                                   controllerCfg,
                                   Constants.MAX_SPEED,
                                   new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
                                              Rotation2d.fromDegrees(0)));
   }
+  
+  /**
+   * Fallback constructor for backward compatibility
+   */
+  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
+    this(driveCfg, controllerCfg, new QuestNav());
+  }
 
   @Override
   public void periodic()
   {
-
-    if(!isClose){
+    // Process Quest heartbeat to maintain connection
+    questNav.processHeartbeat();
+    questNav.cleanUpQuestNavMessages();
+    questNav.updateDashboard();
+    
+    // Check if Quest calibration has timed out
+    if (questCalibrationInProgress && (Timer.getFPGATimestamp() - questCalibrationStartTime > QUEST_CALIBRATION_TIMEOUT)) {
+      questCalibrationInProgress = false;
+      SmartDashboard.putString("Quest Status", "Calibration timed out");
+    }
+    
+    // Initial setup with cameras if not already done
+    if (!initialSetupComplete) {
       addVisionMeasurementInitial();
     }
-    else{
+    // If initial setup is complete but Quest is not calibrated yet, try to calibrate
+    else if (!questNav.isCalibrated() && !questCalibrationInProgress) {
+      attemptQuestCalibration();
+    }
+    // Once Quest is calibrated, use it as the primary source
+    else if (questNav.isCalibrated()) {
+      updateQuestNavPose();
+    }
+    // Fallback to camera-based measurements if Quest isn't ready
+    else {
       addVisionMeasurement();
     }
-  SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
-  SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
-
+    
+    // Update dashboard
+    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    
+    // Log Quest integration status
+    SmartDashboard.putBoolean("Quest/Is Primary", useQuestForPrimary);
+    SmartDashboard.putBoolean("Quest/Initial Setup Complete", initialSetupComplete);
+    
     // Log shake status to SmartDashboard
     SmartDashboard.putBoolean("Shake Mode Active", isShaking);
     if (isShaking) {
       SmartDashboard.putNumber("Shake Time Running", Timer.getFPGATimestamp() - shakeStartTime);
     }
+  }
+
+  /**
+   * Update the swerve drive pose with QuestNav measurements
+   */
+  private void updateQuestNavPose() {
+    // Only update if Quest is connected and tracking
+    if (questNav.connected() && questNav.getTrackingStatus()) {
+      // Get the calibrated pose from QuestNav
+      Pose2d questPose = questNav.getCalibratedPose();
+      
+      // Add the measurement to the pose estimator
+      swerveDrive.addVisionMeasurement(questPose, Timer.getFPGATimestamp());
+      
+      // Log data to SmartDashboard
+      SmartDashboard.putNumber("Quest/Added Pose X", questPose.getX());
+      SmartDashboard.putNumber("Quest/Added Pose Y", questPose.getY());
+      SmartDashboard.putNumber("Quest/Added Pose Rot", questPose.getRotation().getDegrees());
+      
+      useQuestForPrimary = true;
+    } else {
+      // Fallback to camera if Quest is disconnected
+      useQuestForPrimary = false;
+      addVisionMeasurement();
+    }
+  }
+
+  /**
+   * Attempt to calibrate the QuestNav using the current robot pose from vision
+   */
+  private void attemptQuestCalibration() {
+    if (questNav.isZeroingComplete() && questNav.connected() && questNav.getTrackingStatus()) {
+      Pose2d currentPose = getPose();
+      
+      // Skip calibration if position is at origin (likely invalid)
+      if (currentPose.getX() == 0 && currentPose.getY() == 0) {
+        return;
+      }
+      
+      questCalibrationInProgress = true;
+      questCalibrationStartTime = Timer.getFPGATimestamp();
+      
+      // Perform calibration
+      questNav.calibrateWithCamera(currentPose);
+      
+      SmartDashboard.putString("Quest Status", "Calibrated with vision");
+      SmartDashboard.putNumber("Quest/Calibration Time", questCalibrationStartTime);
+      questCalibrationInProgress = false;
+    }
+  }
+  
+  /**
+   * Command to zero the QuestNav position
+   * Should be called at the start of the match during setup
+   */
+  public Command zeroQuestCommand() {
+    return Commands.runOnce(() -> {
+      if (questNav.connected()) {
+        // Zero both heading and position
+        questNav.zeroHeading();
+        questNav.zeroPosition();
+        
+        SmartDashboard.putString("Quest Status", "Zeroed position and heading");
+      } else {
+        SmartDashboard.putString("Quest Status", "Zero failed - Quest not connected");
+      }
+    });
+  }
+  
+  /**
+   * Command to recalibrate Quest during a match using the current known position
+   * This keeps the Quest's internal coordinate system but adjusts the offset
+   */
+  public Command recalibrateQuestCommand() {
+    return Commands.runOnce(() -> {
+      if (questNav.connected() && questNav.getTrackingStatus() && questNav.isZeroingComplete()) {
+        // Get current pose from odometry
+        Pose2d currentPose = getPose();
+        
+        // Recalibrate Quest with this reference pose
+        questNav.recalibrate(currentPose);
+        
+        SmartDashboard.putString("Quest Status", "Recalibrated");
+      } else {
+        SmartDashboard.putString("Quest Status", "Recalibration failed");
+      }
+    });
+  }
+
+  /**
+   * Command to clear any Quest calibration and return to using just the zeroed pose
+   */
+  public Command clearQuestCalibrationCommand() {
+    return Commands.runOnce(() -> {
+      if (questNav.connected()) {
+        questNav.clearCalibration();
+        SmartDashboard.putString("Quest Status", "Calibration cleared");
+      } else {
+        SmartDashboard.putString("Quest Status", "Clear calibration failed - Quest not connected");
+      }
+    });
   }
 
   @Override
@@ -819,14 +978,12 @@ public class SwerveSubsystem extends SubsystemBase
         // High confidence - apply immediately
         swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
         goodMeasurementCounter = 0; // Reset counter as we've applied a measurement
-        isClose = true;
       } else {
         // Lower confidence - require consecutive good measurements
         goodMeasurementCounter++;
         if (goodMeasurementCounter >= AprilTagVisionConstants.MIN_CONSECUTIVE_GOOD_MEASUREMENTS) {
           swerveDrive.addVisionMeasurement(visionPose, timestamp, stdDevs);
           goodMeasurementCounter = 0; // Reset counter after applying
-          isClose = true;
         }
       }
       
@@ -856,7 +1013,6 @@ public class SwerveSubsystem extends SubsystemBase
         swerveDrive.resetOdometry(newPose);
     }
     else{
-      isClose = true;
     }
   }
  }

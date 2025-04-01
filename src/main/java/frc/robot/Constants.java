@@ -432,8 +432,8 @@ public final class Constants
     public static final float questZOffset = (float)Units.inchesToMeters(19.23);
 
     public static final float questRoll = (float)Units.degreesToRadians(0.0);
-    public static final float questPitch = (float)Units.degreesToRadians(90.0);
-    public static final float questYaw = (float)Units.degreesToRadians(0.0);
+    public static final float questPitch = (float)Units.degreesToRadians(0.0);
+    public static final float questYaw = (float)Units.degreesToRadians(90.0);
 
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);

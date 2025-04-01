@@ -37,6 +37,7 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
+import frc.robot.util.QuestNav;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
@@ -376,7 +377,9 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    //driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+
+    driverXbox.back().onTrue(drivebase.recalibrateQuestCommand());
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
