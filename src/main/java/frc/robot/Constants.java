@@ -412,7 +412,7 @@ public final class Constants
   }
   public static final class AprilTagVisionConstants{
 
-    public static final double ambiguityThreshold = 0.1;
+    public static final double ambiguityThreshold = 0.05;
     
     // Maximum distance to consider a tag valid (in meters)
     public static final double MAX_TAG_DISTANCE = 8.0;
