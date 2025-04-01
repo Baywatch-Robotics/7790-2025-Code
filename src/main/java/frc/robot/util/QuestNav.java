@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.AprilTagVisionConstants;
 
 /**
  * QuestNav - Interface to communicate with Oculus Quest for robot positioning
@@ -270,14 +271,19 @@ public class QuestNav {
     return ret;
   }
 
-  private Translation2d getQuestNavTranslation() {
-    float[] questnavPosition = questPosition.get();
-    return new Translation2d(questnavPosition[2], -questnavPosition[0]);
-  }
-
   private Pose2d getQuestNavPose() {
-    // Apply Quest offset from constants
-    var oculousPositionCompensated = getQuestNavTranslation().minus(new Translation2d(0, 0.1651)); // 6.5
-    return new Pose2d(oculousPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
+    // Get the raw Quest pose from network tables
+    float[] questnavPosition = questPosition.get();
+    Translation2d questTranslation = new Translation2d(questnavPosition[2], -questnavPosition[0]);
+    Rotation2d questRotation = Rotation2d.fromDegrees(getOculusYaw());
+    
+    // Create the Quest pose
+    Pose2d oculusPose = new Pose2d(questTranslation, questRotation);
+    
+    // Transform from Quest coordinates to robot coordinates using the defined transform
+    // This handles the physical mounting position/orientation of the Quest on the robot
+    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS.inverse());
+    
+    return robotPose;
   }
 }

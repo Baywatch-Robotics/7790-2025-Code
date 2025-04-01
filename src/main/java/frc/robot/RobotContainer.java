@@ -37,7 +37,6 @@ import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.Elastic;
-import frc.robot.util.QuestNav;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
