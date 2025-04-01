@@ -240,9 +240,7 @@ public class SwerveSubsystem extends SubsystemBase
     if (questNav.connected()) {
       // Only zero position, not heading
       questNav.zeroPosition();
-      
-      // Set the heading offset to match our desired heading instead of zeroing
-      questNav.setHeadingOffset(desiredHeading);
+      questNav.zeroHeading();
       
       // Reset zeroing flag to false - we'll wait for the standard delay
       isQuestZeroed = false;
@@ -296,6 +294,8 @@ public class SwerveSubsystem extends SubsystemBase
       // Perform calibration
       questNav.calibrateWithCamera(currentPose);
       
+      questNav.setHeadingOffset(currentPose.getRotation());
+
       SmartDashboard.putString("Quest Status", "Calibrated with vision");
       SmartDashboard.putNumber("Quest/Calibration Time", questCalibrationStartTime);
       questCalibrationInProgress = false;

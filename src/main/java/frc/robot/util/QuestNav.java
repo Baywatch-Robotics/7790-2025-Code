@@ -106,13 +106,17 @@ public class QuestNav {
     // Calculate the offset between camera pose and Quest pose
     Pose2d questPose = getPose();
     Translation2d offsetTranslation = cameraPose.getTranslation().minus(questPose.getTranslation());
+    
+    // Store the position offset
     cameraOffsetPose = new Pose2d(offsetTranslation, cameraPose.getRotation());
+    
     
     isCalibrated = true;
     lastCalibrationTime = Timer.getFPGATimestamp();
     
     SmartDashboard.putNumber("Quest/Calibration X Offset", offsetTranslation.getX());
     SmartDashboard.putNumber("Quest/Calibration Y Offset", offsetTranslation.getY());
+    SmartDashboard.putNumber("Quest/Calibration Heading", cameraPose.getRotation().getDegrees());
     SmartDashboard.putString("Quest Calibration", "Success at " + lastCalibrationTime);
   }
 
@@ -288,7 +292,7 @@ public class QuestNav {
     
     // Transform from Quest coordinates to robot coordinates using the defined transform
     // This handles the physical mounting position/orientation of the Quest on the robot
-    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS.inverse());
+    Pose2d robotPose = oculusPose.transformBy(AprilTagVisionConstants.ROBOT_TO_OCULUS);
     
     return robotPose;
   }
@@ -311,7 +315,7 @@ public class QuestNav {
     desiredDegrees %= 360;
     
     // Set offset so current physical angle will report the desired angle
-    yaw_offset = currentRawYaw - desiredDegrees;
+    yaw_offset = desiredDegrees;
     
     SmartDashboard.putNumber("Quest/Set Heading To", desiredDegrees);
     SmartDashboard.putNumber("Quest/Raw Yaw", currentRawYaw);
