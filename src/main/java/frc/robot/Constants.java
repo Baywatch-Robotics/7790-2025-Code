@@ -477,6 +477,16 @@ public final class Constants
   }
   public static final class TargetClassConstants{
 
+    public static final float LeftStartX = (float)Units.inchesToMeters(297.5);
+    public static final float LeftStartY = (float)Units.inchesToMeters(242.0);
+    public static final float LeftStartZ = (float)Units.degreesToRadians(240.0);
+    public static final float CenterStartX = (float)Units.inchesToMeters(297.5);
+    public static final float CenterStartY = (float)Units.inchesToMeters(158.5);
+    public static final float CenterStartZ = (float)Units.degreesToRadians(0);
+    public static final float RightStartX = (float)Units.inchesToMeters(297.5);
+    public static final float RightStartY = (float)Units.inchesToMeters(75.0);
+    public static final float RightStartZ = (float)Units.degreesToRadians(120.0);
+
     public static final float SLPositionX = (float)Units.inchesToMeters(43.5);
     public static final float SLPositionY = (float)Units.inchesToMeters(278.52);
     public static final float SLPositionZ = (float)Units.degreesToRadians(306);
