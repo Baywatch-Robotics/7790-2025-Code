@@ -274,8 +274,12 @@ public class QuestNav {
   private Pose2d getQuestNavPose() {
     // Get the raw Quest pose from network tables
     float[] questnavPosition = questPosition.get();
-    Translation2d questTranslation = new Translation2d(questnavPosition[2], -questnavPosition[0]);
-    Rotation2d questRotation = Rotation2d.fromDegrees(getOculusYaw());
+    
+    // Apply 90-degree rotation to the translation coordinates
+    Translation2d questTranslation = new Translation2d(questnavPosition[0], questnavPosition[2]);
+    
+    // Invert the rotation by negating the yaw angle
+    Rotation2d questRotation = Rotation2d.fromDegrees(-getOculusYaw());
     
     // Create the Quest pose
     Pose2d oculusPose = new Pose2d(questTranslation, questRotation);
