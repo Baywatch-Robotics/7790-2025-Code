@@ -445,6 +445,7 @@ public final class Constants
     public static final float rightCamPitch = (float)Units.degreesToRadians(15.0);
     public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
 
+    //leftCam really means Top Camera (make sure to only use these constants if we are using an ArduCam)
     public static final float leftCamXOffset = (float)Units.inchesToMeters(5.672);
     public static final float leftCamYOffset = (float)Units.inchesToMeters(-7.956);
     public static final float leftCamZOffset = (float)Units.inchesToMeters(34.184);
@@ -453,13 +454,22 @@ public final class Constants
     public static final float leftCamPitch = (float)Units.degreesToRadians(30.0);
     public static final float leftCamYaw = (float)Units.degreesToRadians(15.0);
 
-    public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
+    public static final float limelightXOffset = (float)Units.inchesToMeters(7.093);
+    public static final float limelightYOffset = (float)Units.inchesToMeters(-7.575);
+    public static final float limelightZOffset = (float)Units.inchesToMeters(35.181);
+
+    public static final float limelightRoll = (float)Units.degreesToRadians(0.0);
+    public static final float limelightPitch = (float)Units.degreesToRadians(30.0);
+    public static final float limelightYaw = (float)Units.degreesToRadians(15.0);
+
+    //Back-facing Limelight constants
+    /* public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
     public static final float limelightZOffset = (float)Units.inchesToMeters(36.273);
 
     public static final float limelightRoll = (float)Units.degreesToRadians(0.0);
     public static final float limelightPitch = (float)Units.degreesToRadians(-30.0);
-    public static final float limelightYaw = (float)Units.degreesToRadians(180);
+    public static final float limelightYaw = (float)Units.degreesToRadians(180); */
     
     // Vision measurement confidence parameters
     public static final double MAX_VISION_DISTANCE_TRUSTED = 0.2;    // Fully trust measurements within this distance (meters)
