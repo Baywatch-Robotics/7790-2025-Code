@@ -28,7 +28,7 @@ public class CommandFactory {
       // Remove the LED command from here since we'll combine it at the end
       .andThen(algaeArm.algaeArmStowUpCommand())
       .andThen(algaeShooter.algaeShooterZeroSpeedCommand())
-      .andThen(shooterArm.shooterArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger()))
+      .andThen(shooterArm.shooterArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger().and(shooterArm.isClearToElevate())))
       .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       // Only proceed to loading position when outside reef zone
