@@ -52,21 +52,21 @@ public class CommandFactory {
   
   
 
-  public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, SwerveSubsystem drivebase) {
+  public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     
 
     Command command  = elevator.setElevatorPickupCommand()
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmLoadCommand())
     .andThen(shooter.shooterIntakeCommand())
-    .andThen(new WaitUntilCommand(funnel.coralDetectedTrigger()))
+    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
     .andThen(drivebase.shakeRobotCommand())
     .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
     .andThen(drivebase.stopShakeCommand())
     .andThen(shooterArm.shooterArmScoreLOWCommand());
 
 
-    command.addRequirements(shooter, shooterArm, elevator, funnel);
+    command.addRequirements(shooter, shooterArm, elevator);
 
     return command;
 }
@@ -234,7 +234,7 @@ public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, El
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitCommand(1.5))
-  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, funnel, drivebase));
+  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, drivebase, robotContainer));
 
     command.addRequirements(shooter, shooterArm, elevator, funnel);
 
