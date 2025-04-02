@@ -232,7 +232,7 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = 0.5f;
+    public static final float P = 0.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
