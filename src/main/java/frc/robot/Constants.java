@@ -55,7 +55,7 @@ public final class Constants
     public static final float manualMultiplier = 0.01f;
 
 
-    public static final float P = 1.0f;
+    public static final float P = 2.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 50;
@@ -278,7 +278,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 1.0f;
+    public static final float P = 2.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -718,39 +718,39 @@ public final class Constants
    */
   public static final class DriveToPoseConstants {
     // PID values for drive controller
-    public static final double DRIVE_KP = 0.9;
+    public static final double DRIVE_KP = 1.5;
     public static final double DRIVE_KI = 0.0;
     public static final double DRIVE_KD = 0.01;
     
     // PID values for theta (rotation) controller
-    public static final double THETA_KP = 5.0;
+    public static final double THETA_KP = 4.5;
     public static final double THETA_KI = 0.0;
     public static final double THETA_KD = 0.0;
     
     // Motion profile constraints
     public static final double DRIVE_MAX_VELOCITY = 0.7;
     public static final double DRIVE_MAX_ACCELERATION = 1.0;
-    public static final double THETA_MAX_VELOCITY = Units.degreesToRadians(720.0);
-    public static final double THETA_MAX_ACCELERATION = 10.0;
+    public static final double THETA_MAX_VELOCITY = Units.degreesToRadians(360);
+    public static final double THETA_MAX_ACCELERATION = Units.degreesToRadians(180);
     
     // Position and angle tolerances
-    public static final double DRIVE_TOLERANCE = 0.015;
-    public static final double THETA_TOLERANCE = Units.degreesToRadians(1.5);
+    public static final double DRIVE_TOLERANCE = 0.01;
+    public static final double THETA_TOLERANCE = Units.degreesToRadians(1.0);
     
     // Distance thresholds in meters
     public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
     public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
-    public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.3; // meters
+    public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.2; // meters
     
     // Visualization settings
     public static final double TARGET_MARKER_SIZE = 0.3; // size of visualization marker
 
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
-    public static final double APPROACHING_MAX_VEL = 6.0; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 3.0; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_VEL = 3.0; // Same as DRIVE_MAX_VELOCITY
+    public static final double APPROACHING_MAX_ACCEL = 1.5; // Same as DRIVE_MAX_ACCELERATION
     
-    public static final double CLOSE_MAX_VEL = 3.0; // Slower for closer approach
+    public static final double CLOSE_MAX_VEL = 2.0; // Slower for closer approach
     public static final double CLOSE_MAX_ACCEL = 1.5; // Less acceleration when closer
     
     public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
@@ -763,10 +763,10 @@ public final class Constants
     public static final double SHAKE_AMPLITUDE_Y = 0.1;   // More aggressive Y-axis shake
     
     // Direct speed control (meters per second) - MUCH higher for more aggressive motion
-    public static final double SHAKE_SPEED_Y = 5.0;   // Very aggressive Y-axis speed
+    public static final double SHAKE_SPEED_Y = .25;   // Very aggressive Y-a]\[xis speed
     
     // Frequency of shake oscillation (Hz) - Controls how quickly direction changes
-    public static final double SHAKE_FREQUENCY = 5.0;
+    public static final double SHAKE_FREQUENCY = 3.0;
     
     // Rotation shake parameters (radians)
     public static final double ANGULAR_SHAKE_AMPLITUDE = Math.toRadians(10.0);

@@ -35,7 +35,7 @@ public class ProfileToPose extends Command {
     public static final double driveTolerance = DriveToPoseConstants.DRIVE_TOLERANCE;
     public static final double thetaTolerance = DriveToPoseConstants.THETA_TOLERANCE;
     
-    private static final double ffMinRadius = 0.02;
+    private static final double ffMinRadius = 0.01;
     private static final double ffMaxRadius = 0.08;
 
     private SwerveSubsystem swerve;
@@ -294,15 +294,6 @@ public class ProfileToPose extends Command {
         swerve.lock();
     }
 
-    public boolean atGoal() {
-        return running && driveController.atGoal() && thetaController.atGoal();
-    }
-
-    public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
-        return running
-            && Math.abs(driveErrorAbs) < driveTolerance
-            && Math.abs(thetaErrorAbs) < thetaTolerance.getRadians();
-    }
 
     @Override
     public boolean isFinished() {
