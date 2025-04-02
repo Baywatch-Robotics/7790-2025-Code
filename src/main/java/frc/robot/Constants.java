@@ -766,7 +766,7 @@ public final class Constants
     public static final double SHAKE_AMPLITUDE_Y = 0.1;   // More aggressive Y-axis shake
     
     // Direct speed control (meters per second) - MUCH higher for more aggressive motion
-    public static final double SHAKE_SPEED_Y = .25;   // Very aggressive Y-axis speed
+    public static final double SHAKE_SPEED_Y = .3;   // Very aggressive Y-axis speed
     
     // Frequency of shake oscillation (Hz) - Controls how quickly direction changes
     public static final double SHAKE_FREQUENCY = 3.0;
