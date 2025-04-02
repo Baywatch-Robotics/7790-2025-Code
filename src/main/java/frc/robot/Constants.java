@@ -425,13 +425,11 @@ public final class Constants
     public static final double INITIAL_DISTANCE_MULTIPLIER = 0.6; // 60% of max distance when establishing consistency
     public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
 
+
     public static final float questXOffset = (float)Units.inchesToMeters(2.048);
     public static final float questYOffset = (float)Units.inchesToMeters(8.92);
-    public static final float questZOffset = (float)Units.inchesToMeters(19.23);
-
-    public static final float questRoll = (float)Units.degreesToRadians(0.0);
-    public static final float questPitch = (float)Units.degreesToRadians(90.0);
-    public static final float questYaw = (float)Units.degreesToRadians(0.0);
+    public static final float questYaw = (float)Units.degreesToRadians(90.0);
+    
 
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
