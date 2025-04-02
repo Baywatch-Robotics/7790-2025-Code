@@ -232,7 +232,7 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
 
 public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, Funnel funnel){
 
-  Command command = drivebase.startDriveToPose(buttonBox, elevator)
+  Command command = drivebase.startDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(new WaitCommand(1.5))
   .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, drivebase, robotContainer));
 

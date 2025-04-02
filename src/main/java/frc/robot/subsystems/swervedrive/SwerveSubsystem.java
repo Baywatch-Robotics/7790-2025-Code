@@ -909,4 +909,50 @@ public class SwerveSubsystem extends SubsystemBase
   public boolean isShaking() {
     return isShaking;
   }
+
+  /**
+   * Creates a ProfileToPose command with rotation delay
+   * This prevents the robot from rotating during the initial movement period in autonomous
+   * 
+   * @param buttonBox The button box containing target information
+   * @return A command that drives to the target pose with rotation delay
+   */
+  public Command driveToPoseProfiledWithRotationDelay(ButtonBox buttonBox) {
+    return new ProfileToPose(this, buttonBox).withRotationDelay();
+  }
+
+  /**
+   * Creates a ProfileToPose command with custom rotation delay time
+   * 
+   * @param buttonBox The button box containing target information
+   * @param delaySeconds Custom delay time in seconds
+   * @return A command that drives to the target pose with rotation delay
+   */
+  public Command driveToPoseProfiledWithRotationDelay(ButtonBox buttonBox, double delaySeconds) {
+    return new ProfileToPose(this, buttonBox).withRotationDelay(delaySeconds);
+  }
+
+  /**
+   * Starts the drive to pose command with rotation delay and returns immediately.
+   * The drive command will continue running in the background.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @return A command that starts the drive process with rotation delay and completes immediately
+   */
+  public Command startDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator) {
+    return ProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox);
+  }
+
+  /**
+   * Starts the drive to pose command with custom rotation delay and returns immediately.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @param delaySeconds Custom delay time in seconds
+   * @return A command that starts the drive process with rotation delay and completes immediately
+   */
+  public Command startDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator, double delaySeconds) {
+    return ProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox, delaySeconds);
+  }
 }

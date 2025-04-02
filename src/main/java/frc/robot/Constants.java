@@ -755,6 +755,9 @@ public final class Constants
     
     public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
     public static final double VERY_CLOSE_MAX_ACCEL = 1.0; // Least acceleration for precision
+
+    // Rotation delay for autonomous mode (seconds)
+    public static final double AUTON_ROTATION_DELAY = 1.0;
   }
 
   public static final class ShakeModeConstants {
@@ -763,7 +766,7 @@ public final class Constants
     public static final double SHAKE_AMPLITUDE_Y = 0.1;   // More aggressive Y-axis shake
     
     // Direct speed control (meters per second) - MUCH higher for more aggressive motion
-    public static final double SHAKE_SPEED_Y = .25;   // Very aggressive Y-a]\[xis speed
+    public static final double SHAKE_SPEED_Y = .25;   // Very aggressive Y-axis speed
     
     // Frequency of shake oscillation (Hz) - Controls how quickly direction changes
     public static final double SHAKE_FREQUENCY = 3.0;

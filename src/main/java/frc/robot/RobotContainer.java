@@ -282,7 +282,7 @@ public class RobotContainer {
    * Flight joysticks}.
    */
 
-  private void configureBindings() {
+  private void configureBindings() { 
 
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
 
@@ -526,8 +526,8 @@ public class RobotContainer {
 
       // Check if lined up (both position and rotation are within thresholds)
       boolean wasLinedUp = isLinedUp; // Store previous state to detect changes
-      isLinedUp = distance <= 0.02 &&
-          angleDifference <= Units.degreesToRadians(2.0);
+      isLinedUp = distance <= 0.03 &&
+          angleDifference <= Units.degreesToRadians(3.0);
 
       // If we just became lined up, clear the target visualization
       if (isLinedUp && !wasLinedUp) {

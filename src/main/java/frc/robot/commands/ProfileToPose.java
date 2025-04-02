@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveToPoseConstants;
@@ -56,6 +57,11 @@ public class ProfileToPose extends Command {
     private Supplier<Translation2d> linearFF = () -> Translation2d.kZero;
     private DoubleSupplier omegaFF = () -> 0.0;
     
+    // Add timer and rotation delay functionality
+    private final Timer commandTimer = new Timer();
+    private boolean useRotationDelay = false;
+    private double rotationDelaySeconds = DriveToPoseConstants.AUTON_ROTATION_DELAY;
+    
     // Original constructor for backward compatibility
     public ProfileToPose(SwerveSubsystem swerve, Supplier<Pose2d> target) {
         this.swerve = swerve;
@@ -80,6 +86,20 @@ public class ProfileToPose extends Command {
         initializeControllers();
         
         addRequirements(swerve);
+    }
+    
+    // Method to enable rotation delay with default delay time
+    public ProfileToPose withRotationDelay() {
+        this.useRotationDelay = true;
+        this.rotationDelaySeconds = DriveToPoseConstants.AUTON_ROTATION_DELAY;
+        return this;
+    }
+    
+    // Method to enable rotation delay with custom delay time
+    public ProfileToPose withRotationDelay(double delaySeconds) {
+        this.useRotationDelay = true;
+        this.rotationDelaySeconds = delaySeconds;
+        return this;
     }
     
     // Helper method to initialize controllers
@@ -119,6 +139,16 @@ public class ProfileToPose extends Command {
     public void initialize() {
         Pose2d targetPose = target.get();
         SmartDashboard.putString("init", targetPose.toString()); // Diagnostic
+        
+        // Start the timer for rotation delay
+        commandTimer.reset();
+        commandTimer.start();
+        
+        // Log rotation delay status
+        SmartDashboard.putBoolean("Using Rotation Delay", useRotationDelay);
+        if (useRotationDelay) {
+            SmartDashboard.putNumber("Rotation Delay (seconds)", rotationDelaySeconds);
+        }
         
         // Check if there's no valid target (when using ButtonBox and target is null)
         if (useButtonBox && buttonBox.peekNextTarget() == null) {
@@ -252,14 +282,33 @@ public class ProfileToPose extends Command {
                 .transformBy(GeomUtil.toTransform2d(driveController.getSetpoint().position, 0.0))
                 .getTranslation();
 
-        // Calculate theta speed
-        double thetaVelocity =
-            thetaController.getSetpoint().velocity * ffScaler
-                + thetaController.calculate(
-                    currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-        thetaErrorAbs =
-            Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
-        if (thetaErrorAbs < thetaController.getPositionTolerance()) thetaVelocity = 0.0;
+        // Calculate theta speed with rotation delay logic
+        double thetaVelocity;
+        
+        // Apply rotation delay if enabled and still within delay period
+        if (useRotationDelay && commandTimer.get() < rotationDelaySeconds) {
+            // During delay period, don't rotate (zero angular velocity)
+            thetaVelocity = 0.0;
+            
+            // Log that we're in delay period
+            SmartDashboard.putBoolean("Rotation Delayed", true);
+            SmartDashboard.putNumber("Rotation Delay Remaining", rotationDelaySeconds - commandTimer.get());
+        } else {
+            // After delay period (or if delay not enabled), calculate normal rotation
+            thetaVelocity =
+                thetaController.getSetpoint().velocity * ffScaler
+                    + thetaController.calculate(
+                        currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+            thetaErrorAbs =
+                Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
+            if (thetaErrorAbs < thetaController.getPositionTolerance()) thetaVelocity = 0.0;
+            
+            // Clear delay indicators if we were using delay
+            if (useRotationDelay) {
+                SmartDashboard.putBoolean("Rotation Delayed", false);
+                SmartDashboard.putNumber("Rotation Delay Remaining", 0.0);
+            }
+        }
 
         Translation2d driveVelocity =
             new Pose2d(
@@ -319,4 +368,24 @@ public class ProfileToPose extends Command {
                 command.schedule();
             });
         }
+    
+    // New static method that creates a command with rotation delay
+    public static Command startAndReturnCommandWithRotationDelay(SwerveSubsystem swerve, ButtonBox buttonBox) {
+        return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
+            // Create the command with rotation delay and schedule it
+            ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+            command.withRotationDelay();
+            command.schedule();
+        });
+    }
+    
+    // Method with custom delay time
+    public static Command startAndReturnCommandWithRotationDelay(SwerveSubsystem swerve, ButtonBox buttonBox, double delaySeconds) {
+        return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
+            // Create the command with custom rotation delay and schedule it
+            ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+            command.withRotationDelay(delaySeconds);
+            command.schedule();
+        });
+    }
 }
