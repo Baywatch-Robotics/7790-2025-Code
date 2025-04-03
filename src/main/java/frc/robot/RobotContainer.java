@@ -414,7 +414,10 @@ public class RobotContainer {
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
 
 
-    opXbox.pov(180).onTrue(CommandFactory.setClimbPosition(algaeArm, shooter, shooterArm, elevator, funnel, climber));
+    opXbox.pov(180).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber));
+
+    opXbox.start().onTrue(CommandFactory.setClimbPositionArmOnly(elevator, shooterArm));
+
     opXbox.pov(90).onTrue(algaeArm.algaeArmHoldCommand());
 
     opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
@@ -443,20 +446,6 @@ public class RobotContainer {
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
-
-
-    opXbox.start().onTrue(Commands.runOnce(() -> {
-      // First cancel any existing shake commands
-      drivebase.stopShakeCommand().schedule();
-      // Then start a new shake command
-      drivebase.shakeRobotCommand().schedule();
-    }));
-    
-    opXbox.back().onTrue(Commands.runOnce(() -> {
-      drivebase.stopShakeCommand().schedule();
-    }));
-
-
 
 
     chooser.addOption("Left", leftAuto);

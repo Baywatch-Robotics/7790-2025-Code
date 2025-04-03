@@ -137,17 +137,24 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     return command;
 }
 
-  public static Command setClimbPosition(AlgaeArm algaeArm, Shooter shooter, ShooterArm shooterArm, Elevator elevator, Funnel funnel, Climber climber) {
+  public static Command setClimbPositionNoArm(AlgaeArm algaeArm, Funnel funnel, Climber climber) {
 
-    Command command = shooterArm.shooterArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-    .andThen(elevator.setElevatorClimbPoseCommand())
-    .andThen(algaeArm.algaeArmStraightOutCommand())
+    Command command = algaeArm.algaeArmStraightOutCommand()
     .andThen(funnel.funnelFullUpCommand())
     // Add climber control - this will enable position mode temporarily
     .andThen(climber.climberFullExtendCommand());
 
-    command.addRequirements(algaeArm, shooter, shooterArm, elevator, funnel, climber);
+    command.addRequirements(algaeArm, funnel, climber);
+
+    return command;
+  }
+
+  public static Command setClimbPositionArmOnly(Elevator elevator, ShooterArm shooterArm) {
+    Command command = shooterArm.shooterArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(elevator.setElevatorClimbPoseCommand());
+
+    command.addRequirements(shooterArm, elevator);
 
     return command;
   }
