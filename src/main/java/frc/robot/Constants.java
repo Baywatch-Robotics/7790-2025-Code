@@ -201,11 +201,11 @@ public final class Constants
 
     // elevator set positions
     public static final float L4Pose = -48.1287f;
-    public static final float L3LPose = -24;
-    public static final float L3RPose = -24f
+    public static final float L3LPose = -25.11f;
+    public static final float L3RPose = -25.11f
     ;
-    public static final float L2RPose = -9f;
-    public static final float L2LPose = -9f;
+    public static final float L2RPose = -10.92f;
+    public static final float L2LPose = -10.92f;
     public static final float pickupPose = -23.812f;
     public static final float climbPose = -0;
 
