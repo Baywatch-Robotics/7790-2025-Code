@@ -237,20 +237,6 @@
             }
           },
           {
-            "title": "robot_to_quest",
-            "x": 512.0,
-            "y": 768.0,
-            "width": 192.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/questnav/heartbeat/robot_to_quest",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "Quest Status",
             "x": 768.0,
             "y": 640.0,
@@ -266,7 +252,7 @@
           },
           {
             "title": "Battery",
-            "x": 704.0,
+            "x": 512.0,
             "y": 768.0,
             "width": 128.0,
             "height": 128.0,
@@ -280,7 +266,7 @@
           },
           {
             "title": "Connected",
-            "x": 832.0,
+            "x": 640.0,
             "y": 768.0,
             "width": 128.0,
             "height": 128.0,
@@ -306,6 +292,20 @@
               "topic": "/questnav/position",
               "period": 0.06,
               "data_type": "float[]",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "QuestNav Status",
+            "x": 768.0,
+            "y": 768.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/QuestNav Status",
+              "period": 0.06,
+              "data_type": "string",
               "show_submit_button": false
             }
           }
