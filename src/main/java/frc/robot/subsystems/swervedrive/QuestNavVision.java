@@ -2,6 +2,7 @@ package frc.robot.subsystems.swervedrive;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.QuestNav;
 
@@ -19,6 +20,9 @@ public class QuestNavVision extends SubsystemBase {
         // Cleanup QuestNav messages and process heartbeat requests
         questNav.processHeartbeat();
         questNav.cleanUpQuestNavMessages();
+
+        SmartDashboard.putBoolean("Connected", questNav.connected());
+        SmartDashboard.putNumber("Battery", questNav.getBatteryPercent());
     }
 
     public Pair<Pose2d, Double> getPose() {
