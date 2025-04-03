@@ -122,6 +122,13 @@ public class RobotContainer {
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
 
+  // Add a boolean to track Quest nav state
+  private boolean isUsingQuestRobotContainer = true;
+
+  private boolean isUsingQuestToStart = true;
+
+  private boolean questInitialized = false;
+
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
@@ -139,7 +146,10 @@ public class RobotContainer {
   private final LED led = new LED();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
+  
 
+  // Add QuestNavVision instance
+  private final frc.robot.subsystems.swervedrive.QuestNavVision questNavVision = new frc.robot.subsystems.swervedrive.QuestNavVision();
 
   // Triggers for proximity detection
   public Trigger approachingTrigger() {
@@ -446,6 +456,20 @@ public class RobotContainer {
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
 
     opXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+
+    opXbox.back().onTrue(Commands.runOnce(() -> {
+      // Toggle the state
+      isUsingQuestRobotContainer = !isUsingQuestRobotContainer;
+      
+      // Apply the appropriate command based on new state
+      if (isUsingQuestRobotContainer) {
+        drivebase.setIsUsingQuestTrueCommand().schedule();
+        SmartDashboard.putString("QuestNav Status", "QuestNav ENABLED");
+      } else {
+        drivebase.setIsUsingQuestFalseCommand().schedule();
+        SmartDashboard.putString("QuestNav Status", "QuestNav DISABLED");
+      }
+    }));
 
 
     chooser.addOption("Left", leftAuto);
@@ -902,6 +926,27 @@ public class RobotContainer {
         SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
       }
       
+      drivebase.setIsUsingQuestFalseCommand();
+
+      // Add vision measurement cycling and Quest nav reset
+      SmartDashboard.putString("QuestNav Status", "Cycling vision measurements...");
+      
+      // Cycle vision measurement 200 times to ensure stable odometry
+      for (int i = 0; i < 200; i++) {
+        drivebase.addVisionMeasurementCommand();
+      }
+      
+      // After vision measurements are cycled, reset the QuestNav with current pose
+      Pose2d currentPose = drivebase.getPose();
+      questNavVision.setPose(currentPose);
+      
+      drivebase.setIsUsingQuestTrueCommand();
+      SmartDashboard.putString("QuestNav Status", "Pose reset complete");
+      
+      if(!questInitialized){
+        drivebase.setIsUsingQuest(isUsingQuestToStart);
+      }
+
       // Update tracking variables
       lastSelectedAuto = currentSelection;
       poseInitialized = true;

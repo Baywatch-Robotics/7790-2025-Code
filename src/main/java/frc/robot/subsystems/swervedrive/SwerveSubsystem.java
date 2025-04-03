@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
@@ -62,6 +63,16 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean isShaking = false;
   private double shakeStartTime = 0;
   private Command currentShakeCommand = null; // Track the current shake command
+
+
+
+  
+  private boolean isUsingQuest = true;
+
+
+
+  private QuestNavVision questNavVision = new QuestNavVision();
+
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -114,12 +125,20 @@ public class SwerveSubsystem extends SubsystemBase
   public void periodic()
   {
 
+    if(isUsingQuest){
+      addQuestVisionMeasurement();
+    }
+    
     if(!isClose){
       addVisionMeasurementInitial();
     }
     else{
       addVisionMeasurement();
     }
+    
+    
+
+
   SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
   SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
@@ -736,6 +755,14 @@ public class SwerveSubsystem extends SubsystemBase
   }
  }
     
+
+  public void addQuestVisionMeasurement() {
+    var questDetection = questNavVision.getPose();
+swerveDrive.addVisionMeasurement(questDetection.getFirst(), questDetection.getSecond());
+
+  }
+
+
     /**
      * Visualize the target pose on the field
      * @param targetPose The pose to visualize
@@ -954,5 +981,31 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public Command startDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator, double delaySeconds) {
     return ProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox, delaySeconds);
+  }
+
+  /**
+   * Public method to explicitly trigger vision measurement
+   * Used for cycling measurements during initialization
+   */
+  public void addVisionMeasurementCommand() {
+    if(!isClose){
+      addVisionMeasurementInitial();
+    }
+    else{
+      addVisionMeasurement();
+    }
+  }
+
+  
+  public void setIsUsingQuest(boolean bool) {
+    isUsingQuest = bool;
+  }
+
+  public Command setIsUsingQuestTrueCommand() {
+    return new InstantCommand(() -> setIsUsingQuest(true));
+  }
+
+  public Command setIsUsingQuestFalseCommand() {
+    return new InstantCommand(() -> setIsUsingQuest(false));
   }
 }
