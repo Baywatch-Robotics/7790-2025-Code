@@ -56,53 +56,20 @@ public class CommandFactory {
 
   public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     
-    // Create a shaking sequence as a separate command that runs alongside everything else
-    // This is different from the regular approach and should be more reliable
-    Command shakeSequence = Commands.sequence(
-        // Wait until lined up before starting shake
-        new WaitUntilCommand(robotContainer.linedUpTrigger()),
-        // Add a small delay to ensure we're stable at the target
-        new WaitCommand(0.2),
-        // Force shake to start with direct method call
-        new InstantCommand(() -> {
-            // Log the shake start for debugging
-            SmartDashboard.putString("Auto Sequence", "Starting Shake Now");
-            // Make sure any old shake is stopped
-            drivebase.stopShakeCommand().schedule();
-            // Start a fresh shake - IMPORTANT: withTimeout ensures it eventually stops
-            drivebase.shakeRobotCommand().withTimeout(10.0).schedule();
-        }),
-        // Wait for coral loaded OR timeout after 5 seconds
-        Commands.either(
-            new WaitUntilCommand(shooter.coralLoadedTrigger()),
-            new WaitCommand(10.0),
-            () -> shooter.coralLoadedTrigger().getAsBoolean()
-        ),
-        // Always stop shaking at the end
-        new InstantCommand(() -> {
-            SmartDashboard.putString("Auto Sequence", "Stopping Shake");
-            drivebase.stopShakeCommand().schedule();
-        })
-    );
-
-    // Main command sequence for the intake
-    Command mainSequence = elevator.setElevatorPickupCommand()
-        .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-        .andThen(shooterArm.shooterArmLoadCommand())
-        .andThen(shooter.shooterIntakeCommand())
-        // Here's where we'd normally wait for lineup and shake
-        .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()).withTimeout(10.0))
-        .andThen(shooterArm.shooterArmScoreLOWCommand());
     
-    // Combine the sequences - run shake alongside main sequence
-    Command command = Commands.parallel(mainSequence, shakeSequence)
-        // Make sure the shake definitely stops at the end
-        .finallyDo(() -> drivebase.stopShakeCommand().schedule());
-
-    command.addRequirements(shooter, shooterArm, elevator);
-    
-    return command;
-}
+      Command command  = elevator.setElevatorPickupCommand()
+      .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+      .andThen(shooterArm.shooterArmLoadCommand())
+      .andThen(shooter.shooterIntakeCommand())
+      .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
+      .andThen(shooter.shooterZeroSpeedCommand())
+      .andThen(shooterArm.shooterArmScoreLOWCommand());
+  
+  
+      command.addRequirements(shooter, shooterArm, elevator);
+  
+      return command;
+  }
 
   public static Command setElevatorZero(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
