@@ -945,6 +945,7 @@ public class RobotContainer {
       
       if(!questInitialized){
         drivebase.setIsUsingQuest(isUsingQuestToStart);
+        questInitialized = true;
       }
 
       // Update tracking variables
