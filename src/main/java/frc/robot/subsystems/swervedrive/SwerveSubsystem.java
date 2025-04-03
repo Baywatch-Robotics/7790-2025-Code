@@ -67,7 +67,7 @@ public class SwerveSubsystem extends SubsystemBase
 
 
   
-  private boolean isUsingQuest = true;
+  private boolean isUsingQuest;
 
 
 
@@ -758,7 +758,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void addQuestVisionMeasurement() {
     var questDetection = questNavVision.getPose();
-swerveDrive.addVisionMeasurement(questDetection.getFirst(), questDetection.getSecond());
+    //swerveDrive.addVisionMeasurement(questDetection.getFirst(), questDetection.getSecond());
 
   }
 
