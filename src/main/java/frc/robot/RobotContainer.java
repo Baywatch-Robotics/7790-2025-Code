@@ -389,7 +389,7 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));MAKETHISQUESTRELATED
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
@@ -926,6 +926,7 @@ public class RobotContainer {
         SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
       }
       
+THISISGOINGTOFAILBECAUSEITRUNSEVERYLOOPANDITWILLNEVERBEGOOD
       drivebase.setIsUsingQuestFalseCommand();
 
       // Add vision measurement cycling and Quest nav reset
