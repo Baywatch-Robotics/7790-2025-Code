@@ -125,9 +125,7 @@ public class RobotContainer {
   // Add a boolean to track Quest nav state
   private boolean isUsingQuestRobotContainer = true;
 
-  private boolean isUsingQuestToStart = true;
-
-  private boolean questInitialized = false;
+  private boolean isUsingQuestToStart = false;
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
@@ -389,7 +387,7 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));MAKETHISQUESTRELATED
+    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
@@ -464,10 +462,10 @@ public class RobotContainer {
       // Apply the appropriate command based on new state
       if (isUsingQuestRobotContainer) {
         drivebase.setIsUsingQuestTrueCommand().schedule();
-        SmartDashboard.putString("QuestNav Status", "QuestNav ENABLED");
+        SmartDashboard.putString("QuestNav InUSE", "QuestNav ENABLED");
       } else {
         drivebase.setIsUsingQuestFalseCommand().schedule();
-        SmartDashboard.putString("QuestNav Status", "QuestNav DISABLED");
+        SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
       }
     }));
 
@@ -926,7 +924,7 @@ public class RobotContainer {
         SmartDashboard.putString("Auto Pose Initialized", "Right Start Position");
       }
       
-THISISGOINGTOFAILBECAUSEITRUNSEVERYLOOPANDITWILLNEVERBEGOOD
+
       drivebase.setIsUsingQuestFalseCommand();
 
       // Add vision measurement cycling and Quest nav reset
@@ -941,13 +939,24 @@ THISISGOINGTOFAILBECAUSEITRUNSEVERYLOOPANDITWILLNEVERBEGOOD
       Pose2d currentPose = drivebase.getPose();
       questNavVision.setPose(currentPose);
       
-      drivebase.setIsUsingQuestTrueCommand();
-      SmartDashboard.putString("QuestNav Status", "Pose reset complete");
+
       
-      if(!questInitialized){
-        drivebase.setIsUsingQuest(isUsingQuestToStart);
-        questInitialized = true;
-      }
+
+      isUsingQuestToStart = SmartDashboard.getBoolean("isUsingQuestToStart", false);
+
+      SmartDashboard.putBoolean("isUsingQuestToStart", isUsingQuestToStart);
+
+      if(isUsingQuestToStart){
+        SmartDashboard.putString("QuestNav InUSE", "QuestNav ENABLED");
+      drivebase.setIsUsingQuestTrueCommand();
+    }
+    else{
+      SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
+      drivebase.setIsUsingQuestFalseCommand();
+    }
+
+
+      SmartDashboard.putString("QuestNav Status", "Pose reset complete");
 
       // Update tracking variables
       lastSelectedAuto = currentSelection;
