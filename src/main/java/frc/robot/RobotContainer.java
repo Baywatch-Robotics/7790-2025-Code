@@ -948,11 +948,11 @@ public class RobotContainer {
 
       if(isUsingQuestToStart){
         SmartDashboard.putString("QuestNav InUSE", "QuestNav ENABLED");
-      drivebase.setIsUsingQuestTrueCommand();
+      drivebase.setIsUsingQuestTrueCommand().schedule();
     }
     else{
       SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
-      drivebase.setIsUsingQuestFalseCommand();
+      drivebase.setIsUsingQuestFalseCommand().schedule();
     }
 
 
