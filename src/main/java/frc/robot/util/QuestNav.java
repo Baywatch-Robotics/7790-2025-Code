@@ -58,11 +58,29 @@ public class QuestNav {
                     oculusTargetPose.getY(),
                     oculusTargetPose.getRotation().getDegrees()
             });
-    if (questMiso.get() != 98) {
-      questMosi.set(2);
+    
+    // Send reset command
+    questMosi.set(2);
+    
+    // Update local reset position to track the offset
+    resetPosition = new Pose2d(
+        oculusTargetPose.getX(),
+        oculusTargetPose.getY(), 
+        oculusTargetPose.getRotation());
+    
+    // Update yaw offset to match the new pose
+    float[] eulerAngles = questEulerAngles.get();
+    yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
+    
+    // Optional: Wait for confirmation with timeout
+    long startTime = System.currentTimeMillis();
+    while (System.currentTimeMillis() - startTime < 500) {  // 500ms timeout
+        if (questMiso.get() == 98) {
+            break;
+        }
+        try { Thread.sleep(10); } catch (InterruptedException e) {}
     }
-    }
-
+}
   // Gets the battery percent of the Quest.
   public Double getBatteryPercent() {
     return questBatteryPercent.get();
