@@ -757,9 +757,11 @@ public class SwerveSubsystem extends SubsystemBase
     
 
   public void addQuestVisionMeasurement() {
-    var questDetection = questNavVision.getPose();
-    //swerveDrive.addVisionMeasurement(questDetection.getFirst(), questDetection.getSecond());
 
+    if(!DriverStation.isEnabled()){
+    var questDetection = questNavVision.getPose();
+    swerveDrive.addVisionMeasurement(questDetection.getFirst(), Timer.getFPGATimestamp());
+  }
   }
 
 
@@ -996,16 +998,8 @@ public class SwerveSubsystem extends SubsystemBase
     }
   }
 
-  
-  public void setIsUsingQuest(boolean bool) {
+  public void setIsUsingQuest(boolean bool){
     isUsingQuest = bool;
   }
 
-  public Command setIsUsingQuestTrueCommand() {
-    return new InstantCommand(() -> setIsUsingQuest(true));
-  }
-
-  public Command setIsUsingQuestFalseCommand() {
-    return new InstantCommand(() -> setIsUsingQuest(false));
-  }
 }

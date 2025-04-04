@@ -31,6 +31,11 @@ public class QuestNavVision extends SubsystemBase {
         // Transform the Quest's position to the robot's position
         Pose2d robotToField = questToField.transformBy(QUEST_NAV_TO_ROBOT.inverse());
         // Get the timestamp from the Quest and return the pose with said timestamp
+
+        SmartDashboard.putNumber("Quest Corrected Pose X", robotToField.getX());
+
+        SmartDashboard.putNumber("Quest Corrected Pose Y", robotToField.getY());
+
         return new Pair<>(robotToField, questNav.timestamp());
     }
 

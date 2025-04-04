@@ -461,10 +461,10 @@ public class RobotContainer {
       
       // Apply the appropriate command based on new state
       if (isUsingQuestRobotContainer) {
-        drivebase.setIsUsingQuestTrueCommand().schedule();
+        drivebase.setIsUsingQuest(true);
         SmartDashboard.putString("QuestNav InUSE", "QuestNav ENABLED");
       } else {
-        drivebase.setIsUsingQuestFalseCommand().schedule();
+        drivebase.setIsUsingQuest(false);
         SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
       }
     }));
@@ -925,7 +925,7 @@ public class RobotContainer {
       }
       
 
-      drivebase.setIsUsingQuestFalseCommand();
+      drivebase.setIsUsingQuest(false);
 
       // Add vision measurement cycling and Quest nav reset
       SmartDashboard.putString("QuestNav Status", "Cycling vision measurements...");
@@ -937,6 +937,7 @@ public class RobotContainer {
       
       // After vision measurements are cycled, reset the QuestNav with current pose
       Pose2d currentPose = drivebase.getPose();
+
       questNavVision.setPose(currentPose);
       
 
@@ -948,11 +949,11 @@ public class RobotContainer {
 
       if(isUsingQuestToStart){
         SmartDashboard.putString("QuestNav InUSE", "QuestNav ENABLED");
-      drivebase.setIsUsingQuestTrueCommand().schedule();
+      drivebase.setIsUsingQuest(true);
     }
     else{
       SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
-      drivebase.setIsUsingQuestFalseCommand().schedule();
+      drivebase.setIsUsingQuest(false);
     }
 
 
