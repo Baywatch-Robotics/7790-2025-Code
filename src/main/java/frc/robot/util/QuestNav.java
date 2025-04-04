@@ -6,8 +6,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class QuestNav {
   // Configure Network Tables topics (questnav/...) to communicate with the Quest HMD
@@ -36,12 +34,6 @@ public class QuestNav {
   // Local heading helper variables
   private float yaw_offset = 0.0f;
   private Pose2d resetPosition = new Pose2d();
-  
-  // Added tracking variables for pose reset
-  private boolean poseResetInProgress = false;
-  private double poseResetStartTime = 0;
-  private static final double POSE_RESET_TIMEOUT = 1.0; // 1 second timeout
-  private Pose2d lastRequestedPose = new Pose2d();
 
   /** Process heartbeat requests from Quest and respond with the same ID */
   public void processHeartbeat() {
@@ -59,39 +51,16 @@ public class QuestNav {
   }
 
   public void resetPose(Pose2d oculusTargetPose) {
-    // Save the requested pose for debugging
-    lastRequestedPose = oculusTargetPose;
-    
-    // Log the pose reset attempt
-    SmartDashboard.putString("QuestNav Reset", "Resetting pose to: " + 
-        String.format("X: %.2f, Y: %.2f, Rot: %.2f", 
-            oculusTargetPose.getX(), 
-            oculusTargetPose.getY(), 
-            oculusTargetPose.getRotation().getDegrees()));
-    
-    // Set the new pose data in NetworkTables
     resetPosePub.set(
             new double[] {
                     oculusTargetPose.getX(),
                     oculusTargetPose.getY(),
                     oculusTargetPose.getRotation().getDegrees()
             });
-    
-    // Make sure to flush the NetworkTables update
-    nt4Instance.flush();
-    
-    // Begin the pose reset process
-    if (!poseResetInProgress) {
-      if (questMiso.get() != 98) {
-        questMosi.set(2);  // Send reset pose signal
-        poseResetInProgress = true;
-        poseResetStartTime = Timer.getFPGATimestamp();
-        SmartDashboard.putBoolean("QuestNav Reset Active", true);
-      } else {
-        SmartDashboard.putString("QuestNav Reset", "Reset already in progress, waiting for previous reset");
-      }
+    if (questMiso.get() != 98) {
+      questMosi.set(2);
     }
-  }
+    }
 
   // Gets the battery percent of the Quest.
   public Double getBatteryPercent() {
@@ -145,26 +114,7 @@ public class QuestNav {
 
   // Clean up questnav subroutine messages after processing on the headset
   public void cleanUpQuestNavMessages() {
-    // Check for completed pose reset
-    if (poseResetInProgress) {
-      // Check if we've received confirmation from Quest (MISO == 98)
-      if (questMiso.get() == 98) {
-        SmartDashboard.putString("QuestNav Reset", "Reset confirmed by Quest, pose set successfully");
-        questMosi.set(0);  // Acknowledge reset complete
-        poseResetInProgress = false;
-        SmartDashboard.putBoolean("QuestNav Reset Active", false);
-      } else {
-        // Check for timeout
-        double currentTime = Timer.getFPGATimestamp();
-        if (currentTime - poseResetStartTime > POSE_RESET_TIMEOUT) {
-          SmartDashboard.putString("QuestNav Reset", "Reset TIMEOUT - trying again");
-          // Try again - resend the pose
-          questMosi.set(2);  // Send reset pose signal again
-          poseResetStartTime = currentTime;  // Reset timeout timer
-        }
-      }
-    } else if (questMiso.get() == 99 || questMiso.get() == 98) {
-      // Handle other message cleanup for non-pose reset operations
+    if (questMiso.get() == 99 || questMiso.get() == 98) {
       questMosi.set(0);
     }
   }
@@ -188,15 +138,5 @@ public class QuestNav {
   private Pose2d getQuestNavPose() {
     var oculousPositionCompensated = getQuestNavTranslation().minus(new Translation2d(0, 0.1651)); // 6.5
     return new Pose2d(oculousPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
-  }
-  
-  // New method to check if pose reset is complete
-  public boolean isPoseResetComplete() {
-    return !poseResetInProgress;
-  }
-  
-  // New method to get last requested pose (for debugging)
-  public Pose2d getLastRequestedPose() {
-    return lastRequestedPose;
   }
 }

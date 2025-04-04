@@ -938,25 +938,11 @@ public class RobotContainer {
       // After vision measurements are cycled, reset the QuestNav with current pose
       Pose2d currentPose = drivebase.getPose();
 
-      SmartDashboard.putString("QuestNav Status", "Setting initial pose");
-    
-      // Use a more reliable approach for Quest pose reset
-      try {
-        // First set the Quest pose
-        questNavVision.setPose(currentPose);
-        
-        // Wait for the pose set operation to complete with timeout
-        boolean success = questNavVision.waitForPoseSetComplete(2.0);  // 2 second timeout
-        
-        if (success) {
-          SmartDashboard.putString("QuestNav Status", "Pose reset successful");
-        } else {
-          SmartDashboard.putString("QuestNav Status", "Pose reset timed out");
-        }
-      } catch (Exception e) {
-        SmartDashboard.putString("QuestNav Status", "Error: " + e.getMessage());
-      }
+      questNavVision.setPose(currentPose);
       
+
+      
+
       isUsingQuestToStart = SmartDashboard.getBoolean("isUsingQuestToStart", false);
 
       SmartDashboard.putBoolean("isUsingQuestToStart", isUsingQuestToStart);
