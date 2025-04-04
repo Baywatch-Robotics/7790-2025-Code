@@ -237,51 +237,6 @@
             }
           },
           {
-            "title": "Quest Status",
-            "x": 768.0,
-            "y": 640.0,
-            "width": 512.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Quest Status",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Battery",
-            "x": 512.0,
-            "y": 768.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Quest/Battery",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
-            "title": "Connected",
-            "x": 640.0,
-            "y": 768.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/SmartDashboard/Quest/Connected",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "position",
             "x": 960.0,
             "y": 768.0,
@@ -298,8 +253,8 @@
           {
             "title": "QuestNav Status",
             "x": 768.0,
-            "y": 768.0,
-            "width": 192.0,
+            "y": 640.0,
+            "width": 512.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -313,7 +268,7 @@
             "title": "isUsingQuestToStart",
             "x": 512.0,
             "y": 384.0,
-            "width": 128.0,
+            "width": 192.0,
             "height": 128.0,
             "type": "Toggle Switch",
             "properties": {
@@ -333,6 +288,124 @@
               "topic": "/SmartDashboard/QuestNav InUSE",
               "period": 0.06,
               "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Connected",
+            "x": 640.0,
+            "y": 768.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Connected",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Battery",
+            "x": 512.0,
+            "y": 768.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Battery",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "isUsingQuestToStart",
+            "x": 192.0,
+            "y": 256.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/isUsingQuestToStart",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Quest Corrected Pose X",
+            "x": 320.0,
+            "y": 128.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Quest Corrected Pose X",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Quest Corrected Pose Y",
+            "x": 320.0,
+            "y": 256.0,
+            "width": 320.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Quest Corrected Pose Y",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "resetpose",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 640.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/resetpose",
+              "period": 0.06,
+              "data_type": "double[]",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "mosi",
+            "x": 64.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/mosi",
+              "period": 0.06,
+              "data_type": "int",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "miso",
+            "x": 192.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/questnav/miso",
+              "period": 0.06,
+              "data_type": "int",
               "show_submit_button": false
             }
           }
