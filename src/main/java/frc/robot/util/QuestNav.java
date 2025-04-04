@@ -47,8 +47,15 @@ public class QuestNav {
 
   // Gets the Quest's measured position.
   public Pose2d getPose() {
-    return new Pose2d(getQuestNavPose().minus(resetPosition).getTranslation(), Rotation2d.fromDegrees(getOculusYaw()));
-  }
+    Pose2d currentRawPose = getQuestNavPose();
+    double currentYaw = getOculusYaw();
+    
+    // Calculate the position delta from reset position
+    Translation2d deltaPosition = currentRawPose.getTranslation().minus(resetPosition.getTranslation());
+    
+    // Create the corrected pose
+    return new Pose2d(deltaPosition, Rotation2d.fromDegrees(currentYaw));
+}
 
   public void resetPose(Pose2d oculusTargetPose) {
     // Publish the reset pose values
