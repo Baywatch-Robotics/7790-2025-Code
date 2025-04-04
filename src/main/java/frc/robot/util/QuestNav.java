@@ -66,6 +66,7 @@ public class QuestNav {
                     oculusTargetPose.getRotation().getDegrees()
             });
     
+    nt4Instance.flush(); // Ensure the reset pose is sent immediately
     // Send reset command
     questMosi.set(2);
     
