@@ -760,7 +760,7 @@ public class SwerveSubsystem extends SubsystemBase
     
     var questDetection = questNavVision.getPose();
 
-    if(DriverStation.isEnabled()){
+    if(isUsingQuest){
     swerveDrive.addVisionMeasurement(questDetection.getFirst(), Timer.getFPGATimestamp());
   }
   }
