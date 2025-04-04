@@ -58,7 +58,11 @@ public class QuestNav {
 }
 
 public void resetPose(Pose2d oculusTargetPose) {
-  // Skip trying to tell the Quest to reset and just update our internal offset
+  resetPosePub.set(new double[] {
+    oculusTargetPose.getX(),
+    oculusTargetPose.getY(),
+    oculusTargetPose.getRotation().getDegrees()
+});
   Pose2d currentRawPose = getQuestNavPose();
   
   // Update reset position to create the right offset for the desired target
@@ -70,6 +74,10 @@ public void resetPose(Pose2d oculusTargetPose) {
   
   float[] eulerAngles = questEulerAngles.get();
   yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
+
+  if (questMiso.get() != 98) {
+    questMosi.set(2);
+  }
 }
 
   // Gets the battery percent of the Quest.

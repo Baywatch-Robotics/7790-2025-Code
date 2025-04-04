@@ -44,5 +44,6 @@ public class QuestNavVision extends SubsystemBase {
         Pose2d fieldToQuest = fieldToRobot.plus(QUEST_NAV_TO_ROBOT);
         // Reset the Quest's position
         questNav.resetPose(fieldToQuest);
+        NetworkTableInstance.getDefault().flush();
     }
 }
