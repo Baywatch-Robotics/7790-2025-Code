@@ -71,7 +71,7 @@ public void resetPose(Pose2d oculusTargetPose) {
   float[] eulerAngles = questEulerAngles.get();
   yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
 }
-}
+
   // Gets the battery percent of the Quest.
   public Double getBatteryPercent() {
     return questBatteryPercent.get();
