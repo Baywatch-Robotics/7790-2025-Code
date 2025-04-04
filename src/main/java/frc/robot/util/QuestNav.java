@@ -57,37 +57,20 @@ public class QuestNav {
     return new Pose2d(deltaPosition, Rotation2d.fromDegrees(currentYaw));
 }
 
-  public void resetPose(Pose2d oculusTargetPose) {
-    // Publish the reset pose values
-    resetPosePub.set(
-            new double[] {
-                    oculusTargetPose.getX(),
-                    oculusTargetPose.getY(),
-                    oculusTargetPose.getRotation().getDegrees()
-            });
-    
-    nt4Instance.flush(); // Ensure the reset pose is sent immediately
-    // Send reset command
-    questMosi.set(2);
-    
-    // Update local reset position to track the offset
-    resetPosition = new Pose2d(
-        oculusTargetPose.getX(),
-        oculusTargetPose.getY(), 
-        oculusTargetPose.getRotation());
-    
-    // Update yaw offset to match the new pose
-    float[] eulerAngles = questEulerAngles.get();
-    yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
-    
-    // Optional: Wait for confirmation with timeout
-    long startTime = System.currentTimeMillis();
-    while (System.currentTimeMillis() - startTime < 500) {  // 500ms timeout
-        if (questMiso.get() == 98) {
-            break;
-        }
-        try { Thread.sleep(10); } catch (InterruptedException e) {}
-    }
+public void resetPose(Pose2d oculusTargetPose) {
+  // Skip trying to tell the Quest to reset and just update our internal offset
+  Pose2d currentRawPose = getQuestNavPose();
+  
+  // Update reset position to create the right offset for the desired target
+  resetPosition = new Pose2d(
+      currentRawPose.getX() - oculusTargetPose.getX(),
+      currentRawPose.getY() - oculusTargetPose.getY(),
+      Rotation2d.fromDegrees(getOculusYaw() - oculusTargetPose.getRotation().getDegrees())
+  );
+  
+  float[] eulerAngles = questEulerAngles.get();
+  yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
+}
 }
   // Gets the battery percent of the Quest.
   public Double getBatteryPercent() {
