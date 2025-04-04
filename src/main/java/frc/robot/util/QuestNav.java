@@ -55,7 +55,12 @@ public class QuestNav {
 
   // Gets the Quest's measured position.
   public Pose2d getPose() {
-    return new Pose2d(getQuestNavPose().minus(resetPosition).getTranslation(), Rotation2d.fromDegrees(getOculusYaw()));
+    Pose2d rawPose = getQuestNavPose();
+    return new Pose2d(
+        rawPose.getX() - resetPosition.getX(), 
+        rawPose.getY() - resetPosition.getY(), 
+        Rotation2d.fromDegrees(getOculusYaw())
+    );
   }
 
   public void resetPose(Pose2d oculusTargetPose) {
@@ -79,6 +84,25 @@ public class QuestNav {
     
     // Make sure to flush the NetworkTables update
     nt4Instance.flush();
+    
+    // Calculate the new resetPosition offset that will make getPose() return the target pose
+    Pose2d currentRawPose = getQuestNavPose();
+    
+    // Create a new offset using direct translation calculation instead of .minus()
+    Translation2d offsetTranslation = new Translation2d(
+        currentRawPose.getX() - oculusTargetPose.getX(),
+        currentRawPose.getY() - oculusTargetPose.getY()
+    );
+    resetPosition = new Pose2d(offsetTranslation, new Rotation2d());
+    
+    // Save the yaw offset to align with the target rotation
+    float[] eulerAngles = questEulerAngles.get();
+    yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
+    
+    // Log the new offset values for debugging
+    SmartDashboard.putNumber("Quest Calculated Offset X", offsetTranslation.getX());
+    SmartDashboard.putNumber("Quest Calculated Offset Y", offsetTranslation.getY());
+    SmartDashboard.putNumber("Quest Yaw Offset", yaw_offset);
     
     // Begin the pose reset process
     if (!poseResetInProgress) {
@@ -150,6 +174,29 @@ public class QuestNav {
       // Check if we've received confirmation from Quest (MISO == 98)
       if (questMiso.get() == 98) {
         SmartDashboard.putString("QuestNav Reset", "Reset confirmed by Quest, pose set successfully");
+        
+        // Re-calculate the resetPosition offset after confirmation to ensure accuracy
+        Pose2d currentRawPose = getQuestNavPose();
+        
+        // Create a new offset using direct translation calculation
+        Translation2d offsetTranslation = new Translation2d(
+            currentRawPose.getX() - lastRequestedPose.getX(),
+            currentRawPose.getY() - lastRequestedPose.getY()
+        );
+        resetPosition = new Pose2d(offsetTranslation, new Rotation2d());
+        
+        // Update the yaw offset to ensure correct rotation
+        float[] eulerAngles = questEulerAngles.get();
+        yaw_offset = eulerAngles[1] - (float)lastRequestedPose.getRotation().getDegrees();
+        
+        // Log the final offset calculations
+        SmartDashboard.putString("QuestNav Reset Offset", 
+            String.format("X: %.2f, Y: %.2f, Yaw: %.2f", 
+                offsetTranslation.getX(), 
+                offsetTranslation.getY(),
+                yaw_offset));
+        
+        // Complete the reset process
         questMosi.set(0);  // Acknowledge reset complete
         poseResetInProgress = false;
         SmartDashboard.putBoolean("QuestNav Reset Active", false);
@@ -198,5 +245,15 @@ public class QuestNav {
   // New method to get last requested pose (for debugging)
   public Pose2d getLastRequestedPose() {
     return lastRequestedPose;
+  }
+  
+  // New debug method to get the current offset being used
+  public Pose2d getCurrentOffset() {
+    return resetPosition;
+  }
+  
+  // New debug method to get the raw Quest pose before offset is applied
+  public Pose2d getRawQuestPose() {
+    return getQuestNavPose();
   }
 }
