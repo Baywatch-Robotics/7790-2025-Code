@@ -58,14 +58,37 @@ public class QuestNav {
 }
 
 public void resetPose(Pose2d oculusTargetPose) {
+  // 1. Reset any existing handshake
+  questMosi.set(0);
+  nt4Instance.flush();
+  
+  // 2. Publish the reset position data
   resetPosePub.set(new double[] {
     oculusTargetPose.getX(),
     oculusTargetPose.getY(),
     oculusTargetPose.getRotation().getDegrees()
-});
-  Pose2d currentRawPose = getQuestNavPose();
+  });
   
-  // Update reset position to create the right offset for the desired target
+  // 3. Ensure the data is sent immediately
+  nt4Instance.flush();
+  
+  // 4. Signal the Quest to read the reset position data
+  questMosi.set(2);
+  nt4Instance.flush();
+  
+  // 5. Wait for acknowledgment with timeout
+  long startTime = System.currentTimeMillis();
+  boolean acknowledged = false;
+  while (System.currentTimeMillis() - startTime < 200) {  // 200ms timeout
+    if (questMiso.get() == 98) {
+      acknowledged = true;
+      break;
+    }
+    try { Thread.sleep(5); } catch (InterruptedException e) {}
+  }
+  
+  // 6. Update local offsets
+  Pose2d currentRawPose = getQuestNavPose();
   resetPosition = new Pose2d(
       currentRawPose.getX() - oculusTargetPose.getX(),
       currentRawPose.getY() - oculusTargetPose.getY(),
@@ -74,10 +97,9 @@ public void resetPose(Pose2d oculusTargetPose) {
   
   float[] eulerAngles = questEulerAngles.get();
   yaw_offset = eulerAngles[1] - (float)oculusTargetPose.getRotation().getDegrees();
-
-  if (questMiso.get() != 98) {
-    questMosi.set(2);
-  }
+  
+  // 7. Debug info
+  edu.wpi.first.wpilibj.smartdashboard.SmartDashboard.putBoolean("Quest Reset Ack", acknowledged);
 }
 
   // Gets the battery percent of the Quest.
