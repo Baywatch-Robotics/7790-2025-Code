@@ -117,9 +117,9 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
   }
 
   public static Command setClimbPositionArmOnly(Elevator elevator, ShooterArm shooterArm) {
-    Command command = shooterArm.shooterArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-    .andThen(elevator.setElevatorClimbPoseCommand());
+    Command command = elevator.setElevatorPickupCommand()
+    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
+    .andThen(shooterArm.shooterArmLoadCommand());
 
     command.addRequirements(shooterArm, elevator);
 
@@ -212,7 +212,6 @@ public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, Sh
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
-  .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())

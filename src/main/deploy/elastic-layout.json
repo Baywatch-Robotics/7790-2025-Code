@@ -166,15 +166,17 @@
           },
           {
             "title": "photonvision_Port_1181_Input_MJPEG_Server",
-            "x": 704.0,
+            "x": 768.0,
             "y": 0.0,
-            "width": 384.0,
+            "width": 320.0,
             "height": 512.0,
             "type": "Camera Stream",
             "properties": {
               "topic": "/CameraPublisher/photonvision_Port_1181_Input_MJPEG_Server",
               "period": 0.06,
-              "rotation_turns": 2
+              "rotation_turns": 2,
+              "compression": 10,
+              "fps": 15
             }
           },
           {
@@ -266,7 +268,7 @@
           },
           {
             "title": "isUsingQuestToStart",
-            "x": 512.0,
+            "x": 0.0,
             "y": 384.0,
             "width": 192.0,
             "height": 128.0,
@@ -279,9 +281,9 @@
           },
           {
             "title": "QuestNav InUSE",
-            "x": 256.0,
+            "x": 192.0,
             "y": 384.0,
-            "width": 256.0,
+            "width": 192.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -324,7 +326,7 @@
           },
           {
             "title": "isUsingQuestToStart",
-            "x": 192.0,
+            "x": 0.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -341,9 +343,9 @@
           },
           {
             "title": "Quest Corrected Pose X",
-            "x": 320.0,
+            "x": 128.0,
             "y": 128.0,
-            "width": 320.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -355,9 +357,9 @@
           },
           {
             "title": "Quest Corrected Pose Y",
-            "x": 320.0,
+            "x": 128.0,
             "y": 256.0,
-            "width": 320.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -371,7 +373,7 @@
             "title": "resetpose",
             "x": 0.0,
             "y": 0.0,
-            "width": 640.0,
+            "width": 384.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -383,9 +385,9 @@
           },
           {
             "title": "mosi",
-            "x": 64.0,
+            "x": 0.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 64.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -397,9 +399,9 @@
           },
           {
             "title": "miso",
-            "x": 192.0,
+            "x": 64.0,
             "y": 128.0,
-            "width": 128.0,
+            "width": 64.0,
             "height": 128.0,
             "type": "Text Display",
             "properties": {
@@ -407,6 +409,21 @@
               "period": 0.06,
               "data_type": "int",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "photonvision_Port_1183_Input_MJPEG_Server",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 512.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/photonvision_Port_1183_Input_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 2,
+              "compression": 10,
+              "fps": 15
             }
           }
         ]

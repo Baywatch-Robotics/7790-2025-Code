@@ -77,7 +77,8 @@ public final class Constants
 
     public static final class AlgaeShooterConstants{
     public static final int ID = 16;
-    public static final float intake = 0.25f;
+    public static final float intake = 0.4f;
+    
     public static final float outake = -0.4f;
     public static final float currentThreshold = 10f; // Current threshold for detecting algae
     
