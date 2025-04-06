@@ -523,7 +523,7 @@ public final class Constants
     // Offset constants
     public static final float LeftOffset = (float)Units.inchesToMeters(7.5);
     public static final float RightOffset = (float)Units.inchesToMeters(5.75);
-    public static final float BackOffset = (float)Units.inchesToMeters(-3.0);
+    public static final float BackOffset = (float)Units.inchesToMeters(-4.0);
 
     // Face 1 (0 degrees)
     public static final float zValueC1XX = (float)Units.degreesToRadians(0);

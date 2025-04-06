@@ -210,7 +210,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = drivebase.startDriveToPose(buttonBox, elevator)
+  Command command = drivebase.startDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
@@ -249,7 +249,7 @@ public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, El
 
 public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("C531"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("C530"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
