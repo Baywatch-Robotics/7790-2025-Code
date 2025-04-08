@@ -128,13 +128,9 @@ public class SwerveSubsystem extends SubsystemBase
     if(isUsingQuest){
       addQuestVisionMeasurement();
     }
+   
+      addVisionMeasurements();
     
-    if(!isClose){
-      addVisionMeasurementInitial();
-    }
-    else{
-      addVisionMeasurement();
-    }
     
     
 
@@ -697,63 +693,12 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
-  public void addVisionMeasurement() {
+  public void addVisionMeasurements() {
 
-    //boolean newMode;
-
-    
-    //newMode = DriverStation.isDisabled();
-
-    
-    
-    //newMode = isOldMode;
-      Pose2d robotPose = swerveDrive.getPose();
-  
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-  
-      if (estimatedPose3d.isPresent()) {
-          Pose2d newPose = estimatedPose3d.get().toPose2d();
-          double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-          if (distance <= .5) {
-            
-              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-            }
-            else{
-  
-              visionMeasurementCounter++;
-  
-              if(visionMeasurementCounter >= 3){
-  
-                swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-                visionMeasurementCounter = 0;
-                //backup incase it gets too far off
-              }
-  
-            }
-           }
+    AprilTagVision.updateSwerve(swerveDrive);
+           
   }
 
-  public void addVisionMeasurementInitial() {
-
-      Pose2d robotPose = swerveDrive.getPose();
-
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-
-      if (estimatedPose3d.isPresent()) {
-        Pose2d newPose = estimatedPose3d.get().toPose2d();
-        
-        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-    // Only add the measurement if it's within 1 meter of the current pose
-    if (distance >= .5) {
-        swerveDrive.resetOdometry(newPose);
-    }
-    else{
-      isClose = true;
-    }
-  }
- }
     
 
   public void addQuestVisionMeasurement() {
@@ -991,12 +936,9 @@ public class SwerveSubsystem extends SubsystemBase
    * Used for cycling measurements during initialization
    */
   public void addVisionMeasurementCommand() {
-    if(!isClose){
-      addVisionMeasurementInitial();
-    }
-    else{
-      addVisionMeasurement();
-    }
+   
+      addVisionMeasurements();
+    
   }
 
   public void setIsUsingQuest(boolean bool){

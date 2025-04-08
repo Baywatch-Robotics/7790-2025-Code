@@ -8,13 +8,19 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AprilTagVisionConstants;
+import swervelib.SwerveDrive;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +53,11 @@ public class AprilTagVision extends SubsystemBase {
     private static PhotonPoseEstimator leftPoseEstimator;
     //private static PhotonPoseEstimator limelightPoseEstimator;
 
+    private static Pose2d previousRightCam = new Pose2d();
+    private static Pose2d previousLeftCam = new Pose2d();
+
+    private static boolean isSwerveReset = false; // Flag to check if swerve has been reset
+
     // Track pose consistency
     private static int consecutiveValidPoses = 0;
 
@@ -62,13 +73,37 @@ public class AprilTagVision extends SubsystemBase {
 
     public static Optional<EstimatedRobotPose> getRightCamPose(Pose2d prevEstimatedPose) {
         rightPoseEstimator.setReferencePose(prevEstimatedPose);
-        return rightPoseEstimator.update(rightCam.getLatestResult());
+        Optional<EstimatedRobotPose> newPos = rightPoseEstimator.update(rightCam.getLatestResult());
+        previousRightCam = newPos.get().estimatedPose.toPose2d();
+        return newPos;
     }
 
     
     public static Optional<EstimatedRobotPose> getLeftCamPose(Pose2d prevEstimatedPose) {
         leftPoseEstimator.setReferencePose(prevEstimatedPose);
-        return leftPoseEstimator.update(leftCam.getLatestResult());
+        Optional<EstimatedRobotPose> newPos =  leftPoseEstimator.update(leftCam.getLatestResult());
+        previousLeftCam = newPos.get().estimatedPose.toPose2d();
+        return newPos;
+    }
+
+    public static void updateSwerve(SwerveDrive swerve)
+    {
+        EstimatedRobotPose rightCamPose = getRightCamPose(previousRightCam).orElse(null);
+        EstimatedRobotPose leftCamPose = getLeftCamPose(previousLeftCam).orElse(null);
+
+        if(!isSwerveReset)
+        {
+            swerve.resetOdometry(leftCamPose.estimatedPose.toPose2d());
+            isSwerveReset = true;
+        }
+
+        Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);        
+
+        swerve.addVisionMeasurement(leftCamPose.estimatedPose.toPose2d() , leftCamPose.timestampSeconds,kMultiTagStdDevs );
+        swerve.addVisionMeasurement(rightCamPose.estimatedPose.toPose2d() , rightCamPose.timestampSeconds,kMultiTagStdDevs );
+
+       
+        
     }
 
     /*
@@ -117,91 +152,4 @@ public class AprilTagVision extends SubsystemBase {
         return true;
     }
     
-    public static Optional<Pose3d> getBestPoseEstimate(Pose2d prevEstimatedPose) {
-        List<Pose3d> validPoses = new ArrayList<>();
-
-        Optional<EstimatedRobotPose> rightCamEstimate = getRightCamPose(prevEstimatedPose);
-        if (rightCamEstimate.isPresent()) {
-            EstimatedRobotPose estimate = rightCamEstimate.get();
-            if (!estimate.targetsUsed.isEmpty() && 
-                estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold && 
-                usesOnlyValidTags(estimate)) {
-                
-                validPoses.add(estimate.estimatedPose);
-            }
-        }   
-
-        Optional<EstimatedRobotPose> leftCamEstimate = getLeftCamPose(prevEstimatedPose);
-        if (leftCamEstimate.isPresent()) {
-            EstimatedRobotPose estimate = leftCamEstimate.get();
-            if (!estimate.targetsUsed.isEmpty() && 
-                estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold && 
-                usesOnlyValidTags(estimate)) {
-                
-                validPoses.add(estimate.estimatedPose);
-            }
-        }
-        /*
-                Optional<EstimatedRobotPose> limelightEstimate = getLimelightPose(prevEstimatedPose);
-        if (limelightEstimate.isPresent()) {
-            EstimatedRobotPose estimate = limelightEstimate.get();
-            if (estimate.targetsUsed.get(0).getPoseAmbiguity() <= AprilTagVisionConstants.ambiguityThreshold && 
-                usesOnlyValidTags(estimate)) {
-                validPoses.add(estimate.estimatedPose);
-            }
-        }
-        */
-        if (validPoses.isEmpty()) {
-            return Optional.empty(); // No valid poses found
-        }
-
-        Pose3d averagedPose = averagePoses(validPoses);
-        
-            return Optional.of(averagedPose);
-    }
-
-    private static Pose3d averagePoses(List<Pose3d> poses) {
-        // If only one pose, return it directly
-        if (poses.size() == 1) {
-            return poses.get(0);
-        }
-        
-        // Average the positions
-        double x = 0, y = 0, z = 0;
-        
-        // We'll use quaternions to average rotations correctly
-        double qw = 0, qx = 0, qy = 0, qz = 0;
-        
-        for (Pose3d pose : poses) {
-            // Add position components
-            x += pose.getX();
-            y += pose.getY();
-            z += pose.getZ();
-            
-            // Convert rotation to quaternion and add components
-            // Note: WPILib Rotation3d stores quaternions internally
-            qw += pose.getRotation().getQuaternion().getW();
-            qx += pose.getRotation().getQuaternion().getX();
-            qy += pose.getRotation().getQuaternion().getY();
-            qz += pose.getRotation().getQuaternion().getZ();
-        }
-        
-        int count = poses.size();
-        
-        // Average the position
-        Translation3d avgTranslation = new Translation3d(x / count, y / count, z / count);
-        
-        // Average and normalize the quaternion
-        double length = Math.sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
-        qw /= length;
-        qx /= length;
-        qy /= length;
-        qz /= length;
-        
-        // Create the rotation from the averaged quaternion
-        Rotation3d avgRotation = new Rotation3d(
-            new edu.wpi.first.math.geometry.Quaternion(qw, qx, qy, qz));
-        
-        return new Pose3d(avgTranslation, avgRotation);
-    }
 }
