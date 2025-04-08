@@ -31,6 +31,20 @@ public final class Configs {
           // Set PID values for position control
           .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
           .outputRange(-.5, .5);
+    }
+
+    public static final SparkMaxConfig elevatorSlave = new SparkMaxConfig();
+    static {
+      // Configure basic settings of the elevator motor
+      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      
+      /*
+       * Configure the closed loop controller. We want to make sure we set the
+       * feedback sensor as the primary encoder.
+       */
+      elevatorConfig
+      .follow(17, true);
+      
     }  
   }
 

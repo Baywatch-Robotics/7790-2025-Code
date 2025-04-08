@@ -15,7 +15,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -36,7 +35,6 @@ import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 
 import java.io.File;
-import java.util.Optional;
 import java.util.function.Supplier;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -53,11 +51,8 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   private final SwerveDrive         swerveDrive;
-  private boolean isClose = false;
 
   private boolean pathCanceled = false;
-
-  private int visionMeasurementCounter = 0;
 
   private boolean isShaking = false;
   private double shakeStartTime = 0;

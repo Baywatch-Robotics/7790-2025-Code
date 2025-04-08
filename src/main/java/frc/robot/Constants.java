@@ -138,13 +138,13 @@ public final class Constants
     //public static final float D = 0.5f;
 
     //public static final float P = 0.0f;
-    public static final float P = 1.2f;
+    public static final float P = 1.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 10;
-    public static final float maxAcceleration = 20;
+    public static final float maxVelocity = 50;
+    public static final float maxAcceleration = 50;
 
     public static final float allowedClosedLoopError = 0.005f;
     
@@ -190,7 +190,9 @@ public final class Constants
   
   public static final class ElevatorConstants{
     
-    public static final int ID = 13;   
+    public static final int ID = 13;
+
+    public static final int slaveID = 17;
     
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
@@ -236,13 +238,9 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
     
-    public static final float P = 0.75f;
+    public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-
-    public static final float FFPercent = -0.04f;
-
-    //public static final float FFPercent = 0;
 
     public static final float FFCutoff = -6.296857f;
     
@@ -253,7 +251,7 @@ public final class Constants
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
-    public static final float kG = 0.4f;   // Gravity compensation (voltage)
+    public static final float kG = 0.2f;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }

@@ -38,6 +38,8 @@ public class Elevator extends SubsystemBase {
 
     private SparkMax elevatorMotor = new SparkMax(ElevatorConstants.ID, MotorType.kBrushless);
 
+    private SparkMax elevatorSlave = new SparkMax(ElevatorConstants.slaveID, MotorType.kBrushless);
+
     private SparkClosedLoopController elevatorClosedLoopController = elevatorMotor.getClosedLoopController();
     
     private final TrapezoidProfile m_profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(ElevatorConstants.maxVelocity, ElevatorConstants.maxAcceleration));
@@ -80,6 +82,11 @@ public class Elevator extends SubsystemBase {
 
         elevatorMotor.configure(
                 Configs.Elevator.elevatorConfig,
+                ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
+
+        elevatorSlave.configure(
+                Configs.Elevator.elevatorSlave,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
