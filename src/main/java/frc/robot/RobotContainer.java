@@ -406,6 +406,7 @@ public class RobotContainer {
     //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
     driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+    driverXbox.y().and(shooter.L1ScoringTrigger()).onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
 

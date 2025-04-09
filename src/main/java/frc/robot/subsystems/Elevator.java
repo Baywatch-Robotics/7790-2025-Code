@@ -86,7 +86,7 @@ public class Elevator extends SubsystemBase {
                 PersistMode.kPersistParameters);
 
         elevatorSlave.configure(
-                Configs.Elevator.elevatorSlave,
+                Configs.ElevatorSlave.elevatorSlaveConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
@@ -403,6 +403,7 @@ public class Elevator extends SubsystemBase {
         SmartDashboard.putString("Elevator Height Category", getElevatorHeightCategory().toString());
         
         SmartDashboard.putNumber("Elevator Desired Power", elevatorMotor.getAppliedOutput());
+        SmartDashboard.putNumber("Elevator Slave Desiered Power", elevatorSlave.getAppliedOutput());
 
         SmartDashboard.putNumber("Elevator Velocity", elevatorMotor.getEncoder().getVelocity());
 

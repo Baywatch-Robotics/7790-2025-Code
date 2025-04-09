@@ -27,6 +27,8 @@ public class Shooter extends SubsystemBase {
     // Debounce timer variables
     private double currentAboveThresholdStartTime = 0;
     private double currentBelowThresholdStartTime = 0;
+
+    private boolean isL1Scoring = false; // Flag for L1 scoring
     
     // Reference to RobotContainer for controller rumble
     private RobotContainer robotContainer;
@@ -154,7 +156,22 @@ public class Shooter extends SubsystemBase {
     public Command shooterOutakeCommand() {
         return new InstantCommand(this::setOutake, this);
     }
-    
+
+    public void setisL1ScoringFalse() {
+        isL1Scoring = false;
+    }
+
+    public void setisL1ScoringTrue() {
+        isL1Scoring = true;
+    }
+    public boolean getisL1Scoring() {
+        return isL1Scoring;
+    }
+
+    public Trigger L1ScoringTrigger() {
+        return new Trigger(this::getisL1Scoring);
+    }
+
     @Override
     public void periodic(){
         checkCoralLoaded();

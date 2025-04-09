@@ -30,30 +30,30 @@ public final class Configs {
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
           .pid(ElevatorConstants.P, ElevatorConstants.I, ElevatorConstants.D)
-          .outputRange(-.5, .5);
+          .outputRange(-1, 1);
     }
+  }
+  
+  public static final class ElevatorSlave {
+    public static final SparkMaxConfig elevatorSlaveConfig = new SparkMaxConfig();
 
-    public static final SparkMaxConfig elevatorSlave = new SparkMaxConfig();
     static {
       // Configure basic settings of the elevator motor
-      elevatorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
-      
-      /*
-       * Configure the closed loop controller. We want to make sure we set the
-       * feedback sensor as the primary encoder.
-       */
-      elevatorConfig
-      .follow(17, true);
-      
-    }  
+      elevatorSlaveConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+
+    elevatorSlaveConfig
+      .follow(ElevatorConstants.ID, true);
+    }
   }
+
+  
 
   public static final class Climber {
     public static final SparkMaxConfig climberConfig = new SparkMaxConfig();
 
     static {
       // Configure basic settings of the climber motor
-      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      climberConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80).voltageCompensation(12);
 
       climberConfig
       .inverted(false)

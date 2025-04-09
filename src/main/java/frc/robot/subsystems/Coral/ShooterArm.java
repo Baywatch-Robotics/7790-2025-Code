@@ -102,6 +102,9 @@ public class ShooterArm extends SubsystemBase {
     private void setScoreL1() {
         shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
     }
+    private void setScoreL1Real() {
+        shooterArmDesiredAngle = ShooterArmConstants.realL1Angle;
+    }
     private void setClimbAngle() {
         shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
     }
@@ -153,6 +156,12 @@ public class ShooterArm extends SubsystemBase {
     public Command shooterArmClimbCommand()
     {
         Command command = new InstantCommand(() -> this.setClimbAngle());
+        return command;
+    }
+
+    public Command shooterArmScoreL1RealCommand()
+    {
+        Command command = new InstantCommand(() -> this.setScoreL1Real());
         return command;
     }
     

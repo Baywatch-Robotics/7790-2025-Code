@@ -59,6 +59,7 @@ public final class Constants
 
 
     public static final float P = 2.0f;
+    //public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     public static final float maxVelocity = 50;
@@ -127,24 +128,27 @@ public final class Constants
 
     
     // Ball position angle
-    public static final float preBallAngle = 0.5307f;
-    public static final float preLowBallAngle = 0.5307f;
-    public static final float ballAngle = 0.48f;
-    public static final float preBallBelowAngle = 0.56342834234f;
+    public static final float preBallAngle = 0.64974045753479f
+    ;
+    public static final float preLowBallAngle = 0.64974045753479f;
+    public static final float ballAngle = 0.64974045753479f;
+    public static final float preBallBelowAngle = 0.64974045753479f;
     public static final float L1Angle = 0.5f;
+
+    public static final float realL1Angle = 0.252f;
 
     //public static final float P = 7.0f;
     //public static final float I = 0.0f;
     //public static final float D = 0.5f;
 
-    //public static final float P = 0.0f;
-    public static final float P = 1.75f;
+    public static final float P = 2.5f;
+    //public static final float P = 1.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 50;
-    public static final float maxAcceleration = 50;
+    public static final float maxVelocity = 3;
+    public static final float maxAcceleration = 8;
 
     public static final float allowedClosedLoopError = 0.005f;
     
@@ -199,59 +203,57 @@ public final class Constants
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -48.1287f;
+    public static final float min = -28.87722f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -48.1287f;
-    public static final float L3LPose = -25.11f;
-    public static final float L3RPose = -25.11f
-    ;
-    public static final float L2RPose = -10.92f;
-    public static final float L2LPose = -10.92f;
-    public static final float pickupPose = -23.812f;
+    public static final float L4Pose = -28.87722f;
+    public static final float L3LPose = -15.066f;
+    public static final float L3RPose = -15.066f;
+
+    public static final float L2RPose = -6.552f;
+    public static final float L2LPose = -6.552f;
+    public static final float pickupPose = -14.2872f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
-    public static final float downPosition = -7f;
+    public static final float downPosition = -4.2f;
     
     // Ball pickup positions
-     public static final float highBallPose = -45.06f;
-     public static final float highBallBelowPose = -26.4765625f;
-     public static final float lowBallPose = -33.33f;
+     public static final float highBallPose = -16.913700103759766f;
+     public static final float highBallBelowPose = -16.913700103759766f;
+     public static final float lowBallPose = -7.9168572425842285f;
     
     // New elevator height thresholds for speed control
-    public static final float SLIGHTLY_RAISED_THRESHOLD = -10f;
-    public static final float PARTIALLY_RAISED_THRESHOLD = -20f;
-    public static final float MID_RAISED_THRESHOLD = -30f;
-    public static final float FULLY_RAISED_THRESHOLD = -40f;
+    public static final float SLIGHTLY_RAISED_THRESHOLD = -6f;
+    public static final float PARTIALLY_RAISED_THRESHOLD = -12f;
+    public static final float MID_RAISED_THRESHOLD = -18f;
+    public static final float FULLY_RAISED_THRESHOLD = -24f;
     
     // Elevator setpoint tolerance constants
-    public static final float STANDARD_SETPOINT_TOLERANCE = 2.0f;
-    public static final float NEAR_SETPOINT_TOLERANCE = 5.0f;
-    public static final float APPROACHING_SETPOINT_TOLERANCE = 8f;
+    public static final float STANDARD_SETPOINT_TOLERANCE = 1.2f;
+    public static final float NEAR_SETPOINT_TOLERANCE = 3.0f;
+    public static final float APPROACHING_SETPOINT_TOLERANCE = 4.8f;
     
     // Home position threshold
-    public static final float HOME_POSITION_THRESHOLD = 5.0f;
+    public static final float HOME_POSITION_THRESHOLD = 3.0f;
     
     // Intake clearance thresholds
-    public static final float INTAKE_CLEARANCE_MARGIN = 5.0f;
+    public static final float INTAKE_CLEARANCE_MARGIN = 3.0f;
     
-    public static final float P = 0.0f;
+    public static final float P = 1.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
-
-    public static final float FFCutoff = -6.296857f;
     
-    public static final float maxVelocity = 150;
-    public static final float maxAcceleration = 75;
+    public static final float maxVelocity = 500;
+    public static final float maxAcceleration = 70;
 
-    public static final float L1ScoreHeight = -34.8769264f;
+    public static final float L1ScoreHeight = -18.782352447509766f;
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
-    public static final float kG = 0.2f;   // Gravity compensation (voltage)
+    public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }
@@ -280,7 +282,8 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 2.0f;
+    public static final float P = 1.5f;
+    //public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -290,11 +293,11 @@ public final class Constants
     public static final float allowedClosedLoopError = 0.005f;
     
     // New feedforward constants
-    public static final float kS = 0.5f;  // Static friction compensation
-    public static final float kG = 1.1f;  // Gravity compensation
+    public static final float kS = 0.0f;  // Static friction compensation
+    public static final float kG = 0.92f;  // Gravity compensation
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
-    public static final float feedforwardOffset = 0.5f; // Offset for zero position
+    public static final float feedforwardOffset = 0.0f; // Offset for zero position
     
     // Pre-intake position for coral detection
     public static final float preIntakePosition = 0.42f; // Slightly raised from home position
@@ -314,7 +317,9 @@ public final class Constants
     public static final boolean USE_VELOCITY_DETECTION = true;
     public static final boolean USE_CURRENT_DETECTION = true;
 
-    public static final float L1Pose = 0.436f;
+    public static final float L1Pose = 0.515f;
+
+    public static final float L1Dump = 0.425033f;
   }
 
   public static final class LEDConstants{

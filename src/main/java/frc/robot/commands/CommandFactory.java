@@ -130,33 +130,23 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmPreBallCommand());
+    .andThen(shooterArm.shooterArmPreBallCommand())
+    .andThen(shooter.shooterOutakeCommand());
 
     command.addRequirements(shooter, shooterArm, elevator);
 
     return command;
   }
 
-  public static Command pullOffHighBelowBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
-      
-    Command command  = shooterArm.shooterArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
-    .andThen(elevator.setElevatorHighBallBelowCommand())
-    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmPreBallBelowCommand());
-
-    command.addRequirements(shooter, shooterArm, elevator);
-
-    return command;
-  }
-  
   public static Command pullOffLowBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
     Command command  = shooterArm.shooterArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(shooterArm.shooterArmPreLowBallCommand());
+    .andThen(shooterArm.shooterArmPreLowBallCommand())
+    .andThen(shooter.shooterOutakeCommand());
+
 
 
     command.addRequirements(shooter, shooterArm, elevator);
@@ -177,16 +167,29 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
       
     Command command  = elevator.setElevatorL1Command()
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-    .andThen(shooterArm.shooterArmOutLoadCommand())
+    .andThen(shooterArm.shooterArmScoreL1RealCommand())
     .andThen(algaeArm.algaeArmScoreL1Command())
     .andThen(algaeShooter.algaeShooterIntakeCommand())
-    .andThen(funnel.funnelL1Command());
+    .andThen(funnel.funnelL1Command())
+    .andThen(new InstantCommand(() -> shooter.setisL1ScoringTrue()));
 
     command.addRequirements(shooter, shooterArm, elevator);
 
     return command;
   }
 
+  public static Command finishL1ScoreCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, AlgaeArm algaeArm, AlgaeShooter algaeShooter, Funnel funnel) {
+
+    Command command = new WaitCommand(0.2)
+    .andThen(funnel.funnelL1DumpCommand())
+    .andThen(shooterArm.shooterArmLoadCommand())
+    .andThen(new InstantCommand(() -> shooter.setisL1ScoringFalse()));
+
+    command.addRequirements(shooter, shooterArm, elevator);
+
+    return command;
+  }
+  
 public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = shooterArm.shooterArmBasedOnQueueCommand(buttonBox)
@@ -283,7 +286,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
 
 public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
-    Command command = new InstantCommand(() -> buttonBox.addTarget("C330"))
+    Command command = new InstantCommand(() -> buttonBox.addTarget("C331"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())

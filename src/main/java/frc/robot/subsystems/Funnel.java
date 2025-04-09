@@ -124,6 +124,16 @@ public class Funnel extends SubsystemBase {
         stopShaking();
     }
 
+    private void setL1DumpPosition() {
+        // Only move if safe to do so
+        if (isSafeToMove()) {
+            funnelDesiredAngle = FunnelConstants.L1Dump;
+        }
+        
+        isMonitoringForCoral = false;
+        stopShaking();
+    }
+
     private void setFullUpPosition() {
         // Only move if safe to do so
         if (isSafeToMove()) {
@@ -167,6 +177,11 @@ public class Funnel extends SubsystemBase {
     public Command funnelL1Command() {
         return new WaitUntilCommand(this::isSafeToMove)
             .andThen(new InstantCommand(() -> setL1Position()));
+    }
+
+    public Command funnelL1DumpCommand() {
+        return new WaitUntilCommand(this::isSafeToMove)
+            .andThen(new InstantCommand(() -> setL1DumpPosition()));
     }
 
     // Start shaking the funnel to help coral entry
@@ -315,8 +330,7 @@ public class Funnel extends SubsystemBase {
             0                      // Zero acceleration for now
         );
         
-        // Calculate next setpoint - but skip this when shaking with bypass enabled
-        if (!bypassProfilerForShaking) {
+        
             m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
             // Set the motor position to the trapezoidal profile setpoint with feedforward
             funnelController.setReference(
@@ -326,12 +340,6 @@ public class Funnel extends SubsystemBase {
                 feedforwardOutput,
                 ArbFFUnits.kVoltage
             );
-        } else {
-            // For intense shaking, bypass the profiler and set position directly
-            funnelController.setReference(funnelDesiredAngle, ControlType.kPosition);
-            // Update setpoint position to avoid jerky movement when returning to profiled motion
-            m_setpoint = new TrapezoidProfile.State(funnelDesiredAngle, 0);
-        }
         
         // Update dashboard with all relevant values
         SmartDashboard.putNumber("Funnel Desired Angle", funnelDesiredAngle);
@@ -344,21 +352,9 @@ public class Funnel extends SubsystemBase {
         SmartDashboard.putBoolean("Funnel Monitoring For Coral", isMonitoringForCoral);
         SmartDashboard.putNumber("Funnel Profile Velocity", m_setpoint.velocity);
 
+        SmartDashboard.putNumber("Funnel Desired Power", funnelMotor.getAppliedOutput());
         
         SmartDashboard.putNumber("Funnel Feedforward", feedforwardOutput);
-        
-        
-                // Calculate next setpoint - but skip this when shaking with bypass enabled
-                if (!bypassProfilerForShaking) {
-                    m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
-                    // Set the motor position to the trapezoidal profile setpoint
-                    funnelController.setReference(m_setpoint.position, ControlType.kPosition);
-                } else {
-                    // For intense shaking, bypass the profiler and set position directly
-                    funnelController.setReference(funnelDesiredAngle, ControlType.kPosition);
-                    // Update setpoint position to avoid jerky movement when returning to profiled motion
-                    m_setpoint = new TrapezoidProfile.State(funnelDesiredAngle, 0);
-                }
     }
     
     /**
