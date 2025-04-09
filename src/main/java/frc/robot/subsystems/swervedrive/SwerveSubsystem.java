@@ -7,6 +7,7 @@ package frc.robot.subsystems.swervedrive;
 import static edu.wpi.first.units.Units.Meter;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
