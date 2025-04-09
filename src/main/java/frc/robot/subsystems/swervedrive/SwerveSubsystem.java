@@ -72,6 +72,8 @@ public class SwerveSubsystem extends SubsystemBase
 
   private QuestNavVision questNavVision = new QuestNavVision();
 
+  private Vision vision = new Vision();
+
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -121,19 +123,13 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   @Override
-  public void periodic()
-  {
+  public void periodic() {
 
     if(isUsingQuest){
       addQuestVisionMeasurement();
     }
-    
-    if(!isClose){
-      addVisionMeasurementInitial();
-    }
-    else{
+
       addVisionMeasurement();
-    }
     
     
 
@@ -151,6 +147,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void simulationPeriodic()
   {
+    vision.simulationPeriodic(getPose());
   }
 
   /**
@@ -698,62 +695,18 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   public void addVisionMeasurement() {
+// Correct pose estimate with vision measurements
 
-    //boolean newMode;
+var visionEst = vision.getEstimatedGlobalPose();
+visionEst.ifPresent(
+        est -> {
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = vision.getEstimationStdDevs();
 
-    
-    //newMode = DriverStation.isDisabled();
-
-    
-    
-    //newMode = isOldMode;
-      Pose2d robotPose = swerveDrive.getPose();
-  
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-  
-      if (estimatedPose3d.isPresent()) {
-          Pose2d newPose = estimatedPose3d.get().toPose2d();
-          double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-          if (distance <= .5) {
-            
-              swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-            }
-            else{
-  
-              visionMeasurementCounter++;
-  
-              if(visionMeasurementCounter >= 3){
-  
-                swerveDrive.addVisionMeasurement(newPose, Timer.getFPGATimestamp());
-                visionMeasurementCounter = 0;
-                //backup incase it gets too far off
-              }
-  
-            }
+            swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+        });
            }
-  }
 
-  public void addVisionMeasurementInitial() {
-
-      Pose2d robotPose = swerveDrive.getPose();
-
-      Optional<Pose3d> estimatedPose3d = AprilTagVision.getBestPoseEstimate(robotPose); // Pass current pose
-
-      if (estimatedPose3d.isPresent()) {
-        Pose2d newPose = estimatedPose3d.get().toPose2d();
-        
-        double distance = newPose.getTranslation().getDistance(robotPose.getTranslation());
-
-    // Only add the measurement if it's within 1 meter of the current pose
-    if (distance >= .5) {
-        swerveDrive.resetOdometry(newPose);
-    }
-    else{
-      isClose = true;
-    }
-  }
- }
     
 
   public void addQuestVisionMeasurement() {
@@ -991,12 +944,7 @@ public class SwerveSubsystem extends SubsystemBase
    * Used for cycling measurements during initialization
    */
   public void addVisionMeasurementCommand() {
-    if(!isClose){
-      addVisionMeasurementInitial();
-    }
-    else{
       addVisionMeasurement();
-    }
   }
 
   public void setIsUsingQuest(boolean bool){
