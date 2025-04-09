@@ -9,7 +9,11 @@ import edu.wpi.first.wpilibj.Servo;
 public class PaulServo extends SubsystemBase{
 
     Servo paulServo = new Servo(1);
-
+    
+    PaulServo(){
+        setDisengage();
+    }
+    
     public void setDisengage() {
         paulServo.set(0);
     }
