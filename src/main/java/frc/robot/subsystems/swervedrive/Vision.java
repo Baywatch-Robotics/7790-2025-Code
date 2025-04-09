@@ -51,6 +51,8 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision {
+    private final double kMaxAmbiguity = 0.1;
+    
     private final PhotonCamera rightCamera;
     private final PhotonCamera leftCamera;
     private final PhotonPoseEstimator leftPhotonEstimator;
@@ -141,6 +143,11 @@ public class Vision {
         
         // Process right camera results
         for (var change : rightCamera.getAllUnreadResults()) {
+            // Filter out targets with high ambiguity
+            if (hasHighAmbiguityTarget(change.getTargets())) {
+                continue;
+            }
+            
             rightVisionEst = rightPhotonEstimator.update(change);
             if (rightVisionEst.isPresent()) {
                 updateEstimationStdDevs(rightVisionEst, change.getTargets(), rightPhotonEstimator);
@@ -149,6 +156,11 @@ public class Vision {
         
         // Process left camera results
         for (var change : leftCamera.getAllUnreadResults()) {
+            // Filter out targets with high ambiguity
+            if (hasHighAmbiguityTarget(change.getTargets())) {
+                continue;
+            }
+            
             leftVisionEst = leftPhotonEstimator.update(change);
             if (leftVisionEst.isPresent()) {
                 updateEstimationStdDevs(leftVisionEst, change.getTargets(), leftPhotonEstimator);
@@ -164,15 +176,11 @@ public class Vision {
         } else if (!rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
             bestEstimate = leftVisionEst;
         } else if (rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
-            // Both cameras have valid estimates, use the one with more tags or better confidence
-            // This is a simple implementation - you might want to implement more sophisticated logic
             if (rightVisionEst.get().targetsUsed.size() > leftVisionEst.get().targetsUsed.size()) {
                 bestEstimate = rightVisionEst;
             } else if (rightVisionEst.get().targetsUsed.size() < leftVisionEst.get().targetsUsed.size()) {
                 bestEstimate = leftVisionEst;
             } else {
-                // Same number of tags, choose based on estimated ambiguity/distance
-                // For simplicity, we'll just use right camera in this case
                 bestEstimate = rightVisionEst;
             }
         }
@@ -186,6 +194,21 @@ public class Vision {
         }
         
         return bestEstimate;
+    }
+    
+    /**
+     * Checks if any target in the list has ambiguity above the maximum threshold
+     *
+     * @param targets List of tracked targets to check
+     * @return true if any target has high ambiguity, false otherwise
+     */
+    private boolean hasHighAmbiguityTarget(List<PhotonTrackedTarget> targets) {
+        for (PhotonTrackedTarget target : targets) {
+            if (target.getPoseAmbiguity() > kMaxAmbiguity) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
