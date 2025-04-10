@@ -213,9 +213,9 @@ public class AlgaeArm extends SubsystemBase {
     @Override
     public void periodic() {
         if (!isInitialized) {
-            algaeArmDesiredAngle = (float)(algaeArmEncoder.getPosition());
-            // Restore setpoint initialization
-            m_setpoint = new TrapezoidProfile.State(algaeArmEncoder.getPosition(), 0);
+            algaeArmDesiredAngle = AlgaeArmConstants.stowedUpAngle;
+            m_setpoint = new TrapezoidProfile.State(AlgaeArmConstants.stowedUpAngle, 0);
+
             
             isInitialized = true;
         }
