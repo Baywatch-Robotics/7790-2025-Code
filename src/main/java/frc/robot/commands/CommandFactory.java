@@ -38,9 +38,9 @@ public class CommandFactory {
       .andThen(new WaitUntilCommand(shooter.coralLoadedTrigger()))
       .andThen(shooterArm.shooterArmOutLoadCommand())
       .andThen(elevator.setElevatorPickupPlusCommand())
-      .andThen(new WaitCommand(.5))
       .andThen(shooter.shooterZeroSpeedCommand())
-      .andThen(shooterArm.shooterArmScoreLOWCommand());
+      .andThen(shooterArm.shooterArmScoreLOWCommand())
+      .andThen(new InstantCommand(() -> shooter.setisL1ScoringFalse()));
 
       // Combine the LED command with the main command sequence
       Command command = ledCommand.andThen(mainCommand);
@@ -180,8 +180,10 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
 
   public static Command finishL1ScoreCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, AlgaeArm algaeArm, AlgaeShooter algaeShooter, Funnel funnel) {
 
-    Command command = new WaitCommand(0.2)
+    Command command = new WaitCommand(0.3)
     .andThen(funnel.funnelL1DumpCommand())
+    .andThen(elevator.setElevatorL1Command())
+    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmLoadCommand())
     .andThen(new InstantCommand(() -> shooter.setisL1ScoringFalse()));
 
