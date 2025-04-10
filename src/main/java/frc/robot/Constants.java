@@ -92,10 +92,10 @@ public final class Constants
   }
   public static final class ShooterConstants{
     public static final int ID = 19;
-    public static final float intake = 0.30f;
+    public static final float intake = 0.50f;
     public static final float outake = -.50f;
     public static final float currentThreshold = 15;
-    public static final float DEBOUNCE_TIME = 0.1f; // Time to debounce current threshold (seconds)
+    public static final float DEBOUNCE_TIME = 0.075f; // Time to debounce current threshold (seconds)
   }
 
   public static final class ShooterArmConstants{
@@ -148,7 +148,7 @@ public final class Constants
 
     // Uncomment profile constants
     public static final float maxVelocity = 3;
-    public static final float maxAcceleration = 8;
+    public static final float maxAcceleration = 3;
 
     public static final float allowedClosedLoopError = 0.005f;
     
@@ -244,7 +244,7 @@ public final class Constants
     
     public static final float P = 1.5f;
     public static final float I = 0.0f;
-    public static final float D = 0.0f;
+    public static final float D = 0.1f;
     
     public static final float maxVelocity = 500;
     public static final float maxAcceleration = 70;
@@ -253,7 +253,8 @@ public final class Constants
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
-    public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
+    //public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
+    public static final float kG = 0;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }
@@ -262,7 +263,7 @@ public final class Constants
     public static final int ID = 20;
     
     // Position constants
-    public static final float homePosition = .555f;
+    public static final float homePosition = .55f;
     public static final float fullUpPosition = .24f;
     
     // Angle offset for absolute encoder
@@ -270,7 +271,7 @@ public final class Constants
     
     // Min and max position limits
     public static final float min = .24f;
-    public static final float max = .555f;
+    public static final float max = .56f;
     
     // Safety threshold - minimum algae arm position that allows funnel movement
     public static final float SAFE_ALGAE_ARM_POSITION = 0.3f;
@@ -294,7 +295,7 @@ public final class Constants
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 0.92f;  // Gravity compensation
+    public static final float kG = 1.0f;  // Gravity compensation
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     public static final float feedforwardOffset = 0.0f; // Offset for zero position
@@ -317,7 +318,7 @@ public final class Constants
     public static final boolean USE_VELOCITY_DETECTION = true;
     public static final boolean USE_CURRENT_DETECTION = true;
 
-    public static final float L1Pose = 0.515f;
+    public static final float L1Pose = 0.474f;
 
     public static final float L1Dump = 0.425033f;
   }
@@ -521,7 +522,7 @@ public final class Constants
     // Hexagon center and dimensions
     public static final float hexagonCenterX = (float)Units.inchesToMeters(176.745);
     public static final float hexagonCenterY = (float)Units.inchesToMeters(158.5);
-    public static final float hexagonRadius = (float)Units.inchesToMeters(50.75);
+    public static final float hexagonRadius = (float)Units.inchesToMeters(50.0);
     
     // Offset constants
     public static final float LeftOffset = (float)Units.inchesToMeters(5.5);
@@ -740,7 +741,7 @@ public final class Constants
     public static final double DRIVE_KD = 0.01;
     
     // PID values for theta (rotation) controller
-    public static final double THETA_KP = 7.0;
+    public static final double THETA_KP = 5.0;
     public static final double THETA_KI = 0.0;
     public static final double THETA_KD = 0.0;
     
@@ -756,7 +757,7 @@ public final class Constants
     
     // Distance thresholds in meters
     public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
-    public static final double CLOSE_DISTANCE_THRESHOLD = 0.5; // meters
+    public static final double CLOSE_DISTANCE_THRESHOLD = 0.4; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.2; // meters
     
     // Visualization settings
@@ -764,10 +765,10 @@ public final class Constants
 
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
-    public static final double APPROACHING_MAX_VEL = 6.0; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 4.5; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_VEL = 3.0; // Same as DRIVE_MAX_VELOCITY
+    public static final double APPROACHING_MAX_ACCEL = 2.0; // Same as DRIVE_MAX_ACCELERATION
     
-    public static final double CLOSE_MAX_VEL = 2.0; // Slower for closer approach
+    public static final double CLOSE_MAX_VEL = 3.0; // Slower for closer approach
     public static final double CLOSE_MAX_ACCEL = 1.5; // Less acceleration when closer
     
     public static final double VERY_CLOSE_MAX_VEL = 0.7; // Slowest for final approach 
