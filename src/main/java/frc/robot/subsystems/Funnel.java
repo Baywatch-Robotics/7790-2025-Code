@@ -295,8 +295,10 @@ public class Funnel extends SubsystemBase {
     @Override
     public void periodic() {
         if (!isInitialized) {
-            funnelDesiredAngle = FunnelConstants.homePosition;
-            m_setpoint = new TrapezoidProfile.State(FunnelConstants.homePosition, 0);
+            funnelDesiredAngle = (float)(funnelEncoder.getPosition());
+            // Restore setpoint initialization
+            m_setpoint = new TrapezoidProfile.State(funnelEncoder.getPosition(), 0);
+            
             isInitialized = true;
         }
         

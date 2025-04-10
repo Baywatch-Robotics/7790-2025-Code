@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -91,15 +93,19 @@ public class Climber extends SubsystemBase {
         isInManualMode = true; // Switch to manual control
     }
 
-    private void extend() {
-        climberMotor.set(ClimberConstants.extendSpeed);
-        manualPower = ClimberConstants.extendSpeed;
-        isInManualMode = true; // Switch to manual control
-    }
 
-    private void retract() {
-        climberMotor.set(ClimberConstants.retractSpeed);
-        manualPower = ClimberConstants.retractSpeed;
+    public void moveWithPower(DoubleSupplier power) {
+
+        double climbPower = -power.getAsDouble();
+
+        if(Math.abs(climbPower) <= 0.1) {
+            climbPower = 0;
+        } else {
+            climbPower = MathUtil.clamp(climbPower, -1, 1);
+        }
+
+        climberMotor.set(climbPower);
+        manualPower = climbPower;
         isInManualMode = true; // Switch to manual control
     }
 
@@ -111,15 +117,6 @@ public class Climber extends SubsystemBase {
 
     public Command climberFullExtendCommand() {
         return new InstantCommand(() -> setFullExtend());
-    }
-
-    // Commands for manual control (will switch to manual mode)
-    public Command climberExtendCommand() {
-        return new InstantCommand(() -> extend());
-    }
-
-    public Command climberRetractCommand() {
-        return new InstantCommand(() -> retract());
     }
 
     public Command climberStopCommand() {

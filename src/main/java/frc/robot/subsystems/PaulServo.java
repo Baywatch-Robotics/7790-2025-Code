@@ -10,16 +10,16 @@ public class PaulServo extends SubsystemBase{
 
     Servo paulServo = new Servo(1);
     
-    PaulServo(){
+    public PaulServo(){
         setDisengage();
     }
     
     public void setDisengage() {
-        paulServo.set(0);
+        paulServo.set(.2);
     }
 
     public void setEngage() {
-        paulServo.set(.5);
+        paulServo.set(0);
     }
 
     public Command setDisengageCommand() {

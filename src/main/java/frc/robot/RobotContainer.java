@@ -42,6 +42,7 @@ import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.PaulServo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -117,7 +118,7 @@ public class RobotContainer {
   DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
 
   // Add supplier for funnel control
-  DoubleSupplier funnelUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
+  DoubleSupplier climberUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
 
   // Add flag for full speed toggle
   private boolean fullSpeedModeEnabled = false;
@@ -142,6 +143,9 @@ public class RobotContainer {
   private final Funnel funnel = new Funnel();
   
   private final LED led = new LED();
+
+  
+  private final PaulServo servo = new PaulServo();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
   
@@ -296,8 +300,7 @@ public class RobotContainer {
 
     opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
 
-    opXbox.axisMagnitudeGreaterThan(2, 0.2).or(opXbox.axisMagnitudeGreaterThan(3, 0.2)).whileTrue(new RunCommand(() -> funnel.moveAmount(funnelUpDown.getAsDouble()), funnel));
-
+    climber.setDefaultCommand(new RunCommand(() -> climber.moveWithPower(climberUpDown), climber));
 
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
@@ -429,17 +432,10 @@ public class RobotContainer {
 
     opXbox.pov(90).onTrue(algaeArm.algaeArmHoldCommand());
 
-    opXbox.a().onTrue(algaeShooter.algaeShooterIntakeCommand());
-    opXbox.a().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
-  
-    opXbox.b().onTrue(algaeShooter.algaeShooterOutakeCommand());
-    opXbox.b().onFalse(algaeShooter.algaeShooterZeroSpeedCommand());
 
-    opXbox.x().onTrue(climber.climberExtendCommand());
-    opXbox.x().onFalse(climber.climberStopCommand());
+    opXbox.a().onTrue(servo.setEngageCommand());
 
-    opXbox.y().onTrue(climber.climberRetractCommand());
-    opXbox.y().onFalse(climber.climberStopCommand());
+    opXbox.b().onTrue(servo.setDisengageCommand());
     
     // Add new position control commands
     // Fully retract climber (for stowing)
@@ -450,6 +446,9 @@ public class RobotContainer {
 
     opXbox.rightBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(1), algaeArm));
     opXbox.leftBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(-1), algaeArm));
+
+    opXbox.x().whileTrue(new RunCommand(() -> funnel.moveAmount(1), funnel));
+    opXbox.y().whileTrue(new RunCommand(() -> funnel.moveAmount(-1), funnel));
 
     //opXbox.start().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(true)));
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));

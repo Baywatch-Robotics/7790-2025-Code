@@ -123,7 +123,7 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float loadAngle = 0.27f;
+    public static final float loadAngle = 0.252f;
     public static final float outLoadAngle = 0.3f;
 
     
@@ -182,11 +182,11 @@ public final class Constants
     
     
     public static final float min = 0;  // Max extended position
-    public static final float max = 540f;    // Fully retracted position
+    public static final float max = 108f;    // Fully retracted position
     
     // Predefined positions (reversed from previous values to match Neo motor behavior)
     public static final float retractedPosition = 0f;      // Fully retracted
-    public static final float extendedPosition = 540f;    // Fully extended
+    public static final float extendedPosition = 108f;    // Fully extended
     
     // Tolerance for position control
     public static final float SETPOINT_TOLERANCE = 2.0f;
@@ -213,7 +213,7 @@ public final class Constants
 
     public static final float L2RPose = -6.552f;
     public static final float L2LPose = -6.552f;
-    public static final float pickupPose = -14.2872f;
+    public static final float pickupPose = -14.616677284240723f;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -282,7 +282,7 @@ public final class Constants
     public static final float positionTolerance = 0.05f;
     
     // PID Constants
-    public static final float P = 1.5f;
+    public static final float P = 2.5f;
     //public static final float P = 0.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
@@ -524,8 +524,8 @@ public final class Constants
     public static final float hexagonRadius = (float)Units.inchesToMeters(50.75);
     
     // Offset constants
-    public static final float LeftOffset = (float)Units.inchesToMeters(7.5);
-    public static final float RightOffset = (float)Units.inchesToMeters(5.75);
+    public static final float LeftOffset = (float)Units.inchesToMeters(5.5);
+    public static final float RightOffset = (float)Units.inchesToMeters(7.5);
     public static final float BackOffset = (float)Units.inchesToMeters(-4.0);
     public static final float AlgaeOffset = (float)Units.inchesToMeters(9.0);
 
