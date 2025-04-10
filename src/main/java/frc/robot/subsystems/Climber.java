@@ -102,11 +102,11 @@ public class Climber extends SubsystemBase {
             climbPower = 0;
         } else {
             climbPower = MathUtil.clamp(climbPower, -1, 1);
+        isInManualMode = true; // Switch to manual control
         }
 
         climberMotor.set(climbPower);
         manualPower = climbPower;
-        isInManualMode = true; // Switch to manual control
     }
 
     // Commands for position control (will switch to automatic mode)
@@ -121,22 +121,6 @@ public class Climber extends SubsystemBase {
 
     public Command climberStopCommand() {
         return new InstantCommand(() -> setZero());
-    }
-
-    // Manual control with joystick input
-    public void moveAmount(final double amount) {
-        // Only apply power if above deadband
-        if (Math.abs(amount) < 0.2) {
-            climberMotor.set(0);
-            manualPower = 0;
-        } else {
-            double power = MathUtil.clamp(amount, -1, 1);
-            climberMotor.set(power);
-            manualPower = power;
-        }
-        
-        // Any manual control overrides auto mode
-        isInManualMode = true;
     }
     
     // Position feedback methods
