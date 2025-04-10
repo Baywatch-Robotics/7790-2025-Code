@@ -190,30 +190,16 @@ public class FastProfileToPose extends Command {
      * Updates the speed constraints based on distance to target
      */
     private void updateSpeedConstraints(Pose2d currentPose, Pose2d targetPose) {
-        double distance = currentPose.getTranslation().getDistance(targetPose.getTranslation());
-        
+                
         // Select appropriate constraints based on distance
         double newVelocity;
         double newAcceleration;
         
-        if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
-            // Far from target - use fastest speed
-            newVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-            newAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
+        
+            newVelocity = driveMaxVelocity;
+            newAcceleration = driveMaxAcceleration;
             SmartDashboard.putString("Drive Speed Mode", "APPROACHING");
-        } 
-        else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
-            // Getting closer - use medium speed
-            newVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
-            newAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
-            SmartDashboard.putString("Drive Speed Mode", "CLOSE");
-        } 
-        else {
-            // Very close - use slowest speed for precision
-            newVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-            newAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-            SmartDashboard.putString("Drive Speed Mode", "VERY CLOSE");
-        }
+        
         
         // Only update if the constraints have changed
         if (newVelocity != driveMaxVelocity || newAcceleration != driveMaxAcceleration) {
@@ -223,10 +209,6 @@ public class FastProfileToPose extends Command {
             // Update the constraints on the controller
             driveController.setConstraints(
                 new TrapezoidProfile.Constraints(driveMaxVelocity, driveMaxAcceleration));
-                
-            // Log the new values
-            SmartDashboard.putNumber("Drive Max Velocity", driveMaxVelocity);
-            SmartDashboard.putNumber("Drive Max Acceleration", driveMaxAcceleration);
         }
     }
 
@@ -364,7 +346,7 @@ public class FastProfileToPose extends Command {
         public static Command startAndReturnCommand(SwerveSubsystem swerve, ButtonBox buttonBox) {
             return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
                 // Create the command and schedule it
-                ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+                FastProfileToPose command = new FastProfileToPose(swerve, buttonBox);
                 command.schedule();
             });
         }
@@ -373,7 +355,7 @@ public class FastProfileToPose extends Command {
     public static Command startAndReturnCommandWithRotationDelay(SwerveSubsystem swerve, ButtonBox buttonBox) {
         return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
             // Create the command with rotation delay and schedule it
-            ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+            FastProfileToPose command = new FastProfileToPose(swerve, buttonBox);
             command.withRotationDelay();
             command.schedule();
         });
@@ -383,7 +365,7 @@ public class FastProfileToPose extends Command {
     public static Command startAndReturnCommandWithRotationDelay(SwerveSubsystem swerve, ButtonBox buttonBox, double delaySeconds) {
         return edu.wpi.first.wpilibj2.command.Commands.runOnce(() -> {
             // Create the command with custom rotation delay and schedule it
-            ProfileToPose command = new ProfileToPose(swerve, buttonBox);
+            FastProfileToPose command = new FastProfileToPose(swerve, buttonBox);
             command.withRotationDelay(delaySeconds);
             command.schedule();
         });
