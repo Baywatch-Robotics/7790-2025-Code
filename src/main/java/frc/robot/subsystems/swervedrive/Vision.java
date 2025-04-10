@@ -134,67 +134,6 @@ public class Vision {
     }
 
     /**
-     * The latest estimated robot pose on the field from vision data. This may be empty.
-     * This should only be called once per loop. It tries to get pose estimates from both
-     * cameras and returns the best one based on number of tags and their distance.
-     *
-     * @return An {@link EstimatedRobotPose} with an estimated pose, estimate timestamp,
-     *         and targets used for estimation.
-     */
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
-        Optional<EstimatedRobotPose> rightVisionEst = Optional.empty();
-        Optional<EstimatedRobotPose> leftVisionEst = Optional.empty();
-        
-        // Process right camera results
-        for (var change : rightCamera.getAllUnreadResults()) {
-            rightVisionEst = rightPhotonEstimator.update(change);
-            if (rightVisionEst.isPresent()) {
-                updateEstimationStdDevs(rightVisionEst, change.getTargets(), rightPhotonEstimator, rightStdDevs);
-            }
-        }
-        
-        // Process left camera results
-        for (var change : leftCamera.getAllUnreadResults()) {
-            leftVisionEst = leftPhotonEstimator.update(change);
-            if (leftVisionEst.isPresent()) {
-                updateEstimationStdDevs(leftVisionEst, change.getTargets(), leftPhotonEstimator, leftStdDevs);
-            }
-        }
-        
-        // Determine which estimate to use (prefer the one with more or closer tags)
-        Optional<EstimatedRobotPose> bestEstimate = Optional.empty();
-        
-        // If only one camera has a valid estimate, use it
-        if (rightVisionEst.isPresent() && !leftVisionEst.isPresent()) {
-            bestEstimate = rightVisionEst;
-        } else if (!rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
-            bestEstimate = leftVisionEst;
-        } else if (rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
-            // Both cameras have valid estimates, use the one with more tags or better confidence
-            // This is a simple implementation - you might want to implement more sophisticated logic
-            if (rightVisionEst.get().targetsUsed.size() > leftVisionEst.get().targetsUsed.size()) {
-                bestEstimate = rightVisionEst;
-            } else if (rightVisionEst.get().targetsUsed.size() < leftVisionEst.get().targetsUsed.size()) {
-                bestEstimate = leftVisionEst;
-            } else {
-                // Same number of tags, choose based on estimated ambiguity/distance
-                // For simplicity, we'll just use right camera in this case
-                bestEstimate = rightVisionEst;
-            }
-        }
-        
-        if (Robot.isSimulation() && bestEstimate.isPresent()) {
-            getSimDebugField()
-                .getObject("VisionEstimation")
-                .setPose(bestEstimate.get().estimatedPose.toPose2d());
-        } else if (Robot.isSimulation()) {
-            getSimDebugField().getObject("VisionEstimation").setPoses();
-        }
-        
-        return bestEstimate;
-    }
-
-    /**
      * Gets the latest estimated robot pose from the left camera only.
      * 
      * @return An Optional containing the EstimatedRobotPose from the left camera if available

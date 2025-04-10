@@ -765,7 +765,7 @@ public final class Constants
     // Speed profile constants for different distances
     // Using values consistent with the original ProfileToPose
     public static final double APPROACHING_MAX_VEL = 6.0; // Same as DRIVE_MAX_VELOCITY
-    public static final double APPROACHING_MAX_ACCEL = 3.0; // Same as DRIVE_MAX_ACCELERATION
+    public static final double APPROACHING_MAX_ACCEL = 4.5; // Same as DRIVE_MAX_ACCELERATION
     
     public static final double CLOSE_MAX_VEL = 2.0; // Slower for closer approach
     public static final double CLOSE_MAX_ACCEL = 1.5; // Less acceleration when closer
