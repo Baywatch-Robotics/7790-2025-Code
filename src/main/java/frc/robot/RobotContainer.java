@@ -531,7 +531,7 @@ public class RobotContainer {
 
       // Update trigger states based on distance - now using constants from Constants
       // class
-      isApproaching = distance <= DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD;
+      isApproaching = distance <= 3.0;
       isClose = distance <= DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD;
       isVeryClose = distance <= DriveToPoseConstants.VERY_CLOSE_DISTANCE_THRESHOLD;
 
