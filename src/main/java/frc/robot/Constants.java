@@ -756,7 +756,7 @@ public final class Constants
     
     // Distance thresholds in meters
     public static final double APPROACHING_DISTANCE_THRESHOLD = 2.0; // meters
-    public static final double CLOSE_DISTANCE_THRESHOLD = 1.0; // meters
+    public static final double CLOSE_DISTANCE_THRESHOLD = 0.5; // meters
     public static final double VERY_CLOSE_DISTANCE_THRESHOLD = 0.2; // meters
     
     // Visualization settings
