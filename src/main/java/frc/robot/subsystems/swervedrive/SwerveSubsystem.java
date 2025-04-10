@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.commands.FastProfileToPose;
 import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
@@ -958,6 +959,73 @@ public class SwerveSubsystem extends SubsystemBase
 
   public void setIsUsingQuest(boolean bool){
     isUsingQuest = bool;
+  }
+
+  /**
+   * Creates a FastProfileToPose command for high-speed driving
+   * This doesn't slow down near target - useful for fast autonomous movements like to source stations
+   * 
+   * @param buttonBox The button box containing target information
+   * @return A command that drives to the target pose at full speed
+   */
+  public Command fastDriveToPoseProfiled(ButtonBox buttonBox) {
+    return new FastProfileToPose(this, buttonBox);
+  }
+
+  /**
+   * Creates a FastProfileToPose command with rotation delay for high-speed driving
+   * 
+   * @param buttonBox The button box containing target information
+   * @return A high-speed command that drives to the target pose with rotation delay
+   */
+  public Command fastDriveToPoseProfiledWithRotationDelay(ButtonBox buttonBox) {
+    return new FastProfileToPose(this, buttonBox).withRotationDelay();
+  }
+
+  /**
+   * Creates a FastProfileToPose command with custom rotation delay for high-speed driving
+   * 
+   * @param buttonBox The button box containing target information
+   * @param delaySeconds Custom delay time in seconds
+   * @return A high-speed command that drives to the target pose with rotation delay
+   */
+  public Command fastDriveToPoseProfiledWithRotationDelay(ButtonBox buttonBox, double delaySeconds) {
+    return new FastProfileToPose(this, buttonBox).withRotationDelay(delaySeconds);
+  }
+
+  /**
+   * Starts a fast drive to pose command and returns immediately.
+   * The drive command will continue running in the background at maximum speed.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @return A command that starts the fast drive process and completes immediately
+   */
+  public Command startFastDriveToPose(ButtonBox buttonBox, Elevator elevator) {
+    return FastProfileToPose.startAndReturnCommand(this, buttonBox);
+  }
+
+  /**
+   * Starts a fast drive to pose command with rotation delay and returns immediately.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @return A command that starts the fast drive process with rotation delay and completes immediately
+   */
+  public Command startFastDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator) {
+    return FastProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox);
+  }
+
+  /**
+   * Starts a fast drive to pose command with custom rotation delay and returns immediately.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @param delaySeconds Custom delay time in seconds
+   * @return A command that starts the fast drive process with custom rotation delay and completes immediately
+   */
+  public Command startFastDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator, double delaySeconds) {
+    return FastProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox, delaySeconds);
   }
 
 }
