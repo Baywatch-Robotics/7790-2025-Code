@@ -58,7 +58,6 @@ public class SwerveSubsystem extends SubsystemBase
   private boolean isShaking = false;
   private double shakeStartTime = 0;
   private Command currentShakeCommand = null; // Track the current shake command
-
   
   private boolean isUsingQuest;
 
@@ -118,18 +117,16 @@ public class SwerveSubsystem extends SubsystemBase
 
   @Override
   public void periodic() {
+    // Process vision measurements from both cameras separately
+    addLeftCameraVisionMeasurement();
+    addRightCameraVisionMeasurement();
 
     if(isUsingQuest){
       addQuestVisionMeasurement();
     }
 
-      addVisionMeasurement();
-    
-    
-
-
-  SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
-  SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putNumber("Battery Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
     // Log shake status to SmartDashboard
     SmartDashboard.putBoolean("Shake Mode Active", isShaking);
@@ -688,20 +685,36 @@ public class SwerveSubsystem extends SubsystemBase
     return swerveDrive;
   }
 
-  public void addVisionMeasurement() {
-// Correct pose estimate with vision measurements
 
-var visionEst = vision.getEstimatedGlobalPose();
-visionEst.ifPresent(
+  /**
+   * Add vision measurement from the left camera only
+   */
+  public void addLeftCameraVisionMeasurement() {
+    // Correct pose estimate with left camera vision measurements
+    var visionEst = vision.getEstimatedGlobalPoseLeftCamera();
+    visionEst.ifPresent(
         est -> {
             // Change our trust in the measurement based on the tags we can see
-            var estStdDevs = vision.getEstimationStdDevs();
-
+            var estStdDevs = vision.getLeftEstimationStdDevs();
             swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-        });
-           }
+        }
+    );
+  }
 
-    
+  /**
+   * Add vision measurement from the right camera only
+   */
+  public void addRightCameraVisionMeasurement() {
+    // Correct pose estimate with right camera vision measurements
+    var visionEst = vision.getEstimatedGlobalPoseRightCamera();
+    visionEst.ifPresent(
+        est -> {
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = vision.getRightEstimationStdDevs();
+            swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+        }
+    );
+  }
 
   public void addQuestVisionMeasurement() {
     
@@ -938,7 +951,9 @@ visionEst.ifPresent(
    * Used for cycling measurements during initialization
    */
   public void addVisionMeasurementCommand() {
-      addVisionMeasurement();
+    // Call individual camera measurements instead of the combined one
+    addLeftCameraVisionMeasurement();
+    addRightCameraVisionMeasurement();
   }
 
   public void setIsUsingQuest(boolean bool){

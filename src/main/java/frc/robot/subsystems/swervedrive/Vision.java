@@ -51,14 +51,14 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Vision {
-    private final double kMaxAmbiguity = 0.1;
-    
     private final PhotonCamera rightCamera;
     private final PhotonCamera leftCamera;
     private final PhotonPoseEstimator leftPhotonEstimator;
     private final PhotonPoseEstimator rightPhotonEstimator;
 
     private Matrix<N3, N1> curStdDevs;
+    private Matrix<N3, N1> leftStdDevs;
+    private Matrix<N3, N1> rightStdDevs;
 
     // Simulation
     private PhotonCameraSim rightCameraSim;
@@ -100,6 +100,10 @@ public class Vision {
 
         leftPhotonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         rightPhotonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+
+        // Initialize the separate standard deviations for each camera
+        leftStdDevs = kSingleTagStdDevs;
+        rightStdDevs = kSingleTagStdDevs;
 
         // ----- Simulation
         if (Robot.isSimulation()) {
@@ -143,27 +147,17 @@ public class Vision {
         
         // Process right camera results
         for (var change : rightCamera.getAllUnreadResults()) {
-            // Filter out targets with high ambiguity
-            if (hasHighAmbiguityTarget(change.getTargets())) {
-                continue;
-            }
-            
             rightVisionEst = rightPhotonEstimator.update(change);
             if (rightVisionEst.isPresent()) {
-                updateEstimationStdDevs(rightVisionEst, change.getTargets(), rightPhotonEstimator);
+                updateEstimationStdDevs(rightVisionEst, change.getTargets(), rightPhotonEstimator, rightStdDevs);
             }
         }
         
         // Process left camera results
         for (var change : leftCamera.getAllUnreadResults()) {
-            // Filter out targets with high ambiguity
-            if (hasHighAmbiguityTarget(change.getTargets())) {
-                continue;
-            }
-            
             leftVisionEst = leftPhotonEstimator.update(change);
             if (leftVisionEst.isPresent()) {
-                updateEstimationStdDevs(leftVisionEst, change.getTargets(), leftPhotonEstimator);
+                updateEstimationStdDevs(leftVisionEst, change.getTargets(), leftPhotonEstimator, leftStdDevs);
             }
         }
         
@@ -176,11 +170,15 @@ public class Vision {
         } else if (!rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
             bestEstimate = leftVisionEst;
         } else if (rightVisionEst.isPresent() && leftVisionEst.isPresent()) {
+            // Both cameras have valid estimates, use the one with more tags or better confidence
+            // This is a simple implementation - you might want to implement more sophisticated logic
             if (rightVisionEst.get().targetsUsed.size() > leftVisionEst.get().targetsUsed.size()) {
                 bestEstimate = rightVisionEst;
             } else if (rightVisionEst.get().targetsUsed.size() < leftVisionEst.get().targetsUsed.size()) {
                 bestEstimate = leftVisionEst;
             } else {
+                // Same number of tags, choose based on estimated ambiguity/distance
+                // For simplicity, we'll just use right camera in this case
                 bestEstimate = rightVisionEst;
             }
         }
@@ -195,20 +193,59 @@ public class Vision {
         
         return bestEstimate;
     }
-    
+
     /**
-     * Checks if any target in the list has ambiguity above the maximum threshold
-     *
-     * @param targets List of tracked targets to check
-     * @return true if any target has high ambiguity, false otherwise
+     * Gets the latest estimated robot pose from the left camera only.
+     * 
+     * @return An Optional containing the EstimatedRobotPose from the left camera if available
      */
-    private boolean hasHighAmbiguityTarget(List<PhotonTrackedTarget> targets) {
-        for (PhotonTrackedTarget target : targets) {
-            if (target.getPoseAmbiguity() > kMaxAmbiguity) {
-                return true;
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPoseLeftCamera() {
+        Optional<EstimatedRobotPose> leftVisionEst = Optional.empty();
+        
+        // Process left camera results
+        for (var change : leftCamera.getAllUnreadResults()) {
+            leftVisionEst = leftPhotonEstimator.update(change);
+            if (leftVisionEst.isPresent()) {
+                updateEstimationStdDevs(leftVisionEst, change.getTargets(), leftPhotonEstimator, leftStdDevs);
             }
         }
-        return false;
+        
+        if (Robot.isSimulation() && leftVisionEst.isPresent()) {
+            getSimDebugField()
+                .getObject("LeftCameraEstimation")
+                .setPose(leftVisionEst.get().estimatedPose.toPose2d());
+        } else if (Robot.isSimulation()) {
+            getSimDebugField().getObject("LeftCameraEstimation").setPoses();
+        }
+        
+        return leftVisionEst;
+    }
+
+    /**
+     * Gets the latest estimated robot pose from the right camera only.
+     * 
+     * @return An Optional containing the EstimatedRobotPose from the right camera if available
+     */
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPoseRightCamera() {
+        Optional<EstimatedRobotPose> rightVisionEst = Optional.empty();
+        
+        // Process right camera results
+        for (var change : rightCamera.getAllUnreadResults()) {
+            rightVisionEst = rightPhotonEstimator.update(change);
+            if (rightVisionEst.isPresent()) {
+                updateEstimationStdDevs(rightVisionEst, change.getTargets(), rightPhotonEstimator, rightStdDevs);
+            }
+        }
+        
+        if (Robot.isSimulation() && rightVisionEst.isPresent()) {
+            getSimDebugField()
+                .getObject("RightCameraEstimation")
+                .setPose(rightVisionEst.get().estimatedPose.toPose2d());
+        } else if (Robot.isSimulation()) {
+            getSimDebugField().getObject("RightCameraEstimation").setPoses();
+        }
+        
+        return rightVisionEst;
     }
 
     /**
@@ -217,14 +254,16 @@ public class Vision {
      * @param estimatedPose The estimated pose to guess standard deviations for.
      * @param targets       All targets in this camera frame
      * @param estimator     The estimator that produced this pose
+     * @param stdDevsOutput The output standard deviations to be updated
      */
     private void updateEstimationStdDevs(
             Optional<EstimatedRobotPose> estimatedPose, 
             List<PhotonTrackedTarget> targets,
-            PhotonPoseEstimator estimator) {
+            PhotonPoseEstimator estimator,
+            Matrix<N3, N1> stdDevsOutput) {
         if (estimatedPose.isEmpty()) {
             // No pose input. Default to single-tag std devs
-            curStdDevs = kSingleTagStdDevs;
+            stdDevsOutput = kSingleTagStdDevs;
         } else {
             // Pose present. Start running Heuristic
             var estStdDevs = kSingleTagStdDevs;
@@ -247,7 +286,7 @@ public class Vision {
 
             if (numTags == 0) {
                 // No tags visible. Default to single-tag std devs
-                curStdDevs = kSingleTagStdDevs;
+                stdDevsOutput = kSingleTagStdDevs;
             } else {
                 // One or more tags visible, run the full heuristic.
                 avgDist /= numTags;
@@ -259,9 +298,26 @@ public class Vision {
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
                 else
                     estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-                curStdDevs = estStdDevs;
+                stdDevsOutput = estStdDevs;
             }
         }
+        
+        // Also update the common stdDevs for backward compatibility
+        curStdDevs = stdDevsOutput;
+    }
+
+    /**
+     * Returns the latest standard deviations of the estimated pose from the left camera.
+     */
+    public Matrix<N3, N1> getLeftEstimationStdDevs() {
+        return leftStdDevs;
+    }
+
+    /**
+     * Returns the latest standard deviations of the estimated pose from the right camera.
+     */
+    public Matrix<N3, N1> getRightEstimationStdDevs() {
+        return rightStdDevs;
     }
 
     /**
