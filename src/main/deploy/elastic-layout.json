@@ -423,11 +423,7 @@
               "period": 0.06,
               "rotation_turns": 2,
               "compression": 10,
-              "fps": 15,
-              "resolution": [
-                0.0,
-                0.0
-              ]
+              "fps": 15
             }
           }
         ]
