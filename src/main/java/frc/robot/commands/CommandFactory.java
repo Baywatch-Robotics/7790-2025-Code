@@ -285,7 +285,38 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
   .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  // Add algae ball removal sequence - Left Auton does faces 5, 4, then 3
+  // Face 5 ball removal
+  .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+      shooter, 
+      shooterArm, 
+      elevator, 
+      drivebase, 
+      robotContainer, 
+      buttonBox, 
+      "A500"))
+      
+  // Face 4 ball removal
+  .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+      shooter, 
+      shooterArm, 
+      elevator, 
+      drivebase, 
+      robotContainer, 
+      buttonBox, 
+      "A400"))
+      
+  // Face 3 ball removal
+  .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+      shooter, 
+      shooterArm, 
+      elevator, 
+      drivebase, 
+      robotContainer, 
+      buttonBox, 
+      "A300"));
     
   command.addRequirements(shooter, shooterArm, elevator, funnel);
   return command; 
@@ -321,7 +352,38 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
     .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
-    .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+    
+    // Add algae ball removal sequence - Right Auton does faces 3, 4, then 5
+    // Face 3 ball removal
+    .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+        shooter, 
+        shooterArm, 
+        elevator, 
+        drivebase, 
+        robotContainer, 
+        buttonBox, 
+        "A301"))
+        
+    // Face 4 ball removal
+    .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+        shooter, 
+        shooterArm, 
+        elevator, 
+        drivebase, 
+        robotContainer, 
+        buttonBox, 
+        "A401"))
+        
+    // Face 5 ball removal
+    .andThen(CommandFactory.autoAlgaeReefRemovalCommand(
+        shooter, 
+        shooterArm, 
+        elevator, 
+        drivebase, 
+        robotContainer, 
+        buttonBox, 
+        "A501"));
     
     command.addRequirements(shooter, shooterArm, elevator, funnel);
     return command; 
