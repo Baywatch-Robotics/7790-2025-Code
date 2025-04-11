@@ -52,10 +52,12 @@ public class CommandFactory {
   
   
 
-  public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+  public static Command setIntakeCommandFORAUTOONLY(Shooter shooter, ShooterArm shooterArm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter) {
     
     
       Command command  = elevator.setElevatorPickupCommand()
+      .andThen(funnel.funnelHomeCommand())
+      .andThen(algaeArm.algaeArmStowUpCommand())
       .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
       .andThen(shooterArm.shooterArmLoadCommand())
       .andThen(shooter.shooterIntakeCommand())
@@ -169,7 +171,6 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
     .andThen(shooterArm.shooterArmScoreL1RealCommand())
     .andThen(algaeArm.algaeArmScoreL1Command())
-    .andThen(algaeShooter.algaeShooterIntakeCommand())
     .andThen(funnel.funnelL1Command())
     .andThen(new InstantCommand(() -> shooter.setisL1ScoringTrue()));
 
@@ -218,7 +219,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, Sh
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())
-  .andThen(new WaitCommand(.5))
+  .andThen(new WaitCommand(.25))
   .andThen(shooter.shooterZeroSpeedCommand());
     
     command.addRequirements(shooter, shooterArm, elevator);
@@ -232,26 +233,26 @@ public static Command scoreBasedOnQueueCommandDriveAuto(Shooter shooter, Shooter
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())
-  .andThen(new WaitCommand(.5))
+  .andThen(new WaitCommand(.25))
   .andThen(shooter.shooterZeroSpeedCommand());
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
 }
 
-public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, Funnel funnel){
+public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter) {
 
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
   Command command = drivebase.startFastDriveToPoseWithRotationDelay(buttonBox, elevator)
-  .andThen(new WaitCommand(1.5))
-  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, drivebase, robotContainer));
+  .andThen(new WaitCommand(.75))
+  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, drivebase, robotContainer, funnel, algaeArm, algaeShooter));
 
   command.addRequirements(shooter, shooterArm, elevator, funnel);
 
   return command; 
 }
 
-public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
+public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("C530"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
@@ -260,7 +261,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C630")))
@@ -270,7 +271,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
   .andThen(elevator.setElevatorPickupCommand())
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C631")))
@@ -280,14 +281,14 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+  .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
   command.addRequirements(shooter, shooterArm, elevator, funnel);
   return command; 
 }
 
-public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
+public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter){
 
     Command command = new InstantCommand(() -> buttonBox.addTarget("C331"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
@@ -296,7 +297,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C230")))
@@ -306,7 +307,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C231")))
@@ -316,7 +317,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel))
+    .andThen(CommandFactory.sourceDriveAuto(shooter, shooterArm, elevator, buttonBox, robotContainer, drivebase, funnel, algaeArm, algaeShooter))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
     command.addRequirements(shooter, shooterArm, elevator, funnel);

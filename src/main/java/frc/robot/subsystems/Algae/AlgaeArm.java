@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -220,6 +221,10 @@ public class AlgaeArm extends SubsystemBase {
             isInitialized = true;
         }
         
+        if(DriverStation.isDisabled()){
+            algaeArmDesiredAngle = (float)algaeArmEncoder.getPosition();
+        }
+
         // Check if algae is loaded
         checkAlgaeLoaded();
         

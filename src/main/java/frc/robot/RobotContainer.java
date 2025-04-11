@@ -243,12 +243,12 @@ public class RobotContainer {
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel, algaeArm, algaeShooter);
 
   public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
   public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
 
-  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel, algaeArm, algaeShooter);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
 

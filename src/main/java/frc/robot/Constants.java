@@ -213,7 +213,8 @@ public final class Constants
 
     public static final float L2RPose = -6.552f;
     public static final float L2LPose = -6.552f;
-    public static final float pickupPose = -14.616677284240723f;
+    public static final float pickupPose = -15.373566627502441f
+    ;
     public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -263,7 +264,7 @@ public final class Constants
     public static final int ID = 20;
     
     // Position constants
-    public static final float homePosition = .55f;
+    public static final float homePosition = .54f;
     public static final float fullUpPosition = .24f;
     
     // Angle offset for absolute encoder
@@ -318,7 +319,7 @@ public final class Constants
     public static final boolean USE_VELOCITY_DETECTION = true;
     public static final boolean USE_CURRENT_DETECTION = true;
 
-    public static final float L1Pose = 0.474f;
+    public static final float L1Pose = 0.504f;
 
     public static final float L1Dump = 0.425033f;
   }
@@ -775,7 +776,7 @@ public final class Constants
     public static final double VERY_CLOSE_MAX_ACCEL = 1.0; // Least acceleration for precision
 
     // Rotation delay for autonomous mode (seconds)
-    public static final double AUTON_ROTATION_DELAY = 1.0;
+    public static final double AUTON_ROTATION_DELAY = 0.5;
   }
 
   public static final class ShakeModeConstants {
