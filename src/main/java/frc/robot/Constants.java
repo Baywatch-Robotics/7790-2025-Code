@@ -749,8 +749,8 @@ public final class Constants
     // Motion profile constraints
     public static final double DRIVE_MAX_VELOCITY = 0.7;
     public static final double DRIVE_MAX_ACCELERATION = 1.0;
-    public static final double THETA_MAX_VELOCITY = Units.degreesToRadians(360);
-    public static final double THETA_MAX_ACCELERATION = Units.degreesToRadians(180);
+    public static final double THETA_MAX_VELOCITY = Units.degreesToRadians(720);
+    public static final double THETA_MAX_ACCELERATION = Units.degreesToRadians(720);
     
     // Position and angle tolerances
     public static final double DRIVE_TOLERANCE = 0.01;
