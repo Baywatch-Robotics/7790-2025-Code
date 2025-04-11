@@ -515,6 +515,18 @@ public final class Constants
     public static final float SRPositionX = (float)Units.inchesToMeters(43.5);
     public static final float SRPositionY = (float)Units.inchesToMeters(38.48);
     public static final float SRPositionZ = (float)Units.degreesToRadians(54);
+
+    public static final float CLPositionX = (float)Units.inchesToMeters(297.5);
+    public static final float CLPositionY = (float)Units.inchesToMeters(280.375);
+    public static final float CLPositionZ = (float)Units.degreesToRadians(240);
+
+    public static final float CCPositionX = (float)Units.inchesToMeters(297.5);
+    public static final float CCPositionY = (float)Units.inchesToMeters(243.75);
+    public static final float CCPositionZ = (float)Units.degreesToRadians(215);
+
+    public static final float CRPositionX = (float)Units.inchesToMeters(297.5);
+    public static final float CRPositionY = (float)Units.inchesToMeters(207.125);
+    public static final float CRPositionZ = (float)Units.degreesToRadians(190);
     
     public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
