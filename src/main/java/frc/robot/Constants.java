@@ -523,7 +523,7 @@ public final class Constants
     // Hexagon center and dimensions
     public static final float hexagonCenterX = (float)Units.inchesToMeters(176.745);
     public static final float hexagonCenterY = (float)Units.inchesToMeters(158.5);
-    public static final float hexagonRadius = (float)Units.inchesToMeters(50.0);
+    public static final float hexagonRadius = (float)Units.inchesToMeters(50.75);
     
     // Offset constants
     public static final float LeftOffset = (float)Units.inchesToMeters(5.5);
