@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.AutoAlgaeReefRemovalConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ButtonBox;
@@ -351,11 +352,14 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
 
    /**
     * Creates a command sequence for automatic algae reef removal
+    * Using the standard drive to pose methods in SwerveSubsystem
     * 
     * @param shooter The shooter subsystem
     * @param shooterArm The shooter arm subsystem
     * @param elevator The elevator subsystem
     * @param drivebase The swerve drive subsystem
+    * @param robotContainer The robot container object
+    * @param buttonBox The button box subsystem
     * @param faceNumber The reef face number to target (1-6)
     * @param isHighBall Whether to use high ball (true) or low ball (false) retrieval
     * @param isLeftSide Whether to use left side (true) or right side (false) of target
@@ -366,6 +370,7 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
          ShooterArm shooterArm, 
          Elevator elevator,
          SwerveSubsystem drivebase,
+         RobotContainer robotContainer,
          ButtonBox buttonBox,
          int faceNumber,
          boolean isHighBall,
@@ -393,74 +398,64 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
       String backupTarget = String.format("A%dX%dBackup", faceNumber, isLeftSide ? 0 : 1);
       String finalTarget = String.format("A%dX%d", faceNumber, isLeftSide ? 0 : 1);
       
-      // Build the command sequence
+      // Build the command sequence using existing drive methods
       Command command = new InstantCommand(() -> {
          buttonBox.clearTargets();
          buttonBox.addTarget(backupTarget);
       })
-      // Phase 1: Fast profile to drive to backup position
-      .andThen(drivebase.startFastCustomProfileDriveToPose(
-            buttonBox, 
-            AutoAlgaeReefRemovalConstants.FAST_DRIVE_MAX_VEL,
-            AutoAlgaeReefRemovalConstants.FAST_DRIVE_MAX_ACCEL))
+      // Phase 1: Fast profile to drive to backup position - using standard fast drive method
+      .andThen(drivebase.startFastDriveToPose(buttonBox, elevator))
       
-      // Wait until we're close enough to the backup point or timeout
+      // Wait until we're close enough to the backup point using robotContainer's method
       .andThen(new WaitUntilCommand(() -> 
-            drivebase.getDistanceToTargetPose() < AutoAlgaeReefRemovalConstants.PROXIMITY_THRESHOLD))
+            robotContainer.getDistanceToTargetPose() < AutoAlgaeReefRemovalConstants.PROXIMITY_THRESHOLD))
       
       // Add configurable wait time after backup drive
-      .andThen(() -> new WaitCommand(SmartDashboard.getNumber(
-            AutoAlgaeReefRemovalConstants.BACKUP_DRIVE_WAIT_KEY,
-            AutoAlgaeReefRemovalConstants.DEFAULT_BACKUP_WAIT_TIME)))
+      .andThen(new WaitCommand(
+            SmartDashboard.getNumber(
+                  AutoAlgaeReefRemovalConstants.BACKUP_DRIVE_WAIT_KEY,
+                  AutoAlgaeReefRemovalConstants.DEFAULT_BACKUP_WAIT_TIME)))
       
       // Configure shooter arm based on high/low ball
       .andThen(new InstantCommand(() -> {
          if (isHighBall) {
-            shooterArm.setShooterArmPreBall();
+            pullOffHighAboveBall(shooter, shooterArm, elevator);
          } else {
-            shooterArm.setShooterArmPreLowBall();
+            pullOffLowBall(shooter, shooterArm, elevator);
          }
       }))
       
       // Add configurable wait time after arm configuration
-      .andThen(() -> new WaitCommand(SmartDashboard.getNumber(
-            AutoAlgaeReefRemovalConstants.ARM_CONFIG_WAIT_KEY,
-            AutoAlgaeReefRemovalConstants.DEFAULT_ARM_CONFIG_WAIT_TIME)))
+      .andThen(new WaitCommand(
+            SmartDashboard.getNumber(
+                  AutoAlgaeReefRemovalConstants.ARM_CONFIG_WAIT_KEY,
+                  AutoAlgaeReefRemovalConstants.DEFAULT_ARM_CONFIG_WAIT_TIME)))
       
       // Phase 2: Normal profile to drive to final position
       .andThen(new InstantCommand(() -> {
          buttonBox.clearTargets();
          buttonBox.addTarget(finalTarget);
       }))
-      .andThen(drivebase.startCustomProfileDriveToPose(
-            buttonBox, 
-            AutoAlgaeReefRemovalConstants.NORMAL_DRIVE_MAX_VEL,
-            AutoAlgaeReefRemovalConstants.NORMAL_DRIVE_MAX_ACCEL))
+      // Using standard drive to pose for more precision on final approach
+      .andThen(drivebase.startDriveToPose(buttonBox, elevator))
       
-      // Wait until we reach the target or get close enough
-      .andThen(new WaitUntilCommand(() -> drivebase.isAtTargetPose()))
+      // Wait until we reach the target or get close enough - using robotContainer's method
+      .andThen(new WaitUntilCommand(() -> robotContainer.getDistanceToTargetPose() < 0.1))
       
       // Add configurable wait time after cross drive
-      .andThen(() -> new WaitCommand(SmartDashboard.getNumber(
-            AutoAlgaeReefRemovalConstants.CROSS_DRIVE_WAIT_KEY,
-            AutoAlgaeReefRemovalConstants.DEFAULT_CROSS_DRIVE_WAIT_TIME)))
-      
-      // Activate shooter to grab the ball
-      .andThen(shooter.shooterOutakeCommand())
-      
-      // Wait to ensure ball is grabbed or timeout
-      .andThen(new WaitCommand(0.5))
-      
-      // Stop the shooter
-      .andThen(shooter.shooterZeroSpeedCommand())
+      .andThen(new WaitCommand(
+            SmartDashboard.getNumber(
+                  AutoAlgaeReefRemovalConstants.CROSS_DRIVE_WAIT_KEY,
+                  AutoAlgaeReefRemovalConstants.DEFAULT_CROSS_DRIVE_WAIT_TIME)))
       
       // Pull the arm back to a safe position
       .andThen(shooterArm.shooterArmScoreLOWCommand())
       
       // Add configurable wait time for pullback
-      .andThen(() -> new WaitCommand(SmartDashboard.getNumber(
-            AutoAlgaeReefRemovalConstants.PULLBACK_WAIT_KEY,
-            AutoAlgaeReefRemovalConstants.DEFAULT_PULLBACK_WAIT_TIME)));
+      .andThen(new WaitCommand(
+            SmartDashboard.getNumber(
+                  AutoAlgaeReefRemovalConstants.PULLBACK_WAIT_KEY,
+                  AutoAlgaeReefRemovalConstants.DEFAULT_PULLBACK_WAIT_TIME)));
       
       command.addRequirements(shooter, shooterArm, drivebase);
       return command;
@@ -472,6 +467,7 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
          ShooterArm shooterArm, 
          Elevator elevator,
          SwerveSubsystem drivebase,
+         RobotContainer robotContainer,
          ButtonBox buttonBox,
          String targetFace) {
          
@@ -491,6 +487,6 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
          case 6: isHighBall = Constants.TargetClassConstants.isHighAlgaeA6XX; break;
       }
       
-      return autoAlgaeReefRemovalCommand(shooter, shooterArm, elevator, drivebase, buttonBox, faceNumber, isHighBall, isLeftSide);
+      return autoAlgaeReefRemovalCommand(shooter, shooterArm, elevator, drivebase, robotContainer, buttonBox, faceNumber, isHighBall, isLeftSide);
    }
 }
