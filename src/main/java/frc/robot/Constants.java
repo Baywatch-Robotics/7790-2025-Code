@@ -856,4 +856,32 @@ public final class Constants
     // Use open-loop control for maximum power and direct motor response
     public static final boolean USE_OPEN_LOOP = true;
   }
+
+  /**
+   * Constants for the Auto Algae Reef Removal sequence
+   */
+  public static final class AutoAlgaeReefRemovalConstants {
+    // SmartDashboard keys for wait times
+    public static final String BACKUP_DRIVE_WAIT_KEY = "AlgaeAuto/BackupWaitTime";
+    public static final String ARM_CONFIG_WAIT_KEY = "AlgaeAuto/ArmConfigWaitTime";
+    public static final String CROSS_DRIVE_WAIT_KEY = "AlgaeAuto/CrossDriveWaitTime";
+    public static final String PULLBACK_WAIT_KEY = "AlgaeAuto/PullbackWaitTime";
+    
+    // Default wait times in seconds
+    public static final double DEFAULT_BACKUP_WAIT_TIME = 0.1;
+    public static final double DEFAULT_ARM_CONFIG_WAIT_TIME = 0.3;
+    public static final double DEFAULT_CROSS_DRIVE_WAIT_TIME = 0.2;
+    public static final double DEFAULT_PULLBACK_WAIT_TIME = 0.1;
+    
+    // Distance threshold to transition from backup to cross drive (meters)
+    public static final double PROXIMITY_THRESHOLD = 0.5;
+    
+    // Fast profile settings for backup drive
+    public static final double FAST_DRIVE_MAX_VEL = 4.0;
+    public static final double FAST_DRIVE_MAX_ACCEL = 3.0;
+    
+    // Normal profile settings for cross drive
+    public static final double NORMAL_DRIVE_MAX_VEL = 2.0;
+    public static final double NORMAL_DRIVE_MAX_ACCEL = 1.5;
+  }
 }
