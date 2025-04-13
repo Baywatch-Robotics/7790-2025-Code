@@ -992,37 +992,4 @@ public class RobotContainer {
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
   }
-
-  /**
-   * Gets the distance from the robot to the current target pose
-   * @return Distance in meters, or -1 if no target is available
-   */
-  public double getDistanceToTargetPose() {
-    // Get current robot pose
-    Pose2d currentPose = drivebase.getPose();
-
-    // Get the current target pose from the ButtonBox, if available
-    TargetClass currentTarget = buttonBox.currentTargetClassSupplier.get();
-
-    if (currentTarget != null) {
-      // Convert target to Pose2d
-      Pose2d targetPose = new Pose2d(
-          currentTarget.getX(),
-          currentTarget.getY(),
-          Rotation2d.fromRadians(currentTarget.getZ()));
-
-      // Convert to alliance-relative coordinates
-      Pose2d allianceRelativeTarget = TargetClass.toPose2d(targetPose);
-
-      // Calculate distance to target
-      double distance = Math.sqrt(
-          Math.pow(currentPose.getX() - allianceRelativeTarget.getX(), 2) +
-              Math.pow(currentPose.getY() - allianceRelativeTarget.getY(), 2));
-              
-      return distance;
-    }
-    
-    // Return -1 if no target is available
-    return -1;
-  }
 }
