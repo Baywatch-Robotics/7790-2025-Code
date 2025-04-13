@@ -547,6 +547,146 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
+
+
+                
+            // Algae targets for Face 1
+            case "A100": // Face 1, center, no backup
+                target.setX(TargetClassConstants.xValueA1X0);
+                target.setY(TargetClassConstants.yValueA1X0);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setSource(false);
+                break;
+            case "A110": // Face 1, offset, no backup
+                target.setX(TargetClassConstants.xValueA1X1);
+                target.setY(TargetClassConstants.yValueA1X1);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setSource(false);
+                break;
+            case "A111": // Face 1, offset, with backup
+                target.setX(TargetClassConstants.xValueA1X1Backup);
+                target.setY(TargetClassConstants.yValueA1X1Backup);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setSource(false);
+                break;
+                
+            // Algae targets for Face 2
+            case "A200": // Face 2, center, no backup
+                target.setX(TargetClassConstants.xValueA2X0);
+                target.setY(TargetClassConstants.yValueA2X0);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setSource(false);
+                break;
+            case "A210": // Face 2, offset, no backup
+                target.setX(TargetClassConstants.xValueA2X1);
+                target.setY(TargetClassConstants.yValueA2X1);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setSource(false);
+                break;
+            case "A211": // Face 2, offset, with backup
+                target.setX(TargetClassConstants.xValueA2X1Backup);
+                target.setY(TargetClassConstants.yValueA2X1Backup);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setSource(false);
+                break;
+                
+            // Algae targets for Face 3
+            case "A300": // Face 3, center, no backup
+                target.setX(TargetClassConstants.xValueA3X0);
+                target.setY(TargetClassConstants.yValueA3X0);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setSource(false);
+                break;
+            case "A310": // Face 3, offset, no backup
+                target.setX(TargetClassConstants.xValueA3X1);
+                target.setY(TargetClassConstants.yValueA3X1);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setSource(false);
+                break;
+            case "A311": // Face 3, offset, with backup
+                target.setX(TargetClassConstants.xValueA3X1Backup);
+                target.setY(TargetClassConstants.yValueA3X1Backup);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setSource(false);
+                break;
+                
+            // Algae targets for Face 4
+            case "A400": // Face 4, center, no backup
+                target.setX(TargetClassConstants.xValueA4X0);
+                target.setY(TargetClassConstants.yValueA4X0);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setSource(false);
+                break;
+            case "A410": // Face 4, offset, no backup
+                target.setX(TargetClassConstants.xValueA4X1);
+                target.setY(TargetClassConstants.yValueA4X1);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setSource(false);
+                break;
+            case "A411": // Face 4, offset, with backup
+                target.setX(TargetClassConstants.xValueA4X1Backup);
+                target.setY(TargetClassConstants.yValueA4X1Backup);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setSource(false);
+                break;
+                
+            // Algae targets for Face 5
+            case "A500": // Face 5, center, no backup
+                target.setX(TargetClassConstants.xValueA5X0);
+                target.setY(TargetClassConstants.yValueA5X0);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setSource(false);
+                break;
+            case "A510": // Face 5, offset, no backup
+                target.setX(TargetClassConstants.xValueA5X1);
+                target.setY(TargetClassConstants.yValueA5X1);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setSource(false);
+                break;
+            case "A511": // Face 5, offset, with backup
+                target.setX(TargetClassConstants.xValueA5X1Backup);
+                target.setY(TargetClassConstants.yValueA5X1Backup);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setSource(false);
+                break;
+                
+            // Algae targets for Face 6
+            case "A600": // Face 6, center, no backup
+                target.setX(TargetClassConstants.xValueA6X0);
+                target.setY(TargetClassConstants.yValueA6X0);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setSource(false);
+                break;
+            case "A610": // Face 6, offset, no backup
+                target.setX(TargetClassConstants.xValueA6X1);
+                target.setY(TargetClassConstants.yValueA6X1);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setSource(false);
+                break;
+            case "A611": // Face 6, offset, with backup
+                target.setX(TargetClassConstants.xValueA6X1Backup);
+                target.setY(TargetClassConstants.yValueA6X1Backup);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setSource(false);
+                break;
             // Add more cases as needed.
             default:
                 target = null;

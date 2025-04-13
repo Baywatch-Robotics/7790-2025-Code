@@ -346,4 +346,44 @@ public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shoote
   command.addRequirements(shooter, shooterArm, elevator, funnel);
   return command; 
 }
+
+public static Command algaeRemoveBasedOnQueueCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+    Command command = shooterArm.shooterArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevate()))
+    .andThen(buttonBox.setElevatorForCurrentBallCommand(elevator))
+    .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+    .andThen(shooterArm.shooterArmPreLowBallCommand())
+    .andThen(shooter.shooterOutakeCommand());
+
+    command.addRequirements(shooter, shooterArm, elevator);
+    return command;
+}
+
+public static Command algaeRemoveBasedOnQueueCommandDriveCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+    Command command = drivebase.startDriveToPose(buttonBox, elevator)
+    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+    .andThen(buttonBox.getNextTargetCommand())
+    .andThen(drivebase.startDriveToPose(buttonBox, elevator));
+
+
+    command.addRequirements(shooter, shooterArm, elevator);
+    return command;
+}
+
+public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+
+    Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
+    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
+    .andThen(buttonBox.getNextTargetCommand())
+    .andThen(drivebase.startDriveToPose(buttonBox, elevator))
+    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+    .andThen(buttonBox.getNextTargetCommand())
+    .andThen(drivebase.startDriveToPose(buttonBox, elevator))
+    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()));
+
+    command.addRequirements(shooter, shooterArm, elevator);
+    return command;
+}
 }
