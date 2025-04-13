@@ -1028,4 +1028,40 @@ public class SwerveSubsystem extends SubsystemBase
     return FastProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox, delaySeconds);
   }
 
+  /**
+   * Command to stop any active drive-to-pose commands
+   * This sets the cancel flag to true and immediately stops the robot's movement
+   * 
+   * @return A command that cancels drive-to-pose
+   */
+  public Command stopDriveToPoseCommand() {
+    return Commands.sequence(
+      // Set the cancel flag to true
+      Commands.runOnce(() -> setCancel(true)),
+      
+      // Stop motion immediately
+      Commands.runOnce(() -> setChassisSpeeds(new ChassisSpeeds(0, 0, 0))),
+      
+      // Delay very briefly to allow cancelation to propagate
+      Commands.waitSeconds(0.05),
+      
+      // Reset the cancel flag for future commands
+      Commands.runOnce(() -> setCancel(false))
+    );
+  }
+
+  /**
+   * Immediately stops any active drive-to-pose command
+   * This is a convenience method for direct calls from code
+   */
+  public void stopDriveToPose() {
+    setCancel(true);
+    setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+    
+    // Schedule a command to reset the cancel flag after a short delay
+    Commands.runOnce(() -> setCancel(false), this)
+            .withTimeout(0.05)
+            .schedule();
+  }
+
 }
