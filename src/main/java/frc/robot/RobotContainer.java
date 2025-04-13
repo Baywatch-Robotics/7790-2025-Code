@@ -383,7 +383,7 @@ public class RobotContainer {
     buttonBox1.button(8).and(buttonBox2.button(8)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C530")));
     buttonBox1.button(8).and(buttonBox2.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
 
-    buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
+    //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
 
 
     // buttonBox1.button(4).onTrue(new InstantCommand(() ->
@@ -413,7 +413,13 @@ public class RobotContainer {
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
 
-    driverXbox.a().onTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
+
+
+    driverXbox.a().whileTrue(CommandFactory.algaeRemoveBasedOnQueueCommandDriveCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this));
+
+    driverXbox.a().onFalse(drivebase.stopDriveToPoseCommand());
+
+
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
     driverXbox.pov(0).onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
