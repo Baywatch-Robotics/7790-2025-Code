@@ -685,7 +685,7 @@ public final class Constants
     public static final boolean setLeftCXX1 = false;
 
     
-    public static final float BackupOffset = (float)Units.inchesToMeters(18.0);
+    public static final float BackupOffset = (float)Units.inchesToMeters(20);
     
     // Face 1 Algae with backup offset (0 degrees)
     public static final float xValueA1X0Backup = hexagonCenterX + (hexagonRadius + BackupOffset) * (float)Math.cos(zValueC1XX + Math.PI);

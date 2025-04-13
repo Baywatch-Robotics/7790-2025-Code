@@ -330,7 +330,11 @@ public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooter
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
-  .andThen(elevator.setElevatorPickupCommand());
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
   
   command.addRequirements(shooter, shooterArm, elevator, funnel);
   return command; 
@@ -373,11 +377,11 @@ public static Command algaeRemoveBasedOnQueueCommandDriveCommand(Shooter shooter
 
 public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
 
-    Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
-    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
+    Command command = drivebase.startDriveToPosePATHPLANNER(buttonBox, elevator)
+    //.andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
     .andThen(buttonBox.getNextTargetCommand())
-    .andThen(drivebase.startDriveToPose(buttonBox, elevator))
+    .andThen(drivebase.startFastDriveToPose(buttonBox, elevator))
     .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
     .andThen(buttonBox.getNextTargetCommand())
     .andThen(drivebase.startDriveToPose(buttonBox, elevator))

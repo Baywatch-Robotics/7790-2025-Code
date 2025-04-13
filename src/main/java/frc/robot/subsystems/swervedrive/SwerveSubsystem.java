@@ -31,10 +31,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.commands.FastProfileToPose;
 import frc.robot.commands.ProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.TargetClass;
 
 import java.io.File;
 import java.util.function.Supplier;
@@ -259,8 +261,8 @@ public class SwerveSubsystem extends SubsystemBase
     return this.pathCanceled;
   }
   
-  /*
-  public Command driveToPose(ButtonBox buttonBox, Elevator elevator) {
+  
+  public Command driveToPosePATHPLANNER(ButtonBox buttonBox, Elevator elevator) {
     return new Command() {
         private Command pathCommand;
         private PathConstraints lastConstraints = null;
@@ -287,58 +289,12 @@ public class SwerveSubsystem extends SubsystemBase
             );
             Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
             
-            // Calculate distance from current robot pose to target pose
-            
-            //double distance = getPose().getTranslation().getDistance(finalTargetPose.getTranslation());
-            
-            // Base velocity and acceleration values based on distance
-            double baseVelocity, baseAcceleration;
-            
-          
-            baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-            baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-            
-            /*
-            if (elevator.isAtIntakePosition()){
-              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            }
-            else if(elevator.isPartiallyRaised()){
-              baseVelocity = DriveToPoseConstants.CLOSE_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.CLOSE_MAX_ACCEL;
-            }
-            else if(elevator.isMidRaised()){
-              baseVelocity = DriveToPoseConstants.VERY_CLOSE_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL;
-            }
-            else{
-              baseVelocity = DriveToPoseConstants.APPROACHING_MAX_VEL;
-              baseAcceleration = DriveToPoseConstants.APPROACHING_MAX_ACCEL;
-            }
-          
-            
-            if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.APPROACHING_MAX_ACCEL);
-          } else if (distance > DriveToPoseConstants.CLOSE_DISTANCE_THRESHOLD) {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.CLOSE_MAX_ACCEL);
-          } else {
-              baseVelocity = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_VEL);
-              baseAcceleration = Math.min(baseVelocity, DriveToPoseConstants.VERY_CLOSE_MAX_ACCEL);
-          }
-            
-
-            // Apply elevator height-based multipliers
-            double finalVelocity = baseVelocity;
-            double finalAcceleration = baseAcceleration;
-            
             // Create the PathConstraints with the computed values
             PathConstraints currentConstraints = new PathConstraints(
-                finalVelocity, 
-                finalAcceleration,
-                DriveToPoseConstants.MAX_ANGULAR_VEL,
-                DriveToPoseConstants.MAX_ANGULAR_ACCEL
+                3.0,
+                3.0,
+                DriveToPoseConstants.THETA_MAX_VELOCITY,
+                DriveToPoseConstants.THETA_MAX_ACCELERATION
             );
             
             // Only update when either constraints or target have changed
@@ -377,7 +333,7 @@ public class SwerveSubsystem extends SubsystemBase
         }
     };
 }
-*/
+
 
   public Command driveToPoseProfiled(ButtonBox buttonBox) {
     // Simply pass the ButtonBox to the ProfileToPose command
@@ -1062,6 +1018,28 @@ public class SwerveSubsystem extends SubsystemBase
     Commands.runOnce(() -> setCancel(false), this)
             .withTimeout(0.05)
             .schedule();
+  }
+
+  /**
+   * Starts a PathPlanner-based drive-to-pose command and returns immediately.
+   * The drive command will continue running in the background.
+   * This variant uses PathPlanner's pathfinding for more complex navigation.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @return A command that starts the PathPlanner drive process and completes immediately
+   */
+  public Command startDriveToPosePATHPLANNER(ButtonBox buttonBox, Elevator elevator) {
+    return Commands.runOnce(() -> {
+      // Reset cancel flag at start
+      setCancel(false);
+      
+      // Create but don't return the actual drive command
+      Command driveCommand = driveToPosePATHPLANNER(buttonBox, elevator);
+      
+      // Schedule it so it runs in the background
+      driveCommand.schedule();
+    });
   }
 
 }
