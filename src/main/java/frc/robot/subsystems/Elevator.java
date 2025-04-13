@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.Constants.TargetClassConstants;
 import frc.robot.RobotContainer;
 
 public class Elevator extends SubsystemBase {
@@ -211,7 +212,68 @@ public class Elevator extends SubsystemBase {
         return command;
     }
     
+        // New method to position elevator based on ball height in queue
+        public Command setElevatorForBallTargetCommand(ButtonBox buttonBox) {
+            return new InstantCommand(() -> {
+                // Get current target from queue
+                TargetClass target = buttonBox.peekNextTarget();
+                if (target == null) {
+                    // No target in queue, do nothing
+                    return;
+                }
+                
+                String name = target.getName();
+                // Check if it's an algae (ball) target
+                if (name.startsWith("A")) {
+                    int face = target.getFace();
+                    boolean isHighBall = false;
+                    
+                    // Check if it's a high ball based on face
+                    switch (face) {
+                        case 1: isHighBall = TargetClassConstants.isHighAlgaeA1XX; break;
+                        case 2: isHighBall = TargetClassConstants.isHighAlgaeA2XX; break;
+                        case 3: isHighBall = TargetClassConstants.isHighAlgaeA3XX; break;
+                        case 4: isHighBall = TargetClassConstants.isHighAlgaeA4XX; break;
+                        case 5: isHighBall = TargetClassConstants.isHighAlgaeA5XX; break;
+                        case 6: isHighBall = TargetClassConstants.isHighAlgaeA6XX; break;
+                        default: isHighBall = false; break;
+                    }
+                    
+                    // Set elevator to appropriate position
+                    if (isHighBall) {
+                        setHighBall();
+                    } else {
+                        setLowBall();
+                    }
+                }
+            });
+        }
     
+        // Add convenience method that uses boolean supplier
+        public Command setElevatorForBallTargetUsingSupplierCommand(ButtonBox buttonBox) {
+            return new InstantCommand(() -> {
+                // Check if target exists and is a ball target
+                if (buttonBox.isAlgaeTargetSupplier.getAsBoolean()) {
+                    if (buttonBox.isHighAlgaeSupplier.getAsBoolean()) {
+                        setHighBall();
+                    } else {
+                        setLowBall();
+                    }
+                }
+            });
+        }
+    
+        // Direct method to position elevator based on current ball target
+        public void positionForCurrentBallTarget(ButtonBox buttonBox) {
+            if (buttonBox.isAlgaeTargetSupplier.getAsBoolean()) {
+                if (buttonBox.isHighAlgaeSupplier.getAsBoolean()) {
+                    setHighBall();
+                } else {
+                    setLowBall();
+                }
+            }
+        }
+
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;

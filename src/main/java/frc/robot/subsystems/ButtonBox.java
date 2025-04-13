@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.function.BooleanSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
+
+import frc.robot.Constants.TargetClassConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class ButtonBox extends SubsystemBase {
@@ -125,6 +127,71 @@ public class ButtonBox extends SubsystemBase {
     public boolean hasLastTarget() {
         return lastAddedTarget != null;
     }
+    
+    public BooleanSupplier isHighAlgaeSupplier = () -> {
+        var target = targetQueue.peek();
+        if (target == null) return false;
+        
+        String name = target.getName();
+        if (!name.startsWith("A")) return false;
+        
+        int face = target.getFace();
+        // Based on the constants in TargetClassConstants that define which faces have high algae
+        switch (face) {
+            case 1: return TargetClassConstants.isHighAlgaeA1XX;
+            case 2: return TargetClassConstants.isHighAlgaeA2XX;
+            case 3: return TargetClassConstants.isHighAlgaeA3XX;
+            case 4: return TargetClassConstants.isHighAlgaeA4XX;
+            case 5: return TargetClassConstants.isHighAlgaeA5XX;
+            case 6: return TargetClassConstants.isHighAlgaeA6XX;
+            default: return false;
+        }
+    };
+    
+    // Check if current target is an algae target
+    public BooleanSupplier isAlgaeTargetSupplier = () -> {
+        var target = targetQueue.peek();
+        return target != null && target.getName().startsWith("A");
+    };
+    
+    // Direct methods to check ball properties without using suppliers
+    public boolean isCurrentTargetBall() {
+        TargetClass target = peekNextTarget();
+        return target != null && target.getName().startsWith("A");
+    }
+
+    public boolean isCurrentBallHigh() {
+        TargetClass target = peekNextTarget();
+        if (target == null || !target.getName().startsWith("A")) {
+            return false;
+        }
+        
+        int face = target.getFace();
+        // Check if it's a high ball based on face
+        switch (face) {
+            case 1: return TargetClassConstants.isHighAlgaeA1XX;
+            case 2: return TargetClassConstants.isHighAlgaeA2XX;
+            case 3: return TargetClassConstants.isHighAlgaeA3XX;
+            case 4: return TargetClassConstants.isHighAlgaeA4XX;
+            case 5: return TargetClassConstants.isHighAlgaeA5XX;
+            case 6: return TargetClassConstants.isHighAlgaeA6XX;
+            default: return false;
+        }
+    }
+
+    // Command to set elevator based on current ball target
+    public Command setElevatorForCurrentBallCommand(Elevator elevator) {
+        return new InstantCommand(() -> {
+            if (isCurrentTargetBall()) {
+                if (isCurrentBallHigh()) {
+                    elevator.setHighBall();
+                } else {
+                    elevator.setLowBall();
+                }
+            }
+        });
+    }
+    
     /*
     public static class JoystickSuppliers {
         public final DoubleSupplier x;
