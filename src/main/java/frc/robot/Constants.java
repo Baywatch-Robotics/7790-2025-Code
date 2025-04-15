@@ -869,4 +869,26 @@ public final class Constants
     // Use open-loop control for maximum power and direct motor response
     public static final boolean USE_OPEN_LOOP = true;
   }
+
+  /**
+   * Constants for dynamic wait times used throughout the robot.
+   * These are the keys used with SmartDashboard/Shuffleboard to store
+   * configurable wait durations.
+   */
+  public static final class WaitTimeConstants {
+    // Common wait times prefix for organization in dashboard
+    public static final String WAIT_TIMES_KEY_PREFIX = "WaitTimes/";
+    
+    // Game piece placement timing
+    public static final String INITIAL_PLACEMENT_TIME = "InitialPlacementTime";
+    public static final String FIRST_BALL_TIME = "FirstBallTime";
+    public static final String SECOND_BALL_TIME = "SecondBallTime";
+    public static final String THIRD_BALL_TIME = "ThirdBallTime";
+    
+    // Default values for all wait times (in seconds)
+    public static final double DEFAULT_INITIAL_PLACEMENT_TIME = 0.0;
+    public static final double DEFAULT_FIRST_BALL_TIME = 0.0;
+    public static final double DEFAULT_SECOND_BALL_TIME = 0.0;
+    public static final double DEFAULT_THIRD_BALL_TIME = 0.0;
+  }
 }

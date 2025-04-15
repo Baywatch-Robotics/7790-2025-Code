@@ -653,7 +653,7 @@ public class SwerveSubsystem extends SubsystemBase
         est -> {
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = vision.getLeftEstimationStdDevs();
-            swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+            //swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
         }
     );
   }
@@ -668,7 +668,7 @@ public class SwerveSubsystem extends SubsystemBase
         est -> {
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = vision.getRightEstimationStdDevs();
-            swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+            //swerveDrive.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
         }
     );
   }
