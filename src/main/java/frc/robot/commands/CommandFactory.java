@@ -329,7 +329,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
 public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("C431"))
-  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
+  .andThen(new WaitUntilCommand(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY()))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())

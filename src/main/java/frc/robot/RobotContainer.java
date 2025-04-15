@@ -38,6 +38,7 @@ import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.util.DynamicWait;
 import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
@@ -149,6 +150,8 @@ public class RobotContainer {
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
   
+  @SuppressWarnings("unused")
+  private final DynamicWait dynamicWait = new DynamicWait();
 
   // Add QuestNavVision instance
   private final frc.robot.subsystems.swervedrive.QuestNavVision questNavVision = new frc.robot.subsystems.swervedrive.QuestNavVision();

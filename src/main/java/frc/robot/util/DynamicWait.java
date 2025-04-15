@@ -20,7 +20,7 @@ public class DynamicWait {
      * Initializes all wait times with their default values.
      * Call this method in robotInit() to ensure all wait times are properly set.
      */
-    public static void initializeWaitTimes() {
+    public DynamicWait() {
         // Simply initialize all wait times with default values
         SmartDashboard.putNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.INITIAL_PLACEMENT_TIME, 
                                 WaitTimeConstants.DEFAULT_INITIAL_PLACEMENT_TIME);
@@ -51,7 +51,7 @@ public class DynamicWait {
     
 
 
-    public static Command waitCommandWithIncrementAUTALGAEOONLY(){
+    public static double waitTimeWithIncrementAUTALGAEOONLY(){
 
         double waitTime;
 
@@ -73,7 +73,7 @@ public class DynamicWait {
             autoCounter = 0;
             waitTime = 0;
         }
-        return new WaitCommand(waitTime);
+        return waitTime;
     }
 
 
