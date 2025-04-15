@@ -16,6 +16,8 @@ import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.Climber;
 
+import frc.robot.util.DynamicWait;
+
 public class CommandFactory {
 
    
@@ -327,22 +329,26 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
 public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("C431"))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
   
@@ -352,22 +358,26 @@ public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooter
 public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("C430"))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
+  .andThen(DynamicWait.waitCommandWithIncrementAUTALGAEOONLY())
   .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
   

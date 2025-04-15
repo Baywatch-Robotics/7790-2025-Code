@@ -12,6 +12,10 @@ import frc.robot.Constants.WaitTimeConstants;
  */
 public class DynamicWait {
     
+
+    public static int autoCounter;
+
+
     /**
      * Initializes all wait times with their default values.
      * Call this method in robotInit() to ensure all wait times are properly set.
@@ -26,6 +30,10 @@ public class DynamicWait {
                                 WaitTimeConstants.DEFAULT_SECOND_BALL_TIME);
         SmartDashboard.putNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.THIRD_BALL_TIME, 
                                 WaitTimeConstants.DEFAULT_THIRD_BALL_TIME);
+
+
+        autoCounter = 0;
+        
     }
     
     /**
@@ -40,6 +48,35 @@ public class DynamicWait {
         double waitTime = SmartDashboard.getNumber(key, 0.0);
         return new WaitCommand(waitTime);
     }
+    
+
+
+    public static Command waitCommandWithIncrementAUTALGAEOONLY(){
+
+        double waitTime;
+
+        autoCounter++;
+
+        if(autoCounter == 1){
+            waitTime = SmartDashboard.getNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.INITIAL_PLACEMENT_TIME, 0.0);
+        }
+        else if(autoCounter == 2){
+            waitTime = SmartDashboard.getNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.FIRST_BALL_TIME, 0.0);
+        }
+        else if(autoCounter == 3){
+            waitTime = SmartDashboard.getNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.SECOND_BALL_TIME, 0.0);
+        }
+        else if(autoCounter == 4){
+            waitTime = SmartDashboard.getNumber(WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.THIRD_BALL_TIME, 0.0);
+        }
+        else{
+            autoCounter = 0;
+            waitTime = 0;
+        }
+        return new WaitCommand(waitTime);
+    }
+
+
     
     /**
      * Creates a dynamic wait command that will evaluate the wait time when it executes.
