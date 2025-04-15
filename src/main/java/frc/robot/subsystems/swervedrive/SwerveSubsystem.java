@@ -292,7 +292,7 @@ public class SwerveSubsystem extends SubsystemBase
             // Create the PathConstraints with the computed values
             PathConstraints currentConstraints = new PathConstraints(
                 3.0,
-                1.5,
+                2.0,
                 DriveToPoseConstants.THETA_MAX_VELOCITY,
                 DriveToPoseConstants.THETA_MAX_ACCELERATION
             );

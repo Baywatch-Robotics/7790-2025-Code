@@ -77,6 +77,9 @@ public class DynamicWait {
     }
 
 
+    public static void resetAutoCounter(){
+        autoCounter = 0;
+    }
     
     /**
      * Creates a dynamic wait command that will evaluate the wait time when it executes.
@@ -93,6 +96,52 @@ public class DynamicWait {
                 // Read directly from SmartDashboard at execution time
                 String key = WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + waitTimeName;
                 double waitTime = SmartDashboard.getNumber(key, 0.0);
+                endTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() + waitTime;
+            }
+            
+            @Override
+            public boolean isFinished() {
+                return edu.wpi.first.wpilibj.Timer.getFPGATimestamp() >= endTime;
+            }
+        };
+    }
+
+    /**
+     * Creates a dynamic wait command that uses auto counter to determine which wait time to use.
+     * The wait time is read from SmartDashboard when the command executes.
+     * 
+     * @return A command that waits for the duration specified by the current auto counter
+     */
+    public static Command dynamicIncrementWaitCommand() {
+        return new Command() {
+            private double endTime;
+            private String key;
+            
+            @Override
+            public void initialize() {
+                // Increment counter when command starts
+                autoCounter++;
+                
+                // Get the correct key based on counter
+                if (autoCounter == 1) {
+                    key = WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.INITIAL_PLACEMENT_TIME;
+                } else if (autoCounter == 2) {
+                    key = WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.FIRST_BALL_TIME;
+                } else if (autoCounter == 3) {
+                    key = WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.SECOND_BALL_TIME;
+                } else if (autoCounter == 4) {
+                    key = WaitTimeConstants.WAIT_TIMES_KEY_PREFIX + WaitTimeConstants.THIRD_BALL_TIME;
+                } else {
+                    autoCounter = 0;
+                    key = "";
+                }
+                
+                // Read wait time from SmartDashboard at execution time
+                double waitTime = 0.0;
+                if (!key.isEmpty()) {
+                    waitTime = SmartDashboard.getNumber(key, 0.0);
+                }
+                
                 endTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() + waitTime;
             }
             
