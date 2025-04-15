@@ -402,7 +402,7 @@ public static Command algaeRemoveBasedOnQueueCommand(Shooter shooter, ShooterArm
 public static Command algaeRemoveBasedOnQueueCommandDriveCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     Command command = drivebase.startDriveToPose(buttonBox, elevator)
     .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
-    .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+    .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
     .andThen(buttonBox.getNextTargetCommand())
     .andThen(drivebase.startDriveToPose(buttonBox, elevator));
 

@@ -109,6 +109,24 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.SRPositionZ);
                 target.setSource(true);
                 break;
+            case "CL":
+                target.setX(TargetClassConstants.CLPositionX);
+                target.setY(TargetClassConstants.CLPositionY);
+                target.setZ(TargetClassConstants.CLPositionZ);
+                target.setSource(true);
+                break;
+            case "CC":
+                target.setX(TargetClassConstants.CCPositionX);
+                target.setY(TargetClassConstants.CCPositionY);
+                target.setZ(TargetClassConstants.CCPositionZ);
+                target.setSource(true);
+                break;
+            case "CR":
+                target.setX(TargetClassConstants.CRPositionX);
+                target.setY(TargetClassConstants.CRPositionY);
+                target.setZ(TargetClassConstants.CRPositionZ);
+                target.setSource(true);
+                break;
             case "Processor":
                 target.setX(TargetClassConstants.ProcessorPositionX);
                 target.setY(TargetClassConstants.ProcessorPositionY);

@@ -385,6 +385,33 @@ public class RobotContainer {
     buttonBox1.button(8).and(buttonBox2.button(3)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C521")));
     buttonBox1.button(8).and(buttonBox2.button(8)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C530")));
     buttonBox1.button(8).and(buttonBox2.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C531")));
+    
+
+    buttonBox1.button(6).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A110"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A100"))));
+
+    buttonBox1.button(7).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A610"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A600"))));
+
+    buttonBox1.button(8).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A510"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A500"))));
+
+    buttonBox1.button(9).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A410"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A400"))));
+
+    buttonBox1.button(10).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A310"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A300"))));
+
+    buttonBox1.button(11).and(buttonBox1.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("A210"))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("A200"))));
+
+
+    buttonBox1.button(7).and(buttonBox1.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("CL")));
+
+    buttonBox1.button(6).and(buttonBox1.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("CC")));
+
+    buttonBox1.button(11).and(buttonBox1.button(4)).onTrue(new InstantCommand(() -> buttonBox.addTarget("CR")));
+    
 
     //buttonBox1.button(4).onTrue(new InstantCommand(() -> buttonBox.requeueLastTarget()));
 
