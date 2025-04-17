@@ -34,6 +34,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveToPoseConstants;
 import frc.robot.commands.FastProfileToPose;
 import frc.robot.commands.ProfileToPose;
+import frc.robot.commands.SlowProfileToPose;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
@@ -1042,4 +1043,61 @@ public class SwerveSubsystem extends SubsystemBase
     });
   }
 
+  /**
+     * Starts the drive to pose command and returns immediately.
+     * The drive command will continue running in the background.
+     * You can use your triggers (veryCloseTrigger, etc.) to determine when the robot is at the target.
+     * 
+     * @param buttonBox The button box containing target information
+     * @return A command that starts the drive process and completes immediately
+     */
+    public Command startSlowDriveToPose(ButtonBox buttonBox, Elevator elevator) {
+      return ProfileToPose.startAndReturnCommand(this, buttonBox);
+  }
+
+  /**
+   * Creates a ProfileToPose command with rotation delay
+   * This prevents the robot from rotating during the initial movement period in autonomous
+   * 
+   * @param buttonBox The button box containing target information
+   * @return A command that drives to the target pose with rotation delay
+   */
+  public Command slowDriveToPoseProfiledWithRotationDelay(ButtonBox buttonBox) {
+    return new SlowProfileToPose(this, buttonBox).withRotationDelay();
+  }
+
+  /**
+   * Creates a ProfileToPose command with custom rotation delay time
+   * 
+   * @param buttonBox The button box containing target information
+   * @param delaySeconds Custom delay time in seconds
+   * @return A command that drives to the target pose with rotation delay
+   */
+  public Command slowDriveToPoseProfiledWithRotationDelay(ButtonBox buttonBox, double delaySeconds) {
+    return new SlowProfileToPose(this, buttonBox).withRotationDelay(delaySeconds);
+  }
+
+  /**
+   * Starts the drive to pose command with rotation delay and returns immediately.
+   * The drive command will continue running in the background.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @return A command that starts the drive process with rotation delay and completes immediately
+   */
+  public Command startSlowDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator) {
+    return SlowProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox);
+  }
+
+  /**
+   * Starts the drive to pose command with custom rotation delay and returns immediately.
+   * 
+   * @param buttonBox The button box containing target information
+   * @param elevator The elevator subsystem (used for reference)
+   * @param delaySeconds Custom delay time in seconds
+   * @return A command that starts the drive process with rotation delay and completes immediately
+   */
+  public Command startSlowDriveToPoseWithRotationDelay(ButtonBox buttonBox, Elevator elevator, double delaySeconds) {
+    return SlowProfileToPose.startAndReturnCommandWithRotationDelay(this, buttonBox, delaySeconds);
+  }
 }
