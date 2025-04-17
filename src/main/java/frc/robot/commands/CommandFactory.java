@@ -246,6 +246,8 @@ public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, El
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
   Command command = drivebase.startFastDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(new WaitCommand(.75))
+  //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
+  //.andThen(new WaitCommand(1.25));
   .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(shooter, shooterArm, elevator, drivebase, robotContainer, funnel, algaeArm, algaeShooter));
 
   command.addRequirements(shooter, shooterArm, elevator, funnel);
