@@ -172,7 +172,7 @@ public final class Constants
     public static final float retractSpeed = -1f;
     
     // Position control constants
-    public static final float P = 0.5f;
+    public static final float P = 1.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -182,11 +182,11 @@ public final class Constants
     
     
     public static final float min = 0;  // Max extended position
-    public static final float max = 108f;    // Fully retracted position
+    public static final float max = 119.07172393798828f;    // Fully retracted position
     
     // Predefined positions (reversed from previous values to match Neo motor behavior)
     public static final float retractedPosition = 0f;      // Fully retracted
-    public static final float extendedPosition = 108f;    // Fully extended
+    public static final float extendedPosition = 119.07172393798828f;    // Fully extended
     
     // Tolerance for position control
     public static final float SETPOINT_TOLERANCE = 2.0f;
@@ -419,20 +419,6 @@ public final class Constants
   }
   public static final class AprilTagVisionConstants{
 
-    public static final double ambiguityThreshold = 0.1;
-    
-    // Maximum distance to consider a tag valid (in meters)[\]
-    public static final double MAX_TAG_DISTANCE = 8.0;
-    
-    // List of valid tag IDs (excluding tags 1-5 and 12-16)
-    public static final Integer[] VALID_TAG_IDS = {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
-
-    // Pose consistency tracking constants
-    public static final int REQUIRED_CONSISTENT_POSES = 2;
-    public static final double MAX_POSE_JUMP_DISTANCE = 1.0; // meters
-    public static final double MAX_POSE_JUMP_ANGLE_DEGREES = 15.0; // degrees
-    public static final double INITIAL_DISTANCE_MULTIPLIER = 0.6; // 60% of max distance when establishing consistency
-    public static final double ESTABLISHED_DISTANCE_MULTIPLIER = 1.5; // 150% of thresholds after establishing consistency
 
     public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
     public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
@@ -458,38 +444,7 @@ public final class Constants
     public static final float limelightPitch = (float)Units.degreesToRadians(-30.0);
     public static final float limelightYaw = (float)Units.degreesToRadians(180);
     
-    // Vision measurement confidence parameters
-    public static final double MAX_VISION_DISTANCE_TRUSTED = 0.2;    // Fully trust measurements within this distance (meters)
-    public static final double MAX_VISION_DISTANCE_CONSIDERED = 3.0; // Maximum distance to consider a measurement at all (meters)
-    public static final double MAX_VISION_ANGLE_TRUSTED = 5.0;      // Fully trust measurements within this angle (degrees)
-    public static final double MAX_VISION_ANGLE_CONSIDERED = 30.0;   // Maximum angle diff to consider a measurement (degrees)
-    
-    // Measurement filtering parameters
-    public static final int MIN_CONSECUTIVE_GOOD_MEASUREMENTS = 3;   // Require this many consecutive good measurements
-    public static final double OUTLIER_JUMP_DISTANCE = 3.0;          // Maximum plausible movement speed (m/s)
-    public static final double OUTLIER_JUMP_ANGLE = 30.0;           // Maximum plausible rotation speed (deg/s)
-    
-    // Standard deviation parameters for pose estimation
-    public static final double BASE_XY_STD_DEV = 0.1;    // Base XY standard deviation (10cm) at max confidence
-    public static final double BASE_ROT_STD_DEV = 0.05;  // Base rotation standard deviation (~3 degrees) at max confidence
-    
-    // Minimum confidence value to prevent division by zero
-    public static final double MIN_CONFIDENCE_VALUE = 0.05;
-    
-    /*
-    public static Integer[] getAllowedTags() {
-        return DriverStation ? BLUE_ALLIANCE_TAGS : RED_ALLIANCE_TAGS;
-    }
-    
-    public static void setAlliance(boolean isBlue) {
-        isBlueAlliance = isBlue;
-    }
-    
-    public static boolean isBlueAlliance() {
-        return isBlueAlliance;
-    }
-  }
-*/
+
   }
   public static final class QuestNavVisionConstants {
     public static final Transform2d QUEST_NAV_TO_ROBOT = new Transform2d(
@@ -535,10 +490,10 @@ public final class Constants
     // Hexagon center and dimensions
     public static final float hexagonCenterX = (float)Units.inchesToMeters(176.745);
     public static final float hexagonCenterY = (float)Units.inchesToMeters(158.5);
-    public static final float hexagonRadius = (float)Units.inchesToMeters(50.75);
+    public static final float hexagonRadius = (float)Units.inchesToMeters(50.0);
     
     // Offset constants
-    public static final float LeftOffset = (float)Units.inchesToMeters(5.5);
+    public static final float LeftOffset = (float)Units.inchesToMeters(7.5);
     public static final float RightOffset = (float)Units.inchesToMeters(7.5);
     public static final float BackOffset = (float)Units.inchesToMeters(-4.0);
     public static final float AlgaeInset = (float)Units.inchesToMeters(8.0);

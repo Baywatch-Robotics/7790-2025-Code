@@ -216,8 +216,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = drivebase.startDriveToPoseWithRotationDelay(buttonBox, elevator)
-  .andThen(shooterArm.shooterArmBasedOnQueueCommand(buttonBox))
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())

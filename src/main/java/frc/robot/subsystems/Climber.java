@@ -95,17 +95,20 @@ public class Climber extends SubsystemBase {
 
 
     public void moveWithPower(DoubleSupplier power) {
-
         double climbPower = -power.getAsDouble();
 
         if(Math.abs(climbPower) <= 0.1) {
+            // Do nothing if power is close to zero - don't change modes or set power
             climbPower = 0;
         } else {
             climbPower = MathUtil.clamp(climbPower, -1, 1);
-        isInManualMode = true; // Switch to manual control
+            isInManualMode = true; // Switch to manual control only with significant input
         }
 
-        climberMotor.set(climbPower);
+        // Only set motor power directly when in manual mode
+        if (isInManualMode) {
+            climberMotor.set(climbPower);
+        }
         manualPower = climbPower;
     }
 
@@ -187,6 +190,5 @@ public class Climber extends SubsystemBase {
                                                   ControlType.kPosition, 
                                                   ClosedLoopSlot.kSlot0);
         }
-        // In manual mode, the manual control methods handle setting the motor directly
     }
 }

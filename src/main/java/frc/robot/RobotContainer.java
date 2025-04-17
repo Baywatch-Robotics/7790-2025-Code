@@ -455,10 +455,10 @@ public class RobotContainer {
 
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 
-    driverXbox.pov(0).onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
+    driverXbox.pov(0).onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
     driverXbox.pov(180).onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     
-    driverXbox.rightStick().onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
+    driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
