@@ -105,6 +105,9 @@ public class Climber extends SubsystemBase {
             isInManualMode = true; // Switch to manual control only with significant input
         }
 
+        if(m_encoder.getPosition() < 0){
+        climbPower = MathUtil.clamp(climbPower, 0, 1);
+        }
         // Only set motor power directly when in manual mode
         if (isInManualMode) {
             climberMotor.set(climbPower);
@@ -173,6 +176,8 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("Climber Desired Position", climberDesiredPosition);
         SmartDashboard.putBoolean("Climber Manual Mode", isInManualMode);
         SmartDashboard.putNumber("Climber Manual Power", manualPower);
+
+        SmartDashboard.putNumber("Climber OutputPower", climberMotor.getOutputCurrent());
         
         // Only use position control when not in manual mode
         if (!isInManualMode) {

@@ -85,7 +85,7 @@ public class Vision {
     // The standard deviations of our vision estimated poses, which affect
     // correction rate
     // (Fake values. Experiment and determine estimation noise on an actual robot.)
-    private final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(2, 2, 4);
+    private final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(1.5, 1.5, 3);
     private final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
     public Vision() {

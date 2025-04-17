@@ -216,7 +216,7 @@ public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, 
 
 public static Command scoreBasedOnQueueCommandDriveAutoFIRST(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
-  Command command = drivebase.startSlowDriveToPose(buttonBox, elevator)
+  Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(shooter.shooterOutakeCommand())
@@ -257,7 +257,7 @@ public static Command sourceDriveAuto(Shooter shooter, ShooterArm shooterArm, El
 
 public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("C530"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("S530"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(shooterArm.shooterArmScoreLOWCommand())
@@ -293,7 +293,7 @@ public static Command LeftAutonCommand(Shooter shooter, ShooterArm shooterArm, E
 
 public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel, AlgaeArm algaeArm, AlgaeShooter algaeShooter){
 
-    Command command = new InstantCommand(() -> buttonBox.addTarget("C331"))
+    Command command = new InstantCommand(() -> buttonBox.addTarget("S331"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(shooterArm.shooterArmScoreLOWCommand())
@@ -329,7 +329,7 @@ public static Command RightAutonCommand(Shooter shooter, ShooterArm shooterArm, 
 
 public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("C431"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("S431"))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
@@ -359,7 +359,7 @@ public static Command LeftCenterAutonCommand(Shooter shooter, ShooterArm shooter
 }
 public static Command RightCenterAutonCommand(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, Funnel funnel){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("C430"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("S430"))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(shooter, shooterArm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
