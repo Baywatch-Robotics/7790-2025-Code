@@ -198,14 +198,14 @@ public class SlowProfileToPose extends Command {
         
         if (distance > DriveToPoseConstants.APPROACHING_DISTANCE_THRESHOLD) {
             // Far from target - use fastest speed
-            newVelocity = 3.0;
-            newAcceleration = 2.0;
+            newVelocity = 1.0;
+            newAcceleration = 1.0;
             SmartDashboard.putString("Drive Speed Mode", "APPROACHING");
         } 
         else if (distance > 1.0) {
             // Getting closer - use medium speed
-            newVelocity = 1.5;
-            newAcceleration = 1.5;
+            newVelocity = 0.7;
+            newAcceleration = 1.0;
             SmartDashboard.putString("Drive Speed Mode", "CLOSE");
         } 
         else {

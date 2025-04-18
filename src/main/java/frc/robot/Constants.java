@@ -186,7 +186,7 @@ public final class Constants
     
     // Predefined positions (reversed from previous values to match Neo motor behavior)
     public static final float retractedPosition = 0f;      // Fully retracted
-    public static final float extendedPosition = 119.07172393798828f;    // Fully extended
+    public static final float extendedPosition = 109f;    // Fully extended
     
     // Tolerance for position control
     public static final float SETPOINT_TOLERANCE = 2.0f;

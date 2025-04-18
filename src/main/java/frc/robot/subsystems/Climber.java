@@ -104,10 +104,6 @@ public class Climber extends SubsystemBase {
             climbPower = MathUtil.clamp(climbPower, -1, 1);
             isInManualMode = true; // Switch to manual control only with significant input
         }
-
-        if(m_encoder.getPosition() < 0){
-        climbPower = MathUtil.clamp(climbPower, 0, 1);
-        }
         // Only set motor power directly when in manual mode
         if (isInManualMode) {
             climberMotor.set(climbPower);
