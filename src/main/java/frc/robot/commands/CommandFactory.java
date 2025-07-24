@@ -9,6 +9,7 @@ import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.Algae.AlgaeArm;
 import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
@@ -223,6 +224,38 @@ public static Command scoreBasedOnQueueCommandLeft(Shooter shooter, ShooterArm s
     
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
+}
+
+// New combined command that scores right target and drives to next target ending in "1"
+public static Command scoreBasedOnQueueCommandRightWithDrive(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
+  return scoreBasedOnQueueCommandRight(shooter, shooterArm, elevator, buttonBox)
+    .andThen(new InstantCommand(() -> {
+      // Create a custom ButtonBox wrapper that filters by suffix "1"
+      ButtonBox filteredButtonBox = new ButtonBox(drivebase) {
+        @Override
+        public TargetClass peekNextTarget() {
+          return buttonBox.peekNextTargetEndingIn1();
+        }
+      };
+      // Start the drive command in the background
+      drivebase.startDriveToPose(filteredButtonBox, elevator).schedule();
+    }));
+}
+
+// New combined command that scores left target and drives to next target ending in "0"  
+public static Command scoreBasedOnQueueCommandLeftWithDrive(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
+  return scoreBasedOnQueueCommandLeft(shooter, shooterArm, elevator, buttonBox)
+    .andThen(new InstantCommand(() -> {
+      // Create a custom ButtonBox wrapper that filters by suffix "0"
+      ButtonBox filteredButtonBox = new ButtonBox(drivebase) {
+        @Override
+        public TargetClass peekNextTarget() {
+          return buttonBox.peekNextTargetEndingIn0();
+        }
+      };
+      // Start the drive command in the background
+      drivebase.startDriveToPose(filteredButtonBox, elevator).schedule();
+    }));
 }
 
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){

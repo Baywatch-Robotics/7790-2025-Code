@@ -109,10 +109,6 @@ public class RobotContainer {
 
   //DoubleSupplier climberUpDown = () -> opXbox.getRightX();
 
-  // Add suppliers for algae shooter triggers
-  DoubleSupplier algaeShooterIntake = () -> driverXbox.getLeftTriggerAxis();
-  DoubleSupplier algaeShooterOutake = () -> driverXbox.getRightTriggerAxis();
-
   // Add supplier for funnel control
   DoubleSupplier climberUpDown = () -> opXbox.getLeftTriggerAxis() - opXbox.getRightTriggerAxis();
 
@@ -301,29 +297,20 @@ public class RobotContainer {
     climber.setDefaultCommand(new RunCommand(() -> climber.moveWithPower(climberUpDown), climber));
 
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    
+    //Bumpers drive to pose
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandRightWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase));
+    driverXbox.leftBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandLeftWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase));
+    
+    // Left trigger controls coral intake
+    driverXbox.axisMagnitudeGreaterThan(2, 0.2).onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
-    // SWAPPED: Left bumper now controls algae shooter intake, Right trigger still controls algae shooter outake
-    driverXbox.axisMagnitudeGreaterThan(2, 0.2).or(driverXbox.axisMagnitudeGreaterThan(3, 0.2))
-    .whileTrue(new RunCommand(() -> {
-      // Get trigger values from the suppliers - LEFT bumper now handled separately, RIGHT trigger for outake
-      double leftTrigger = 0; // Left trigger no longer used for algae shooter
-      double rightTrigger = algaeShooterOutake.getAsDouble(); // Right trigger unchanged
-      
-      // Control logic for the algae shooter based on triggers
-      if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
-        // Left trigger no longer controls algae shooter
-        double speed = leftTrigger * AlgaeShooterConstants.maxTriggerIntake;
-        algaeShooter.setSpeed(speed);
-      } else if (rightTrigger > AlgaeShooterConstants.triggerThreshold) {
-        // Right trigger controls outake (reverse) at variable speed
-        double speed = rightTrigger * AlgaeShooterConstants.maxTriggerOutake;
-        algaeShooter.setSpeed(speed);
-      } else {
-        // If both triggers are below threshold, stop the motor
-        algaeShooter.setSpeed(0);
-      }
-    }, algaeShooter))
-    .onFalse(new InstantCommand(() -> algaeShooter.setSpeed(0), algaeShooter));
+    // Right trigger controls coral outake
+    driverXbox.axisMagnitudeGreaterThan(3, 0.2)
+    .onTrue(shooter.shooterOutakeCommand().alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
+    .and(shooter.L1ScoringTrigger())
+    .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel))
+    .onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -493,16 +480,6 @@ public class RobotContainer {
     driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
-
-    //driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
-
-    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandRight(shooter, shooterArm, elevator, buttonBox));
-    driverXbox.leftBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandLeft(shooter, shooterArm, elevator, buttonBox));
-
-    // SWAPPED: Left trigger now runs the coral intake command (what left bumper used to do)
-    driverXbox.axisMagnitudeGreaterThan(2, 0.2).onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
-
-    driverXbox.rightBumper().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
 
     /*driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
