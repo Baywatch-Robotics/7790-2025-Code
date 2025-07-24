@@ -1,9 +1,4 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of the
-// WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
-
 import java.io.File;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -307,16 +302,16 @@ public class RobotContainer {
 
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
 
-
+    // SWAPPED: Left bumper now controls algae shooter intake, Right trigger still controls algae shooter outake
     driverXbox.axisMagnitudeGreaterThan(2, 0.2).or(driverXbox.axisMagnitudeGreaterThan(3, 0.2))
     .whileTrue(new RunCommand(() -> {
-      // Get trigger values from the suppliers
-      double leftTrigger = algaeShooterIntake.getAsDouble();
-      double rightTrigger = algaeShooterOutake.getAsDouble();
+      // Get trigger values from the suppliers - LEFT bumper now handled separately, RIGHT trigger for outake
+      double leftTrigger = 0; // Left trigger no longer used for algae shooter
+      double rightTrigger = algaeShooterOutake.getAsDouble(); // Right trigger unchanged
       
       // Control logic for the algae shooter based on triggers
       if (leftTrigger > AlgaeShooterConstants.triggerThreshold) {
-        // Left trigger controls intake (forward) at variable speed
+        // Left trigger no longer controls algae shooter
         double speed = leftTrigger * AlgaeShooterConstants.maxTriggerIntake;
         algaeShooter.setSpeed(speed);
       } else if (rightTrigger > AlgaeShooterConstants.triggerThreshold) {
@@ -330,12 +325,87 @@ public class RobotContainer {
     }, algaeShooter))
     .onFalse(new InstantCommand(() -> algaeShooter.setSpeed(0), algaeShooter));
 
-
-
-
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
     buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
+
+    driverXbox.y().onTrue(new InstantCommand(() -> {
+      Pose2d currentPose = drivebase.getPose();
+      double robotRotation = currentPose.getRotation().getDegrees();
+  
+      // Check if robot rotation is within the specified bounds (in degrees)
+      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+        buttonBox.addTarget("C130");
+        buttonBox.addTarget("C131");
+      } else if (robotRotation > 30 && robotRotation <= 90) {
+        buttonBox.addTarget("C230");
+        buttonBox.addTarget("C231");
+      } else if (robotRotation > 90 && robotRotation <= 150) {
+        buttonBox.addTarget("C330");
+        buttonBox.addTarget("C331");
+      } else if (robotRotation > 150 && robotRotation <= 210) {
+        buttonBox.addTarget("C430");
+        buttonBox.addTarget("C431");
+      } else if (robotRotation > 210 && robotRotation <= 270) {
+        buttonBox.addTarget("C530");
+        buttonBox.addTarget("C531");
+      } else if (robotRotation > 270 && robotRotation <= 330) {
+        buttonBox.addTarget("C630");
+        buttonBox.addTarget("C631");
+      }
+    }));
+
+    driverXbox.x().onTrue(new InstantCommand(() -> {
+      Pose2d currentPose = drivebase.getPose();
+      double robotRotation = currentPose.getRotation().getDegrees();
+  
+      // Check if robot rotation is within the specified bounds (in degrees)
+      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+        buttonBox.addTarget("C120");
+        buttonBox.addTarget("C121");
+      } else if (robotRotation > 30 && robotRotation <= 90) {
+        buttonBox.addTarget("C220");
+        buttonBox.addTarget("C221");
+      } else if (robotRotation > 90 && robotRotation <= 150) {
+        buttonBox.addTarget("C320");
+        buttonBox.addTarget("C321");
+      } else if (robotRotation > 150 && robotRotation <= 210) {
+        buttonBox.addTarget("C420");
+        buttonBox.addTarget("C421");
+      } else if (robotRotation > 210 && robotRotation <= 270) {
+        buttonBox.addTarget("C520");
+        buttonBox.addTarget("C521");
+      } else if (robotRotation > 270 && robotRotation <= 330) {
+        buttonBox.addTarget("C620");
+        buttonBox.addTarget("C621");
+      }
+    }));
+
+    driverXbox.b().onTrue(new InstantCommand(() -> {
+      Pose2d currentPose = drivebase.getPose();
+      double robotRotation = currentPose.getRotation().getDegrees();
+  
+      // Check if robot rotation is within the specified bounds (in degrees)
+      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+        buttonBox.addTarget("C110");
+        buttonBox.addTarget("C111");
+      } else if (robotRotation > 30 && robotRotation <= 90) {
+        buttonBox.addTarget("C210");
+        buttonBox.addTarget("C211");
+      } else if (robotRotation > 90 && robotRotation <= 150) {
+        buttonBox.addTarget("C310");
+        buttonBox.addTarget("C311");
+      } else if (robotRotation > 150 && robotRotation <= 210) {
+        buttonBox.addTarget("C410");
+        buttonBox.addTarget("C411");
+      } else if (robotRotation > 210 && robotRotation <= 270) {
+        buttonBox.addTarget("C510");
+        buttonBox.addTarget("C511");
+      } else if (robotRotation > 270 && robotRotation <= 330) {
+        buttonBox.addTarget("C610");
+        buttonBox.addTarget("C611");
+      }
+    }));
 
     buttonBox1.button(9).and(buttonBox2.button(5)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C400")));
     buttonBox1.button(9).and(buttonBox2.button(1)).onTrue(new InstantCommand(() -> buttonBox.addTarget("C401")));
@@ -426,44 +496,43 @@ public class RobotContainer {
 
     //driverXbox.rightBumper().onTrue(CommandFactory.scoreBasedOnQueueCommandDriveAutoNOSHOOT(shooter, shooterArm, elevator, buttonBox, drivebase, this));
 
-    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
-    driverXbox.leftBumper().onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
+    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandRight(shooter, shooterArm, elevator, buttonBox));
+    driverXbox.leftBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandLeft(shooter, shooterArm, elevator, buttonBox));
+
+    // SWAPPED: Left trigger now runs the coral intake command (what left bumper used to do)
+    driverXbox.axisMagnitudeGreaterThan(2, 0.2).onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
     driverXbox.rightBumper().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
 
-
-
-    driverXbox.x().onTrue(shooter.shooterIntakeCommand());
+    /*driverXbox.x().onTrue(shooter.shooterIntakeCommand());
     driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+*/
     
     //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("CC")));
 
     //driverXbox.y().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
     //driverXbox.y().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
 
-    driverXbox.y().onTrue(shooter.shooterOutakeCommand());
+    /*driverXbox.y().onTrue(shooter.shooterOutakeCommand());
     driverXbox.y().and(shooter.L1ScoringTrigger()).onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
     driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
-
-
 
     driverXbox.a().whileTrue(CommandFactory.algaeRemoveBasedOnQueueCommandDriveCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this));
 
     driverXbox.a().onFalse(drivebase.stopDriveToPoseCommand());
 
-
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
+*/
 
     driverXbox.pov(0).onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
-    driverXbox.pov(180).onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     
     driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
     driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
     driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
-
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber));
 
@@ -506,7 +575,6 @@ public class RobotContainer {
         SmartDashboard.putString("QuestNav InUSE", "QuestNav DISABLED");
       }
     }));
-
 
     chooser.addOption("Left", leftAuto);
     chooser.addOption("Left Center", leftCenterAuto);

@@ -204,6 +204,26 @@ public static Command scoreBasedOnQueueCommand(Shooter shooter, ShooterArm shoot
     command.addRequirements(shooter, shooterArm, elevator);
     return command; 
 }
+  
+public static Command scoreBasedOnQueueCommandRight(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = shooterArm.shooterArmBasedOnQueueCommandRight(buttonBox)
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevateBasedOnQueueRight(buttonBox)))
+    .andThen(elevator.elevatorBasedOnQueueCommandRight(buttonBox));
+    
+    command.addRequirements(shooter, shooterArm, elevator);
+    return command; 
+}
+  
+public static Command scoreBasedOnQueueCommandLeft(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = shooterArm.shooterArmBasedOnQueueCommandLeft(buttonBox)
+    .andThen(new WaitUntilCommand(shooterArm.isClearToElevateBasedOnQueueLeft(buttonBox)))
+    .andThen(elevator.elevatorBasedOnQueueCommandLeft(buttonBox));
+    
+    command.addRequirements(shooter, shooterArm, elevator);
+    return command; 
+}
 
 public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(Shooter shooter, ShooterArm shooterArm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 

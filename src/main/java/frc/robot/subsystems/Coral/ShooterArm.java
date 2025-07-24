@@ -319,4 +319,112 @@ public class ShooterArm extends SubsystemBase {
             ArbFFUnits.kVoltage
         );
     }
+
+    /**
+     * Command that sets shooter arm position based on the next target ending in '1' from the queue
+     * This version uses the target from the queue without consuming it
+     */
+    public Command shooterArmBasedOnQueueCommandRight(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn1;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn1;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier != null && currentSideSupplier != null) {
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    new InstantCommand();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    if (currentSideSupplier.getAsBoolean()) {
+                        // Left L4
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                    } else {
+                        // Right L4
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                    }
+                }
+            }
+        });
+        return command;
+    }
+
+    /**
+     * Returns a trigger for the Right command that checks if it's clear to elevate based on target ending in '1'
+     * This version uses the target ending in '1' without consuming it from the queue
+     */
+    public Trigger isClearToElevateBasedOnQueueRight(ButtonBox buttonBox) {
+        return new Trigger(() -> {
+            // If we have a button box and there's a target ending in '1'
+            if (buttonBox != null && buttonBox.currentLevelSupplierEndingIn1 != null) {
+                // Get the current level from the target ending in '1'
+                int currentLevel = buttonBox.currentLevelSupplierEndingIn1.getAsInt();
+                
+                // Immediately return true for levels 3 and 4
+                if (currentLevel == 3 || currentLevel == 4) {
+                    return true;
+                }
+            }
+            
+            // For all other cases, use the standard clearance condition
+            return shooterArmEncoder.getPosition() >= 0.5;
+        });
+    }
+
+    /**
+     * Command that sets shooter arm position based on the next target ending in '0' from the queue
+     * This version uses the target from the queue without consuming it
+     */
+    public Command shooterArmBasedOnQueueCommandLeft(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn0;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn0;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier != null && currentSideSupplier != null) {
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    new InstantCommand();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setScoreLOW();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    if (currentSideSupplier.getAsBoolean()) {
+                        // Left L4
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                    } else {
+                        // Right L4
+                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                    }
+                }
+            }
+        });
+        return command;
+    }
+
+    /**
+     * Returns a trigger for the Left command that checks if it's clear to elevate based on target ending in '0'
+     * This version uses the target ending in '0' without consuming it from the queue
+     */
+    public Trigger isClearToElevateBasedOnQueueLeft(ButtonBox buttonBox) {
+        return new Trigger(() -> {
+            // If we have a button box and there's a target ending in '0'
+            if (buttonBox != null && buttonBox.currentLevelSupplierEndingIn0 != null) {
+                // Get the current level from the target ending in '0'
+                int currentLevel = buttonBox.currentLevelSupplierEndingIn0.getAsInt();
+                
+                // Immediately return true for levels 3 and 4
+                if (currentLevel == 3 || currentLevel == 4) {
+                    return true;
+                }
+            }
+            
+            // For all other cases, use the standard clearance condition
+            return shooterArmEncoder.getPosition() >= 0.5;
+        });
+    }
 }

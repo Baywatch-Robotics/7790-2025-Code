@@ -59,6 +59,38 @@ public class ButtonBox extends SubsystemBase {
     
     public Supplier<TargetClass> currentTargetClassSupplier = () -> targetQueue.peek();
     
+    // Suppliers for targets ending in '1' (for Right commands)
+    public IntSupplier currentLevelSupplierEndingIn1 = () -> {
+        var target = peekNextTargetEndingIn1();
+        return target != null ? target.getLevel() : 0;
+    };
+    public IntSupplier currentFaceSupplierEndingIn1 = () -> {
+        var target = peekNextTargetEndingIn1();
+        return target != null ? target.getFace() : 0;
+    };
+    public BooleanSupplier currentisLeftSupplierEndingIn1 = () -> {
+        var target = peekNextTargetEndingIn1();
+        return target != null && target.isLeft();
+    };
+    
+    public Supplier<TargetClass> currentTargetClassSupplierEndingIn1 = () -> peekNextTargetEndingIn1();
+    
+    // Suppliers for targets ending in '0' (for Left commands)
+    public IntSupplier currentLevelSupplierEndingIn0 = () -> {
+        var target = peekNextTargetEndingIn0();
+        return target != null ? target.getLevel() : 0;
+    };
+    public IntSupplier currentFaceSupplierEndingIn0 = () -> {
+        var target = peekNextTargetEndingIn0();
+        return target != null ? target.getFace() : 0;
+    };
+    public BooleanSupplier currentisLeftSupplierEndingIn0 = () -> {
+        var target = peekNextTargetEndingIn0();
+        return target != null && target.isLeft();
+    };
+    
+    public Supplier<TargetClass> currentTargetClassSupplierEndingIn0 = () -> peekNextTargetEndingIn0();
+    
     public void deleteLastTarget() {
 
         if(targetQueue.isEmpty()) {
@@ -79,6 +111,26 @@ public class ButtonBox extends SubsystemBase {
         TargetClass target = targetQueue.poll();
         updateDashboard();
         return target;
+    }
+
+    public TargetClass peekNextTargetEndingIn1() {
+        // Search through the queue for the first target ending in '1' without removing anything
+        for (TargetClass target : targetQueue) {
+            if (target.getName().endsWith("1")) {
+                return target;
+            }
+        }
+        return null;
+    }
+
+    public TargetClass peekNextTargetEndingIn0() {
+        // Search through the queue for the first target ending in '0' without removing anything
+        for (TargetClass target : targetQueue) {
+            if (target.getName().endsWith("0")) {
+                return target;
+            }
+        }
+        return null;
     }
 
     public TargetClass peekNextTarget() {

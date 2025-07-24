@@ -589,4 +589,64 @@ public class Elevator extends SubsystemBase {
     public Trigger getIsFullyRaisedTrigger() {
         return fullyRaisedTrigger;
     }
+
+    /**
+     * Command that sets elevator position based on the next target ending in '1' from the queue
+     * This version uses the target from the queue without consuming it
+     */
+    public Command elevatorBasedOnQueueCommandRight(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn1;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn1;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
+                new InstantCommand();
+            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+                new InstantCommand();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
+                setL2L();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
+                setL2R();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
+                setL3L();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
+                setL3R();
+            } else if (currentLevelSupplier.getAsInt() == 3) {
+                setL4();
+            }
+        });
+        return command;
+    }
+
+    /**
+     * Command that sets elevator position based on the next target ending in '0' from the queue
+     * This version uses the target from the queue without consuming it
+     */
+    public Command elevatorBasedOnQueueCommandLeft(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn0;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn0;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
+                new InstantCommand();
+            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+                new InstantCommand();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
+                setL2L();
+            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
+                setL2R();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
+                setL3L();
+            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
+                setL3R();
+            } else if (currentLevelSupplier.getAsInt() == 3) {
+                setL4();
+            }
+        });
+        return command;
+    }
 }
