@@ -298,18 +298,38 @@ public class RobotContainer {
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
     //Bumpers drive to pose
-    driverXbox.rightBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandRightWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase));
-    driverXbox.leftBumper().whileTrue(CommandFactory.scoreBasedOnQueueCommandLeftWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase));
+    Command rightScoreCommand = CommandFactory.scoreBasedOnQueueCommandRightWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase);
+    Command leftScoreCommand = CommandFactory.scoreBasedOnQueueCommandLeftWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase);
+    
+    driverXbox.rightBumper().whileTrue(rightScoreCommand);
+    driverXbox.rightBumper().onFalse(Commands.runOnce(() -> {
+        rightScoreCommand.cancel();
+        drivebase.stopDriveToPoseCommand().schedule();
+    }));
+    
+    driverXbox.leftBumper().whileTrue(leftScoreCommand);
+    driverXbox.leftBumper().onFalse(Commands.runOnce(() -> {
+        leftScoreCommand.cancel();
+        drivebase.stopDriveToPoseCommand().schedule();
+    }));
     
     // Left trigger controls coral intake
     driverXbox.axisMagnitudeGreaterThan(2, 0.2).onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
 
-    // Right trigger controls coral outake
-    driverXbox.axisMagnitudeGreaterThan(3, 0.2)
-    .onTrue(shooter.shooterOutakeCommand().alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
-    .and(shooter.L1ScoringTrigger())
-    .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel))
-    .onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
+    // Right trigger controls coral outake - restructured to ensure stop on release
+    Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
+    
+    // Start shooting and LED pattern when pressed
+    rightTriggerPressed.onTrue(shooter.shooterOutakeCommand()
+        .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
+    
+    // Handle special L1 scoring if applicable
+    rightTriggerPressed.and(shooter.L1ScoringTrigger())
+        .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    
+    // Always stop shooter when trigger is released
+    rightTriggerPressed.onFalse(shooter.shooterZeroSpeedCommand()
+        .alongWith(led.setAlliancePattern()));
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
@@ -320,22 +340,22 @@ public class RobotContainer {
       double robotRotation = currentPose.getRotation().getDegrees();
   
       // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
         buttonBox.addTarget("C130");
         buttonBox.addTarget("C131");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
+      } else if (robotRotation > -150 && robotRotation <= -90) {
         buttonBox.addTarget("C230");
         buttonBox.addTarget("C231");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
+      } else if (robotRotation > -90 && robotRotation <= -30) {
         buttonBox.addTarget("C330");
         buttonBox.addTarget("C331");
-      } else if (robotRotation > 150 && robotRotation <= 210) {
+      } else if (robotRotation > -30 && robotRotation <= 30) {
         buttonBox.addTarget("C430");
         buttonBox.addTarget("C431");
-      } else if (robotRotation > 210 && robotRotation <= 270) {
+      } else if (robotRotation > 30 && robotRotation <= 90) {
         buttonBox.addTarget("C530");
         buttonBox.addTarget("C531");
-      } else if (robotRotation > 270 && robotRotation <= 330) {
+      } else if (robotRotation > 90 && robotRotation <= 150) {
         buttonBox.addTarget("C630");
         buttonBox.addTarget("C631");
       }
@@ -346,22 +366,22 @@ public class RobotContainer {
       double robotRotation = currentPose.getRotation().getDegrees();
   
       // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
         buttonBox.addTarget("C120");
         buttonBox.addTarget("C121");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
+      } else if (robotRotation > -150 && robotRotation <= -90) {
         buttonBox.addTarget("C220");
         buttonBox.addTarget("C221");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
+      } else if (robotRotation > -90 && robotRotation <= -30) {
         buttonBox.addTarget("C320");
         buttonBox.addTarget("C321");
-      } else if (robotRotation > 150 && robotRotation <= 210) {
+      } else if (robotRotation > -30 && robotRotation <= 30) {
         buttonBox.addTarget("C420");
         buttonBox.addTarget("C421");
-      } else if (robotRotation > 210 && robotRotation <= 270) {
+      } else if (robotRotation > 30 && robotRotation <= 90) {
         buttonBox.addTarget("C520");
         buttonBox.addTarget("C521");
-      } else if (robotRotation > 270 && robotRotation <= 330) {
+      } else if (robotRotation > 90 && robotRotation <= 150) {
         buttonBox.addTarget("C620");
         buttonBox.addTarget("C621");
       }
@@ -372,22 +392,22 @@ public class RobotContainer {
       double robotRotation = currentPose.getRotation().getDegrees();
   
       // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 0 && robotRotation <= 30) || (robotRotation > 330 && robotRotation <= 360)) {
+      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
         buttonBox.addTarget("C110");
         buttonBox.addTarget("C111");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
+      } else if (robotRotation > -150 && robotRotation <= -90) {
         buttonBox.addTarget("C210");
         buttonBox.addTarget("C211");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
+      } else if (robotRotation > -90 && robotRotation <= -30) {
         buttonBox.addTarget("C310");
         buttonBox.addTarget("C311");
-      } else if (robotRotation > 150 && robotRotation <= 210) {
+      } else if (robotRotation > -30 && robotRotation <= 30) {
         buttonBox.addTarget("C410");
         buttonBox.addTarget("C411");
-      } else if (robotRotation > 210 && robotRotation <= 270) {
+      } else if (robotRotation > 30 && robotRotation <= 90) {
         buttonBox.addTarget("C510");
         buttonBox.addTarget("C511");
-      } else if (robotRotation > 270 && robotRotation <= 330) {
+      } else if (robotRotation > 90 && robotRotation <= 150) {
         buttonBox.addTarget("C610");
         buttonBox.addTarget("C611");
       }
@@ -502,6 +522,7 @@ public class RobotContainer {
 */
 
     driverXbox.pov(0).onTrue(CommandFactory.ballDown(shooter, shooterArm, elevator));
+    driverXbox.pov(180).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     
     driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
@@ -732,6 +753,11 @@ public class RobotContainer {
 
     // Update zone statuses
     Pose2d currentPose = drivebase.getPose();
+    
+    // Add robot rotation display to SmartDashboard
+    double robotRotationDegrees = currentPose.getRotation().getDegrees();
+    SmartDashboard.putNumber("Robot Rotation (deg)", robotRotationDegrees);
+    
     isInReefZone = isInReefZone(currentPose);
     isInCoralStationLeftZone = isInCoralStationLeft(currentPose);
     isInCoralStationRightZone = isInCoralStationRight(currentPose);
@@ -1025,7 +1051,6 @@ public class RobotContainer {
       questNavVision.setPose(currentPose);
       
 
-      
 
       isUsingQuestToStart = SmartDashboard.getBoolean("isUsingQuestToStart", false);
 
