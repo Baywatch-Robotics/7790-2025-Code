@@ -120,6 +120,9 @@ public class RobotContainer {
   // Add flag for climb mode toggle
   private boolean climbModeEnabled = false;
 
+  // Add flag for algae mode toggle
+  private boolean algaeModeEnabled = false;
+
   // Add a boolean to track Quest nav state
   private boolean isUsingQuestRobotContainer = true;
 
@@ -336,9 +339,10 @@ public class RobotContainer {
     rightTriggerPressed.and(() -> !climbModeEnabled).and(shooter.L1ScoringTrigger())
         .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
     
-    // Always stop shooter when trigger is released (only when not in climb mode)
+    // Always stop shooter when trigger is released (only when not in climb mode), clear all button box targets
     rightTriggerPressed.and(() -> !climbModeEnabled).onFalse(shooter.shooterZeroSpeedCommand()
-        .alongWith(led.setAlliancePattern()));
+        .alongWith(led.setAlliancePattern())
+        .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));
 
     // Climber control when in climb mode - using either trigger activates climber
     Trigger anyTriggerPressed = leftTriggerPressed.or(rightTriggerPressed);
@@ -348,7 +352,7 @@ public class RobotContainer {
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
     buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
 
-    driverXbox.y().onTrue(new InstantCommand(() -> {
+    driverXbox.y().and(() -> !climbModeEnabled).onTrue(new InstantCommand(() -> {
       Pose2d currentPose = drivebase.getPose();
       double robotRotation = currentPose.getRotation().getDegrees();
   
@@ -374,7 +378,7 @@ public class RobotContainer {
       }
     }));
 
-    driverXbox.x().onTrue(new InstantCommand(() -> {
+    driverXbox.x().and(() -> !climbModeEnabled).onTrue(new InstantCommand(() -> {
       Pose2d currentPose = drivebase.getPose();
       double robotRotation = currentPose.getRotation().getDegrees();
   
@@ -400,7 +404,7 @@ public class RobotContainer {
       }
     }));
 
-    driverXbox.b().onTrue(new InstantCommand(() -> {
+    driverXbox.b().and(() -> !climbModeEnabled).onTrue(new InstantCommand(() -> {
       Pose2d currentPose = drivebase.getPose();
       double robotRotation = currentPose.getRotation().getDegrees();
   
@@ -509,7 +513,7 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    //driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
@@ -534,17 +538,21 @@ public class RobotContainer {
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 */
 
-    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    driverXbox.a().and(() -> !climbModeEnabled).onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    driverXbox.a().and(() -> climbModeEnabled).onTrue(servo.setEngageCommand());
+    driverXbox.b().and(() -> climbModeEnabled).onTrue(servo.setDisengageCommand());
+    driverXbox.x().and(() -> climbModeEnabled).onTrue(climber.climberFullRetractCommand());
+    driverXbox.y().and(() -> climbModeEnabled).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber).alongWith(CommandFactory.setClimbPositionArmOnly(elevator, shooterArm)));
     
     driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
-    driverXbox.pov(0).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
-    driverXbox.pov(90).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
-    driverXbox.pov(180).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber));
-    driverXbox.pov(270).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
-
-    driverXbox.back().onTrue(toggleClimbModeCommand());
+    driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
+    driverXbox.pov(90).and(() -> !algaeModeEnabled).whileTrue(new RunCommand(() -> funnel.moveAmount(-1), funnel));
+    driverXbox.pov(90).and(() -> algaeModeEnabled).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
+    driverXbox.pov(180).onTrue(toggleClimbModeCommand());
+    driverXbox.pov(270).and(() -> !algaeModeEnabled).whileTrue(new RunCommand(() -> funnel.moveAmount(1), funnel));
+    driverXbox.pov(270).and(() -> algaeModeEnabled).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
 
     opXbox.pov(180).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber));
 
@@ -621,6 +629,17 @@ public class RobotContainer {
           new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO,
               "Climb Mode Changed",
               "Climb mode " + (climbModeEnabled ? "enabled" : "disabled")));
+    });
+  }
+
+  public Command toggleAlgaeModeCommand() {
+    return Commands.runOnce(() -> {
+      algaeModeEnabled = !algaeModeEnabled;
+      SmartDashboard.putBoolean("Algae Mode", algaeModeEnabled);
+      Elastic.sendNotification(
+          new Elastic.Notification(Elastic.Notification.NotificationLevel.INFO,
+              "Algae Mode Changed",
+              "Algae mode " + (algaeModeEnabled ? "enabled" : "disabled")));
     });
   }
 
@@ -805,6 +824,7 @@ public class RobotContainer {
     // Update SmartDashboard with full speed mode status
     SmartDashboard.putBoolean("Full Speed Mode", fullSpeedModeEnabled);
     SmartDashboard.putBoolean("Climb Mode", climbModeEnabled);
+    SmartDashboard.putBoolean("Algae Mode", algaeModeEnabled);
 
     reefZoneTrigger();
     coralStationLeftTrigger();
