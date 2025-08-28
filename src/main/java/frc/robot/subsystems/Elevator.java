@@ -66,7 +66,6 @@ public class Elevator extends SubsystemBase {
     private Trigger atHomeTrigger;
     private Trigger raisedTrigger;
     private Trigger clearToIntakeTrigger;
-    private Trigger clearToClimbAngleTrigger;
     
     // Additional triggers for more precise height detection
     private Trigger slightlyRaisedTrigger;
@@ -141,6 +140,14 @@ public class Elevator extends SubsystemBase {
         elevatorDesiredPosition = ElevatorConstants.lowBallPose;
     }
     
+    // Add algae elevator commands
+    public void setAlgaeLevel1() {
+        elevatorDesiredPosition = ElevatorConstants.algaeLevel1Pose;
+    }
+
+    public void setAlgaeLevel2() {
+        elevatorDesiredPosition = ElevatorConstants.algaeLevel2Pose;
+    }
     
     // Commands
     public Command setfullElevatorRetractCommand() {
@@ -270,27 +277,37 @@ public class Elevator extends SubsystemBase {
             }
         }
 
+    // Update elevatorBasedOnQueueCommand to handle algae
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
-
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
+        BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
 
         Command command = new InstantCommand(() -> {
-
-            if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
-                new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
-                new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
-                setL2L();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
-                setL2R();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
-                setL3L();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
-                setL3R();
-            } else if (currentLevelSupplier.getAsInt() == 3) {
-                setL4();
+            if (isAlgaeSupplier.getAsBoolean()) {
+                // Handle algae targets
+                if (currentLevelSupplier.getAsInt() == 1) {
+                    setAlgaeLevel1();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setAlgaeLevel2();
+                }
+            } else {
+                // Existing coral logic
+                if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
+                    new InstantCommand();
+                } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+                    new InstantCommand();
+                } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
+                    setL2L();
+                } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
+                    setL2R();
+                } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
+                    setL3L();
+                } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
+                    setL3R();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    setL4();
+                }
             }
         });
         return command;
@@ -496,7 +513,6 @@ public class Elevator extends SubsystemBase {
         clearToIntakeTrigger.getAsBoolean();
         atHomeTrigger.getAsBoolean();
         atSetpointTrigger.getAsBoolean();
-        clearToClimbAngleTrigger.getAsBoolean();
         raisedTrigger.getAsBoolean();
         slightlyRaisedTrigger.getAsBoolean();
         partiallyRaisedTrigger.getAsBoolean();
@@ -551,10 +567,6 @@ public class Elevator extends SubsystemBase {
     
     public Trigger getIsAtSetpointTrigger() {
         return atSetpointTrigger;
-    }
-    
-    public Trigger getIsClearToClimbAngleTrigger() {
-        return clearToClimbAngleTrigger;
     }
     
     // Getters for the new trigger instances

@@ -356,54 +356,90 @@ public class RobotContainer {
     }));
 
     driverXbox.x().onTrue(new InstantCommand(() -> {
-      Pose2d currentPose = drivebase.getPose();
-      double robotRotation = currentPose.getRotation().getDegrees();
-  
-      // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
-        buttonBox.addTarget("C120");
-        buttonBox.addTarget("C121");
-      } else if (robotRotation > -150 && robotRotation <= -90) {
-        buttonBox.addTarget("C220");
-        buttonBox.addTarget("C221");
-      } else if (robotRotation > -90 && robotRotation <= -30) {
-        buttonBox.addTarget("C320");
-        buttonBox.addTarget("C321");
-      } else if (robotRotation > -30 && robotRotation <= 30) {
-        buttonBox.addTarget("C420");
-        buttonBox.addTarget("C421");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
-        buttonBox.addTarget("C520");
-        buttonBox.addTarget("C521");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
-        buttonBox.addTarget("C620");
-        buttonBox.addTarget("C621");
+      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
+    
+        // Check if robot rotation is within the specified bounds (in degrees)
+        if ((robotRotation >= 120 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -120)) {
+          buttonBox.addTarget("A121");
+          buttonBox.addTarget("A120");
+        } else if (robotRotation > -120 && robotRotation <= 0) {
+          buttonBox.addTarget("A321");
+          buttonBox.addTarget("A320");
+        } else if (robotRotation > 0 && robotRotation <= 120) {
+          buttonBox.addTarget("A521");
+          buttonBox.addTarget("A520");
+        }
+      }
+      else { // Only execute when algae mode is NOT enabled
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
+    
+        // Check if robot rotation is within the specified bounds (in degrees)
+        if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+          buttonBox.addTarget("C120");
+          buttonBox.addTarget("C121");
+        } else if (robotRotation > -150 && robotRotation <= -90) {
+          buttonBox.addTarget("C220");
+          buttonBox.addTarget("C221");
+        } else if (robotRotation > -90 && robotRotation <= -30) {
+          buttonBox.addTarget("C320");
+          buttonBox.addTarget("C321");
+        } else if (robotRotation > -30 && robotRotation <= 30) {
+          buttonBox.addTarget("C420");
+          buttonBox.addTarget("C421");
+        } else if (robotRotation > 30 && robotRotation <= 90) {
+          buttonBox.addTarget("C520");
+          buttonBox.addTarget("C521");
+        } else if (robotRotation > 90 && robotRotation <= 150) {
+          buttonBox.addTarget("C620");
+          buttonBox.addTarget("C621");
+        }
       }
     }));
 
     driverXbox.b().onTrue(new InstantCommand(() -> {
-      Pose2d currentPose = drivebase.getPose();
-      double robotRotation = currentPose.getRotation().getDegrees();
+      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
+    
+        // Check if robot rotation is within the specified bounds (in degrees)
+        if (robotRotation > -180 && robotRotation <= -60) {
+          buttonBox.addTarget("A211");
+          buttonBox.addTarget("A210");
+        } else if (robotRotation > -60 && robotRotation <= 60) {
+          buttonBox.addTarget("A411");
+          buttonBox.addTarget("A410");
+        } else if (robotRotation > 60 && robotRotation <= 180) {
+          buttonBox.addTarget("A611");
+          buttonBox.addTarget("A610");
+        }
+      }
+      else { // Only execute when algae mode is NOT enabled
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
   
-      // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
-        buttonBox.addTarget("C110");
-        buttonBox.addTarget("C111");
-      } else if (robotRotation > -150 && robotRotation <= -90) {
-        buttonBox.addTarget("C210");
-        buttonBox.addTarget("C211");
-      } else if (robotRotation > -90 && robotRotation <= -30) {
-        buttonBox.addTarget("C310");
-        buttonBox.addTarget("C311");
-      } else if (robotRotation > -30 && robotRotation <= 30) {
-        buttonBox.addTarget("C410");
-        buttonBox.addTarget("C411");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
-        buttonBox.addTarget("C510");
-        buttonBox.addTarget("C511");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
-        buttonBox.addTarget("C610");
-        buttonBox.addTarget("C611");
+        // Check if robot rotation is within the specified bounds (in degrees)
+        if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+          buttonBox.addTarget("C110");
+          buttonBox.addTarget("C111");
+        } else if (robotRotation > -150 && robotRotation <= -90) {
+          buttonBox.addTarget("C210");
+          buttonBox.addTarget("C211");
+        } else if (robotRotation > -90 && robotRotation <= -30) {
+          buttonBox.addTarget("C310");
+          buttonBox.addTarget("C311");
+        } else if (robotRotation > -30 && robotRotation <= 30) {
+          buttonBox.addTarget("C410");
+          buttonBox.addTarget("C411");
+        } else if (robotRotation > 30 && robotRotation <= 90) {
+          buttonBox.addTarget("C510");
+          buttonBox.addTarget("C511");
+        } else if (robotRotation > 90 && robotRotation <= 150) {
+          buttonBox.addTarget("C610");
+          buttonBox.addTarget("C611");
+        }
       }
     }));
 
@@ -515,9 +551,6 @@ public class RobotContainer {
 */
 
     driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(endEffector, Arm, elevator));
-    
-    driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(endEffector, Arm, elevator));
-    driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(endEffector, Arm, elevator));
 
     driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
 

@@ -128,6 +128,11 @@ public class Arm extends SubsystemBase {
         ArmDesiredAngle = ArmConstants.preLowBallAngle;
     }
 
+    // Add algae arm command
+    public void setAlgaeAngle() {
+        ArmDesiredAngle = ArmConstants.algaeAngle;
+    }
+
     public Command ArmScoreLOWCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOW());
@@ -193,27 +198,35 @@ public class Arm extends SubsystemBase {
         return command;
     }
     
+    // Update ArmBasedOnQueueCommand to handle algae
     public Command ArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
+        BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
 
         Command command = new InstantCommand(() -> {
 
             if (currentLevelSupplier != null && currentSideSupplier != null) {
-                if (currentLevelSupplier.getAsInt() == 0) {
-                    new InstantCommand();
-                } else if (currentLevelSupplier.getAsInt() == 1) {
-                    setScoreLOW();
-                } else if (currentLevelSupplier.getAsInt() == 2) {
-                    setScoreLOW();
-                } else if (currentLevelSupplier.getAsInt() == 3) {
-                    if (currentSideSupplier.getAsBoolean()) {
-                        // Left L4
-                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
-                    } else {
-                        // Right L4
-                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
+                if (isAlgaeSupplier.getAsBoolean()) {
+                    // Handle algae targets - both levels use same arm angle
+                    setAlgaeAngle();
+                } else {
+                    // Existing coral logic
+                    if (currentLevelSupplier.getAsInt() == 0) {
+                        new InstantCommand();
+                    } else if (currentLevelSupplier.getAsInt() == 1) {
+                        setScoreLOW();
+                    } else if (currentLevelSupplier.getAsInt() == 2) {
+                        setScoreLOW();
+                    } else if (currentLevelSupplier.getAsInt() == 3) {
+                        if (currentSideSupplier.getAsBoolean()) {
+                            // Left L4
+                            ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
+                        } else {
+                            // Right L4
+                            ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
+                        }
                     }
                 }
             }

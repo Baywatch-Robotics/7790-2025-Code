@@ -25,29 +25,23 @@ public class CommandFactory {
       // Run the LED pattern first as a separate command
       Command ledCommand = led.runPattern("INTAKE_PATTERN");
       
-      // Deploy intake and start roller first
       Command intakeStart = intake.deployCommand()
         .andThen(intake.intakeCommand())
-        .andThen(indexer.indexCommand());
-
-      // Automatically stop & stow once coral fully indexed
-      Command autoStow = new WaitUntilCommand(indexer.coralIndexedTrigger())
+        .andThen(indexer.indexCommand())
+        .andThen(elevator.setElevatorHoverCommand())
+        .andThen(arm.ArmPickUpCommand())
+        .andThen(endEffector.endEffectorIntakeCommand())
+        .andThen(new WaitUntilCommand(indexer.coralIndexedTrigger()))
         .andThen(indexer.stopCommand())
         .andThen(intake.stopCommand())
+        .andThen(elevator.setElevatorPickupCommand())
+        .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
+        .andThen(endEffector.endEffectorZeroSpeedCommand())
+        .andThen(elevator.setElevatorHoverCommand())
         .andThen(intake.stowCommand());
 
-      Command pickUpCommand = arm.ArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger().and(arm.isClearToElevate()))
-      .andThen(elevator.setElevatorHoverCommand())
-      .andThen(arm.ArmPickUpCommand())
-      .andThen(endEffector.endEffectorIntakeCommand())
-      .andThen(new WaitUntilCommand(indexer.coralIndexedTrigger()))
-      .andThen(elevator.setElevatorPickupCommand())
-      .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
-      .andThen(endEffector.endEffectorZeroSpeedCommand())
-      .andThen(elevator.setElevatorHoverCommand());
-
       Command command = ledCommand
-        .andThen(intakeStart.alongWith(autoStow)).alongWith(pickUpCommand);
+        .andThen(intakeStart);
 
       command.addRequirements(endEffector, arm, elevator, intake);
 
@@ -82,9 +76,9 @@ public class CommandFactory {
     command.addRequirements(endEffector, arm, elevator);
 
     return command;
-}
+  }
 
-  public static Command pullOffHighAboveBall(EndEffector endEffector, Arm arm, Elevator elevator) {
+  public static Command intakeHighBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
     Command command  = arm.ArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
@@ -98,7 +92,7 @@ public class CommandFactory {
     return command;
   }
 
-  public static Command pullOffLowBall(EndEffector endEffector, Arm arm, Elevator elevator) {
+  public static Command intakeLowBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
     Command command  = arm.ArmScoreLOWCommand()
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
@@ -138,7 +132,6 @@ public class CommandFactory {
 public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = arm.ArmBasedOnQueueCommand(buttonBox)
-    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueue(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
@@ -148,7 +141,6 @@ public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm,
 public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = arm.ArmBasedOnQueueCommandRight(buttonBox)
-    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueueRight(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommandRight(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
@@ -158,7 +150,6 @@ public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm
 public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
   Command command = arm.ArmBasedOnQueueCommandLeft(buttonBox)
-    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueueLeft(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommandLeft(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
@@ -429,6 +420,16 @@ public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(EndEffector
     .andThen(drivebase.startDriveToPose(buttonBox, elevator))
     .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()));
 
+    command.addRequirements(endEffector, arm, elevator);
+    return command;
+}
+
+public static Command algaeIntakeBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox) {
+    Command command = arm.ArmBasedOnQueueCommand(buttonBox)
+        .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox))
+        .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
+        .andThen(endEffector.endEffectorIntakeCommand());
+        
     command.addRequirements(endEffector, arm, elevator);
     return command;
 }

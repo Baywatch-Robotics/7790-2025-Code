@@ -321,4 +321,38 @@ public class ButtonBox extends SubsystemBase {
         return new JoystickSuppliers(xInput, yInput, rotationX, rotationY);
     }
         */
+    
+    // Update setCurrentSuppliers method to handle algae
+    /* private void setCurrentSuppliers() {
+        TargetClass target = peekNextTarget();
+        if (target != null) {
+            String targetName = target.getName();
+            if (targetName.startsWith("A")) {
+                // Algae target: A[level]XX format
+                currentLevelSupplier = () -> {
+                    if (targetName.length() >= 2) {
+                        return Character.getNumericValue(targetName.charAt(1));
+                    }
+                    return 0;
+                };
+                currentisLeftSupplier = () -> false; // Not used for algae
+            } else {
+                // Existing coral logic
+                currentLevelSupplier = () -> {
+                    if (targetName.length() >= 2) {
+                        return Character.getNumericValue(targetName.charAt(1));
+                    }
+                    return 0;
+                };
+                
+                currentisLeftSupplier = () -> {
+                    if (targetName.length() >= 3) {
+                        int position = Character.getNumericValue(targetName.charAt(2));
+                        return position == 1 || position == 3 || position == 5;
+                    }
+                    return false;
+                };
+            }
+        }
+    } */
 }

@@ -268,72 +268,98 @@ public class SwerveSubsystem extends SubsystemBase
         private Command pathCommand;
         private PathConstraints lastConstraints = null;
         private TargetClass lastTarget = null;
-        
+        private int scheduleCount = 0;
+
         @Override
         public void initialize() {
-            // Reset cancel flag once at the very start
             setCancel(false);
+            SmartDashboard.putString("DriveToPosePP/InitPose", getPose().toString());
+            SmartDashboard.putBoolean("DriveToPosePP/Active", true);
+            System.out.println("[DriveToPosePP] initialize");
         }
-        
+
         @Override
         public void execute() {
-            // Get current target from the supplier
             TargetClass target = buttonBox.currentTargetClassSupplier.get();
             if (target == null) {
                 target = TargetClass.GetTargetByName("C100");
+                SmartDashboard.putBoolean("DriveToPosePP/UsedFallbackTarget", true);
+            } else {
+                SmartDashboard.putBoolean("DriveToPosePP/UsedFallbackTarget", false);
             }
-            
-            // Compute target pose from the target
+
             Pose2d targetPose = new Pose2d(
                 new Translation2d(target.getX(), target.getY()),
                 Rotation2d.fromRadians(target.getZ())
             );
             Pose2d finalTargetPose = TargetClass.toPose2d(targetPose);
-            
-            // Create the PathConstraints with the computed values
+
             PathConstraints currentConstraints = new PathConstraints(
                 3.0,
                 2.0,
                 DriveToPoseConstants.THETA_MAX_VELOCITY,
                 DriveToPoseConstants.THETA_MAX_ACCELERATION
             );
-            
-            // Only update when either constraints or target have changed
-            if (!currentConstraints.equals(lastConstraints) || !target.equals(lastTarget)) {
+
+            boolean needsNew =
+                (lastConstraints == null || !currentConstraints.equals(lastConstraints)) ||
+                (lastTarget == null || target != lastTarget);
+
+            if (needsNew) {
                 if (pathCommand != null && !pathCommand.isFinished()) {
                     pathCommand.cancel();
                 }
-                
-                // Create and schedule the new pathfinding command using the computed constraints
-                pathCommand = AutoBuilder.pathfindToPose(finalTargetPose, currentConstraints,
-                    edu.wpi.first.units.Units.MetersPerSecond.of(0));
-                pathCommand.schedule();
-                
-                // Cache new values
+                try {
+                    pathCommand = AutoBuilder.pathfindToPose(finalTargetPose, currentConstraints,
+                        edu.wpi.first.units.Units.MetersPerSecond.of(0));
+                    pathCommand.schedule();
+                    scheduleCount++;
+                    SmartDashboard.putString("DriveToPosePP/ScheduledPose", finalTargetPose.toString());
+                    SmartDashboard.putNumber("DriveToPosePP/ScheduleCount", scheduleCount);
+                    System.out.println("[DriveToPosePP] Scheduled new path (count=" + scheduleCount + ") target=" + finalTargetPose);
+                } catch (Exception ex) {
+                    System.out.println("[DriveToPosePP] ERROR scheduling: " + ex.getMessage());
+                    DriverStation.reportError("DriveToPosePP schedule error", ex.getStackTrace());
+                }
                 lastConstraints = currentConstraints;
                 lastTarget = target;
             }
-            
-            // Check cancellation flag during this cycle
-            if (getCancel() && pathCommand != null && !pathCommand.isFinished()) {
-                pathCommand.cancel();
+
+            if (pathCommand != null) {
+                SmartDashboard.putBoolean("DriveToPosePP/InnerActive", !pathCommand.isFinished());
             }
+
+            if (getCancel() && pathCommand != null && !pathCommand.isFinished()) {
+                SmartDashboard.putBoolean("DriveToPosePP/CancelledFlag", true);
+                System.out.println("[DriveToPosePP] Cancel flag detected, cancelling pathCommand");
+                pathCommand.cancel();
+            } else {
+                SmartDashboard.putBoolean("DriveToPosePP/CancelledFlag", false);
+            }
+
+            // Distance debug
+            SmartDashboard.putNumber("DriveToPosePP/DistanceToTarget",
+                getPose().getTranslation().getDistance(finalTargetPose.getTranslation()));
         }
-        
+
         @Override
         public boolean isFinished() {
-            return (pathCommand != null && pathCommand.isFinished()) || getCancel();
+            boolean finished = (pathCommand != null && pathCommand.isFinished()) || getCancel();
+            SmartDashboard.putBoolean("DriveToPosePP/Finished", finished);
+            return finished;
         }
-        
+
         @Override
         public void end(boolean interrupted) {
             if (pathCommand != null) {
                 pathCommand.cancel();
             }
+            SmartDashboard.putBoolean("DriveToPosePP/Active", false);
+            System.out.println("[DriveToPosePP] end interrupted=" + interrupted);
             setCancel(false);
         }
     };
-}
+  }
 
 
   public Command driveToPoseProfiled(ButtonBox buttonBox) {
