@@ -37,7 +37,6 @@ import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
-import frc.robot.subsystems.PaulServo;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -145,7 +144,6 @@ public class RobotContainer {
   private final LED led = new LED();
 
   
-  private final PaulServo servo = new PaulServo();
 
   private final ButtonBox buttonBox = new ButtonBox(drivebase);
   
@@ -539,8 +537,7 @@ public class RobotContainer {
 */
 
     driverXbox.a().and(() -> !climbModeEnabled).onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
-    driverXbox.a().and(() -> climbModeEnabled).onTrue(servo.setEngageCommand());
-    driverXbox.b().and(() -> climbModeEnabled).onTrue(servo.setDisengageCommand());
+
     driverXbox.x().and(() -> climbModeEnabled).onTrue(climber.climberFullRetractCommand());
     driverXbox.y().and(() -> climbModeEnabled).onTrue(CommandFactory.setClimbPositionNoArm(algaeArm, funnel, climber).alongWith(CommandFactory.setClimbPositionArmOnly(elevator, shooterArm)));
     
@@ -559,10 +556,6 @@ public class RobotContainer {
     opXbox.start().onTrue(CommandFactory.setClimbPositionArmOnly(elevator, shooterArm));
 
     opXbox.pov(90).onTrue(algaeArm.algaeArmHoldCommand());
-
-    opXbox.a().onTrue(servo.setEngageCommand());
-
-    opXbox.b().onTrue(servo.setDisengageCommand());
     
     // Add new position control commands
     // Fully retract climber (for stowing)
