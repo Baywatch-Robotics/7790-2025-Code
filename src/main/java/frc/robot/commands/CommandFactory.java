@@ -20,7 +20,7 @@ import frc.robot.util.DynamicWait;
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(EndEffector endEffector, Arm Arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
+    public static Command setIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
       
       // Run the LED pattern first as a separate command
       Command ledCommand = led.runPattern("INTAKE_PATTERN");
@@ -30,156 +30,144 @@ public class CommandFactory {
         .andThen(intake.intakeCommand())
         .andThen(indexer.indexCommand());
 
-      Command mainCommand = Arm.ArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger().and(Arm.isClearToElevate()))
+      // Automatically stop & stow once coral fully indexed
+      Command autoStow = new WaitUntilCommand(indexer.coralIndexedTrigger())
+        .andThen(indexer.stopCommand())
+        .andThen(intake.stopCommand())
+        .andThen(intake.stowCommand());
+
+      Command pickUpCommand = arm.ArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger().and(arm.isClearToElevate()))
+      .andThen(elevator.setElevatorHoverCommand())
+      .andThen(arm.ArmPickUpCommand())
+      .andThen(endEffector.endEffectorIntakeCommand())
+      .andThen(new WaitUntilCommand(indexer.coralIndexedTrigger()))
       .andThen(elevator.setElevatorPickupCommand())
-      .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-      // Only proceed to loading position when outside reef zone
-      .andThen(new WaitUntilCommand(robotContainer.reefZoneTrigger().negate()))
-      .andThen(Arm.ArmLoadCommand())
-      .andThen(endEffector.endEffectorIntakeCommand())
       .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
-      .andThen(Arm.ArmOutLoadCommand())
-      .andThen(elevator.setElevatorPickupPlusCommand())
       .andThen(endEffector.endEffectorZeroSpeedCommand())
-      .andThen(Arm.ArmScoreLOWCommand())
-      .andThen(new InstantCommand(() -> endEffector.setisL1ScoringFalse()));
+      .andThen(elevator.setElevatorHoverCommand());
 
-      // Combine the LED command with the main command sequence
-      Command command = ledCommand.andThen(intakeStart).andThen(mainCommand);
+      Command command = ledCommand
+        .andThen(intakeStart.alongWith(autoStow)).alongWith(pickUpCommand);
 
-      command.addRequirements(endEffector, Arm, elevator, intake);
+      command.addRequirements(endEffector, arm, elevator, intake);
 
       return command;
   }
   
   
 
-  public static Command setIntakeCommandFORAUTOONLY(EndEffector endEffector, Arm Arm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+  public static Command setLollipopIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     
     
-      Command command  = elevator.setElevatorPickupCommand()
-      .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-      .andThen(Arm.ArmLoadCommand())
-      .andThen(endEffector.endEffectorIntakeCommand())
+      Command command  = endEffector.endEffectorIntakeCommand()
+      .andThen(arm.ArmLollipopCommand())
+      .andThen(new WaitUntilCommand(arm.isClearToDescend()))
+      .andThen(elevator.setElevatorLollipopCommand())
       .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
-      .andThen(endEffector.endEffectorZeroSpeedCommand())
-      .andThen(Arm.ArmScoreLOWCommand());
+      .andThen(endEffector.endEffectorZeroSpeedCommand());
   
   
-      command.addRequirements(endEffector, Arm, elevator);
+      command.addRequirements(endEffector, arm, elevator);
   
       return command;
   }
 
-  public static Command setElevatorZero(EndEffector endEffector, Arm Arm, Elevator elevator) {
+  public static Command setElevatorZero(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = Arm.ArmScoreLOWCommand() //Will make this straight up at some point
-    .andThen(new WaitUntilCommand(Arm.isClearToElevate()))
+    Command command  = arm.ArmScoreLOWCommand() //Will make this straight up at some point
+    .andThen(new WaitUntilCommand(arm.isClearToElevate()))
       .andThen(elevator.setfullElevatorRetractCommand());
 
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
 
     return command;
 }
 
-  public static Command pullOffHighAboveBall(EndEffector endEffector, Arm Arm, Elevator elevator) {
+  public static Command pullOffHighAboveBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = Arm.ArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(Arm.isClearToElevate()))
+    Command command  = arm.ArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(Arm.ArmPreBallCommand())
+    .andThen(arm.ArmPreBallCommand())
     .andThen(endEffector.endEffectorOuttakeCommand());
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
 
     return command;
   }
 
-  public static Command pullOffLowBall(EndEffector endEffector, Arm Arm, Elevator elevator) {
+  public static Command pullOffLowBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = Arm.ArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(Arm.isClearToElevate()))
+    Command command  = arm.ArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(Arm.ArmPreLowBallCommand())
+    .andThen(arm.ArmPreLowBallCommand())
     .andThen(endEffector.endEffectorOuttakeCommand());
 
 
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
 
     return command;
   }
 
-  public static Command ballDown(EndEffector endEffector, Arm Arm, Elevator elevator) {
+  public static Command ballDown(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = Arm.ArmBallCommand();
+    Command command  = arm.ArmBallCommand();
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
 
     return command;
   }
   
-  public static Command scoreL1CommandNOSHOOT(EndEffector endEffector, Arm Arm, Elevator elevator) {
+  public static Command scoreL1CommandNOSHOOT(EndEffector endEffector, Arm arm, Elevator elevator) {
       
     Command command  = elevator.setElevatorL1Command()
     .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-    .andThen(Arm.ArmScoreL1RealCommand())
+    .andThen(arm.ArmScoreL1RealCommand())
     .andThen(new InstantCommand(() -> endEffector.setisL1ScoringTrue()));
 
-    command.addRequirements(endEffector, Arm, elevator);
-
-    return command;
-  }
-
-  public static Command finishL1ScoreCommand(EndEffector endEffector, Arm Arm, Elevator elevator) {
-
-    Command command = new WaitCommand(0.3)
-    .andThen(elevator.setElevatorL1Command())
-    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-    .andThen(Arm.ArmLoadCommand())
-    .andThen(new InstantCommand(() -> endEffector.setisL1ScoringFalse()));
-
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
 
     return command;
   }
   
-public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox){
+public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = Arm.ArmBasedOnQueueCommand(buttonBox)
-    .andThen(new WaitUntilCommand(Arm.isClearToElevateBasedOnQueue(buttonBox)))
+  Command command = arm.ArmBasedOnQueueCommand(buttonBox)
+    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueue(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
   
-public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox){
+public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = Arm.ArmBasedOnQueueCommandRight(buttonBox)
-    .andThen(new WaitUntilCommand(Arm.isClearToElevateBasedOnQueueRight(buttonBox)))
+  Command command = arm.ArmBasedOnQueueCommandRight(buttonBox)
+    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueueRight(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommandRight(buttonBox));
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
   
-public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox){
+public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = Arm.ArmBasedOnQueueCommandLeft(buttonBox)
-    .andThen(new WaitUntilCommand(Arm.isClearToElevateBasedOnQueueLeft(buttonBox)))
+  Command command = arm.ArmBasedOnQueueCommandLeft(buttonBox)
+    .andThen(new WaitUntilCommand(arm.isClearToElevateBasedOnQueueLeft(buttonBox)))
     .andThen(elevator.elevatorBasedOnQueueCommandLeft(buttonBox));
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
 
 // New combined command that scores right target and drives to next target ending in "1"
-public static Command scoreBasedOnQueueCommandRightWithDrive(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
-  return scoreBasedOnQueueCommandRight(endEffector, Arm, elevator, buttonBox)
+public static Command scoreBasedOnQueueCommandRightWithDrive(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
+  return scoreBasedOnQueueCommandRight(endEffector, arm, elevator, buttonBox)
     .andThen(new InstantCommand(() -> {
       // Create a custom ButtonBox wrapper that filters by suffix "1"
       ButtonBox filteredButtonBox = new ButtonBox(drivebase) {
@@ -194,8 +182,8 @@ public static Command scoreBasedOnQueueCommandRightWithDrive(EndEffector endEffe
 }
 
 // New combined command that scores left target and drives to next target ending in "0"  
-public static Command scoreBasedOnQueueCommandLeftWithDrive(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
-  return scoreBasedOnQueueCommandLeft(endEffector, Arm, elevator, buttonBox)
+public static Command scoreBasedOnQueueCommandLeftWithDrive(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase) {
+  return scoreBasedOnQueueCommandLeft(endEffector, arm, elevator, buttonBox)
     .andThen(new InstantCommand(() -> {
       // Create a custom ButtonBox wrapper that filters by suffix "0"
       ButtonBox filteredButtonBox = new ButtonBox(drivebase) {
@@ -209,230 +197,230 @@ public static Command scoreBasedOnQueueCommandLeftWithDrive(EndEffector endEffec
     }));
 }
 
-public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAutoNOSHOOT(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
-  .alongWith(CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox));
+  .alongWith(CommandFactory.scoreBasedOnQueueCommand(endEffector, arm, elevator, buttonBox));
     
-    command.addRequirements(endEffector, Arm, elevator, drivebase);
+    command.addRequirements(endEffector, arm, elevator, drivebase);
     return command; 
 }
 
-public static Command scoreBasedOnQueueCommandDriveAutoFIRST(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAutoFIRST(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
-  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox))
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, arm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(endEffector.endEffectorOuttakeCommand())
   .andThen(new WaitCommand(.25))
   .andThen(endEffector.endEffectorZeroSpeedCommand());
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
 
-public static Command scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startSlowDriveToPose(buttonBox, elevator)
-  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox))
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, arm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(endEffector.endEffectorOuttakeCommand())
   .andThen(new WaitCommand(.25))
   .andThen(endEffector.endEffectorZeroSpeedCommand());
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
 
-public static Command scoreBasedOnQueueCommandDriveAuto(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command scoreBasedOnQueueCommandDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = drivebase.startDriveToPose(buttonBox, elevator)
   .andThen(new WaitUntilCommand(robotContainer.approachingTrigger()))
-  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox))
+  .andThen(CommandFactory.scoreBasedOnQueueCommand(endEffector, arm, elevator, buttonBox))
   .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   .andThen(endEffector.endEffectorOuttakeCommand())
   .andThen(new WaitCommand(.25))
   .andThen(endEffector.endEffectorZeroSpeedCommand());
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
 
-public static Command sourceDriveAuto(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase) {
+public static Command sourceDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, LED led, Intake intake, Indexer indexer){ {
 
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
   Command command = drivebase.startFastDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(new WaitCommand(.75))
   //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   //.andThen(new WaitCommand(1.25));
-  .andThen(CommandFactory.setIntakeCommandFORAUTOONLY(endEffector, Arm, elevator, drivebase, robotContainer));
+  .andThen(CommandFactory.setIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
 
-  command.addRequirements(endEffector, Arm, elevator);
+  command.addRequirements(endEffector, arm, elevator);
 
-  return command; 
+  return command;} 
 }
 
-public static Command LeftAutonCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("S530"))
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(Arm.ArmScoreLOWCommand())
+  .andThen(arm.ArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+  .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C630")))
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(Arm.ArmScoreLOWCommand())
+  .andThen(arm.ArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
   
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+  .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("C631")))
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(Arm.ArmScoreLOWCommand())
+  .andThen(arm.ArmScoreLOWCommand())
   .andThen(elevator.setElevatorPickupCommand())
 
   .andThen(new InstantCommand(() -> buttonBox.addTarget("SL")))
-  .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+  .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
-  command.addRequirements(endEffector, Arm, elevator);
+  command.addRequirements(endEffector, arm, elevator);
   return command; 
 }
 
-public static Command RightAutonCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command RightAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
     Command command = new InstantCommand(() -> buttonBox.addTarget("S331"))
-    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(Arm.ArmScoreLOWCommand())
+    .andThen(arm.ArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+    .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C230")))
-    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(Arm.ArmScoreLOWCommand())
+    .andThen(arm.ArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+    .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
     .andThen(new InstantCommand(() -> buttonBox.addTarget("C231")))
-    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-    .andThen(Arm.ArmScoreLOWCommand())
+    .andThen(arm.ArmScoreLOWCommand())
     .andThen(elevator.setElevatorPickupCommand())
 
     .andThen(new InstantCommand(() -> buttonBox.addTarget("SR")))
-    .andThen(CommandFactory.sourceDriveAuto(endEffector, Arm, elevator, buttonBox, robotContainer, drivebase))
+    .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
     
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
 
-public static Command LeftCenterAutonCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command LeftCenterAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("S431"))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(Arm.ArmScoreLOWCommand())
+  .andThen(arm.ArmScoreLOWCommand())
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> DynamicWait.resetAutoCounter()));
   
-  command.addRequirements(endEffector, Arm, elevator);
+  command.addRequirements(endEffector, arm, elevator);
   return command; 
 }
-public static Command RightCenterAutonCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
+public static Command RightCenterAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("S430"))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(Arm.ArmScoreLOWCommand())
+  .andThen(arm.ArmScoreLOWCommand())
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
   .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
   .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(new InstantCommand(() -> DynamicWait.resetAutoCounter()));
   
-  command.addRequirements(endEffector, Arm, elevator);
+  command.addRequirements(endEffector, arm, elevator);
   return command; 
 }
 
-public static Command algaeRemoveBasedOnQueueCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
-    Command command = Arm.ArmScoreLOWCommand()
-    .andThen(new WaitUntilCommand(Arm.isClearToElevate()))
+public static Command algaeRemoveBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+    Command command = arm.ArmScoreLOWCommand()
+    .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(buttonBox.setElevatorForCurrentBallCommand(elevator))
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(Arm.ArmPreLowBallCommand())
+    .andThen(arm.ArmPreLowBallCommand())
     .andThen(endEffector.endEffectorOuttakeCommand());
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command;
 }
 
-public static Command algaeRemoveBasedOnQueueCommandDriveCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+public static Command algaeRemoveBasedOnQueueCommandDriveCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     Command command = drivebase.startDriveToPose(buttonBox, elevator)
-    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new WaitUntilCommand(robotContainer.veryCloseTrigger()))
     .andThen(buttonBox.getNextTargetCommand())
     .andThen(drivebase.startDriveToPose(buttonBox, elevator));
 
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command;
 }
 
-public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(EndEffector endEffector, Arm Arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
 
     Command command = drivebase.startDriveToPosePATHPLANNER(buttonBox, elevator)
-    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox, drivebase, robotContainer))
+    .andThen(CommandFactory.algaeRemoveBasedOnQueueCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new WaitUntilCommand(robotContainer.closeTrigger()))
     .andThen(buttonBox.getNextTargetCommand())
     .andThen(drivebase.startFastDriveToPose(buttonBox, elevator))
@@ -441,7 +429,7 @@ public static Command algaeRemoveBasedOnQueueCommandDriveAutoCommand(EndEffector
     .andThen(drivebase.startDriveToPose(buttonBox, elevator))
     .andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()));
 
-    command.addRequirements(endEffector, Arm, elevator);
+    command.addRequirements(endEffector, arm, elevator);
     return command;
 }
 }

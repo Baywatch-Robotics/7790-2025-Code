@@ -239,12 +239,12 @@ public class RobotContainer {
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
   public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
 
-  public Command rightAuto = CommandFactory.RightAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
+  public Command rightAuto = CommandFactory.RightAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -321,8 +321,6 @@ public class RobotContainer {
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
-    rightTriggerPressed.and(endEffector.L1ScoringTrigger())
-        .onTrue(CommandFactory.finishL1ScoreCommand(endEffector, Arm, elevator));
     rightTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand()
         .alongWith(led.setAlliancePattern())
         .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));

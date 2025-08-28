@@ -120,8 +120,11 @@ public class Elevator extends SubsystemBase {
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
     }
-    public void setPickupPlus() {
-        elevatorDesiredPosition = ElevatorConstants.pickupPose - 2;
+    public void setHover() {
+        elevatorDesiredPosition = ElevatorConstants.hoverPose;
+    }
+    public void setLollipop() {
+        elevatorDesiredPosition = ElevatorConstants.lollipopPose;
     }
     
     // New methods for ball positions
@@ -174,17 +177,17 @@ public class Elevator extends SubsystemBase {
     }
 
     public Command setElevatorPickupCommand() {
-
         Command command = new InstantCommand(() -> setPickup());
-
-        isClearToIntake();
-
         return command;
     }
-    public Command setElevatorPickupPlusCommand() {
 
-        Command command = new InstantCommand(() -> setPickupPlus());
+    public Command setElevatorHoverCommand() {
+        Command command = new InstantCommand(() -> setHover());
+        return command;
+    }
 
+    public Command setElevatorLollipopCommand() {
+        Command command = new InstantCommand(() -> setLollipop());
         return command;
     }
     

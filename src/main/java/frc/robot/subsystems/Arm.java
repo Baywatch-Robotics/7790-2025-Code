@@ -40,6 +40,9 @@ public class Arm extends SubsystemBase {
 
     private AbsoluteEncoder ArmEncoder = ArmMotor.getAbsoluteEncoder();
     
+    // New trigger storage (mirrors Elevator pattern)
+    private Trigger clearToDescendTrigger;
+    
     // Keep ArmFeedforward controller
     private final ArmFeedforward armFeedforward = new ArmFeedforward(
         ArmConstants.kS, 
@@ -92,8 +95,11 @@ public class Arm extends SubsystemBase {
     private void setScoreHIGH() {
         ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
     }
-    private void setLoad() {
-        ArmDesiredAngle = ArmConstants.loadAngle;
+    private void setPickUp() {
+        ArmDesiredAngle = ArmConstants.pickUpAngle;
+    }
+    private void setLollipop() {
+        ArmDesiredAngle = ArmConstants.lollipopAngle;
     }
     private void setoutLoad() {
         ArmDesiredAngle = ArmConstants.outLoadAngle;
@@ -133,9 +139,15 @@ public class Arm extends SubsystemBase {
         return command;
     }
 
-    public Command ArmLoadCommand()
+    public Command ArmPickUpCommand()
     {
-        Command command = new InstantCommand(() -> this.setLoad());
+        Command command = new InstantCommand(() -> this.setPickUp());
+        return command;
+    }
+
+    public Command ArmLollipopCommand()
+    {
+        Command command = new InstantCommand(() -> this.setLollipop());
         return command;
     }
 
@@ -213,6 +225,15 @@ public class Arm extends SubsystemBase {
         return new Trigger(() -> ArmEncoder.getPosition() >= 0.5);
     }
     
+    // New: trigger becomes active when arm at or above 0.25
+    public Trigger isClearToDescend() {
+        return new Trigger(() -> {
+            boolean clear = ArmEncoder.getPosition() >= 0.25;
+            SmartDashboard.putBoolean("Arm Clear To Descend", clear);
+            return clear;
+        });
+    }
+    
     /**
      * Returns a trigger that's immediately true if the queue is for level 3 or 4
      * Otherwise it checks the standard clearance condition
@@ -261,6 +282,13 @@ public class Arm extends SubsystemBase {
         }
         
         isClearToElevate();
+        
+        // Initialize new trigger once
+        if (clearToDescendTrigger == null) {
+            clearToDescendTrigger = isClearToDescend();
+        }
+        // Evaluate to refresh dashboard value
+        clearToDescendTrigger.getAsBoolean();
         
         // Get current arm position for dynamic reef zone constraint
         float currentPosition = (float)ArmEncoder.getPosition();

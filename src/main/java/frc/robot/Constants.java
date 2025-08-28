@@ -71,7 +71,8 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float loadAngle = 0.252f;
+    public static final float pickUpAngle = 0.016666667f;
+    public static final float lollipopAngle = 0.25f;
     public static final float outLoadAngle = 0.3f;
 
     
@@ -134,7 +135,9 @@ public final class Constants
 
     public static final float L2RPose = -6.552f;
     public static final float L2LPose = -6.552f;
-    public static final float pickupPose = -15.373566627502441f
+    public static final float pickupPose = -15.373566627502441f;
+    public static final float lollipopPose = -4.2f;
+    public static final float hoverPose = -20.373566627502441f
     ;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
@@ -757,5 +760,15 @@ public final class Constants
     public static final double kP = 0.0; // (Open-loop for now; placeholder if closed-loop added later)
     public static final double kI = 0.0;
     public static final double kD = 0.0;
+
+    // NEW: detection tuning
+    public static final double indexCurrentThreshold = 12.0;      // Amps (tune)
+    public static final double indexDebounceTime     = 0.06;      // Seconds (tune)
+    public static final double indexReleaseHysteresis = 6.0;      // Amps to auto-release (optional)
+
+    // NEW: Beam-break (or optical) sensor configuration
+    public static final boolean useBeamBreak = true;   // Set false to rely only on current
+    public static final int beamBreakDIOPort = 0;      // DIO port number
+    public static final boolean beamBreakNormallyClosed = false; // If true, invert logic
   }
 }
