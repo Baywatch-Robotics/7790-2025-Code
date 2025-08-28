@@ -26,15 +26,12 @@ import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
-import frc.robot.subsystems.Algae.AlgaeArm;
-import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.DynamicWait;
 import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
-import frc.robot.subsystems.Funnel;
 import frc.robot.subsystems.LED;
 
 /**
@@ -131,14 +128,9 @@ public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
 
-  private final AlgaeArm algaeArm = new AlgaeArm();
-  private final AlgaeShooter algaeShooter = new AlgaeShooter();
   private final Shooter shooter = new Shooter();
   private final ShooterArm shooterArm = new ShooterArm();
   private final Elevator elevator = new Elevator(this);
-
-  // Initialize funnel subsystem
-  private final Funnel funnel = new Funnel();
   
   private final LED led = new LED();
 
@@ -242,12 +234,12 @@ public class RobotContainer {
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel, algaeArm, algaeShooter);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
 
-  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
-  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel);
+  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
+  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
 
-  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this, funnel, algaeArm, algaeShooter);
+  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -259,10 +251,7 @@ public class RobotContainer {
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
-  public RobotContainer() {
-    // Set up the Funnel-AlgaeArm safety connection
-    funnel.setAlgaeArmReference(algaeArm);
-    
+  public RobotContainer() {    
     // Set RobotContainer reference for the shooter
     shooter.setRobotContainer(this);
     
@@ -321,14 +310,14 @@ public class RobotContainer {
     
     // Left trigger - intake (was conditional on climb mode)
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, funnel, algaeArm, algaeShooter, this, led));
+    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, this, led));
 
     // Right trigger - outake (was conditional on climb mode)
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(shooter.shooterOutakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
     rightTriggerPressed.and(shooter.L1ScoringTrigger())
-        .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+        .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator));
     rightTriggerPressed.onFalse(shooter.shooterZeroSpeedCommand()
         .alongWith(led.setAlliancePattern())
         .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));
@@ -523,28 +512,12 @@ public class RobotContainer {
     driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
 */
 
-    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator));
     
     driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
     driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
 
     driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
-    // driverXbox.pov(180) climb mode toggle removed
-    driverXbox.pov(90).and(() -> !algaeModeEnabled).whileTrue(new RunCommand(() -> funnel.moveAmount(-1), funnel));
-    driverXbox.pov(90).and(() -> algaeModeEnabled).onTrue(CommandFactory.setAlgaeIntakeCommand(algaeArm, algaeShooter));
-    driverXbox.pov(270).and(() -> !algaeModeEnabled).whileTrue(new RunCommand(() -> funnel.moveAmount(1), funnel));
-    driverXbox.pov(270).and(() -> algaeModeEnabled).onTrue(CommandFactory.algaeStowCommand(algaeArm, algaeShooter));
-
-    opXbox.pov(90).onTrue(algaeArm.algaeArmHoldCommand());
-
-    //opXbox.rightBumper().onTrue(algaeArm.algaeArmGroundIntakeCommand());
-    //opXbox.leftBumper().onTrue(algaeArm.algaeArmStowUpCommand());
-
-    opXbox.rightBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(1), algaeArm));
-    opXbox.leftBumper().whileTrue(new RunCommand(() -> algaeArm.moveAmount(-1), algaeArm));
-
-    opXbox.x().whileTrue(new RunCommand(() -> funnel.moveAmount(1), funnel));
-    opXbox.y().whileTrue(new RunCommand(() -> funnel.moveAmount(-1), funnel));
 
     //opXbox.start().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(true)));
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
