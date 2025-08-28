@@ -177,11 +177,22 @@ public class EndEffector extends SubsystemBase {
         checkCoralLoaded();
         
         // If coral is loaded and we're still trying to intake, stop the motor
-        if(coralLoaded && isLoading){
+        // EXCEPT when algae mode is enabled (must keep intaking to hold algae)
+        if (coralLoaded 
+            && isLoading 
+            && (robotContainer == null || !robotContainer.isAlgaeModeEnabled())) {
             setZeroSpeed(); // Directly call method instead of scheduling command
         }
 
         SmartDashboard.putNumber("Current Draw", getCurrentDraw());
-        SmartDashboard.putBoolean("Coral Loaded", coralLoaded);
+
+        // Show correct game piece loaded indicator based on algae mode
+        if (robotContainer != null && robotContainer.isAlgaeModeEnabled()) {
+            SmartDashboard.putBoolean("Algae Loaded", coralLoaded);
+            SmartDashboard.putBoolean("Coral Loaded", false);
+        } else {
+            SmartDashboard.putBoolean("Coral Loaded", coralLoaded);
+            SmartDashboard.putBoolean("Algae Loaded", false);
+        }
     }
 }

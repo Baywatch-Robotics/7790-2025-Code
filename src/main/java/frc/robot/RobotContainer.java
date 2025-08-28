@@ -572,6 +572,11 @@ public class RobotContainer {
     });
   }
 
+  // Getter so subsystems (EndEffector) can query algae mode.
+  public boolean isAlgaeModeEnabled() {
+    return algaeModeEnabled;
+  }
+
   public Command changeDriveSpeedCommand(float speed) {
     return new InstantCommand(() -> targetDriveSpeed = speed);
   }
