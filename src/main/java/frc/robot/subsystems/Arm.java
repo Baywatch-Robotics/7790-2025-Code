@@ -104,9 +104,6 @@ public class Arm extends SubsystemBase {
     private void setScoreL1Real() {
         ArmDesiredAngle = ArmConstants.realL1Angle;
     }
-    private void setClimbAngle() {
-        ArmDesiredAngle = ArmConstants.climbAngle;
-    }
 
     // New method for ball position
     private void setBallAngle() {
@@ -150,11 +147,6 @@ public class Arm extends SubsystemBase {
     public Command ArmScoreL1Command()
     {
         Command command = new InstantCommand(() -> this.setScoreL1());
-        return command;
-    }
-    public Command ArmClimbCommand()
-    {
-        Command command = new InstantCommand(() -> this.setClimbAngle());
         return command;
     }
 

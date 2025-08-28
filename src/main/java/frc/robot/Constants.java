@@ -38,58 +38,7 @@ public final class Constants
     
 
 
-  public static final class AlgaeArmConstants{
-    public static final int ID = 14;
-
-    public static final float stowedUpAngle = 0.305f;
-    public static final float straightOutAngle = 0.535f;
-    public static final float groundIntakeAngle = 0.45f;
-
-    public static final float holdAngle = 0.34f;
-
-    // Current threshold for detecting algae
-    public static final float currentThreshold = 15.0f;
-
-    public static final float angleOffset = 0.75f;
-
-    public static final float max = 0.535f;
-    public static final float min = 0.28f;
-
-    public static final float manualMultiplier = 0.01f;
-
-
-    public static final float P = 2.0f;
-    //public static final float P = 0.0f;
-    public static final float I = 0.0f;
-    public static final float D = 0.0f;
-    public static final float maxVelocity = 50;
-    public static final float maxAcceleration = 50;
-    public static final float allowedClosedLoopError = .005f;
-
-    public static final float L1ScoreAngle = 0.33f;
-    
-    // New feedforward constants
-    public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 0.3f;  // Gravity compensation (tune based on arm mass)
-    public static final float kV = 0.0f;  // Velocity feedforward
-    public static final float kA = 0.0f;  // Acceleration feedforward
-    public static final float feedforwardOffset = 0.75f; // Offset for zero position
-  }
-
-    public static final class AlgaeConstants{
-    public static final int ID = 16;
-    public static final float intake = 0.4f;
-    
-    public static final float outake = -0.4f;
-    public static final float currentThreshold = 10f; // Current threshold for detecting algae
-    
-    // Trigger control constants
-    public static final float triggerThreshold = 0.25f;    // Minimum trigger value to activate
-    public static final float maxTriggerIntake = 0.5f;    // Maximum intake speed with trigger (left)
-    public static final float maxTriggerOutake = -0.6f;   // Maximum outake speed with trigger (right)
-    
-    public static final float DEBOUNCE_TIME = 1.0f; // Time to debounce current threshold (seconds)
-  }
+  
   public static final class EndEffectorConstants{
     public static final int ID = 19;
     public static final float intake = 0.50f;
@@ -114,8 +63,7 @@ public final class Constants
     public static final float maxManual = 0.698f;
     //public static final float maxManual = .9f;
     
-    public static final float climbAngle = 0.698f; //Larger than this in reality
-
+    
     public static final float scoreAngleLOW = 0.698f;
     public static final float scoreAngleHIGH = 0.661367297f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
@@ -164,33 +112,6 @@ public final class Constants
     public static final float positionTolerance = 0.01f;
   }
 
-  public static final class ClimberConstants{
-
-    public static final int ID = 18;
-
-    public static final float extendSpeed = 1;
-    public static final float retractSpeed = -1f;
-    
-    // Position control constants
-    public static final float P = 1.0f;
-    public static final float I = 0.0f;
-    public static final float D = 0.0f;
-    
-    // Motion profile parameters
-    public static final float maxVelocity = 1000;
-    public static final float maxAcceleration = 1000;
-    
-    
-    public static final float min = 0;  // Max extended position
-    public static final float max = 119.07172393798828f;    // Fully retracted position
-    
-    // Predefined positions (reversed from previous values to match Neo motor behavior)
-    public static final float retractedPosition = 0f;      // Fully retracted
-    public static final float extendedPosition = 109f;    // Fully extended
-    
-    // Tolerance for position control
-    public static final float SETPOINT_TOLERANCE = 2.0f;
-  }
   
   public static final class ElevatorConstants{
     
@@ -215,7 +136,6 @@ public final class Constants
     public static final float L2LPose = -6.552f;
     public static final float pickupPose = -15.373566627502441f
     ;
-    public static final float climbPose = -0;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
@@ -273,9 +193,6 @@ public final class Constants
     // Min and max position limits
     public static final float min = .24f;
     public static final float max = .56f;
-    
-    // Safety threshold - minimum algae arm position that allows funnel movement
-    public static final float SAFE_ALGAE_ARM_POSITION = 0.3f;
     
     // Manual control multiplier
     public static final float manualMultiplier = 0.005f;

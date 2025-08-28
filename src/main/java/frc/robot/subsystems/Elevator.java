@@ -123,9 +123,6 @@ public class Elevator extends SubsystemBase {
     public void setPickupPlus() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose - 2;
     }
-    public void setClimbPose() {
-        elevatorDesiredPosition = ElevatorConstants.climbPose;
-    }
     
     // New methods for ball positions
     
@@ -188,10 +185,6 @@ public class Elevator extends SubsystemBase {
 
         Command command = new InstantCommand(() -> setPickupPlus());
 
-        return command;
-    }
-    public Command setElevatorClimbPoseCommand() {
-        Command command = new InstantCommand(() -> setClimbPose());
         return command;
     }
     
@@ -342,14 +335,6 @@ public class Elevator extends SubsystemBase {
             return atSetpoint;
         });
     }
-    public Trigger isClearToClimbAngle() {
-        return new Trigger(() -> {
-            boolean clearToClimb = m_encoder.getPosition() >= ElevatorConstants.climbPose - 5 &&
-                                   m_encoder.getPosition() <= ElevatorConstants.climbPose + 5;
-            SmartDashboard.putBoolean("Elevator Clear To Climb", clearToClimb);
-            return clearToClimb;
-        });
-    }
 
     public Boolean isAtSetpointBoolean() {
 
@@ -485,10 +470,6 @@ public class Elevator extends SubsystemBase {
         
         if (clearToIntakeTrigger == null) {
             clearToIntakeTrigger = isClearToIntake();
-        }
-        
-        if (clearToClimbAngleTrigger == null) {
-            clearToClimbAngleTrigger = isClearToClimbAngle();
         }
         
         // Initialize the new triggers
