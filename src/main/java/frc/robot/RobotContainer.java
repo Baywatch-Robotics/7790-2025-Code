@@ -33,6 +33,7 @@ import swervelib.SwerveInputStream;
 import frc.robot.subsystems.LED;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Intake;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -143,6 +144,8 @@ public class RobotContainer {
 
   // Add QuestNavVision instance
   private final frc.robot.subsystems.swervedrive.QuestNavVision questNavVision = new frc.robot.subsystems.swervedrive.QuestNavVision();
+
+  private final Intake intake = new Intake();
 
   // Triggers for proximity detection
   public Trigger approachingTrigger() {
@@ -310,7 +313,7 @@ public class RobotContainer {
     
     // Left trigger - intake (was conditional on climb mode)
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(endEffector, Arm, elevator, this, led));
+    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(endEffector, Arm, elevator, this, led, intake));
 
     // Right trigger - outake (was conditional on climb mode)
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);

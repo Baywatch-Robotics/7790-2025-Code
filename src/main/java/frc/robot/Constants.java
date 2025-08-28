@@ -40,7 +40,7 @@ public final class Constants
 
   
   public static final class EndEffectorConstants{
-    public static final int ID = 19;
+    public static final int ID = 20;
     public static final float intake = 0.50f;
     public static final float outtake = -.50f;
     public static final float currentThreshold = 15;
@@ -48,7 +48,7 @@ public final class Constants
   }
 
   public static final class ArmConstants{
-    public static final int ID = 15;
+    public static final int ID = 19;
 
     public static final float angleOffset = .83f;
 
@@ -115,9 +115,9 @@ public final class Constants
   
   public static final class ElevatorConstants{
     
-    public static final int ID = 13;
+    public static final int ID = 17;
 
-    public static final int slaveID = 17;
+    public static final int slaveID = 18;
     
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
@@ -178,67 +178,6 @@ public final class Constants
     public static final float kG = 0;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
-  }
-
-  public static final class FunnelConstants {
-    public static final int ID = 20;
-    
-    // Position constants
-    public static final float homePosition = .54f;
-    public static final float fullUpPosition = .24f;
-    
-    // Angle offset for absolute encoder
-    public static final float angleOffset = 0.13f; // Adjust this based on mechanical setup
-    
-    // Min and max position limits
-    public static final float min = .24f;
-    public static final float max = .56f;
-    
-    // Manual control multiplier
-    public static final float manualMultiplier = 0.005f;
-    
-    // Position tolerance for "at position" detection
-    public static final float positionTolerance = 0.05f;
-    
-    // PID Constants
-    public static final float P = 2.5f;
-    //public static final float P = 0.0f;
-    public static final float I = 0.0f;
-    public static final float D = 0.0f;
-    
-    // Motion profile parameters
-    public static final float maxVelocity = 6;
-    public static final float maxAcceleration = 6;
-    public static final float allowedClosedLoopError = 0.005f;
-    
-    // New feedforward constants
-    public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 1.0f;  // Gravity compensation
-    public static final float kV = 0.0f;  // Velocity feedforward
-    public static final float kA = 0.0f;  // Acceleration feedforward
-    public static final float feedforwardOffset = 0.0f; // Offset for zero position
-    
-    // Pre-intake position for coral detection
-    public static final float preIntakePosition = 0.42f; // Slightly raised from home position
-    
-    
-    // New current detection parameters
-    public static final float currentThreshold = 3.0f;  // Current spike threshold (amps)
-    public static final float currentNormalLevel = 0.25f; // Normal operating current (for comparison)
-    public static final float currentSpikeDuration = 0.05f; // How long a spike needs to last (seconds)
-    
-    // Shaking parameters
-    public static final float shakingAmplitude = 0.03f; // How far to move when shaking
-    public static final float shakingFrequency = 3f; // Increased oscillations per second
-    public static final float shakingDuration = 15f; // Extended max duration (will stop early when coral loaded)
-    
-    // Multiple detection methods
-    public static final boolean USE_VELOCITY_DETECTION = true;
-    public static final boolean USE_CURRENT_DETECTION = true;
-
-    public static final float L1Pose = 0.504f;
-
-    public static final float L1Dump = 0.425033f;
   }
 
   public static final class LEDConstants{
@@ -782,5 +721,28 @@ public final class Constants
     public static final double DEFAULT_FIRST_BALL_TIME = 0.0;
     public static final double DEFAULT_SECOND_BALL_TIME = 0.0;
     public static final double DEFAULT_THIRD_BALL_TIME = 0.0;
+  }
+
+  public static final class IntakeConstants {
+    public static final int pivotMotorID = 13;           // Pivot NEO
+    public static final int rollerMotorID = 14;          // Roller NEO
+
+    // Absolute encoder target angles in motor rotations (1.0 = 360 deg)
+    public static final double deployAngleRotations = 0.00;
+    public static final double stowAngleRotations   = 0.10;
+    public static final double startAngleRotations   = 0.20;
+
+    // Roller speeds
+    public static final double intakeSpeed  = 0.8;
+    public static final double outtakeSpeed = -0.8;
+
+    // Pivot PID (SparkMAX internal) - placeholder gains
+    public static final double kP = 3.0;
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+    public static final double kFF = 0.0;
+
+    // Allowable error (rotations) before considering at setpoint
+    public static final double angleTolerance = 0.01;
   }
 }

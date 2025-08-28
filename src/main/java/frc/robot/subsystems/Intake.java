@@ -1,0 +1,89 @@
+package frc.robot.subsystems;
+
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Configs;
+import frc.robot.Constants.IntakeConstants;
+
+public class Intake extends SubsystemBase {
+
+    private final SparkMax pivotMotor  = new SparkMax(IntakeConstants.pivotMotorID, MotorType.kBrushless);
+    private final SparkMax rollerMotor = new SparkMax(IntakeConstants.rollerMotorID, MotorType.kBrushless);
+
+    private final SparkClosedLoopController pivotPID = pivotMotor.getClosedLoopController();
+    private final AbsoluteEncoder absEncoder = pivotMotor.getAbsoluteEncoder(); // Match Arm usage
+
+    private double targetAngleRotations = IntakeConstants.stowAngleRotations;
+    private boolean holdEnabled = false;
+
+    public Intake() {
+        // Configure via central Configs (avoids mixed old/new API)
+        pivotMotor.configure(Configs.Intake.pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rollerMotor.configure(Configs.Intake.rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        targetAngleRotations = IntakeConstants.stowAngleRotations;
+        holdEnabled = true; // Start holding initial position
+    }
+
+    // Pivot control
+    private void setDeploy() {
+        targetAngleRotations = IntakeConstants.deployAngleRotations;
+        holdEnabled = true;
+    }
+
+    private void setStow() {
+        targetAngleRotations = IntakeConstants.stowAngleRotations;
+        holdEnabled = true;
+    }
+
+    private void setStart() {
+        targetAngleRotations = IntakeConstants.startAngleRotations;
+        holdEnabled = true;
+    }
+
+    // Roller control
+    private void setIntake() {
+        rollerMotor.set(IntakeConstants.intakeSpeed);
+    }
+
+    private void setOuttake() {
+        rollerMotor.set(IntakeConstants.outtakeSpeed);
+    }
+
+    private void setStop() {
+        rollerMotor.set(0);
+    }
+
+    public boolean isAtTarget() {
+        return Math.abs(absEncoder.getPosition() - targetAngleRotations) <= IntakeConstants.angleTolerance;
+    }
+
+    // Commands
+    public Command deployCommand() { return new InstantCommand(this::setDeploy, this); }
+    public Command stowCommand()   { return new InstantCommand(this::setStow, this); }
+    public Command startCommand()   { return new InstantCommand(this::setStart, this); }
+    public Command intakeCommand() { return new InstantCommand(this::setIntake, this); }
+    public Command outtakeCommand(){ return new InstantCommand(this::setOuttake, this); }
+    public Command stopCommand()   { return new InstantCommand(this::setStop, this); }
+
+    @Override
+    public void periodic() {
+        if (holdEnabled) {
+            pivotPID.setReference(targetAngleRotations, ControlType.kPosition);
+        }
+        SmartDashboard.putNumber("Intake Pivot Angle", absEncoder.getPosition());
+        SmartDashboard.putNumber("Intake Pivot Target", targetAngleRotations);
+        SmartDashboard.putBoolean("Intake Pivot At Target", isAtTarget());
+        SmartDashboard.putBoolean("Intake Holding", holdEnabled);
+    }
+}
