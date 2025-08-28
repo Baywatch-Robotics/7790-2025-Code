@@ -76,7 +76,7 @@ public final class Constants
     public static final float feedforwardOffset = 0.75f; // Offset for zero position
   }
 
-    public static final class AlgaeShooterConstants{
+    public static final class AlgaeConstants{
     public static final int ID = 16;
     public static final float intake = 0.4f;
     
@@ -90,15 +90,15 @@ public final class Constants
     
     public static final float DEBOUNCE_TIME = 1.0f; // Time to debounce current threshold (seconds)
   }
-  public static final class ShooterConstants{
+  public static final class EndEffectorConstants{
     public static final int ID = 19;
     public static final float intake = 0.50f;
-    public static final float outake = -.50f;
+    public static final float outtake = -.50f;
     public static final float currentThreshold = 15;
     public static final float DEBOUNCE_TIME = 0.075f; // Time to debounce current threshold (seconds)
   }
 
-  public static final class ShooterArmConstants{
+  public static final class ArmConstants{
     public static final int ID = 15;
 
     public static final float angleOffset = .83f;

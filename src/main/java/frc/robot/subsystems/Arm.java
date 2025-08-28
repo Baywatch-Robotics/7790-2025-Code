@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Coral;
+package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -25,35 +25,34 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
-import frc.robot.Constants.ShooterArmConstants;
-import frc.robot.subsystems.ButtonBox;
+import frc.robot.Constants.ArmConstants;
 
-public class ShooterArm extends SubsystemBase {
+public class Arm extends SubsystemBase {
 
-    public float shooterArmDesiredAngle;
+    public float ArmDesiredAngle;
     private double kDt = 0.02; // 20ms periodic loop time
     
     public boolean isInitialized = false;
 
-    private SparkMax shooterArmMotor = new SparkMax(ShooterArmConstants.ID, MotorType.kBrushless);
+    private SparkMax ArmMotor = new SparkMax(ArmConstants.ID, MotorType.kBrushless);
 
-    private SparkClosedLoopController shooterArmController = shooterArmMotor.getClosedLoopController();
+    private SparkClosedLoopController ArmController = ArmMotor.getClosedLoopController();
 
-    private AbsoluteEncoder shooterArmEncoder = shooterArmMotor.getAbsoluteEncoder();
+    private AbsoluteEncoder ArmEncoder = ArmMotor.getAbsoluteEncoder();
     
     // Keep ArmFeedforward controller
     private final ArmFeedforward armFeedforward = new ArmFeedforward(
-        ShooterArmConstants.kS, 
-        ShooterArmConstants.kG,
-        ShooterArmConstants.kV,
-        ShooterArmConstants.kA
+        ArmConstants.kS, 
+        ArmConstants.kG,
+        ArmConstants.kV,
+        ArmConstants.kA
     );
     
-    // Update trapezoidal profile to use constants from ShooterArmConstants
+    // Update trapezoidal profile to use constants from ArmConstants
     private final TrapezoidProfile m_profile = new TrapezoidProfile(
         new TrapezoidProfile.Constraints(
-            ShooterArmConstants.maxVelocity,
-            ShooterArmConstants.maxAcceleration
+            ArmConstants.maxVelocity,
+            ArmConstants.maxAcceleration
         )
     );
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
@@ -82,115 +81,115 @@ public class ShooterArm extends SubsystemBase {
         return encoderToRadians(encoderPosition) - kHorizontalReferenceRad;
     }
 
-    public ShooterArm() {
-        shooterArmMotor.configure(Configs.ShooterArm.shooterArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
+    public Arm() {
+        ArmMotor.configure(Configs.Arm.ArmConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        ArmDesiredAngle = (float)(ArmEncoder.getPosition());
     }
 
     private void setScoreLOW() {
-        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleLOW;
+        ArmDesiredAngle = ArmConstants.scoreAngleLOW;
     }
     private void setScoreHIGH() {
-        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
     }
     private void setLoad() {
-        shooterArmDesiredAngle = ShooterArmConstants.loadAngle;
+        ArmDesiredAngle = ArmConstants.loadAngle;
     }
     private void setoutLoad() {
-        shooterArmDesiredAngle = ShooterArmConstants.outLoadAngle;
+        ArmDesiredAngle = ArmConstants.outLoadAngle;
     }
     private void setScoreL1() {
-        shooterArmDesiredAngle = ShooterArmConstants.L1Angle;
+        ArmDesiredAngle = ArmConstants.L1Angle;
     }
     private void setScoreL1Real() {
-        shooterArmDesiredAngle = ShooterArmConstants.realL1Angle;
+        ArmDesiredAngle = ArmConstants.realL1Angle;
     }
     private void setClimbAngle() {
-        shooterArmDesiredAngle = ShooterArmConstants.climbAngle;
+        ArmDesiredAngle = ArmConstants.climbAngle;
     }
 
     // New method for ball position
     private void setBallAngle() {
-        shooterArmDesiredAngle = ShooterArmConstants.ballAngle;
+        ArmDesiredAngle = ArmConstants.ballAngle;
     }
 
     private void setPreBallAngle() {
-        shooterArmDesiredAngle = ShooterArmConstants.preBallAngle;
+        ArmDesiredAngle = ArmConstants.preBallAngle;
     }
 
     private void setPreBallBelowAngle() {
-        shooterArmDesiredAngle = ShooterArmConstants.preBallBelowAngle;
+        ArmDesiredAngle = ArmConstants.preBallBelowAngle;
     }
 
     private void setPreLowBallAngle() {
-        shooterArmDesiredAngle = ShooterArmConstants.preLowBallAngle;
+        ArmDesiredAngle = ArmConstants.preLowBallAngle;
     }
 
-    public Command shooterArmScoreLOWCommand()
+    public Command ArmScoreLOWCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOW());
         return command;
     }
-    public Command shooterArmScoreHIGHCommand()
+    public Command ArmScoreHIGHCommand()
     {
         Command command = new InstantCommand(() -> this.setScoreHIGH());
         return command;
     }
 
-    public Command shooterArmLoadCommand()
+    public Command ArmLoadCommand()
     {
         Command command = new InstantCommand(() -> this.setLoad());
         return command;
     }
 
-    public Command shooterArmOutLoadCommand()
+    public Command ArmOutLoadCommand()
     {
         Command command = new InstantCommand(() -> this.setoutLoad());
         return command;
     }
-    public Command shooterArmScoreL1Command()
+    public Command ArmScoreL1Command()
     {
         Command command = new InstantCommand(() -> this.setScoreL1());
         return command;
     }
-    public Command shooterArmClimbCommand()
+    public Command ArmClimbCommand()
     {
         Command command = new InstantCommand(() -> this.setClimbAngle());
         return command;
     }
 
-    public Command shooterArmScoreL1RealCommand()
+    public Command ArmScoreL1RealCommand()
     {
         Command command = new InstantCommand(() -> this.setScoreL1Real());
         return command;
     }
     
     // New command for ball position
-    public Command shooterArmBallCommand()
+    public Command ArmBallCommand()
     {
         Command command = new InstantCommand(() -> this.setBallAngle());
         return command;
     }
 
-    public Command shooterArmPreBallCommand()
+    public Command ArmPreBallCommand()
     {
         Command command = new InstantCommand(() -> this.setPreBallAngle());
         return command;
     }
     
-    public Command shooterArmPreBallBelowCommand()
+    public Command ArmPreBallBelowCommand()
     {
         Command command = new InstantCommand(() -> this.setPreBallBelowAngle());
         return command;
     }
     
-    public Command shooterArmPreLowBallCommand()
+    public Command ArmPreLowBallCommand()
     {
         Command command = new InstantCommand(() -> this.setPreLowBallAngle());
         return command;
     }
     
-    public Command shooterArmBasedOnQueueCommand(ButtonBox buttonBox) {
+    public Command ArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
@@ -207,10 +206,10 @@ public class ShooterArm extends SubsystemBase {
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     if (currentSideSupplier.getAsBoolean()) {
                         // Left L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     } else {
                         // Right L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     }
                 }
             }
@@ -219,7 +218,7 @@ public class ShooterArm extends SubsystemBase {
     }
 
     public Trigger isClearToElevate() {
-        return new Trigger(() -> shooterArmEncoder.getPosition() >= 0.5);
+        return new Trigger(() -> ArmEncoder.getPosition() >= 0.5);
     }
     
     /**
@@ -242,7 +241,7 @@ public class ShooterArm extends SubsystemBase {
             }
             
             // For all other cases, use the standard clearance condition
-            return shooterArmEncoder.getPosition() >= 0.5;
+            return ArmEncoder.getPosition() >= 0.5;
         });
     }
 
@@ -251,20 +250,20 @@ public class ShooterArm extends SubsystemBase {
             return;
         }
 
-        float scale = ShooterArmConstants.manualMultiplier;
-        float newAngle = (float)(shooterArmDesiredAngle + amount * scale);
+        float scale = ArmConstants.manualMultiplier;
+        float newAngle = (float)(ArmDesiredAngle + amount * scale);
 
         // Apply the general min/max constraints
-        shooterArmDesiredAngle = (float) MathUtil.clamp(newAngle, ShooterArmConstants.min, ShooterArmConstants.maxManual);
+        ArmDesiredAngle = (float) MathUtil.clamp(newAngle, ArmConstants.min, ArmConstants.maxManual);
     }
     
     @Override
     public void periodic() {
         
         if (!isInitialized) {
-            shooterArmDesiredAngle = (float)(shooterArmEncoder.getPosition());
+            ArmDesiredAngle = (float)(ArmEncoder.getPosition());
             // Restore setpoint initialization
-            m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
+            m_setpoint = new TrapezoidProfile.State(ArmEncoder.getPosition(), 0);
             
             isInitialized = true;
         }
@@ -272,27 +271,27 @@ public class ShooterArm extends SubsystemBase {
         isClearToElevate();
         
         // Get current arm position for dynamic reef zone constraint
-        float currentPosition = (float)shooterArmEncoder.getPosition();
+        float currentPosition = (float)ArmEncoder.getPosition();
         
         // Apply general constraints
-        shooterArmDesiredAngle = (float)MathUtil.clamp(shooterArmDesiredAngle, ShooterArmConstants.min, ShooterArmConstants.max);
+        ArmDesiredAngle = (float)MathUtil.clamp(ArmDesiredAngle, ArmConstants.min, ArmConstants.max);
         
         // Restore trapezoidal profile calculation
         // Set goal for motion profile
-        m_goal = new TrapezoidProfile.State(shooterArmDesiredAngle, 0);
+        m_goal = new TrapezoidProfile.State(ArmDesiredAngle, 0);
         
         // Calculate next setpoint
         m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
 
         if (DriverStation.isDisabled()) {
-            shooterArmDesiredAngle = (float)shooterArmEncoder.getPosition();
+            ArmDesiredAngle = (float)ArmEncoder.getPosition();
             // Restore setpoint reset
-            m_setpoint = new TrapezoidProfile.State(shooterArmEncoder.getPosition(), 0);
+            m_setpoint = new TrapezoidProfile.State(ArmEncoder.getPosition(), 0);
         }
         
         // Convert profile positions to radians for feedforward
-        double currentPositonRad = encoderToFeedforwardRadians(shooterArmEncoder.getPosition() - ShooterArmConstants.feedforwardOffset);
-        double currentVelocityRad = shooterArmEncoder.getVelocity() * kEncoderToRadians;
+        double currentPositonRad = encoderToFeedforwardRadians(ArmEncoder.getPosition() - ArmConstants.feedforwardOffset);
+        double currentVelocityRad = ArmEncoder.getVelocity() * kEncoderToRadians;
         
         // Calculate the feedforward output using radians
         double feedforwardOutput = armFeedforward.calculate(
@@ -301,17 +300,17 @@ public class ShooterArm extends SubsystemBase {
             0                       // Zero acceleration for now
         );
         
-        SmartDashboard.putNumber("Shooter Arm Desired Angle", shooterArmDesiredAngle);
-        SmartDashboard.putNumber("Shooter Arm Current Angle", currentPosition);
-        SmartDashboard.putNumber("Shooter Arm Feedforward", feedforwardOutput);
-        SmartDashboard.putNumber("Shooter Arm Position (rad)", currentPositonRad);
-        SmartDashboard.putNumber("Shooter Arm Velocity (rad/s)", currentVelocityRad);
+        SmartDashboard.putNumber(" Arm Desired Angle", ArmDesiredAngle);
+        SmartDashboard.putNumber(" Arm Current Angle", currentPosition);
+        SmartDashboard.putNumber(" Arm Feedforward", feedforwardOutput);
+        SmartDashboard.putNumber(" Arm Position (rad)", currentPositonRad);
+        SmartDashboard.putNumber(" Arm Velocity (rad/s)", currentVelocityRad);
         // Restore profile metrics
-        SmartDashboard.putNumber("Shooter Arm Profile Position", m_setpoint.position);
-        SmartDashboard.putNumber("Shooter Arm Profile Velocity", m_setpoint.velocity);
+        SmartDashboard.putNumber(" Arm Profile Position", m_setpoint.position);
+        SmartDashboard.putNumber(" Arm Profile Velocity", m_setpoint.velocity);
         
         // Use profiled position with feedforward
-        shooterArmController.setReference(
+        ArmController.setReference(
             m_setpoint.position, 
             ControlType.kPosition,
             ClosedLoopSlot.kSlot0,  // Use slot 0 for PID
@@ -321,10 +320,10 @@ public class ShooterArm extends SubsystemBase {
     }
 
     /**
-     * Command that sets shooter arm position based on the next target ending in '1' from the queue
+     * Command that sets  arm position based on the next target ending in '1' from the queue
      * This version uses the target from the queue without consuming it
      */
-    public Command shooterArmBasedOnQueueCommandRight(ButtonBox buttonBox) {
+    public Command ArmBasedOnQueueCommandRight(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn1;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn1;
@@ -341,10 +340,10 @@ public class ShooterArm extends SubsystemBase {
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     if (currentSideSupplier.getAsBoolean()) {
                         // Left L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     } else {
                         // Right L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     }
                 }
             }
@@ -370,15 +369,15 @@ public class ShooterArm extends SubsystemBase {
             }
             
             // For all other cases, use the standard clearance condition
-            return shooterArmEncoder.getPosition() >= 0.5;
+            return ArmEncoder.getPosition() >= 0.5;
         });
     }
 
     /**
-     * Command that sets shooter arm position based on the next target ending in '0' from the queue
+     * Command that sets  arm position based on the next target ending in '0' from the queue
      * This version uses the target from the queue without consuming it
      */
-    public Command shooterArmBasedOnQueueCommandLeft(ButtonBox buttonBox) {
+    public Command ArmBasedOnQueueCommandLeft(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplierEndingIn0;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplierEndingIn0;
@@ -395,10 +394,10 @@ public class ShooterArm extends SubsystemBase {
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     if (currentSideSupplier.getAsBoolean()) {
                         // Left L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     } else {
                         // Right L4
-                        shooterArmDesiredAngle = ShooterArmConstants.scoreAngleHIGH;
+                        ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
                     }
                 }
             }
@@ -424,7 +423,7 @@ public class ShooterArm extends SubsystemBase {
             }
             
             // For all other cases, use the standard clearance condition
-            return shooterArmEncoder.getPosition() >= 0.5;
+            return ArmEncoder.getPosition() >= 0.5;
         });
     }
 }

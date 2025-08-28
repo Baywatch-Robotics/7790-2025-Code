@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Coral;
+package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Configs;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.EndEffectorConstants;
 import frc.robot.RobotContainer;
 
-public class Shooter extends SubsystemBase {
+public class EndEffector extends SubsystemBase {
 
-    private SparkMax shooterMotor = new SparkMax(ShooterConstants.ID, MotorType.kBrushless);
+    private SparkMax endEffectorMotor = new SparkMax(EndEffectorConstants.ID, MotorType.kBrushless);
 
     public static boolean coralLoaded;
 
@@ -33,9 +33,9 @@ public class Shooter extends SubsystemBase {
     // Reference to RobotContainer for controller rumble
     private RobotContainer robotContainer;
 
-    public Shooter() {
-        shooterMotor.configure(
-                Configs.Shooter.shooterConfig,
+    public EndEffector() {
+        endEffectorMotor.configure(
+                Configs.EndEffector.endEffectorConfig,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
@@ -50,7 +50,7 @@ public class Shooter extends SubsystemBase {
 
     // Method to get the current draw from the motor
     private double getCurrentDraw() {
-        return shooterMotor.getOutputCurrent();
+        return endEffectorMotor.getOutputCurrent();
     }
 
     // Method to check if the coral is loaded based on current draw with debouncing
@@ -58,7 +58,7 @@ public class Shooter extends SubsystemBase {
         double currentDraw = getCurrentDraw();
         double currentTime = Timer.getFPGATimestamp();
         
-        if (currentDraw > ShooterConstants.currentThreshold) {
+        if (currentDraw > EndEffectorConstants.currentThreshold) {
             // Reset the "below threshold" timer since we're above threshold
             currentBelowThresholdStartTime = currentTime;
             
@@ -68,7 +68,7 @@ public class Shooter extends SubsystemBase {
             }
             
             // Check if we've been above threshold long enough
-            if (currentTime - currentAboveThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
+            if (currentTime - currentAboveThresholdStartTime >= EndEffectorConstants.DEBOUNCE_TIME) {
                 // Check if we're transitioning from not loaded to loaded
                 if (!coralLoaded) {
                     // Trigger rumble when coral becomes loaded
@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
             }
             
             // Check if we've been below threshold long enough
-            if (currentTime - currentBelowThresholdStartTime >= ShooterConstants.DEBOUNCE_TIME) {
+            if (currentTime - currentBelowThresholdStartTime >= EndEffectorConstants.DEBOUNCE_TIME) {
                 coralLoaded = false;
             }
         }
@@ -132,29 +132,29 @@ public class Shooter extends SubsystemBase {
     
     private void setZeroSpeed() {
         isLoading = false;
-        shooterMotor.set(0);
+        endEffectorMotor.set(0);
     }
 
     private void setIntake() {
         isLoading = true;
-        shooterMotor.set(ShooterConstants.intake);
+        endEffectorMotor.set(EndEffectorConstants.intake);
     }
 
-    private void setOutake() {
-        shooterMotor.set(ShooterConstants.outake);
+    private void setOuttake() {
+        endEffectorMotor.set(EndEffectorConstants.outtake);
     }
 
     // Commands
-    public Command shooterZeroSpeedCommand() {
+    public Command endEffectorZeroSpeedCommand() {
         return new InstantCommand(this::setZeroSpeed, this);
     }
 
-    public Command shooterIntakeCommand() {
+    public Command endEffectorIntakeCommand() {
         return new InstantCommand(this::setIntake, this);
     }
 
-    public Command shooterOutakeCommand() {
-        return new InstantCommand(this::setOutake, this);
+    public Command endEffectorOuttakeCommand() {
+        return new InstantCommand(this::setOuttake, this);
     }
 
     public void setisL1ScoringFalse() {

@@ -26,13 +26,13 @@ import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.ButtonBox;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.TargetClass;
-import frc.robot.subsystems.Coral.Shooter;
-import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.util.DynamicWait;
 import frc.robot.util.Elastic;
 import swervelib.SwerveInputStream;
 import frc.robot.subsystems.LED;
+import frc.robot.subsystems.EndEffector;
+import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -97,8 +97,8 @@ public class RobotContainer {
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
   // DoubleSupplier algaeArmTriggerUp = () -> opXbox.getLeftTriggerAxis();
   // DoubleSupplier algaeArmTriggerDown = () -> opXbox.getLeftTriggerAxis();
-  DoubleSupplier shooterArmUpDown = () -> opXbox.getLeftY();
-  DoubleSupplier shooterPivotUpDown = () -> opXbox.getLeftX(); // Questionable Name Practices... Shooter Pivot UP DOWN
+  DoubleSupplier ArmUpDown = () -> opXbox.getLeftY();
+  DoubleSupplier endEffectorPivotUpDown = () -> opXbox.getLeftX(); // Questionable Name Practices... Shooter Pivot UP DOWN
                                                                // not Left Right??
 
   //DoubleSupplier climberUpDown = () -> opXbox.getRightX();
@@ -128,8 +128,8 @@ public class RobotContainer {
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
       "swerve/neo"));
 
-  private final Shooter shooter = new Shooter();
-  private final ShooterArm shooterArm = new ShooterArm();
+  private final EndEffector endEffector = new EndEffector();
+  private final Arm Arm = new Arm();
   private final Elevator elevator = new Elevator(this);
   
   private final LED led = new LED();
@@ -234,12 +234,12 @@ public class RobotContainer {
   public Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
 
 
-  public Command leftAuto = CommandFactory.LeftAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
+  public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
 
-  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
-  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
+  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
+  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
 
-  public Command rightAuto = CommandFactory.RightAutonCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this);
+  public Command rightAuto = CommandFactory.RightAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
 
@@ -252,8 +252,8 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {    
-    // Set RobotContainer reference for the shooter
-    shooter.setRobotContainer(this);
+    // Set RobotContainer reference for the endEffector
+    endEffector.setRobotContainer(this);
     
     // Configure the trigger bindings
     configureBindings();
@@ -286,13 +286,13 @@ public class RobotContainer {
 
     opXbox.axisMagnitudeGreaterThan(5, 0.2).whileTrue(new RunCommand(() -> elevator.moveAmount(elevatorUpDown.getAsDouble()), elevator));
 
-    opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> shooterArm.moveAmount(shooterArmUpDown.getAsDouble()), shooterArm));
+    opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> Arm.moveAmount(ArmUpDown.getAsDouble()), Arm));
 
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
     //Bumpers drive to pose
-    Command rightScoreCommand = CommandFactory.scoreBasedOnQueueCommandRightWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase);
-    Command leftScoreCommand = CommandFactory.scoreBasedOnQueueCommandLeftWithDrive(shooter, shooterArm, elevator, buttonBox, drivebase);
+    Command rightScoreCommand = CommandFactory.scoreBasedOnQueueCommandRightWithDrive(endEffector, Arm, elevator, buttonBox, drivebase);
+    Command leftScoreCommand = CommandFactory.scoreBasedOnQueueCommandLeftWithDrive(endEffector, Arm, elevator, buttonBox, drivebase);
     
     driverXbox.rightBumper().whileTrue(rightScoreCommand);
     driverXbox.rightBumper().onFalse(Commands.runOnce(() -> {
@@ -310,15 +310,15 @@ public class RobotContainer {
     
     // Left trigger - intake (was conditional on climb mode)
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(shooter, shooterArm, elevator, this, led));
+    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(endEffector, Arm, elevator, this, led));
 
     // Right trigger - outake (was conditional on climb mode)
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
-    rightTriggerPressed.onTrue(shooter.shooterOutakeCommand()
+    rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
-    rightTriggerPressed.and(shooter.L1ScoringTrigger())
-        .onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator));
-    rightTriggerPressed.onFalse(shooter.shooterZeroSpeedCommand()
+    rightTriggerPressed.and(endEffector.L1ScoringTrigger())
+        .onTrue(CommandFactory.finishL1ScoreCommand(endEffector, Arm, elevator));
+    rightTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand()
         .alongWith(led.setAlliancePattern())
         .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));
 
@@ -491,31 +491,30 @@ public class RobotContainer {
 
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
-    /*driverXbox.x().onTrue(shooter.shooterIntakeCommand());
-    driverXbox.x().onFalse(shooter.shooterZeroSpeedCommand());
+    /*driverXbox.x().onTrue(endEffector.endEffectorIntakeCommand());
+    driverXbox.x().onFalse(endEffector.endEffectorZeroSpeedCommand());
 */
     
     //driverXbox.x().onTrue(new InstantCommand(() -> buttonBox.addTarget("CC")));
 
     //driverXbox.y().whileTrue(drivebase.driveToPoseProfiled(buttonBox));
-    //driverXbox.y().whileTrue(CommandFactory.scoreBasedOnQueueCommand(shooter, shooterArm, elevator, buttonBox));
+    //driverXbox.y().whileTrue(CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox));
 
-    /*driverXbox.y().onTrue(shooter.shooterOutakeCommand());
-    driverXbox.y().and(shooter.L1ScoringTrigger()).onTrue(CommandFactory.finishL1ScoreCommand(shooter, shooterArm, elevator, algaeArm, algaeShooter, funnel));
+    /*driverXbox.y().onTrue(endEffector.endEffectorOutakeCommand());
     driverXbox.y().whileTrue(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly());
-    driverXbox.y().onFalse(shooter.shooterZeroSpeedCommand().alongWith(led.setAlliancePattern()));
+    driverXbox.y().onFalse(endEffector.endEffectorZeroSpeedCommand().alongWith(led.setAlliancePattern()));
 
-    driverXbox.a().whileTrue(CommandFactory.algaeRemoveBasedOnQueueCommandDriveCommand(shooter, shooterArm, elevator, buttonBox, drivebase, this));
+    driverXbox.a().whileTrue(CommandFactory.algaeRemoveBasedOnQueueCommandDriveCommand(endEffector, Arm, elevator, buttonBox, drivebase, this));
 
     driverXbox.a().onFalse(drivebase.stopDriveToPoseCommand());
 
-    driverXbox.b().onTrue(CommandFactory.setElevatorZero(shooter, shooterArm, elevator));
+    driverXbox.b().onTrue(CommandFactory.setElevatorZero(endEffector, Arm, elevator));
 */
 
-    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(shooter, shooterArm, elevator));
+    driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(endEffector, Arm, elevator));
     
-    driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(shooter, shooterArm, elevator));
-    driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(shooter, shooterArm, elevator));
+    driverXbox.rightStick().onTrue(CommandFactory.pullOffHighAboveBall(endEffector, Arm, elevator));
+    driverXbox.leftStick().onTrue(CommandFactory.pullOffLowBall(endEffector, Arm, elevator));
 
     driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
 
@@ -644,7 +643,7 @@ public class RobotContainer {
       }
 
       if(loadedSingleTime == false){
-        loadedSingleTime = shooter.coralLoadedTrigger().getAsBoolean();
+        loadedSingleTime = endEffector.coralLoadedTrigger().getAsBoolean();
       }
 
       // If coral is loaded and we're approaching the target, update LED pattern based on distance
