@@ -15,7 +15,6 @@ import frc.robot.subsystems.Algae.AlgaeShooter;
 import frc.robot.subsystems.Coral.Shooter;
 import frc.robot.subsystems.Coral.ShooterArm;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.Climber;
 
 import frc.robot.util.DynamicWait;
 
@@ -106,28 +105,6 @@ public static Command algaeStowCommand(AlgaeArm algaeArm, AlgaeShooter algaeShoo
     command.addRequirements(algaeArm, algaeShooter);
     return command;
 }
-
-  public static Command setClimbPositionNoArm(AlgaeArm algaeArm, Funnel funnel, Climber climber) {
-
-    Command command = algaeArm.algaeArmStraightOutCommand()
-    .andThen(funnel.funnelFullUpCommand())
-    // Add climber control - this will enable position mode temporarily
-    .andThen(climber.climberFullExtendCommand());
-
-    command.addRequirements(algaeArm, funnel, climber);
-
-    return command;
-  }
-
-  public static Command setClimbPositionArmOnly(Elevator elevator, ShooterArm shooterArm) {
-    Command command = elevator.setElevatorPickupCommand()
-    .andThen(new WaitUntilCommand(elevator.isClearToIntake()))
-    .andThen(shooterArm.shooterArmLoadCommand());
-
-    command.addRequirements(shooterArm, elevator);
-
-    return command;
-  }
 
   public static Command pullOffHighAboveBall(Shooter shooter, ShooterArm shooterArm, Elevator elevator) {
       
