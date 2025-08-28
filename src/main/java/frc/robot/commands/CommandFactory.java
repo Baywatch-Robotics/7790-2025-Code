@@ -13,20 +13,22 @@ import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.TargetClass;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Indexer;
 
 import frc.robot.util.DynamicWait;
 
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(EndEffector endEffector, Arm Arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake) {
+    public static Command setIntakeCommand(EndEffector endEffector, Arm Arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
       
       // Run the LED pattern first as a separate command
       Command ledCommand = led.runPattern("INTAKE_PATTERN");
       
       // Deploy intake and start roller first
       Command intakeStart = intake.deployCommand()
-        .andThen(intake.intakeCommand());
+        .andThen(intake.intakeCommand())
+        .andThen(indexer.indexCommand());
 
       Command mainCommand = Arm.ArmScoreLOWCommand().onlyIf(robotContainer.reefZoneTrigger().and(Arm.isClearToElevate()))
       .andThen(elevator.setElevatorPickupCommand())

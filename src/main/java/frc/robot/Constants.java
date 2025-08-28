@@ -745,4 +745,17 @@ public final class Constants
     // Allowable error (rotations) before considering at setpoint
     public static final double angleTolerance = 0.01;
   }
+  public static final class IndexerConstants {
+    public static final int leftMotorID  = 15;
+    public static final int rightMotorID = 16;      // Will be inverted in config
+
+    public static final double runSpeed      = 0.6; // Forward index
+    public static final double reverseSpeed  = -0.6;
+
+    public static final int currentLimit = 30;
+
+    public static final double kP = 0.0; // (Open-loop for now; placeholder if closed-loop added later)
+    public static final double kI = 0.0;
+    public static final double kD = 0.0;
+  }
 }

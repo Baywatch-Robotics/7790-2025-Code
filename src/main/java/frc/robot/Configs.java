@@ -6,6 +6,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.IndexerConstants;
 
 public final class Configs {
 
@@ -101,6 +102,25 @@ public final class Configs {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(40)
         .voltageCompensation(12);
+    }
+  }
+
+  public static final class Indexer {
+    public static final SparkMaxConfig leftConfig  = new SparkMaxConfig();
+    public static final SparkMaxConfig rightConfig = new SparkMaxConfig();
+
+    static {
+      leftConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(IndexerConstants.currentLimit)
+        .voltageCompensation(12)
+        .inverted(false);
+
+      rightConfig
+        .idleMode(IdleMode.kBrake)
+        .smartCurrentLimit(IndexerConstants.currentLimit)
+        .voltageCompensation(12)
+        .inverted(true); // Opposite direction
     }
   }
 }
