@@ -95,6 +95,12 @@ public class Arm extends SubsystemBase {
     private void setScoreHIGH() {
         ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
     }
+    private void setScoreLOWBackwards() {
+        ArmDesiredAngle = ArmConstants.scoreAngleLOWBackwards;
+    }
+    private void setScoreHIGHBackwards() {
+        ArmDesiredAngle = ArmConstants.scoreAngleHIGHBackwards;
+    }
     private void setPickUp() {
         ArmDesiredAngle = ArmConstants.pickUpAngle;
     }
@@ -111,24 +117,6 @@ public class Arm extends SubsystemBase {
         ArmDesiredAngle = ArmConstants.realL1Angle;
     }
 
-    // New method for ball position
-    private void setBallAngle() {
-        ArmDesiredAngle = ArmConstants.ballAngle;
-    }
-
-    private void setPreBallAngle() {
-        ArmDesiredAngle = ArmConstants.preBallAngle;
-    }
-
-    private void setPreBallBelowAngle() {
-        ArmDesiredAngle = ArmConstants.preBallBelowAngle;
-    }
-
-    private void setPreLowBallAngle() {
-        ArmDesiredAngle = ArmConstants.preLowBallAngle;
-    }
-
-    // Add algae arm command
     public void setAlgaeAngle() {
         ArmDesiredAngle = ArmConstants.algaeAngle;
     }
@@ -141,6 +129,17 @@ public class Arm extends SubsystemBase {
     public Command ArmScoreHIGHCommand()
     {
         Command command = new InstantCommand(() -> this.setScoreHIGH());
+        return command;
+    }
+
+    public Command ArmScoreLOWBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> setScoreLOWBackwards());
+        return command;
+    }
+    public Command ArmScoreHIGHBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> this.setScoreHIGHBackwards());
         return command;
     }
 
@@ -173,36 +172,11 @@ public class Arm extends SubsystemBase {
         return command;
     }
     
-    // New command for ball position
-    public Command ArmBallCommand()
-    {
-        Command command = new InstantCommand(() -> this.setBallAngle());
-        return command;
-    }
-
-    public Command ArmPreBallCommand()
-    {
-        Command command = new InstantCommand(() -> this.setPreBallAngle());
-        return command;
-    }
-    
-    public Command ArmPreBallBelowCommand()
-    {
-        Command command = new InstantCommand(() -> this.setPreBallBelowAngle());
-        return command;
-    }
-    
-    public Command ArmPreLowBallCommand()
-    {
-        Command command = new InstantCommand(() -> this.setPreLowBallAngle());
-        return command;
-    }
-    
-    // Update ArmBasedOnQueueCommand to handle algae
     public Command ArmBasedOnQueueCommand(ButtonBox buttonBox) {
 
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
         BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
+        BooleanSupplier currentRotationSupplier = buttonBox.currentisForwardsSupplier;
         BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
 
         Command command = new InstantCommand(() -> {
@@ -214,18 +188,24 @@ public class Arm extends SubsystemBase {
                 } else {
                     // Existing coral logic
                     if (currentLevelSupplier.getAsInt() == 0) {
-                        new InstantCommand();
+                        setScoreL1();
                     } else if (currentLevelSupplier.getAsInt() == 1) {
-                        setScoreLOW();
-                    } else if (currentLevelSupplier.getAsInt() == 2) {
-                        setScoreLOW();
-                    } else if (currentLevelSupplier.getAsInt() == 3) {
-                        if (currentSideSupplier.getAsBoolean()) {
-                            // Left L4
-                            ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setScoreLOW();
                         } else {
-                            // Right L4
-                            ArmDesiredAngle = ArmConstants.scoreAngleHIGH;
+                            setScoreLOWBackwards();
+                        }
+                    } else if (currentLevelSupplier.getAsInt() == 2) {
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setScoreLOW();
+                        } else {
+                            setScoreLOWBackwards();
+                        }
+                    } else if (currentLevelSupplier.getAsInt() == 3) {
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setScoreHIGH();
+                        } else {
+                            setScoreHIGHBackwards();
                         }
                     }
                 }
@@ -457,6 +437,53 @@ public class Arm extends SubsystemBase {
             
             // For all other cases, use the standard clearance condition
             return ArmEncoder.getPosition() >= 0.5;
+        });
+    }
+
+    // New overloaded version using queue context
+    public Command ArmScoreCommand(ButtonBox buttonBox) {
+        return new InstantCommand(() -> {
+            if (buttonBox == null) return;
+
+            IntSupplier levelSup = buttonBox.currentLevelSupplier;
+            BooleanSupplier isForwardsSup = buttonBox.currentisForwardsSupplier;
+            BooleanSupplier isAlgaeSup = buttonBox.isAlgaeTargetSupplier;
+
+            if (levelSup == null || isForwardsSup == null || isAlgaeSup == null) return;
+
+            int level = levelSup.getAsInt();
+            boolean isForwards = isForwardsSup.getAsBoolean();
+            boolean isAlgae = isAlgaeSup.getAsBoolean();
+
+            float delta = 0f;
+
+            if (!isAlgae) { // Coral logic
+                switch (level) {
+                    case 0:
+                        break;
+                    case 1:
+                    case 2:
+                        delta = (isForwards ? -ArmConstants.placeAngleLOW : ArmConstants.placeAngleLOW);
+                        break;
+                    case 3:
+                        delta = (isForwards ? -ArmConstants.placeAngleHIGH : ArmConstants.placeAngleHIGH);
+                        break;
+                    default:
+                        break;
+                }
+            } else { // Algae logic
+                if (level == 3) {
+                    delta = (isForwards ? -ArmConstants.netPlaceAngle : ArmConstants.netPlaceAngle);
+                }
+            }
+
+            if (delta != 0f) {
+                ArmDesiredAngle = (float)MathUtil.clamp(
+                    ArmDesiredAngle + delta,
+                    ArmConstants.min,
+                    ArmConstants.max
+                );
+            }
         });
     }
 }

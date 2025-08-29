@@ -327,6 +327,12 @@ public class RobotContainer {
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
+    rightTriggerPressed.onTrue(
+        Commands.runOnce(() -> {
+          endEffector.endEffectorOuttakeCommand();
+          Arm.ArmScoreCommand();
+        })
+    );
     rightTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand()
         .alongWith(led.setAlliancePattern())
         .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));
@@ -1355,6 +1361,7 @@ public class RobotContainer {
       }
       
       
+
 
       // After vision measurements are cycled, reset the QuestNav with current pose
       Pose2d currentPose = drivebase.getPose();

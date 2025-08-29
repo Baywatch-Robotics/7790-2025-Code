@@ -108,6 +108,7 @@ public class TargetClass {
         //Face 0-5
         //Level 0-3
         //0 left, 1 right
+        //0 forward, 1 backward
 
         switch(name) {
             case "SL":

@@ -64,10 +64,15 @@ public final class Constants
     //public static final float maxManual = .9f;
     
     
-    public static final float scoreAngleLOW = 0.698f;
-    public static final float scoreAngleHIGH = 0.661367297f;
+    public static final float scoreAngleLOW = 0.35f;
+    public static final float scoreAngleHIGH = 0.3f;
+    public static final float scoreAngleLOWBackwards = (0.5f - scoreAngleLOW) + 0.5f;
+    public static final float scoreAngleHIGHBackwards = (0.5f - scoreAngleHIGH) + 0.5f;
+    public static final float placeAngleHIGH = 0.05f;
+    public static final float placeAngleLOW = 0.05f;
+    public static final float netPlaceAngle = 0.05f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
-    public static final float reefZoneMinimumAngle = 0.643f; // This should be between ballAngle and scoreAngleHIGH
+    public static final float reefZoneMinimumAngle = 0.0f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
@@ -75,24 +80,13 @@ public final class Constants
     public static final float lollipopAngle = 0.25f;
     public static final float outLoadAngle = 0.3f;
     public static final float algaeAngle = 0.25f;
-
-    
-    // Ball position angle
-    public static final float preBallAngle = 0.64974045753479f
-    ;
-    public static final float preLowBallAngle = 0.64974045753479f;
-    public static final float ballAngle = 0.64974045753479f;
-    public static final float preBallBelowAngle = 0.64974045753479f;
-    public static final float L1Angle = 0.5f;
+    public static final float netAngle = 0.475f;
+    public static final float netAngleBackwards = (0.5f - netAngle) + 0.5f;
+    public static final float L1Angle = 0.2f;
 
     public static final float realL1Angle = 0.252f;
 
-    //public static final float P = 7.0f;
-    //public static final float I = 0.0f;
-    //public static final float D = 0.5f;
-
     public static final float P = 2.5f;
-    //public static final float P = 1.75f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 

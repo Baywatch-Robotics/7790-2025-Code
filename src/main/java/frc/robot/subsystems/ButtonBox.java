@@ -48,6 +48,16 @@ public class ButtonBox extends SubsystemBase {
         var target = targetQueue.peek();
         return target != null ? target.getLevel() : 0;
     };
+    public BooleanSupplier currentisForwardsSupplier = () -> {
+        var target = targetQueue.peek();
+        if (target == null) return false;
+        
+        String name = target.getName();
+        if (name != null && name.length() >= 5) {
+            return name.charAt(4) == '0';
+        }
+        return false;
+    };
     public IntSupplier currentFaceSupplier = () -> {
         var target = targetQueue.peek();
         return target != null ? target.getFace() : 0;
