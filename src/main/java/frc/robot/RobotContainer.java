@@ -330,7 +330,7 @@ public class RobotContainer {
     rightTriggerPressed.onTrue(
         Commands.runOnce(() -> {
           endEffector.endEffectorOuttakeCommand();
-          Arm.ArmScoreCommand();
+          Arm.ArmScoreCommand(buttonBox);
         })
     );
     rightTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand()

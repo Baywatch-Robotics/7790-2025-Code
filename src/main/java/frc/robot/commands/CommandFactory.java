@@ -84,8 +84,7 @@ public class CommandFactory {
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(arm.ArmPreBallCommand())
-    .andThen(endEffector.endEffectorOuttakeCommand());
+    .andThen(endEffector.endEffectorIntakeCommand());
 
     command.addRequirements(endEffector, arm, elevator);
 
@@ -98,19 +97,9 @@ public class CommandFactory {
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(arm.ArmPreLowBallCommand())
-    .andThen(endEffector.endEffectorOuttakeCommand());
+    .andThen(endEffector.endEffectorIntakeCommand());
 
 
-
-    command.addRequirements(endEffector, arm, elevator);
-
-    return command;
-  }
-
-  public static Command ballDown(EndEffector endEffector, Arm arm, Elevator elevator) {
-      
-    Command command  = arm.ArmBallCommand();
 
     command.addRequirements(endEffector, arm, elevator);
 
@@ -389,7 +378,6 @@ public static Command algaeRemoveBasedOnQueueCommand(EndEffector endEffector, Ar
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(buttonBox.setElevatorForCurrentBallCommand(elevator))
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
-    .andThen(arm.ArmPreLowBallCommand())
     .andThen(endEffector.endEffectorOuttakeCommand());
 
     command.addRequirements(endEffector, arm, elevator);
