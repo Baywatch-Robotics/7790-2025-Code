@@ -102,6 +102,8 @@ public class SwerveSubsystem extends SubsystemBase
                                                 1); // Enable if you want to resynchronize your absolute encoders and motor encoders periodically when they are not moving.
 //    swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
     setupPathPlanner();
+    // Register pose supplier for dynamic target generation (AX3X0 / AX3X1)
+    frc.robot.subsystems.TargetClass.setRobotPoseSupplier(this::getPose);
   }
 
   /**
@@ -117,6 +119,7 @@ public class SwerveSubsystem extends SubsystemBase
                                   Constants.MAX_SPEED,
                                   new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)),
                                              Rotation2d.fromDegrees(0)));
+    frc.robot.subsystems.TargetClass.setRobotPoseSupplier(this::getPose);
   }
 
   @Override

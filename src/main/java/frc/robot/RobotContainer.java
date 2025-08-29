@@ -311,13 +311,19 @@ public class RobotContainer {
         drivebase.stopDriveToPoseCommand().schedule();
     }));
     
-    // Conditional trigger bindings based on climb mode (Removed - always active now)
     
-    // Left trigger - intake (was conditional on climb mode)
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(CommandFactory.setIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer));
+    leftTriggerPressed.onTrue(
+        Commands.runOnce(() -> {
+          if (!algaeModeEnabled) {
+            CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
+          } else {
+            CommandFactory.setLollipopIntakeCommand(endEffector, Arm, elevator, this).schedule();
+          }
+        })
+    );
 
-    // Right trigger - outake (was conditional on climb mode)
+    // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
@@ -330,115 +336,390 @@ public class RobotContainer {
     buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
 
     driverXbox.y().onTrue(new InstantCommand(() -> {
-      Pose2d currentPose = drivebase.getPose();
-      double robotRotation = currentPose.getRotation().getDegrees();
+      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
   
-      // Check if robot rotation is within the specified bounds (in degrees)
-      if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
-        buttonBox.addTarget("C130");
-        buttonBox.addTarget("C131");
-      } else if (robotRotation > -150 && robotRotation <= -90) {
-        buttonBox.addTarget("C230");
-        buttonBox.addTarget("C231");
-      } else if (robotRotation > -90 && robotRotation <= -30) {
-        buttonBox.addTarget("C330");
-        buttonBox.addTarget("C331");
-      } else if (robotRotation > -30 && robotRotation <= 30) {
-        buttonBox.addTarget("C430");
-        buttonBox.addTarget("C431");
-      } else if (robotRotation > 30 && robotRotation <= 90) {
-        buttonBox.addTarget("C530");
-        buttonBox.addTarget("C531");
-      } else if (robotRotation > 90 && robotRotation <= 150) {
-        buttonBox.addTarget("C630");
-        buttonBox.addTarget("C631");
+        // Check if robot rotation is within the specified bounds (in degrees)
+        if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
+          buttonBox.addTarget("AN301");
+          buttonBox.addTarget("AN311");
+        } else if (robotRotation > -90 && robotRotation <= 90) {
+          buttonBox.addTarget("AN300");
+          buttonBox.addTarget("AN310");
+        }
+      } else {
+        // New nearest-face coral selection (replaces rotation bucket logic)
+        Pose2d robotPose = drivebase.getPose();
+
+        // Face reference points (Blue-alliance reference) -> convert to alliance-relative before distance calc
+        double[] faceXs = {
+          Constants.TargetClassConstants.xValueA1X1,
+          Constants.TargetClassConstants.xValueA2X1,
+          Constants.TargetClassConstants.xValueA3X1,
+          Constants.TargetClassConstants.xValueA4X1,
+          Constants.TargetClassConstants.xValueA5X1,
+          Constants.TargetClassConstants.xValueA6X1
+        };
+        double[] faceYs = {
+          Constants.TargetClassConstants.yValueA1X1,
+          Constants.TargetClassConstants.yValueA2X1,
+          Constants.TargetClassConstants.yValueA3X1,
+          Constants.TargetClassConstants.yValueA4X1,
+          Constants.TargetClassConstants.yValueA5X1,
+          Constants.TargetClassConstants.yValueA6X1
+        };
+
+        int closestFace = 1;
+        double minDist = Double.POSITIVE_INFINITY;
+
+        for (int i = 0; i < faceXs.length; i++) {
+          Pose2d facePoseAlliance = TargetClass.toPose2d(new Pose2d(faceXs[i], faceYs[i], new Rotation2d()));
+          double dist = Math.hypot(robotPose.getX() - facePoseAlliance.getX(),
+                                   robotPose.getY() - facePoseAlliance.getY());
+            if (dist < minDist) {
+              minDist = dist;
+              closestFace = i + 1; // faces numbered 1–6
+            }
+        }
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
+
+        // Map chosen face to coral target pair
+        switch (closestFace) {
+          case 1 -> { if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
+            buttonBox.addTarget("C1300");
+            buttonBox.addTarget("C1310");
+          } else {
+            buttonBox.addTarget("C1301");
+            buttonBox.addTarget("C1311");
+          } }
+          case 2 -> { if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -30)) {
+            buttonBox.addTarget("C2300");
+            buttonBox.addTarget("C2310");
+          } else {
+            buttonBox.addTarget("C2301");
+            buttonBox.addTarget("C2311");
+          } }
+          case 3 -> { if (robotRotation > -150 && robotRotation <= 30) {
+            buttonBox.addTarget("C3300");
+            buttonBox.addTarget("C3310");
+          } else {
+            buttonBox.addTarget("C3301");
+            buttonBox.addTarget("C3311");
+          } }
+          case 4 -> { if (robotRotation > -90 && robotRotation <= 90) {
+            buttonBox.addTarget("C4300");
+            buttonBox.addTarget("C4310");
+          } else {
+            buttonBox.addTarget("C4301");
+            buttonBox.addTarget("C4311");
+          } }
+          case 5 -> { if (robotRotation > -30 && robotRotation <= 150) {
+            buttonBox.addTarget("C5300");
+            buttonBox.addTarget("C5310");
+          } else {
+            buttonBox.addTarget("C5301");
+            buttonBox.addTarget("C5311");
+          } }
+          case 6 -> { if ((robotRotation >= 30 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+            buttonBox.addTarget("C6300");
+            buttonBox.addTarget("C6310");
+          } else {
+            buttonBox.addTarget("C6301");
+            buttonBox.addTarget("C6311");
+          } }
+          default -> { /* no-op */ }
+        }
       }
     }));
 
     driverXbox.x().onTrue(new InstantCommand(() -> {
-      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
-        Pose2d currentPose = drivebase.getPose();
-        double robotRotation = currentPose.getRotation().getDegrees();
-    
-        // Check if robot rotation is within the specified bounds (in degrees)
-        if ((robotRotation >= 120 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -120)) {
-          buttonBox.addTarget("A121");
-          buttonBox.addTarget("A120");
-        } else if (robotRotation > -120 && robotRotation <= 0) {
-          buttonBox.addTarget("A321");
-          buttonBox.addTarget("A320");
-        } else if (robotRotation > 0 && robotRotation <= 120) {
-          buttonBox.addTarget("A521");
-          buttonBox.addTarget("A520");
+      if (algaeModeEnabled) {
+        // Nearest-face algae selection now restricted to faces 1, 3, 5 only
+        Pose2d robotPose = drivebase.getPose();
+
+        int[] faceIds = {1, 3, 5};
+        double[] faceXs = {
+          Constants.TargetClassConstants.xValueA1X1,
+          Constants.TargetClassConstants.xValueA3X1,
+          Constants.TargetClassConstants.xValueA5X1
+        };
+        double[] faceYs = {
+          Constants.TargetClassConstants.yValueA1X1,
+          Constants.TargetClassConstants.yValueA3X1,
+          Constants.TargetClassConstants.yValueA5X1
+        };
+
+        int closestFace = faceIds[0];
+        double minDist = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < faceIds.length; i++) {
+          Pose2d facePoseAlliance = TargetClass.toPose2d(new Pose2d(faceXs[i], faceYs[i], new Rotation2d()));
+          double dist = Math.hypot(robotPose.getX() - facePoseAlliance.getX(),
+                                   robotPose.getY() - facePoseAlliance.getY());
+          if (dist < minDist) {
+            minDist = dist;
+            closestFace = faceIds[i]; // actual face number (1,3,5)
+          }
         }
-      }
-      else { // Only execute when algae mode is NOT enabled
         Pose2d currentPose = drivebase.getPose();
         double robotRotation = currentPose.getRotation().getDegrees();
-    
-        // Check if robot rotation is within the specified bounds (in degrees)
-        if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
-          buttonBox.addTarget("C120");
-          buttonBox.addTarget("C121");
-        } else if (robotRotation > -150 && robotRotation <= -90) {
-          buttonBox.addTarget("C220");
-          buttonBox.addTarget("C221");
-        } else if (robotRotation > -90 && robotRotation <= -30) {
-          buttonBox.addTarget("C320");
-          buttonBox.addTarget("C321");
-        } else if (robotRotation > -30 && robotRotation <= 30) {
-          buttonBox.addTarget("C420");
-          buttonBox.addTarget("C421");
-        } else if (robotRotation > 30 && robotRotation <= 90) {
-          buttonBox.addTarget("C520");
-          buttonBox.addTarget("C521");
-        } else if (robotRotation > 90 && robotRotation <= 150) {
-          buttonBox.addTarget("C620");
-          buttonBox.addTarget("C621");
+
+        switch (closestFace) {
+          case 1 -> { if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
+            buttonBox.addTarget("A1200");
+            buttonBox.addTarget("A1210");
+          } else {
+            buttonBox.addTarget("A1201");
+            buttonBox.addTarget("A1211");
+          } }
+          case 3 -> { if (robotRotation > -150 && robotRotation <= 30) {
+            buttonBox.addTarget("A3200");
+            buttonBox.addTarget("A3210");
+          } else {
+            buttonBox.addTarget("A3201");
+            buttonBox.addTarget("A3211");
+          } }
+          case 5 -> { if (robotRotation > -30 && robotRotation <= 150) {
+            buttonBox.addTarget("A5200");
+            buttonBox.addTarget("A5210");
+          } else {
+            buttonBox.addTarget("A5201");
+            buttonBox.addTarget("A5211");
+          } }
+          default -> { /* unreachable with filtered faces */ }
+        }
+      } else {
+        // New nearest-face coral selection (replaces rotation bucket logic)
+        Pose2d robotPose = drivebase.getPose();
+
+        // Face reference points (Blue-alliance reference) -> convert to alliance-relative before distance calc
+        double[] faceXs = {
+          Constants.TargetClassConstants.xValueA1X1,
+          Constants.TargetClassConstants.xValueA2X1,
+          Constants.TargetClassConstants.xValueA3X1,
+          Constants.TargetClassConstants.xValueA4X1,
+          Constants.TargetClassConstants.xValueA5X1,
+          Constants.TargetClassConstants.xValueA6X1
+        };
+        double[] faceYs = {
+          Constants.TargetClassConstants.yValueA1X1,
+          Constants.TargetClassConstants.yValueA2X1,
+          Constants.TargetClassConstants.yValueA3X1,
+          Constants.TargetClassConstants.yValueA4X1,
+          Constants.TargetClassConstants.yValueA5X1,
+          Constants.TargetClassConstants.yValueA6X1
+        };
+
+        int closestFace = 1;
+        double minDist = Double.POSITIVE_INFINITY;
+
+        for (int i = 0; i < faceXs.length; i++) {
+          Pose2d facePoseAlliance = TargetClass.toPose2d(new Pose2d(faceXs[i], faceYs[i], new Rotation2d()));
+          double dist = Math.hypot(robotPose.getX() - facePoseAlliance.getX(),
+                                   robotPose.getY() - facePoseAlliance.getY());
+            if (dist < minDist) {
+              minDist = dist;
+              closestFace = i + 1; // faces numbered 1–6
+            }
+        }
+        Pose2d currentPose = drivebase.getPose();
+        double robotRotation = currentPose.getRotation().getDegrees();
+
+        // Map chosen face to coral target pair
+        switch (closestFace) {
+          case 1 -> { if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
+            buttonBox.addTarget("C1200");
+            buttonBox.addTarget("C1210");
+          } else {
+            buttonBox.addTarget("C1201");
+            buttonBox.addTarget("C1211");
+          } }
+          case 2 -> { if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -30)) {
+            buttonBox.addTarget("C2200");
+            buttonBox.addTarget("C2210");
+          } else {
+            buttonBox.addTarget("C2201");
+            buttonBox.addTarget("C2211");
+          } }
+          case 3 -> { if (robotRotation > -150 && robotRotation <= 30) {
+            buttonBox.addTarget("C3200");
+            buttonBox.addTarget("C3210");
+          } else {
+            buttonBox.addTarget("C3201");
+            buttonBox.addTarget("C3211");
+          } }
+          case 4 -> { if (robotRotation > -90 && robotRotation <= 90) {
+            buttonBox.addTarget("C4200");
+            buttonBox.addTarget("C4210");
+          } else {
+            buttonBox.addTarget("C4201");
+            buttonBox.addTarget("C4211");
+          } }
+          case 5 -> { if (robotRotation > -30 && robotRotation <= 150) {
+            buttonBox.addTarget("C5200");
+            buttonBox.addTarget("C5210");
+          } else {
+            buttonBox.addTarget("C5201");
+            buttonBox.addTarget("C5211");
+          } }
+          case 6 -> { if ((robotRotation >= 30 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+            buttonBox.addTarget("C6200");
+            buttonBox.addTarget("C6210");
+          } else {
+            buttonBox.addTarget("C6201");
+            buttonBox.addTarget("C6211");
+          } }
+          default -> { /* no-op */ }
         }
       }
     }));
 
     driverXbox.b().onTrue(new InstantCommand(() -> {
-      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
+      if (algaeModeEnabled) {
+        // Nearest-face algae selection restricted to faces 2,4,6
+        Pose2d robotPose = drivebase.getPose();
+
+        int[] faceIds = {2, 4, 6};
+        double[] faceXs = {
+          Constants.TargetClassConstants.xValueA2X1,
+          Constants.TargetClassConstants.xValueA4X1,
+          Constants.TargetClassConstants.xValueA6X1
+        };
+        double[] faceYs = {
+          Constants.TargetClassConstants.yValueA2X1,
+          Constants.TargetClassConstants.yValueA4X1,
+          Constants.TargetClassConstants.yValueA6X1
+        };
+
+        int closestFace = faceIds[0];
+        double minDist = Double.POSITIVE_INFINITY;
+        for (int i = 0; i < faceIds.length; i++) {
+          Pose2d facePoseAlliance = TargetClass.toPose2d(new Pose2d(faceXs[i], faceYs[i], new Rotation2d()));
+          double dist = Math.hypot(robotPose.getX() - facePoseAlliance.getX(),
+                                   robotPose.getY() - facePoseAlliance.getY());
+          if (dist < minDist) {
+            minDist = dist;
+            closestFace = faceIds[i]; // actual face number (2,4,6)
+          }
+        }
+
         Pose2d currentPose = drivebase.getPose();
         double robotRotation = currentPose.getRotation().getDegrees();
-    
-        // Check if robot rotation is within the specified bounds (in degrees)
-        if (robotRotation > -180 && robotRotation <= -60) {
-          buttonBox.addTarget("A211");
-          buttonBox.addTarget("A210");
-        } else if (robotRotation > -60 && robotRotation <= 60) {
-          buttonBox.addTarget("A411");
-          buttonBox.addTarget("A410");
-        } else if (robotRotation > 60 && robotRotation <= 180) {
-          buttonBox.addTarget("A611");
-          buttonBox.addTarget("A610");
+
+        switch (closestFace) {
+          case 2 -> {
+            if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -30)) {
+              buttonBox.addTarget("A2100");
+              buttonBox.addTarget("A2110");
+            } else {
+              buttonBox.addTarget("A2101");
+              buttonBox.addTarget("A2111");
+            }
+          }
+          case 4 -> {
+            if (robotRotation > -90 && robotRotation <= 90) {
+              buttonBox.addTarget("A4100");
+              buttonBox.addTarget("A4110");
+            } else {
+              buttonBox.addTarget("A4101");
+              buttonBox.addTarget("A4111");
+            }
+          }
+          case 6 -> {
+            if ((robotRotation >= 30 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+              buttonBox.addTarget("A6100");
+              buttonBox.addTarget("A6110");
+            } else {
+              buttonBox.addTarget("A6101");
+              buttonBox.addTarget("A6111");
+            }
+          }
+          default -> { /* unreachable with filtered faces */ }
         }
       }
-      else { // Only execute when algae mode is NOT enabled
+      else {
+        // New nearest-face coral selection (replaces rotation bucket logic)
+        Pose2d robotPose = drivebase.getPose();
+
+        // Face reference points (Blue-alliance reference) -> convert to alliance-relative before distance calc
+        double[] faceXs = {
+          Constants.TargetClassConstants.xValueA1X1,
+          Constants.TargetClassConstants.xValueA2X1,
+          Constants.TargetClassConstants.xValueA3X1,
+          Constants.TargetClassConstants.xValueA4X1,
+          Constants.TargetClassConstants.xValueA5X1,
+          Constants.TargetClassConstants.xValueA6X1
+        };
+        double[] faceYs = {
+          Constants.TargetClassConstants.yValueA1X1,
+          Constants.TargetClassConstants.yValueA2X1,
+          Constants.TargetClassConstants.yValueA3X1,
+          Constants.TargetClassConstants.yValueA4X1,
+          Constants.TargetClassConstants.yValueA5X1,
+          Constants.TargetClassConstants.yValueA6X1
+        };
+
+        int closestFace = 1;
+        double minDist = Double.POSITIVE_INFINITY;
+
+        for (int i = 0; i < faceXs.length; i++) {
+          Pose2d facePoseAlliance = TargetClass.toPose2d(new Pose2d(faceXs[i], faceYs[i], new Rotation2d()));
+          double dist = Math.hypot(robotPose.getX() - facePoseAlliance.getX(),
+                                   robotPose.getY() - facePoseAlliance.getY());
+            if (dist < minDist) {
+              minDist = dist;
+              closestFace = i + 1; // faces numbered 1–6
+            }
+        }
         Pose2d currentPose = drivebase.getPose();
         double robotRotation = currentPose.getRotation().getDegrees();
-  
-        // Check if robot rotation is within the specified bounds (in degrees)
-        if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
-          buttonBox.addTarget("C110");
-          buttonBox.addTarget("C111");
-        } else if (robotRotation > -150 && robotRotation <= -90) {
-          buttonBox.addTarget("C210");
-          buttonBox.addTarget("C211");
-        } else if (robotRotation > -90 && robotRotation <= -30) {
-          buttonBox.addTarget("C310");
-          buttonBox.addTarget("C311");
-        } else if (robotRotation > -30 && robotRotation <= 30) {
-          buttonBox.addTarget("C410");
-          buttonBox.addTarget("C411");
-        } else if (robotRotation > 30 && robotRotation <= 90) {
-          buttonBox.addTarget("C510");
-          buttonBox.addTarget("C511");
-        } else if (robotRotation > 90 && robotRotation <= 150) {
-          buttonBox.addTarget("C610");
-          buttonBox.addTarget("C611");
+
+        // Map chosen face to coral target pair
+        switch (closestFace) {
+          case 1 -> { if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
+            buttonBox.addTarget("C1100");
+            buttonBox.addTarget("C1110");
+          } else {
+            buttonBox.addTarget("C1101");
+            buttonBox.addTarget("C1111");
+          } }
+          case 2 -> { if ((robotRotation >= 150 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -30)) {
+            buttonBox.addTarget("C2100");
+            buttonBox.addTarget("C2110");
+          } else {
+            buttonBox.addTarget("C2101");
+            buttonBox.addTarget("C2111");
+          } }
+          case 3 -> { if (robotRotation > -150 && robotRotation <= 30) {
+            buttonBox.addTarget("C3100");
+            buttonBox.addTarget("C3110");
+          } else {
+            buttonBox.addTarget("C3101");
+            buttonBox.addTarget("C3111");
+          } }
+          case 4 -> { if (robotRotation > -90 && robotRotation <= 90) {
+            buttonBox.addTarget("C4100");
+            buttonBox.addTarget("C4110");
+          } else {
+            buttonBox.addTarget("C4101");
+            buttonBox.addTarget("C4111");
+          } }
+          case 5 -> { if (robotRotation > -30 && robotRotation <= 150) {
+            buttonBox.addTarget("C5100");
+            buttonBox.addTarget("C5111");
+          } else {
+            buttonBox.addTarget("C5101");
+            buttonBox.addTarget("C5111");
+          } }
+          case 6 -> { if ((robotRotation >= 30 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -150)) {
+            buttonBox.addTarget("C6100");
+            buttonBox.addTarget("C6110");
+          } else {
+            buttonBox.addTarget("C6101");
+            buttonBox.addTarget("C6111");
+          } }
+          default -> { /* no-op */ }
         }
       }
     }));

@@ -351,6 +351,11 @@ public final class Constants
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
     public static final float ProcessorPositionZ = (float)Units.degreesToRadians(270);
 
+    public static final float xValueAX3X0 = (float)Units.inchesToMeters(283);
+    public static final float zValueAX3X0 = (float)Units.degreesToRadians(180);
+    public static final float xValueAX3X1 = (float)Units.inchesToMeters(283);
+    public static final float zValueAX3X1 = (float)Units.degreesToRadians(0);
+
     // Hexagon center and dimensions
     public static final float hexagonCenterX = (float)Units.inchesToMeters(176.745);
     public static final float hexagonCenterY = (float)Units.inchesToMeters(158.5);

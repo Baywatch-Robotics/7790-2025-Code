@@ -20,7 +20,7 @@ import frc.robot.util.DynamicWait;
 public class CommandFactory {
 
    
-    public static Command setIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
+    public static Command setCoralIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
       
       // Run the LED pattern first as a separate command
       Command ledCommand = led.runPattern("INTAKE_PATTERN");
@@ -50,7 +50,7 @@ public class CommandFactory {
   
   
 
-  public static Command setLollipopIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, SwerveSubsystem drivebase, RobotContainer robotContainer) {
+  public static Command setLollipopIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer) {
     
     
       Command command  = endEffector.endEffectorIntakeCommand()
@@ -244,7 +244,7 @@ public static Command sourceDriveAuto(EndEffector endEffector, Arm arm, Elevator
   .andThen(new WaitCommand(.75))
   //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   //.andThen(new WaitCommand(1.25));
-  .andThen(CommandFactory.setIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
+  .andThen(CommandFactory.setCoralIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
 
   command.addRequirements(endEffector, arm, elevator);
 

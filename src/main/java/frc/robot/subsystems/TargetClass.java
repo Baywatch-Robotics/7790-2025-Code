@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Constants.TargetClassConstants;
 
@@ -12,6 +13,8 @@ public class TargetClass {
     // Field width based on blue alliance origin. Update this value as required.
     private static final double FIELD_WIDTH = 17.55;
     private static final double FIELD_LENGTH = 8.05;
+    // Centerline (158.5 inches) converted to meters for Y reflection of AX3X0/AX3X1
+    private static final double CENTERLINE_Y_METERS = Units.inchesToMeters(158.5);
 
     private double x;
     private double y;
@@ -21,6 +24,9 @@ public class TargetClass {
     private int face;
     private boolean isSource;
     private String name;
+
+    // Supplier for current robot pose (set by SwerveSubsystem)
+    private static Supplier<Pose2d> robotPoseSupplier = () -> new Pose2d();
 
     public TargetClass(String name) {
         this.name = name;
@@ -87,6 +93,13 @@ public class TargetClass {
         this.face = face;
     }
 
+    /**
+     * Register a supplier that returns the current robot pose.
+     * Must be called during robot init (done in SwerveSubsystem).
+     */
+    public static void setRobotPoseSupplier(Supplier<Pose2d> supplier) {
+        if (supplier != null) robotPoseSupplier = supplier;
+    }
 
     public static TargetClass GetTargetByName(String name) {
         TargetClass target = new TargetClass(name);
@@ -133,7 +146,47 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.ProcessorPositionZ);
                 target.setSource(true);
                 break;
-            case "C100":
+            case "AN300":
+                target.setX(TargetClassConstants.xValueAX3X0);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueAX3X0);
+                target.setSource(true);
+                break;
+            case "AN301":
+                target.setX(TargetClassConstants.xValueAX3X1);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueAX3X1);
+                target.setSource(true);
+                break;
+            case "AN310":
+                target.setX(TargetClassConstants.xValueAX3X0);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueAX3X0);
+                target.setSource(true);
+                break;
+            case "AN311":
+                target.setX(TargetClassConstants.xValueAX3X1);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueAX3X1);
+                target.setSource(true);
+                break;
+            case "C1000":
                 target.setX(TargetClassConstants.xValueC1X0);
                 target.setY(TargetClassConstants.yValueC1X0);
                 target.setZ(TargetClassConstants.zValueC10X);
@@ -142,7 +195,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C101":
+            case "C1010":
                 target.setX(TargetClassConstants.xValueC1X1);
                 target.setY(TargetClassConstants.yValueC1X1);
                 target.setZ(TargetClassConstants.zValueC10X);
@@ -151,7 +204,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C110":
+            case "C1100":
                 target.setX(TargetClassConstants.xValueC1X0);
                 target.setY(TargetClassConstants.yValueC1X0);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -160,7 +213,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C111":
+            case "C1110":
                 target.setX(TargetClassConstants.xValueC1X1);
                 target.setY(TargetClassConstants.yValueC1X1);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -169,7 +222,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C120":
+            case "C1200":
                 target.setX(TargetClassConstants.xValueC1X0);
                 target.setY(TargetClassConstants.yValueC1X0);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -178,7 +231,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C121":
+            case "C1210":
                 target.setX(TargetClassConstants.xValueC1X1);
                 target.setY(TargetClassConstants.yValueC1X1);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -187,7 +240,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C130":
+            case "C1300":
                 target.setX(TargetClassConstants.xValueC130);
                 target.setY(TargetClassConstants.yValueC130);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -196,7 +249,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C131":
+            case "C1310":
                 target.setX(TargetClassConstants.xValueC131);
                 target.setY(TargetClassConstants.yValueC131);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -205,7 +258,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C200":
+            case "C2000":
                 target.setX(TargetClassConstants.xValueC2X0);
                 target.setY(TargetClassConstants.yValueC2X1);
                 target.setZ(TargetClassConstants.zValueC20X);
@@ -214,7 +267,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C201":
+            case "C2010":
                 target.setX(TargetClassConstants.xValueC2X0);
                 target.setY(TargetClassConstants.yValueC2X1);
                 target.setZ(TargetClassConstants.zValueC20X);
@@ -223,7 +276,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C210":
+            case "C2100":
                 target.setX(TargetClassConstants.xValueC2X0);
                 target.setY(TargetClassConstants.yValueC2X0);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -232,7 +285,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C211":
+            case "C2110":
                 target.setX(TargetClassConstants.xValueC2X1);
                 target.setY(TargetClassConstants.yValueC2X1);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -241,7 +294,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C220":
+            case "C2200":
                 target.setX(TargetClassConstants.xValueC2X0);
                 target.setY(TargetClassConstants.yValueC2X0);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -250,7 +303,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C221":
+            case "C2210":
                 target.setX(TargetClassConstants.xValueC2X1);
                 target.setY(TargetClassConstants.yValueC2X1);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -259,7 +312,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C230":
+            case "C2300":
                 target.setX(TargetClassConstants.xValueC230);
                 target.setY(TargetClassConstants.yValueC230);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -268,7 +321,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C231":        
+            case "C2310":        
                 target.setX(TargetClassConstants.xValueC231);
                 target.setY(TargetClassConstants.yValueC231);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -277,7 +330,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C300":
+            case "C3000":
                 target.setX(TargetClassConstants.xValueC3X0);
                 target.setY(TargetClassConstants.yValueC3X0);
                 target.setZ(TargetClassConstants.zValueC30X);
@@ -286,7 +339,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C301":
+            case "C3010":
                 target.setX(TargetClassConstants.xValueC3X1);
                 target.setY(TargetClassConstants.yValueC3X1);
                 target.setZ(TargetClassConstants.zValueC30X);
@@ -295,7 +348,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C310":
+            case "C3100":
                 target.setX(TargetClassConstants.xValueC3X0);
                 target.setY(TargetClassConstants.yValueC3X0);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -304,7 +357,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C311":
+            case "C3110":
                 target.setX(TargetClassConstants.xValueC3X1);
                 target.setY(TargetClassConstants.yValueC3X1);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -313,7 +366,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C320":
+            case "C3200":
                 target.setX(TargetClassConstants.xValueC3X0);
                 target.setY(TargetClassConstants.yValueC3X0);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -322,7 +375,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C321":
+            case "C3210":
                 target.setX(TargetClassConstants.xValueC3X1);
                 target.setY(TargetClassConstants.yValueC3X1);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -331,7 +384,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C330":
+            case "C3300":
                 target.setX(TargetClassConstants.xValueC330);
                 target.setY(TargetClassConstants.yValueC330);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -340,7 +393,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C331":
+            case "C3310":
                 target.setX(TargetClassConstants.xValueC331);
                 target.setY(TargetClassConstants.yValueC331);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -349,7 +402,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S330":
+            case "S3300":
                 target.setX(TargetClassConstants.xValueS330);
                 target.setY(TargetClassConstants.yValueS330);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -358,7 +411,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S331":
+            case "S3310":
                 target.setX(TargetClassConstants.xValueS331);
                 target.setY(TargetClassConstants.yValueS331);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -367,7 +420,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C400":
+            case "C4000":
                 target.setX(TargetClassConstants.xValueC4X0);
                 target.setY(TargetClassConstants.yValueC4X0);
                 target.setZ(TargetClassConstants.zValueC40X);
@@ -376,7 +429,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C401":
+            case "C4010":
                 target.setX(TargetClassConstants.xValueC4X1);
                 target.setY(TargetClassConstants.yValueC4X1);
                 target.setZ(TargetClassConstants.zValueC40X);
@@ -385,7 +438,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C410":
+            case "C4100":
                 target.setX(TargetClassConstants.xValueC4X0);
                 target.setY(TargetClassConstants.yValueC4X0);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -394,7 +447,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C411":
+            case "C4110":
                 target.setX(TargetClassConstants.xValueC4X1);
                 target.setY(TargetClassConstants.yValueC4X1);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -403,7 +456,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C420":
+            case "C4200":
                 target.setX(TargetClassConstants.xValueC4X0);
                 target.setY(TargetClassConstants.yValueC4X0);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -412,7 +465,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C421":
+            case "C4210":
                 target.setX(TargetClassConstants.xValueC4X1);
                 target.setY(TargetClassConstants.yValueC4X1);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -421,7 +474,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C430":
+            case "C4300":
                 target.setX(TargetClassConstants.xValueC430);
                 target.setY(TargetClassConstants.yValueC430);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -430,7 +483,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C431":
+            case "C4310":
                 target.setX(TargetClassConstants.xValueC431);
                 target.setY(TargetClassConstants.yValueC431);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -439,7 +492,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S430":
+            case "S4300":
                 target.setX(TargetClassConstants.xValueS430);
                 target.setY(TargetClassConstants.yValueS430);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -448,7 +501,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S431":
+            case "S4310":
                 target.setX(TargetClassConstants.xValueS431);
                 target.setY(TargetClassConstants.yValueS431);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -457,7 +510,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C500":
+            case "C5000":
                 target.setX(TargetClassConstants.xValueC5X0);
                 target.setY(TargetClassConstants.yValueC5X0);
                 target.setZ(TargetClassConstants.zValueC50X);
@@ -466,7 +519,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C501":
+            case "C5010":
                 target.setX(TargetClassConstants.xValueC5X1);
                 target.setY(TargetClassConstants.yValueC5X1);
                 target.setZ(TargetClassConstants.zValueC50X);
@@ -475,7 +528,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C510":
+            case "C5100":
                 target.setX(TargetClassConstants.xValueC5X0);
                 target.setY(TargetClassConstants.yValueC5X0);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -484,7 +537,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C511":
+            case "C5110":
                 target.setX(TargetClassConstants.xValueC5X1);
                 target.setY(TargetClassConstants.yValueC5X1);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -493,7 +546,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C520":
+            case "C5200":
                 target.setX(TargetClassConstants.xValueC5X0);
                 target.setY(TargetClassConstants.yValueC5X0);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -502,7 +555,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C521":
+            case "C5210":
                 target.setX(TargetClassConstants.xValueC5X1);
                 target.setY(TargetClassConstants.yValueC5X1);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -511,7 +564,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C530":
+            case "C5300":
                 target.setX(TargetClassConstants.xValueC530);
                 target.setY(TargetClassConstants.yValueC530);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -520,7 +573,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C531":
+            case "C5310":
                 target.setX(TargetClassConstants.xValueC531);
                 target.setY(TargetClassConstants.yValueC531);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -529,7 +582,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S530":
+            case "S5300":
                 target.setX(TargetClassConstants.xValueS530);
                 target.setY(TargetClassConstants.yValueS530);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -538,7 +591,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "S531":
+            case "S5310":
                 target.setX(TargetClassConstants.xValueS531);
                 target.setY(TargetClassConstants.yValueS531);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -547,7 +600,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C600":
+            case "C6000":
                 target.setX(TargetClassConstants.xValueC6X0);
                 target.setY(TargetClassConstants.yValueC6X0);
                 target.setZ(TargetClassConstants.zValueC60X);
@@ -556,7 +609,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C601":
+            case "C6010":
                 target.setX(TargetClassConstants.xValueC6X1);
                 target.setY(TargetClassConstants.yValueC6X1);
                 target.setZ(TargetClassConstants.zValueC60X);
@@ -565,7 +618,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX0X);
                 target.setSource(false);
                 break;
-            case "C610":
+            case "C6100":
                 target.setX(TargetClassConstants.xValueC6X0);
                 target.setY(TargetClassConstants.yValueC6X0);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -574,7 +627,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C611":
+            case "C6110":
                 target.setX(TargetClassConstants.xValueC6X1);
                 target.setY(TargetClassConstants.yValueC6X1);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -583,7 +636,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX1X);
                 target.setSource(false);
                 break;
-            case "C620":
+            case "C6200":
                 target.setX(TargetClassConstants.xValueC6X0);
                 target.setY(TargetClassConstants.yValueC6X0);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -592,7 +645,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C621":
+            case "C6210":
                 target.setX(TargetClassConstants.xValueC6X1);
                 target.setY(TargetClassConstants.yValueC6X1);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -601,7 +654,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX2X);
                 target.setSource(false);
                 break;
-            case "C630":
+            case "C6300":
                 target.setX(TargetClassConstants.xValueC630);
                 target.setY(TargetClassConstants.yValueC630);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -610,7 +663,7 @@ public class TargetClass {
                 target.setLevel(TargetClassConstants.heightCX3X);
                 target.setSource(false);
                 break;
-            case "C631":
+            case "C6310":
                 target.setX(TargetClassConstants.xValueC631);
                 target.setY(TargetClassConstants.yValueC631);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -621,9 +674,499 @@ public class TargetClass {
                 break;
 
 
+
+                
+            case "C1001":
+                target.setX(TargetClassConstants.xValueC1X0);
+                target.setY(TargetClassConstants.yValueC1X0);
+                target.setZ(TargetClassConstants.zValueC40X);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C1011":
+                target.setX(TargetClassConstants.xValueC1X1);
+                target.setY(TargetClassConstants.yValueC1X1);
+                target.setZ(TargetClassConstants.zValueC40X);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C1101":
+                target.setX(TargetClassConstants.xValueC1X0);
+                target.setY(TargetClassConstants.yValueC1X0);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C1111":
+                target.setX(TargetClassConstants.xValueC1X1);
+                target.setY(TargetClassConstants.yValueC1X1);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C1201":
+                target.setX(TargetClassConstants.xValueC1X0);
+                target.setY(TargetClassConstants.yValueC1X0);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C1211":
+                target.setX(TargetClassConstants.xValueC1X1);
+                target.setY(TargetClassConstants.yValueC1X1);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C1301":
+                target.setX(TargetClassConstants.xValueC130);
+                target.setY(TargetClassConstants.yValueC130);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C1311":
+                target.setX(TargetClassConstants.xValueC131);
+                target.setY(TargetClassConstants.yValueC131);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C2001":
+                target.setX(TargetClassConstants.xValueC2X0);
+                target.setY(TargetClassConstants.yValueC2X1);
+                target.setZ(TargetClassConstants.zValueC50X);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C2011":
+                target.setX(TargetClassConstants.xValueC2X0);
+                target.setY(TargetClassConstants.yValueC2X1);
+                target.setZ(TargetClassConstants.zValueC50X);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C2101":
+                target.setX(TargetClassConstants.xValueC2X0);
+                target.setY(TargetClassConstants.yValueC2X0);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C2111":
+                target.setX(TargetClassConstants.xValueC2X1);
+                target.setY(TargetClassConstants.yValueC2X1);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C2201":
+                target.setX(TargetClassConstants.xValueC2X0);
+                target.setY(TargetClassConstants.yValueC2X0);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C2211":
+                target.setX(TargetClassConstants.xValueC2X1);
+                target.setY(TargetClassConstants.yValueC2X1);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C2301":
+                target.setX(TargetClassConstants.xValueC230);
+                target.setY(TargetClassConstants.yValueC230);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C2311":        
+                target.setX(TargetClassConstants.xValueC231);
+                target.setY(TargetClassConstants.yValueC231);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C3001":
+                target.setX(TargetClassConstants.xValueC3X0);
+                target.setY(TargetClassConstants.yValueC3X0);
+                target.setZ(TargetClassConstants.zValueC60X);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C3011":
+                target.setX(TargetClassConstants.xValueC3X1);
+                target.setY(TargetClassConstants.yValueC3X1);
+                target.setZ(TargetClassConstants.zValueC60X);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C3101":
+                target.setX(TargetClassConstants.xValueC3X0);
+                target.setY(TargetClassConstants.yValueC3X0);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C3111":
+                target.setX(TargetClassConstants.xValueC3X1);
+                target.setY(TargetClassConstants.yValueC3X1);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C3201":
+                target.setX(TargetClassConstants.xValueC3X0);
+                target.setY(TargetClassConstants.yValueC3X0);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C3211":
+                target.setX(TargetClassConstants.xValueC3X1);
+                target.setY(TargetClassConstants.yValueC3X1);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C3301":
+                target.setX(TargetClassConstants.xValueC330);
+                target.setY(TargetClassConstants.yValueC330);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C3311":
+                target.setX(TargetClassConstants.xValueC331);
+                target.setY(TargetClassConstants.yValueC331);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S3301":
+                target.setX(TargetClassConstants.xValueS330);
+                target.setY(TargetClassConstants.yValueS330);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S3311":
+                target.setX(TargetClassConstants.xValueS331);
+                target.setY(TargetClassConstants.yValueS331);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C4001":
+                target.setX(TargetClassConstants.xValueC4X0);
+                target.setY(TargetClassConstants.yValueC4X0);
+                target.setZ(TargetClassConstants.zValueC10X);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C4011":
+                target.setX(TargetClassConstants.xValueC4X1);
+                target.setY(TargetClassConstants.yValueC4X1);
+                target.setZ(TargetClassConstants.zValueC10X);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C4101":
+                target.setX(TargetClassConstants.xValueC4X0);
+                target.setY(TargetClassConstants.yValueC4X0);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C4111":
+                target.setX(TargetClassConstants.xValueC4X1);
+                target.setY(TargetClassConstants.yValueC4X1);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C4201":
+                target.setX(TargetClassConstants.xValueC4X0);
+                target.setY(TargetClassConstants.yValueC4X0);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C4211":
+                target.setX(TargetClassConstants.xValueC4X1);
+                target.setY(TargetClassConstants.yValueC4X1);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C4301":
+                target.setX(TargetClassConstants.xValueC430);
+                target.setY(TargetClassConstants.yValueC430);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C4311":
+                target.setX(TargetClassConstants.xValueC431);
+                target.setY(TargetClassConstants.yValueC431);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S4301":
+                target.setX(TargetClassConstants.xValueS430);
+                target.setY(TargetClassConstants.yValueS430);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S4311":
+                target.setX(TargetClassConstants.xValueS431);
+                target.setY(TargetClassConstants.yValueS431);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C5001":
+                target.setX(TargetClassConstants.xValueC5X0);
+                target.setY(TargetClassConstants.yValueC5X0);
+                target.setZ(TargetClassConstants.zValueC20X);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C5011":
+                target.setX(TargetClassConstants.xValueC5X1);
+                target.setY(TargetClassConstants.yValueC5X1);
+                target.setZ(TargetClassConstants.zValueC20X);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C5101":
+                target.setX(TargetClassConstants.xValueC5X0);
+                target.setY(TargetClassConstants.yValueC5X0);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C5111":
+                target.setX(TargetClassConstants.xValueC5X1);
+                target.setY(TargetClassConstants.yValueC5X1);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C5201":
+                target.setX(TargetClassConstants.xValueC5X0);
+                target.setY(TargetClassConstants.yValueC5X0);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C5211":
+                target.setX(TargetClassConstants.xValueC5X1);
+                target.setY(TargetClassConstants.yValueC5X1);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C5301":
+                target.setX(TargetClassConstants.xValueC530);
+                target.setY(TargetClassConstants.yValueC530);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C5311":
+                target.setX(TargetClassConstants.xValueC531);
+                target.setY(TargetClassConstants.yValueC531);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S5301":
+                target.setX(TargetClassConstants.xValueS530);
+                target.setY(TargetClassConstants.yValueS530);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "S5311":
+                target.setX(TargetClassConstants.xValueS531);
+                target.setY(TargetClassConstants.yValueS531);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C6001":
+                target.setX(TargetClassConstants.xValueC6X0);
+                target.setY(TargetClassConstants.yValueC6X0);
+                target.setZ(TargetClassConstants.zValueC30X);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C6011":
+                target.setX(TargetClassConstants.xValueC6X1);
+                target.setY(TargetClassConstants.yValueC6X1);
+                target.setZ(TargetClassConstants.zValueC30X);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX0X);
+                target.setSource(false);
+                break;
+            case "C6101":
+                target.setX(TargetClassConstants.xValueC6X0);
+                target.setY(TargetClassConstants.yValueC6X0);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C6111":
+                target.setX(TargetClassConstants.xValueC6X1);
+                target.setY(TargetClassConstants.yValueC6X1);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX1X);
+                target.setSource(false);
+                break;
+            case "C6201":
+                target.setX(TargetClassConstants.xValueC6X0);
+                target.setY(TargetClassConstants.yValueC6X0);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C6211":
+                target.setX(TargetClassConstants.xValueC6X1);
+                target.setY(TargetClassConstants.yValueC6X1);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX2X);
+                target.setSource(false);
+                break;
+            case "C6301":
+                target.setX(TargetClassConstants.xValueC630);
+                target.setY(TargetClassConstants.yValueC630);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX0);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+            case "C6311":
+                target.setX(TargetClassConstants.xValueC631);
+                target.setY(TargetClassConstants.yValueC631);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLeft(TargetClassConstants.setLeftCXX1);
+                target.setLevel(TargetClassConstants.heightCX3X);
+                target.setSource(false);
+                break;
+
+
                 
             // Algae targets for Face 1
-            case "A120": // Face 1 with backup
+            case "A1200": // Face 1 with backup
                 target.setX(TargetClassConstants.xValueA1X0);
                 target.setY(TargetClassConstants.yValueA1X0);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -631,7 +1174,7 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
-            case "A121": // Face 1 no backup
+            case "A1210": // Face 1 no backup
                 target.setX(TargetClassConstants.xValueA1X1);
                 target.setY(TargetClassConstants.yValueA1X1);
                 target.setZ(TargetClassConstants.zValueC1XX);
@@ -639,9 +1182,25 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
+            case "A1201": // Face 1 with backup
+                target.setX(TargetClassConstants.xValueA1X0);
+                target.setY(TargetClassConstants.yValueA1X0);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
+            case "A1211": // Face 1 no backup
+                target.setX(TargetClassConstants.xValueA1X1);
+                target.setY(TargetClassConstants.yValueA1X1);
+                target.setZ(TargetClassConstants.zValueC4XX);
+                target.setFace(TargetClassConstants.faceValueC1XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
                 
             // Algae targets for Face 2
-            case "A210": // Face 2 with backup
+            case "A2100": // Face 2 with backup
                 target.setX(TargetClassConstants.xValueA2X0);
                 target.setY(TargetClassConstants.yValueA2X0);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -649,7 +1208,7 @@ public class TargetClass {
                 target.setLevel(1);
                 target.setSource(false);
                 break;
-            case "A211": // Face 2 no backup
+            case "A2110": // Face 2 no backup
                 target.setX(TargetClassConstants.xValueA2X1);
                 target.setY(TargetClassConstants.yValueA2X1);
                 target.setZ(TargetClassConstants.zValueC2XX);
@@ -657,9 +1216,25 @@ public class TargetClass {
                 target.setLevel(1);
                 target.setSource(false);
                 break;
+            case "A2101": // Face 2 with backup
+                target.setX(TargetClassConstants.xValueA2X0);
+                target.setY(TargetClassConstants.yValueA2X0);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
+            case "A2111": // Face 2 no backup
+                target.setX(TargetClassConstants.xValueA2X1);
+                target.setY(TargetClassConstants.yValueA2X1);
+                target.setZ(TargetClassConstants.zValueC5XX);
+                target.setFace(TargetClassConstants.faceValueC2XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
                 
             // Algae targets for Face 3
-            case "A320": // Face 3 with backup
+            case "A3200": // Face 3 with backup
                 target.setX(TargetClassConstants.xValueA3X0);
                 target.setY(TargetClassConstants.yValueA3X0);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -667,7 +1242,7 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
-            case "A321": // Face 3 no backup
+            case "A3210": // Face 3 no backup
                 target.setX(TargetClassConstants.xValueA3X1);
                 target.setY(TargetClassConstants.yValueA3X1);
                 target.setZ(TargetClassConstants.zValueC3XX);
@@ -675,9 +1250,25 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
+            case "A3201": // Face 3 with backup
+                target.setX(TargetClassConstants.xValueA3X0);
+                target.setY(TargetClassConstants.yValueA3X0);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
+            case "A3211": // Face 3 no backup
+                target.setX(TargetClassConstants.xValueA3X1);
+                target.setY(TargetClassConstants.yValueA3X1);
+                target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC3XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
                 
             // Algae targets for Face 4
-            case "A410": // Face 4 with backup
+            case "A4100": // Face 4 with backup
                 target.setX(TargetClassConstants.xValueA4X0);
                 target.setY(TargetClassConstants.yValueA4X0);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -685,7 +1276,7 @@ public class TargetClass {
                 target.setLevel(1);
                 target.setSource(false);
                 break;
-            case "A411": // Face 4 no backup
+            case "A4110": // Face 4 no backup
                 target.setX(TargetClassConstants.xValueA4X1);
                 target.setY(TargetClassConstants.yValueA4X1);
                 target.setZ(TargetClassConstants.zValueC4XX);
@@ -693,9 +1284,25 @@ public class TargetClass {
                 target.setLevel(1);
                 target.setSource(false);
                 break;
+            case "A4101": // Face 4 with backup
+                target.setX(TargetClassConstants.xValueA4X0);
+                target.setY(TargetClassConstants.yValueA4X0);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
+            case "A4111": // Face 4 no backup
+                target.setX(TargetClassConstants.xValueA4X1);
+                target.setY(TargetClassConstants.yValueA4X1);
+                target.setZ(TargetClassConstants.zValueC1XX);
+                target.setFace(TargetClassConstants.faceValueC4XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
                 
             // Algae targets for Face 5
-            case "A520": // Face 5 with backup
+            case "A5200": // Face 5 with backup
                 target.setX(TargetClassConstants.xValueA5X0);
                 target.setY(TargetClassConstants.yValueA5X0);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -703,7 +1310,7 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
-            case "A521": // Face 5 no backup
+            case "A5210": // Face 5 no backup
                 target.setX(TargetClassConstants.xValueA5X1);
                 target.setY(TargetClassConstants.yValueA5X1);
                 target.setZ(TargetClassConstants.zValueC5XX);
@@ -711,9 +1318,25 @@ public class TargetClass {
                 target.setLevel(2);
                 target.setSource(false);
                 break;
+            case "A5201": // Face 5 with backup
+                target.setX(TargetClassConstants.xValueA5X0);
+                target.setY(TargetClassConstants.yValueA5X0);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
+            case "A5211": // Face 5 no backup
+                target.setX(TargetClassConstants.xValueA5X1);
+                target.setY(TargetClassConstants.yValueA5X1);
+                target.setZ(TargetClassConstants.zValueC2XX);
+                target.setFace(TargetClassConstants.faceValueC5XX);
+                target.setLevel(2);
+                target.setSource(false);
+                break;
                 
             // Algae targets for Face 6
-            case "A610": // Face 6 with backup
+            case "A6100": // Face 6 with backup
                 target.setX(TargetClassConstants.xValueA6X0);
                 target.setY(TargetClassConstants.yValueA6X0);
                 target.setZ(TargetClassConstants.zValueC6XX);
@@ -721,10 +1344,26 @@ public class TargetClass {
                 target.setLevel(1);
                 target.setSource(false);
                 break;
-            case "A611": // Face 6 no backup
+            case "A6110": // Face 6 no backup
                 target.setX(TargetClassConstants.xValueA6X1);
                 target.setY(TargetClassConstants.yValueA6X1);
                 target.setZ(TargetClassConstants.zValueC6XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
+            case "A6101": // Face 6 with backup
+                target.setX(TargetClassConstants.xValueA6X0);
+                target.setY(TargetClassConstants.yValueA6X0);
+                target.setZ(TargetClassConstants.zValueC3XX);
+                target.setFace(TargetClassConstants.faceValueC6XX);
+                target.setLevel(1);
+                target.setSource(false);
+                break;
+            case "A6111": // Face 6 no backup
+                target.setX(TargetClassConstants.xValueA6X1);
+                target.setY(TargetClassConstants.yValueA6X1);
+                target.setZ(TargetClassConstants.zValueC3XX);
                 target.setFace(TargetClassConstants.faceValueC6XX);
                 target.setLevel(1);
                 target.setSource(false);

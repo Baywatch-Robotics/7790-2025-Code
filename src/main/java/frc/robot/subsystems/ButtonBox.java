@@ -114,9 +114,9 @@ public class ButtonBox extends SubsystemBase {
     }
 
     public TargetClass peekNextTargetEndingIn1() {
-        // Search through the queue for the first target ending in '1' without removing anything
         for (TargetClass target : targetQueue) {
-            if (target.getName().endsWith("1")) {
+            String name = target.getName();
+            if (name != null && name.length() >= 4 && name.charAt(3) == '1') {
                 return target;
             }
         }
@@ -124,9 +124,9 @@ public class ButtonBox extends SubsystemBase {
     }
 
     public TargetClass peekNextTargetEndingIn0() {
-        // Search through the queue for the first target ending in '0' without removing anything
         for (TargetClass target : targetQueue) {
-            if (target.getName().endsWith("0")) {
+            String name = target.getName();
+            if (name != null && name.length() >= 4 && name.charAt(3) == '0') {
                 return target;
             }
         }
