@@ -146,44 +146,84 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.ProcessorPositionZ);
                 target.setSource(true);
                 break;
-            case "AN300":
-                target.setX(TargetClassConstants.xValueAX3X0);
+            case "A7300":
+                target.setX(TargetClassConstants.xValueA73N0);
                 {
                     double currentY = robotPoseSupplier.get().getY();
                     double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
                     target.setY(flippedY);
                 }
-                target.setZ(TargetClassConstants.zValueAX3X0);
+                target.setZ(TargetClassConstants.zValueA73N0);
                 target.setSource(true);
                 break;
-            case "AN301":
-                target.setX(TargetClassConstants.xValueAX3X1);
+            case "A7301":
+                target.setX(TargetClassConstants.xValueA73N1);
                 {
                     double currentY = robotPoseSupplier.get().getY();
                     double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
                     target.setY(flippedY);
                 }
-                target.setZ(TargetClassConstants.zValueAX3X1);
+                target.setZ(TargetClassConstants.zValueA73N1);
                 target.setSource(true);
                 break;
-            case "AN310":
-                target.setX(TargetClassConstants.xValueAX3X0);
+            case "A7310":
+                target.setX(TargetClassConstants.xValueA73N0);
                 {
                     double currentY = robotPoseSupplier.get().getY();
                     double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
                     target.setY(flippedY);
                 }
-                target.setZ(TargetClassConstants.zValueAX3X0);
+                target.setZ(TargetClassConstants.zValueA73N0);
                 target.setSource(true);
                 break;
-            case "AN311":
-                target.setX(TargetClassConstants.xValueAX3X1);
+            case "A7311":
+                target.setX(TargetClassConstants.xValueA73N1);
                 {
                     double currentY = robotPoseSupplier.get().getY();
                     double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
                     target.setY(flippedY);
                 }
-                target.setZ(TargetClassConstants.zValueAX3X1);
+                target.setZ(TargetClassConstants.zValueA73N1);
+                target.setSource(true);
+                break;
+            case "A8300":
+                target.setX(TargetClassConstants.xValueA83N0);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueA83N0);
+                target.setSource(true);
+                break;
+            case "A8301":
+                target.setX(TargetClassConstants.xValueA83N1);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueA83N1);
+                target.setSource(true);
+                break;
+            case "A8310":
+                target.setX(TargetClassConstants.xValueA83N0);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueA83N0);
+                target.setSource(true);
+                break;
+            case "A8311":
+                target.setX(TargetClassConstants.xValueA83N1);
+                {
+                    double currentY = robotPoseSupplier.get().getY();
+                    double flippedY = 2 * CENTERLINE_Y_METERS - currentY;
+                    target.setY(flippedY);
+                }
+                target.setZ(TargetClassConstants.zValueA83N1);
                 target.setSource(true);
                 break;
             case "C1000":

@@ -336,17 +336,28 @@ public class RobotContainer {
     buttonBox1.button(1).onTrue(new InstantCommand(() -> buttonBox.deleteLastTarget()));
 
     driverXbox.y().onTrue(new InstantCommand(() -> {
-      if (algaeModeEnabled) { // Only execute when algae mode IS enabled
+      if (algaeModeEnabled) {
         Pose2d currentPose = drivebase.getPose();
         double robotRotation = currentPose.getRotation().getDegrees();
+        double robotX = Units.metersToInches(currentPose.getX());
+        System.out.println("Robot X (inches): " + robotX);
   
-        // Check if robot rotation is within the specified bounds (in degrees)
         if ((robotRotation >= 90 && robotRotation <= 180) || (robotRotation > -180 && robotRotation <= -90)) {
-          buttonBox.addTarget("AN301");
-          buttonBox.addTarget("AN311");
+          if (robotX >= 393.95) {
+            buttonBox.addTarget("A7301");
+            buttonBox.addTarget("A7311");
+          } else if (robotX <= 297) {
+            buttonBox.addTarget("A8301");
+            buttonBox.addTarget("A8311");
+          }
         } else if (robotRotation > -90 && robotRotation <= 90) {
-          buttonBox.addTarget("AN300");
-          buttonBox.addTarget("AN310");
+          if (robotX >= 393.95) {
+            buttonBox.addTarget("A7300");
+            buttonBox.addTarget("A7310");
+          } else if (robotX <= 297) {
+            buttonBox.addTarget("A8300");
+            buttonBox.addTarget("A8310");
+          }
         }
       } else {
         // New nearest-face coral selection (replaces rotation bucket logic)
