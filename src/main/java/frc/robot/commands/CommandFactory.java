@@ -244,7 +244,7 @@ public static Command sourceDriveAuto(EndEffector endEffector, Arm arm, Elevator
 public static Command lollipopIntakeDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, LED led, Intake intake, Indexer indexer){ {
 
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
-  Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
+  Command command = drivebase.startDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(new WaitCommand(.25))
   .andThen(CommandFactory.setCoralIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
 
@@ -256,7 +256,7 @@ public static Command lollipopIntakeDriveAuto(EndEffector endEffector, Arm arm, 
 public static Command lollipopDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, LED led, Intake intake, Indexer indexer){ {
 
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
-  Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
+  Command command = drivebase.startDriveToPoseWithRotationDelay(buttonBox, elevator)
   .andThen(new WaitCommand(.25))
   .andThen(CommandFactory.setLollipopIntakeCommand(endEffector, arm, elevator, robotContainer, led));
 
@@ -265,7 +265,7 @@ public static Command lollipopDriveAuto(EndEffector endEffector, Arm arm, Elevat
   return command;} 
 }
 
-public static Command LeftLollipopIntakeAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+public static Command LeftIntakeLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("PL"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
@@ -307,7 +307,7 @@ public static Command LeftLollipopIntakeAutonCommand(EndEffector endEffector, Ar
   return command; 
 }
 
-public static Command RightLollipopIntakeAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+public static Command RightIntakeLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
   Command command = new InstantCommand(() -> buttonBox.addTarget("PR"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))

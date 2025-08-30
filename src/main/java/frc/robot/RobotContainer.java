@@ -240,10 +240,14 @@ public class RobotContainer {
 
 
   public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  public Command leftLollipopAuto = CommandFactory.LeftLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  public Command leftIntakeLollipopAuto = CommandFactory.LeftIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
   public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
 
+  public Command rightIntakeLollipopAuto = CommandFactory.RightIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  public Command rightLollipopAuto = CommandFactory.RightLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command rightAuto = CommandFactory.RightAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   SendableChooser<Command> chooser = new SendableChooser<>();
