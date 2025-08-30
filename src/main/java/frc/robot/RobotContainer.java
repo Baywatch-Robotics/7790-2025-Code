@@ -318,7 +318,7 @@ public class RobotContainer {
           if (!algaeModeEnabled) {
             CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
           } else {
-            CommandFactory.setLollipopIntakeCommand(endEffector, Arm, elevator, this).schedule();
+            CommandFactory.setLollipopIntakeCommand(endEffector, Arm, elevator, this, led).schedule();
           }
         })
     );

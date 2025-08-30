@@ -50,10 +50,11 @@ public class CommandFactory {
   
   
 
-  public static Command setLollipopIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer) {
+  public static Command setLollipopIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led) {
     
     
-      Command command  = endEffector.endEffectorIntakeCommand()
+      Command command  = led.runPattern("INTAKE_PATTERN")
+      .andThen (endEffector.endEffectorIntakeCommand())
       .andThen(arm.ArmLollipopCommand())
       .andThen(new WaitUntilCommand(arm.isClearToDescend()))
       .andThen(elevator.setElevatorLollipopCommand())
@@ -238,6 +239,198 @@ public static Command sourceDriveAuto(EndEffector endEffector, Arm arm, Elevator
   command.addRequirements(endEffector, arm, elevator);
 
   return command;} 
+}
+
+public static Command lollipopIntakeDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, LED led, Intake intake, Indexer indexer){ {
+
+  // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
+  Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
+  .andThen(new WaitCommand(.25))
+  .andThen(CommandFactory.setCoralIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
+
+  command.addRequirements(endEffector, arm, elevator);
+
+  return command;} 
+}
+
+public static Command lollipopDriveAuto(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, RobotContainer robotContainer, SwerveSubsystem drivebase, LED led, Intake intake, Indexer indexer){ {
+
+  // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
+  Command command = drivebase.startFastDriveToPose(buttonBox, elevator)
+  .andThen(new WaitCommand(.25))
+  .andThen(CommandFactory.setLollipopIntakeCommand(endEffector, arm, elevator, robotContainer, led));
+
+  command.addRequirements(endEffector, arm, elevator);
+
+  return command;} 
+}
+
+public static Command LeftLollipopIntakeAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PL"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1300")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LL")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1100")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LCL")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1310")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LR")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1110")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LC")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    
+  command.addRequirements(endEffector, arm, elevator);
+  return command; 
+}
+
+public static Command RightLollipopIntakeAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PR"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1310")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LR")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1110")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LCR")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1300")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LL")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1100")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LC")))
+  .andThen(CommandFactory.lollipopIntakeDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    
+  command.addRequirements(endEffector, arm, elevator);
+  return command; 
+}
+
+public static Command LeftLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PL"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1301")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LL")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1101")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LCL")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1311")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LR")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1111")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LC")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    
+  command.addRequirements(endEffector, arm, elevator);
+  return command; 
+}
+
+public static Command RightLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PR"))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1311")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LR")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1111")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LCR")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1301")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LL")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+  
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C1101")))
+  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
+
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("LC")))
+  .andThen(CommandFactory.lollipopDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
+  .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    
+  command.addRequirements(endEffector, arm, elevator);
+  return command; 
 }
 
 public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){

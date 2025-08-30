@@ -123,22 +123,28 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.SRPositionZ);
                 target.setSource(true);
                 break;
-            case "CL":
-                target.setX(TargetClassConstants.CLPositionX);
-                target.setY(TargetClassConstants.CLPositionY);
-                target.setZ(TargetClassConstants.CLPositionZ);
+            case "LL":
+                target.setX(TargetClassConstants.LLPositionX);
+                target.setY(TargetClassConstants.LLPositionY);
+                target.setZ(TargetClassConstants.LLPositionZ);
                 target.setSource(true);
                 break;
-            case "CC":
-                target.setX(TargetClassConstants.CCPositionX);
-                target.setY(TargetClassConstants.CCPositionY);
-                target.setZ(TargetClassConstants.CCPositionZ);
+            case "LCR":
+                target.setX(TargetClassConstants.LCRPositionX);
+                target.setY(TargetClassConstants.LCRPositionY);
+                target.setZ(TargetClassConstants.LCRPositionZ);
                 target.setSource(true);
                 break;
-            case "CR":
-                target.setX(TargetClassConstants.CRPositionX);
-                target.setY(TargetClassConstants.CRPositionY);
-                target.setZ(TargetClassConstants.CRPositionZ);
+            case "LCL":
+                target.setX(TargetClassConstants.LCLPositionX);
+                target.setY(TargetClassConstants.LCLPositionY);
+                target.setZ(TargetClassConstants.LCLPositionZ);
+                target.setSource(true);
+                break;
+            case "LR":
+                target.setX(TargetClassConstants.LRPositionX);
+                target.setY(TargetClassConstants.LRPositionY);
+                target.setZ(TargetClassConstants.LRPositionZ);
                 target.setSource(true);
                 break;
             case "Processor":
