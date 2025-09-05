@@ -331,11 +331,13 @@ public final class Constants
 
     public static final float PLPositionX = (float)Units.inchesToMeters(67);
     public static final float PLPositionY = (float)Units.inchesToMeters(254);
-    public static final float PLPositionZ = (float)Units.degreesToRadians(306);
+    public static final float PLPositionZ0 = (float)Units.degreesToRadians(0);
+    public static final float PLPositionZ1 = (float)Units.degreesToRadians(180);
 
     public static final float PRPositionX = (float)Units.inchesToMeters(67);
     public static final float PRPositionY = (float)Units.inchesToMeters(63);
-    public static final float PRPositionZ = (float)Units.degreesToRadians(54);
+    public static final float PRPositionZ0 = (float)Units.degreesToRadians(0);
+    public static final float PRPositionZ1 = (float)Units.degreesToRadians(180);
 
     public static final float LLPositionX = (float)Units.inchesToMeters(61.394);
     public static final float LLPositionY = (float)Units.inchesToMeters(218.475);

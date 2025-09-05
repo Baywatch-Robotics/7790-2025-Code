@@ -267,7 +267,7 @@ public static Command lollipopDriveAuto(EndEffector endEffector, Arm arm, Elevat
 
 public static Command LeftIntakeLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("PL"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PL0"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
@@ -309,7 +309,7 @@ public static Command LeftIntakeLollipopAutonCommand(EndEffector endEffector, Ar
 
 public static Command RightIntakeLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("PR"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PR0"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
@@ -351,7 +351,7 @@ public static Command RightIntakeLollipopAutonCommand(EndEffector endEffector, A
 
 public static Command LeftLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("PL"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PL1"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
@@ -393,7 +393,7 @@ public static Command LeftLollipopAutonCommand(EndEffector endEffector, Arm arm,
 
 public static Command RightLollipopAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("PR"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("PR1"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 

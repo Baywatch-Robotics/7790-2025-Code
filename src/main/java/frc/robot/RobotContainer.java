@@ -879,6 +879,11 @@ public class RobotContainer {
     chooser.addOption("Left Center", leftCenterAuto);
     chooser.addOption("Right Center", rightCenterAuto);
     chooser.setDefaultOption("Right", rightAuto);
+    chooser.addOption("Left Lollipop", leftLollipopAuto);
+    chooser.addOption("Left Intake Lollipop", leftIntakeLollipopAuto);
+    chooser.addOption("Right Lollipop", rightLollipopAuto);
+    chooser.addOption("Right Intake Lollipop", rightIntakeLollipopAuto);
+
      
     SmartDashboard.putData(chooser);
   }
