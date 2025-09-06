@@ -70,6 +70,10 @@ public class TargetClass {
         TARGET_CONFIGS.put("LCR", new TargetConfig(TargetClassConstants.LCRPositionX, TargetClassConstants.LCRPositionY, TargetClassConstants.LCRPositionZ, true));
         TARGET_CONFIGS.put("LCL", new TargetConfig(TargetClassConstants.LCLPositionX, TargetClassConstants.LCLPositionY, TargetClassConstants.LCLPositionZ, true));
         TARGET_CONFIGS.put("LR", new TargetConfig(TargetClassConstants.LRPositionX, TargetClassConstants.LRPositionY, TargetClassConstants.LRPositionZ, true));
+        TARGET_CONFIGS.put("LLI", new TargetConfig(TargetClassConstants.LLPositionX, TargetClassConstants.LLPositionY, TargetClassConstants.LLIPositionZ, true));
+        TARGET_CONFIGS.put("LCRI", new TargetConfig(TargetClassConstants.LCRPositionX, TargetClassConstants.LCRPositionY, TargetClassConstants.LCRIPositionZ, true));
+        TARGET_CONFIGS.put("LCLI", new TargetConfig(TargetClassConstants.LCLPositionX, TargetClassConstants.LCLPositionY, TargetClassConstants.LCLIPositionZ, true));
+        TARGET_CONFIGS.put("LRI", new TargetConfig(TargetClassConstants.LRPositionX, TargetClassConstants.LRPositionY, TargetClassConstants.LRIPositionZ, true));
         TARGET_CONFIGS.put("Processor", new TargetConfig(TargetClassConstants.ProcessorPositionX, TargetClassConstants.ProcessorPositionY, TargetClassConstants.ProcessorPositionZ, true));
         
         // Dynamic Y targets (A73XX and A83XX series)

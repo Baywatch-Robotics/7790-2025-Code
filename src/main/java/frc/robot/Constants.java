@@ -355,6 +355,11 @@ public final class Constants
     public static final float LRPositionY = (float)Units.inchesToMeters(98.526);
     public static final float LRPositionZ = (float)Units.degreesToRadians(221.915);
     
+    public static final float LLIPositionZ = (float)Units.degreesToRadians(138.085);
+    public static final float LCRIPositionZ = (float)Units.degreesToRadians(174.935);
+    public static final float LCLIPositionZ = (float)Units.degreesToRadians(185.065);
+    public static final float LRIPositionZ = (float)Units.degreesToRadians(221.915);
+    
     public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
     public static final float ProcessorPositionZ = (float)Units.degreesToRadians(270);
