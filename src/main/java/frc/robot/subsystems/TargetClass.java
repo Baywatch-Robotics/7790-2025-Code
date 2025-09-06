@@ -171,6 +171,30 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.LRPositionZ);
                 target.setSource(true);
                 break;
+            case "LLI":
+                target.setX(TargetClassConstants.LLPositionX);
+                target.setY(TargetClassConstants.LLPositionY);
+                target.setZ(TargetClassConstants.LLIPositionZ);
+                target.setSource(true);
+                break;
+            case "LCRI":
+                target.setX(TargetClassConstants.LCRPositionX);
+                target.setY(TargetClassConstants.LCRPositionY);
+                target.setZ(TargetClassConstants.LCRIPositionZ);
+                target.setSource(true);
+                break;
+            case "LCLI":
+                target.setX(TargetClassConstants.LCLPositionX);
+                target.setY(TargetClassConstants.LCLPositionY);
+                target.setZ(TargetClassConstants.LCLIPositionZ);
+                target.setSource(true);
+                break;
+            case "LRI":
+                target.setX(TargetClassConstants.LRPositionX);
+                target.setY(TargetClassConstants.LRPositionY);
+                target.setZ(TargetClassConstants.LRIPositionZ);
+                target.setSource(true);
+                break;
             case "Processor":
                 target.setX(TargetClassConstants.ProcessorPositionX);
                 target.setY(TargetClassConstants.ProcessorPositionY);

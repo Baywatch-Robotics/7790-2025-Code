@@ -337,31 +337,35 @@ public final class Constants
     public static final float SRPositionY = (float)Units.inchesToMeters(63);
     public static final float SRPositionZ = (float)Units.degreesToRadians(54);
 
-    public static final float PLPositionX = (float)Units.inchesToMeters(120);
-    public static final float PLPositionY = (float)Units.inchesToMeters(244);
+    public static final float PLPositionX = (float)Units.inchesToMeters(-120);
+    public static final float PLPositionY = (float)Units.inchesToMeters(200);
     public static final float PLPositionZ0 = (float)Units.degreesToRadians(0);
     public static final float PLPositionZ1 = (float)Units.degreesToRadians(180);
 
-    public static final float PRPositionX = (float)Units.inchesToMeters(120);
-    public static final float PRPositionY = (float)Units.inchesToMeters(73);
+    public static final float PRPositionX = (float)Units.inchesToMeters(-120);
+    public static final float PRPositionY = (float)Units.inchesToMeters(117);
     public static final float PRPositionZ0 = (float)Units.degreesToRadians(0);
     public static final float PRPositionZ1 = (float)Units.degreesToRadians(180);
 
     public static final float LLPositionX = (float)Units.inchesToMeters(61.394);
     public static final float LLPositionY = (float)Units.inchesToMeters(218.475);
     public static final float LLPositionZ = (float)Units.degreesToRadians(138.085);
+    public static final float LLIPositionZ = (float)Units.degreesToRadians(318.085);
 
     public static final float LCRPositionX = (float)Units.inchesToMeters(65.930);
     public static final float LCRPositionY = (float)Units.inchesToMeters(156.911);
     public static final float LCRPositionZ = (float)Units.degreesToRadians(174.935);
+    public static final float LCRIPositionZ = (float)Units.degreesToRadians(354.935);
     
     public static final float LCLPositionX = (float)Units.inchesToMeters(65.930);
     public static final float LCLPositionY = (float)Units.inchesToMeters(160.089);
     public static final float LCLPositionZ = (float)Units.degreesToRadians(185.065);
+    public static final float LCLIPositionZ = (float)Units.degreesToRadians(5.065);
 
     public static final float LRPositionX = (float)Units.inchesToMeters(61.394);
     public static final float LRPositionY = (float)Units.inchesToMeters(98.526);
     public static final float LRPositionZ = (float)Units.degreesToRadians(221.915);
+    public static final float LRIPositionZ = (float)Units.degreesToRadians(41.915);
     
     public static final float ProcessorPositionX = (float)Units.inchesToMeters(234);
     public static final float ProcessorPositionY = (float)Units.inchesToMeters(26);
