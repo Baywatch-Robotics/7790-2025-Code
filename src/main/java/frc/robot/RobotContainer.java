@@ -1301,6 +1301,14 @@ public class RobotContainer {
       currentSelection = "RightCenter";
     } else if (selectedCommand == rightAuto) {
       currentSelection = "Right";
+    } else if (selectedCommand == rightLollipopAuto) {
+      currentSelection = "RightLollipop";
+    } else if (selectedCommand == rightIntakeLollipopAuto) {
+      currentSelection = "RightIntakeLollipop";
+    } else if (selectedCommand == leftLollipopAuto) {
+      currentSelection = "LeftLollipop";
+    } else if (selectedCommand == leftIntakeLollipopAuto) {
+      currentSelection = "LeftIntakeLollipop";
     } else {
       currentSelection = "Unknown";
     }
@@ -1344,6 +1352,54 @@ public class RobotContainer {
         drivebase.resetOdometry(allianceRelativeRightCenterPose);
         
         SmartDashboard.putString("Auto Pose Initialized", "Right Center Start Position");
+      } else if (currentSelection.equals("RightLollipop")) {
+        // Set pose for Right Lollipop autonomous
+        Pose2d rightLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.RightLLStartX,
+            Constants.TargetClassConstants.RightLLStartY,
+            new Rotation2d(Constants.TargetClassConstants.RightLLStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightLollipopPose = TargetClass.toPose2d(rightLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeRightLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Right Lollipop Start Position");
+      } else if (currentSelection.equals("RightIntakeLollipop")) {
+        // Set pose for Right Intake Lollipop autonomous
+        Pose2d rightIntakeLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.RightLLStartX,
+            Constants.TargetClassConstants.RightLLStartY,
+            new Rotation2d(Constants.TargetClassConstants.RightLLIStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightIntakeLollipopPose = TargetClass.toPose2d(rightIntakeLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeRightIntakeLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Right Intake Lollipop Start Position");
+      } else if (currentSelection.equals("LeftLollipop")) {
+        // Set pose for Left Lollipop autonomous
+        Pose2d leftLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.LeftLLStartX,
+            Constants.TargetClassConstants.LeftLLStartY,
+            new Rotation2d(Constants.TargetClassConstants.LeftLLStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeLeftLollipopPose = TargetClass.toPose2d(leftLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeLeftLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Left Lollipop Start Position");
+      } else if (currentSelection.equals("LeftIntakeLollipop")) {
+        // Set pose for Left Intake Lollipop autonomous
+        Pose2d leftIntakeLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.LeftLLStartX,
+            Constants.TargetClassConstants.LeftLLStartY,
+            new Rotation2d(Constants.TargetClassConstants.LeftLLIStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeLeftIntakeLollipopPose = TargetClass.toPose2d(leftIntakeLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeLeftIntakeLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Left Intake Lollipop Start Position");
       } else {
         // Default to Right autonomous pose
         Pose2d rightStartPose = new Pose2d(

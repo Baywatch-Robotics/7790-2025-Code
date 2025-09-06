@@ -320,6 +320,14 @@ public final class Constants
     public static final float RightStartX = (float)Units.inchesToMeters(297.5);
     public static final float RightStartY = (float)Units.inchesToMeters(75.0);
     public static final float RightStartZ = (float)Units.degreesToRadians(120.0);
+    public static final float RightLLStartX = (float)Units.inchesToMeters(297.5);
+    public static final float RightLLStartY = (float)Units.inchesToMeters(34.0);
+    public static final float RightLLStartZ = (float)Units.degreesToRadians(180.0);
+    public static final float RightLLIStartZ = (float)Units.degreesToRadians(0.0);
+    public static final float LeftLLStartX = (float)Units.inchesToMeters(297.5);
+    public static final float LeftLLStartY = (float)Units.inchesToMeters(283.0);
+    public static final float LeftLLStartZ = (float)Units.degreesToRadians(180.0);
+    public static final float LeftLLIStartZ = (float)Units.degreesToRadians(0.0);
 
     public static final float SLPositionX = (float)Units.inchesToMeters(67);
     public static final float SLPositionY = (float)Units.inchesToMeters(254);
@@ -329,13 +337,13 @@ public final class Constants
     public static final float SRPositionY = (float)Units.inchesToMeters(63);
     public static final float SRPositionZ = (float)Units.degreesToRadians(54);
 
-    public static final float PLPositionX = (float)Units.inchesToMeters(67);
-    public static final float PLPositionY = (float)Units.inchesToMeters(254);
+    public static final float PLPositionX = (float)Units.inchesToMeters(120);
+    public static final float PLPositionY = (float)Units.inchesToMeters(244);
     public static final float PLPositionZ0 = (float)Units.degreesToRadians(0);
     public static final float PLPositionZ1 = (float)Units.degreesToRadians(180);
 
-    public static final float PRPositionX = (float)Units.inchesToMeters(67);
-    public static final float PRPositionY = (float)Units.inchesToMeters(63);
+    public static final float PRPositionX = (float)Units.inchesToMeters(120);
+    public static final float PRPositionY = (float)Units.inchesToMeters(73);
     public static final float PRPositionZ0 = (float)Units.degreesToRadians(0);
     public static final float PRPositionZ1 = (float)Units.degreesToRadians(180);
 
