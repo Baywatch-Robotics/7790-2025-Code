@@ -243,9 +243,6 @@ public class RobotContainer {
   public Command leftLollipopAuto = CommandFactory.LeftLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command leftIntakeLollipopAuto = CommandFactory.LeftIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
-  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
-  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this);
-
   public Command rightIntakeLollipopAuto = CommandFactory.RightIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command rightLollipopAuto = CommandFactory.RightLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command rightAuto = CommandFactory.RightAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
@@ -876,8 +873,6 @@ public class RobotContainer {
     }));
 
     chooser.addOption("Left", leftAuto);
-    chooser.addOption("Left Center", leftCenterAuto);
-    chooser.addOption("Right Center", rightCenterAuto);
     chooser.setDefaultOption("Right", rightAuto);
     chooser.addOption("Left Lollipop", leftLollipopAuto);
     chooser.addOption("Left Intake Lollipop", leftIntakeLollipopAuto);
@@ -1295,10 +1290,6 @@ public class RobotContainer {
     // Determine which auto is selected
     if (selectedCommand == leftAuto) {
       currentSelection = "Left";
-    } else if (selectedCommand == leftCenterAuto) {
-      currentSelection = "LeftCenter";
-    } else if (selectedCommand == rightCenterAuto) {
-      currentSelection = "RightCenter";
     } else if (selectedCommand == rightAuto) {
       currentSelection = "Right";
     } else if (selectedCommand == rightLollipopAuto) {
@@ -1328,30 +1319,6 @@ public class RobotContainer {
         drivebase.resetOdometry(allianceRelativeLeftPose);
         
         SmartDashboard.putString("Auto Pose Initialized", "Left Start Position");
-      } else if (currentSelection.equals("LeftCenter")) {
-        // Set pose for Left Center autonomous
-        Pose2d leftCenterStartPose = new Pose2d(
-            Constants.TargetClassConstants.CenterStartX,
-            Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
-        
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeLeftCenterPose = TargetClass.toPose2d(leftCenterStartPose);
-        drivebase.resetOdometry(allianceRelativeLeftCenterPose);
-        
-        SmartDashboard.putString("Auto Pose Initialized", "Left Center Start Position");
-      } else if (currentSelection.equals("RightCenter")) {
-        // Set pose for Right Center autonomous
-        Pose2d rightCenterStartPose = new Pose2d(
-            Constants.TargetClassConstants.CenterStartX,
-            Constants.TargetClassConstants.CenterStartY,
-            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
-        
-        // Convert to alliance-relative coordinates
-        Pose2d allianceRelativeRightCenterPose = TargetClass.toPose2d(rightCenterStartPose);
-        drivebase.resetOdometry(allianceRelativeRightCenterPose);
-        
-        SmartDashboard.putString("Auto Pose Initialized", "Right Center Start Position");
       } else if (currentSelection.equals("RightLollipop")) {
         // Set pose for Right Lollipop autonomous
         Pose2d rightLollipopStartPose = new Pose2d(

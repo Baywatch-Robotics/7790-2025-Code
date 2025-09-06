@@ -15,8 +15,6 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Indexer;
 
-import frc.robot.util.DynamicWait;
-
 public class CommandFactory {
 
    
@@ -231,7 +229,7 @@ public static Command sourceDriveAuto(EndEffector endEffector, Arm arm, Elevator
 
   // Use startFastDriveToPoseWithRotationDelay instead of the regular one for faster source driving
   Command command = drivebase.startFastDriveToPoseWithRotationDelay(buttonBox, elevator)
-  .andThen(new WaitCommand(.75))
+  .andThen(new WaitCommand(0.75))
   //.andThen(new WaitUntilCommand(robotContainer.linedUpTrigger()))
   //.andThen(new WaitCommand(1.25));
   .andThen(CommandFactory.setCoralIntakeCommand(endEffector, arm, elevator, robotContainer, led, intake, indexer));
@@ -443,7 +441,7 @@ public static Command RightLollipopAutonCommand(EndEffector endEffector, Arm arm
 
 public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-  Command command = new InstantCommand(() -> buttonBox.addTarget("S530"))
+  Command command = new InstantCommand(() -> buttonBox.addTarget("S5300"))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(arm.ArmScoreLOWCommand())
@@ -453,7 +451,7 @@ public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevato
   .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("C630")))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C6300")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(arm.ArmScoreLOWCommand())
@@ -463,7 +461,7 @@ public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevato
   .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
 
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("C631")))
+  .andThen(new InstantCommand(() -> buttonBox.addTarget("C6310")))
   .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
   .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
   .andThen(arm.ArmScoreLOWCommand())
@@ -479,7 +477,7 @@ public static Command LeftAutonCommand(EndEffector endEffector, Arm arm, Elevato
 
 public static Command RightAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
 
-    Command command = new InstantCommand(() -> buttonBox.addTarget("S331"))
+    Command command = new InstantCommand(() -> buttonBox.addTarget("S3310"))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRST(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(arm.ArmScoreLOWCommand())
@@ -489,7 +487,7 @@ public static Command RightAutonCommand(EndEffector endEffector, Arm arm, Elevat
     .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
-    .andThen(new InstantCommand(() -> buttonBox.addTarget("C230")))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C2300")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(arm.ArmScoreLOWCommand())
@@ -499,7 +497,7 @@ public static Command RightAutonCommand(EndEffector endEffector, Arm arm, Elevat
     .andThen(CommandFactory.sourceDriveAuto(endEffector, arm, elevator, buttonBox, robotContainer, drivebase, led, intake, indexer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     
-    .andThen(new InstantCommand(() -> buttonBox.addTarget("C231")))
+    .andThen(new InstantCommand(() -> buttonBox.addTarget("C2310")))
     .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAuto(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     .andThen(arm.ArmScoreLOWCommand())
@@ -511,67 +509,6 @@ public static Command RightAutonCommand(EndEffector endEffector, Arm arm, Elevat
     
     command.addRequirements(endEffector, arm, elevator);
     return command; 
-}
-
-public static Command LeftCenterAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
-
-  Command command = new InstantCommand(() -> buttonBox.addTarget("S431"))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(arm.ArmScoreLOWCommand())
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> DynamicWait.resetAutoCounter()));
-  
-  command.addRequirements(endEffector, arm, elevator);
-  return command; 
-}
-public static Command RightCenterAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer){
-
-  Command command = new InstantCommand(() -> buttonBox.addTarget("S430"))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(CommandFactory.scoreBasedOnQueueCommandDriveAutoFIRSTBACKAUTO(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(arm.ArmScoreLOWCommand())
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A311")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A310")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A300")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A411")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A410")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A400")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A511")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A510")))
-  .andThen(new InstantCommand(() -> buttonBox.addTarget("A500")))
-  .andThen(DynamicWait.dynamicIncrementWaitCommand())
-  .andThen(algaeRemoveBasedOnQueueCommandDriveAutoCommand(endEffector, arm, elevator, buttonBox, drivebase, robotContainer))
-  .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
-  .andThen(new InstantCommand(() -> DynamicWait.resetAutoCounter()));
-  
-  command.addRequirements(endEffector, arm, elevator);
-  return command; 
 }
 
 public static Command algaeRemoveBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
