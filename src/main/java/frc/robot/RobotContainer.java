@@ -88,13 +88,13 @@ public class RobotContainer {
     return new Trigger(() -> heldOutsideReefZone);
   }
 
-  DoubleSupplier headingXAng = () -> -driverXbox.getRightX() * .8;
+  DoubleSupplier headingXAng = () -> driverXbox.getRightX() * .8;
   DoubleSupplier angSpeed;
 
   DoubleSupplier driveX;
   DoubleSupplier driveY;
-  DoubleSupplier headingX = () -> -driverXbox.getRightX();
-  DoubleSupplier headingY = () -> -driverXbox.getRightY();
+  DoubleSupplier headingX = () -> driverXbox.getRightX();
+  DoubleSupplier headingY = () -> driverXbox.getRightY();
 
   DoubleSupplier elevatorUpDown = () -> opXbox.getRightY();
   // DoubleSupplier algaeArmTriggerUp = () -> opXbox.getLeftTriggerAxis();
@@ -314,14 +314,13 @@ public class RobotContainer {
     
     
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(
-        Commands.runOnce(() -> {
-          if (!algaeModeEnabled) {
-            CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
-          } else {
-            CommandFactory.setLollipopIntakeCommand(endEffector, Arm, elevator, this, led).schedule();
-          }
-        })
+    leftTriggerPressed.whileTrue(
+          intake.intakeCommand()
+          .andThen(intake.deployCommand())
+    );
+    leftTriggerPressed.onFalse(
+          intake.stopCommand()
+          .andThen(intake.stowCommand())
     );
 
     // Right trigger - outtake
@@ -1118,7 +1117,7 @@ public class RobotContainer {
     // Update drive suppliers with new speed
     driveY = () -> -driverXbox.getLeftY() * targetDriveSpeed;
     driveX = () -> -driverXbox.getLeftX() * targetDriveSpeed;
-    angSpeed = () -> -driverXbox.getRightX() * targetDriveSpeed;
+    angSpeed = () -> driverXbox.getRightX() * targetDriveSpeed;
   }
 
   /**
