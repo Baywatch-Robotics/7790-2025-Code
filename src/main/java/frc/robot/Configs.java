@@ -88,10 +88,6 @@ public final class Configs {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .voltageCompensation(12);
-      
-      // Absolute encoder setup (match Arm style; zero offset if needed)
-      pivotConfig.absoluteEncoder
-        .zeroOffset(0.0);
 
       pivotConfig.closedLoop
         .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
