@@ -334,12 +334,14 @@ public class RobotContainer {
     // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-          intake.outtakeCommand()
+          intake.deployCommand()
+          .andThen(intake.outtakeCommand())
           .andThen(indexer.reverseCommand())
     );
     rightTriggerPressed.onFalse(
           intake.stopCommand()  
           .andThen(indexer.stopCommand())
+          .andThen(intake.stowCommand())
     );
     /* rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));

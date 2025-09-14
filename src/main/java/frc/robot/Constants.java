@@ -728,7 +728,7 @@ public final class Constants
 
     // Absolute encoder target angles in motor rotations (1.0 = 360 deg)
     public static final double deployAngleRotations = 0.32;
-    public static final double stowAngleRotations   = 0.23;
+    public static final double stowAngleRotations   = 0.19;
     public static final double startAngleRotations   = 0.13;
 
     public static final float angleOffset = .7f;
@@ -738,16 +738,16 @@ public final class Constants
     public static final double outtakeSpeed = 0.8;
 
     // Pivot PID (SparkMAX internal) - placeholder gains
-    public static final double kP = 2.0;
+    public static final double kP = 2.5;
     public static final double kI = 0.0;
-    public static final double kD = 0.2;
+    public static final double kD = 0.0;
     public static final double kFF = 0.1;
 
     // Feedforward constants (ArmFeedforward) - start conservative and tune on robot
     public static final double kS = 0.0;  // Static friction compensation (volts)
-    public static final double kG = 0.2;  // Gravity compensation (volts) - tune up/down as needed
-    public static final double kV = 0.0;  // Velocity feedforward (V per rad/s)
-    public static final double kA = 0.0;  // Acceleration feedforward (V per rad/s^2)
+    public static final double kG = 0.9;  // Gravity compensation (volts) - tune up/down as needed
+    public static final double kV = 0.5;  // Velocity feedforward (V per rad/s)
+    public static final double kA = 0.5;  // Acceleration feedforward (V per rad/s^2)
     // Offset applied before feedforward conversion (rotations). If 0.25 == 90°, matches Arm template
     public static final double feedforwardOffset = 0.25;
 
