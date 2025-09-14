@@ -1,17 +1,17 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkBase.ControlType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.IntakeConstants;
 
@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
 
     private double targetAngleRotations = IntakeConstants.stowAngleRotations;
     private boolean holdEnabled = false;
+    private boolean isInitialized = false;
 
     public Intake() {
         // Configure via central Configs (avoids mixed old/new API)
@@ -32,23 +33,19 @@ public class Intake extends SubsystemBase {
         rollerMotor.configure(Configs.Intake.rollerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         targetAngleRotations = IntakeConstants.stowAngleRotations;
-        holdEnabled = true; // Start holding initial position
     }
 
     // Pivot control
     private void setDeploy() {
         targetAngleRotations = IntakeConstants.deployAngleRotations;
-        holdEnabled = true;
     }
 
     private void setStow() {
         targetAngleRotations = IntakeConstants.stowAngleRotations;
-        holdEnabled = true;
     }
 
     private void setStart() {
         targetAngleRotations = IntakeConstants.startAngleRotations;
-        holdEnabled = true;
     }
 
     // Roller control
@@ -78,6 +75,14 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+            if (!isInitialized) {
+            targetAngleRotations = (float)(absEncoder.getPosition());
+            
+            isInitialized = true;
+            holdEnabled = true;
+        }
+
         if (holdEnabled) {
             pivotPID.setReference(targetAngleRotations, ControlType.kPosition);
         }
