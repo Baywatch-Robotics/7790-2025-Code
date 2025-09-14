@@ -748,8 +748,8 @@ public final class Constants
     public static final double kG = 0.9;  // Gravity compensation (volts) - tune up/down as needed
     public static final double kV = 0.5;  // Velocity feedforward (V per rad/s)
     public static final double kA = 0.5;  // Acceleration feedforward (V per rad/s^2)
-    // Offset applied before feedforward conversion (rotations). If 0.25 == 90°, matches Arm template
-    public static final double feedforwardOffset = 0.25;
+    // Offset applied before feedforward conversion (rotations)
+    public static final double feedforwardOffset = 0.23;
 
     // Allowable error (rotations) before considering at setpoint
     public static final double angleTolerance = 0.01;
