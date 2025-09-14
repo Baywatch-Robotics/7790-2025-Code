@@ -103,6 +103,9 @@ public class RobotContainer {
   DoubleSupplier endEffectorPivotUpDown = () -> opXbox.getLeftX(); // Questionable Name Practices... Shooter Pivot UP DOWN
                                                                // not Left Right??
 
+  // Manual intake pivot control (op Xbox Right X)
+  DoubleSupplier intakeUpDown = () -> opXbox.getRightX();
+
   //DoubleSupplier climberUpDown = () -> opXbox.getRightX();
 
   // Add supplier for climber control
@@ -294,6 +297,9 @@ public class RobotContainer {
 
     opXbox.axisMagnitudeGreaterThan(1, 0.2).whileTrue(new RunCommand(() -> Arm.moveAmount(ArmUpDown.getAsDouble()), Arm));
 
+    // Allow manual intake pivot control anywhere: hold Right X to jog
+    // Axis 4 = Right X on Xbox
+    
     drivebase.setDefaultCommand(driveFieldOrientedAnglularVelocity);
     
     //Bumpers drive to pose
@@ -314,18 +320,28 @@ public class RobotContainer {
     
     
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.whileTrue(
+    leftTriggerPressed.onTrue(
           intake.intakeCommand()
+          .andThen(indexer.indexCommand())
           .andThen(intake.deployCommand())
     );
     leftTriggerPressed.onFalse(
           intake.stopCommand()
+          .andThen(indexer.stopCommand())
           .andThen(intake.stowCommand())
     );
 
     // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
-    rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
+    rightTriggerPressed.onTrue(
+          intake.outtakeCommand()
+          .andThen(indexer.reverseCommand())
+    );
+    rightTriggerPressed.onFalse(
+          intake.stopCommand()  
+          .andThen(indexer.stopCommand())
+    );
+    /* rightTriggerPressed.onTrue(endEffector.endEffectorOuttakeCommand()
         .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()));
     rightTriggerPressed.onTrue(
         Commands.runOnce(() -> {
@@ -335,7 +351,7 @@ public class RobotContainer {
     );
     rightTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand()
         .alongWith(led.setAlliancePattern())
-        .alongWith(new InstantCommand(() -> buttonBox.clearTargets())));
+        .alongWith(new InstantCommand(() -> buttonBox.clearTargets()))); */
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));

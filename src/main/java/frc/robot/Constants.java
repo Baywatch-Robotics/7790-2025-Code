@@ -727,19 +727,21 @@ public final class Constants
     public static final int rollerMotorID = 14;          // Roller NEO
 
     // Absolute encoder target angles in motor rotations (1.0 = 360 deg)
-    public static final double deployAngleRotations = 0.19;
-    public static final double stowAngleRotations   = 0.10;
-    public static final double startAngleRotations   = 0.0;
+    public static final double deployAngleRotations = 0.32;
+    public static final double stowAngleRotations   = 0.23;
+    public static final double startAngleRotations   = 0.13;
+
+    public static final float angleOffset = .7f;
 
     // Roller speeds
     public static final double intakeSpeed  = -0.8;
     public static final double outtakeSpeed = 0.8;
 
     // Pivot PID (SparkMAX internal) - placeholder gains
-    public static final double kP = 3.0;
+    public static final double kP = 2.0;
     public static final double kI = 0.0;
-    public static final double kD = 0.0;
-    public static final double kFF = 0.0;
+    public static final double kD = 0.2;
+    public static final double kFF = 0.1;
 
     // Allowable error (rotations) before considering at setpoint
     public static final double angleTolerance = 0.01;

@@ -84,6 +84,9 @@ public final class Configs {
     public static final SparkMaxConfig rollerConfig = new SparkMaxConfig();
 
     static {
+
+      pivotConfig.absoluteEncoder.zeroOffset(IntakeConstants.angleOffset);
+
       pivotConfig
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
