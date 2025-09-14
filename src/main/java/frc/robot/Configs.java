@@ -88,6 +88,7 @@ public final class Configs {
       pivotConfig.absoluteEncoder.zeroOffset(IntakeConstants.angleOffset);
 
       pivotConfig
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(30)
         .voltageCompensation(12);
