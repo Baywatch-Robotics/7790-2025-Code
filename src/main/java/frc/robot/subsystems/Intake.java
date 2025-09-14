@@ -10,7 +10,10 @@ import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,8 +30,9 @@ public class Intake extends SubsystemBase {
     private final AbsoluteEncoder absEncoder = pivotMotor.getAbsoluteEncoder(); // Match Arm usage
 
     private double targetAngleRotations = IntakeConstants.stowAngleRotations;
-    private boolean holdEnabled = false;
     private boolean isInitialized = false;
+
+    private double kDt = 0.02; // 20ms periodic loop time
 
     // Feedforward like Arm
     private final ArmFeedforward intakeFeedforward = new ArmFeedforward(
@@ -37,6 +41,16 @@ public class Intake extends SubsystemBase {
         IntakeConstants.kV,
         IntakeConstants.kA
     );
+        // Update trapezoidal profile to use constants from ArmConstants
+        private final TrapezoidProfile m_profile = new TrapezoidProfile(
+            new TrapezoidProfile.Constraints(
+                IntakeConstants.maxVelocity,
+                IntakeConstants.maxAcceleration
+            )
+        );
+        private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
+        private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
 
     // Conversion helpers (rotations <-> radians). 1 rotation = 2π rad
     private static final double kEncoderToRadians = 2.0 * Math.PI;
@@ -102,8 +116,26 @@ public class Intake extends SubsystemBase {
 
         if (!isInitialized) {
             targetAngleRotations = (float)(absEncoder.getPosition());
+            // Restore setpoint initialization
+            m_setpoint = new TrapezoidProfile.State(absEncoder.getPosition(), 0);
+            
             isInitialized = true;
-            holdEnabled = true;
+        }
+        
+        // Apply general constraints
+        targetAngleRotations = (float)MathUtil.clamp(targetAngleRotations, IntakeConstants.min, IntakeConstants.max);
+        
+        // Restore trapezoidal profile calculation
+        // Set goal for motion profile
+        m_goal = new TrapezoidProfile.State(targetAngleRotations, 0);
+        
+        // Calculate next setpoint
+        m_setpoint = m_profile.calculate(kDt, m_setpoint, m_goal);
+
+        if (DriverStation.isDisabled()) {
+            targetAngleRotations = (float)absEncoder.getPosition();
+            // Restore setpoint reset
+            m_setpoint = new TrapezoidProfile.State(absEncoder.getPosition(), 0);
         }
 
         // Compute feedforward like Arm
@@ -112,7 +144,6 @@ public class Intake extends SubsystemBase {
         // Use non-deprecated overload (position, velocity)
         double ffVolts = intakeFeedforward.calculate(currentPositionRad, currentVelocityRad);
 
-        if (holdEnabled) {
             pivotPID.setReference(
                 targetAngleRotations,
                 ControlType.kPosition,
@@ -120,7 +151,6 @@ public class Intake extends SubsystemBase {
                 ffVolts,
                 ArbFFUnits.kVoltage
             );
-        }
 
         SmartDashboard.putNumber("Intake FF Volts", ffVolts);
         SmartDashboard.putNumber("Intake Position (rad)", currentPositionRad);
@@ -128,6 +158,5 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putNumber("Intake Pivot Angle", absEncoder.getPosition());
         SmartDashboard.putNumber("Intake Pivot Target", targetAngleRotations);
         SmartDashboard.putBoolean("Intake Pivot At Target", isAtTarget());
-        SmartDashboard.putBoolean("Intake Holding", holdEnabled);
     }
 }
