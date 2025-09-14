@@ -743,6 +743,14 @@ public final class Constants
     public static final double kD = 0.2;
     public static final double kFF = 0.1;
 
+    // Feedforward constants (ArmFeedforward) - start conservative and tune on robot
+    public static final double kS = 0.0;  // Static friction compensation (volts)
+    public static final double kG = 0.2;  // Gravity compensation (volts) - tune up/down as needed
+    public static final double kV = 0.0;  // Velocity feedforward (V per rad/s)
+    public static final double kA = 0.0;  // Acceleration feedforward (V per rad/s^2)
+    // Offset applied before feedforward conversion (rotations). If 0.25 == 90°, matches Arm template
+    public static final double feedforwardOffset = 0.25;
+
     // Allowable error (rotations) before considering at setpoint
     public static final double angleTolerance = 0.01;
   }
