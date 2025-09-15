@@ -321,9 +321,7 @@ public class RobotContainer {
     
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
     leftTriggerPressed.onTrue(
-          intake.intakeCommand()
-          .andThen(indexer.indexCommand())
-          .andThen(intake.deployCommand())
+          CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer)
     );
     leftTriggerPressed.onFalse(
           intake.stopCommand()

@@ -120,50 +120,48 @@ public final class Constants
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -28.87722f;
+    public static final float min = -17.32632f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -28.87722f;
-    public static final float L3LPose = -15.066f;
-    public static final float L3RPose = -15.066f;
+    public static final float L4Pose = -17.32632f;
+    public static final float L3LPose = -9.0396f;
+    public static final float L3RPose = -9.0396f;
 
-    public static final float L2RPose = -6.552f;
-    public static final float L2LPose = -6.552f;
-    public static final float pickupPose = -15.373566627502441f;
-    public static final float lollipopPose = -4.2f;
-    public static final float hoverPose = -20.373566627502441f
-    ;
+    public static final float L2RPose = -3.9312f;
+    public static final float L2LPose = -3.9312f;
+    public static final float pickupPose = -9.2241f;
+    public static final float lollipopPose = -2.52f;
+    public static final float hoverPose = -12.4425f;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
-    public static final float downPosition = -4.2f;
+    public static final float downPosition = -2.52f;
     
     // Ball pickup positions
-     public static final float highBallPose = -16.913700103759766f;
-     public static final float highBallBelowPose = -16.913700103759766f;
-     public static final float lowBallPose = -7.9168572425842285f;
+     public static final float highBallPose = -9.6f;
+     public static final float lowBallPose = -4.75014f;
     
     // Algae positions
-    public static final float algaeLevel1Pose = -10f;
-    public static final float algaeLevel2Pose = -20f;
+    public static final float algaeLevel1Pose = -6f;
+    public static final float algaeLevel2Pose = -12f;
 
     // New elevator height thresholds for speed control
-    public static final float SLIGHTLY_RAISED_THRESHOLD = -6f;
-    public static final float PARTIALLY_RAISED_THRESHOLD = -12f;
-    public static final float MID_RAISED_THRESHOLD = -18f;
-    public static final float FULLY_RAISED_THRESHOLD = -24f;
+    public static final float SLIGHTLY_RAISED_THRESHOLD = -3.6f;
+    public static final float PARTIALLY_RAISED_THRESHOLD = -7.2f;
+    public static final float MID_RAISED_THRESHOLD = -10.8f;
+    public static final float FULLY_RAISED_THRESHOLD = -14.4f;
     
     // Elevator setpoint tolerance constants
-    public static final float STANDARD_SETPOINT_TOLERANCE = 1.2f;
-    public static final float NEAR_SETPOINT_TOLERANCE = 3.0f;
-    public static final float APPROACHING_SETPOINT_TOLERANCE = 4.8f;
+    public static final float STANDARD_SETPOINT_TOLERANCE = 0.72f;
+    public static final float NEAR_SETPOINT_TOLERANCE = 1.8f;
+    public static final float APPROACHING_SETPOINT_TOLERANCE = 2.88f;
     
     // Home position threshold
-    public static final float HOME_POSITION_THRESHOLD = 3.0f;
+    public static final float HOME_POSITION_THRESHOLD = 1.8f;
     
     // Intake clearance thresholds
-    public static final float INTAKE_CLEARANCE_MARGIN = 3.0f;
+    public static final float INTAKE_CLEARANCE_MARGIN = 1.8f;
     
     public static final float P = 1.5f;
     public static final float I = 0.0f;
@@ -172,7 +170,7 @@ public final class Constants
     public static final float maxVelocity = 500;
     public static final float maxAcceleration = 70;
 
-    public static final float L1ScoreHeight = -18.782352447509766f;
+    public static final float L1ScoreHeight = -11.2693f;
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
@@ -743,13 +741,19 @@ public final class Constants
     public static final double kD = 0.0;
     public static final double kFF = 0.1;
 
+    // Trapezoidal Motion Profile
+    public static final double maxVelocity = 1.0;
+    public static final double maxAcceleration = 1.0;
+    public static final double min = 0.13;
+    public static final double max = 0.32;
+
     // Feedforward constants (ArmFeedforward) - start conservative and tune on robot
     public static final double kS = 0.0;  // Static friction compensation (volts)
     public static final double kG = 0.9;  // Gravity compensation (volts) - tune up/down as needed
     public static final double kV = 0.5;  // Velocity feedforward (V per rad/s)
     public static final double kA = 0.5;  // Acceleration feedforward (V per rad/s^2)
     // Offset applied before feedforward conversion (rotations)
-    public static final double feedforwardOffset = 0.23;
+    public static final double feedforwardOffset = 0.19;
 
     // Allowable error (rotations) before considering at setpoint
     public static final double angleTolerance = 0.01;
