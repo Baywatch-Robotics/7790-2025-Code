@@ -141,6 +141,7 @@ public final class Constants
     // Ball pickup positions
      public static final float highBallPose = -9.6f;
      public static final float lowBallPose = -4.75014f;
+     public static final float highBallBelowPose = -4.75014f;
     
     // Algae positions
     public static final float algaeLevel1Pose = -6f;
