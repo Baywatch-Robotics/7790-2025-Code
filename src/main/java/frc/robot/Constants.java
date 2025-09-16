@@ -50,41 +50,39 @@ public final class Constants
   public static final class ArmConstants{
     public static final int ID = 19;
 
-    public static final float angleOffset = .83f;
+    public static final float angleOffset = .35f;
 
     public static final float manualMultiplier = -0.005f;
 
-    public static final float min = 0.252f;
-    //public static final float max = .9f;
-    public static final float max = 0.698f;
+    public static final float min = 0.05f;
+    public static final float max = .9f;
 
     
 
-    public static final float maxManual = 0.698f;
-    //public static final float maxManual = .9f;
+    public static final float maxManual = .9f;
     
     
-    public static final float scoreAngleLOW = 0.35f;
-    public static final float scoreAngleHIGH = 0.3f;
-    public static final float scoreAngleLOWBackwards = (0.5f - scoreAngleLOW) + 0.5f;
-    public static final float scoreAngleHIGHBackwards = (0.5f - scoreAngleHIGH) + 0.5f;
-    public static final float placeAngleHIGH = 0.05f;
-    public static final float placeAngleLOW = 0.05f;
-    public static final float netPlaceAngle = 0.05f;
+    public static final float scoreAngleLOW = 0.55f;
+    public static final float scoreAngleHIGH = 0.6f;
+    public static final float scoreAngleLOWBackwards = (0.4f - scoreAngleLOW) + 0.4f;
+    public static final float scoreAngleHIGHBackwards = (0.4f - scoreAngleHIGH) + 0.4f;
+    public static final float placeAngleHIGH = 0.7f;
+    public static final float placeAngleLOW = 0.65f;
+    public static final float netPlaceAngle = 0.45f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.0f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float pickUpAngle = 0.016666667f;
-    public static final float lollipopAngle = 0.25f;
-    public static final float outLoadAngle = 0.3f;
-    public static final float algaeAngle = 0.25f;
-    public static final float netAngle = 0.475f;
-    public static final float netAngleBackwards = (0.5f - netAngle) + 0.5f;
-    public static final float L1Angle = 0.2f;
+    public static final float pickUpAngle = 0.883333333f;
+    public static final float lollipopAngle = 0.65f;
+    public static final float outLoadAngle = 0.6f;
+    public static final float algaeAngle = 0.65f;
+    public static final float netAngle = 0.425f;
+    public static final float netAngleBackwards = (0.4f - netAngle) + 0.4f;
+    public static final float L1Angle = 0.7f;
 
-    public static final float realL1Angle = 0.252f;
+    public static final float realL1Angle = 0.7f;
 
     public static final float P = 2.5f;
     public static final float I = 0.0f;
@@ -140,8 +138,8 @@ public final class Constants
     
     // Ball pickup positions
      public static final float highBallPose = -9.6f;
+     public static final float highBallBelowPose = -9.6f;
      public static final float lowBallPose = -4.75014f;
-     public static final float highBallBelowPose = -4.75014f;
     
     // Algae positions
     public static final float algaeLevel1Pose = -6f;

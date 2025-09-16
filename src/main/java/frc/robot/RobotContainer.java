@@ -321,10 +321,13 @@ public class RobotContainer {
     
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
     leftTriggerPressed.onTrue(
-      intake.intakeCommand()
-      .andThen(indexer.indexCommand())
-      .andThen(intake.deployCommand())
-          //CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer)
+      Commands.runOnce(() -> {
+        if (!algaeModeEnabled) {
+          CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
+        } else {
+          CommandFactory.setLollipopIntakeCommand(endEffector, Arm, elevator, this, led).schedule();
+        }
+      })
     );
     leftTriggerPressed.onFalse(
           intake.stopCommand()
@@ -335,29 +338,24 @@ public class RobotContainer {
     // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-          Commands.either(
-              intake.deployCommand(),
-              Commands.none(),
-              endEffector.coralLoadedTrigger().negate()
-          )
-          .alongWith(endEffector.endEffectorOuttakeCommand()
-          .alongWith(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
-          .alongWith(Commands.runOnce(() -> {
-            endEffector.endEffectorOuttakeCommand();
-            Arm.ArmScoreCommand(buttonBox);
-          }))
-          .andThen(intake.outtakeCommand())
-          .andThen(indexer.reverseCommand())
+      Commands.runOnce(() -> {
+        endEffector.endEffectorOuttakeCommand();
+        Arm.ArmScoreCommand(buttonBox);
+        intake.deployCommand();
+        intake.outtakeCommand();
+        indexer.reverseCommand();
+      })
     );
     rightTriggerPressed.onFalse(
-          intake.stopCommand()  
-          .alongWith(indexer.stopCommand())
-          .alongWith(intake.stowCommand())
-          .alongWith(endEffector.endEffectorZeroSpeedCommand()
-          .alongWith(led.setAlliancePattern())
-          .alongWith(new InstantCommand(() -> buttonBox.clearTargets())))
+      Commands.runOnce(() -> {
+          intake.stopCommand();
+          indexer.stopCommand();
+          intake.stowCommand();
+          endEffector.endEffectorZeroSpeedCommand();
+          led.setAlliancePattern();
+          new InstantCommand(() -> buttonBox.clearTargets());
+        })
     );
-
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
     buttonBox1.button(2).onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
