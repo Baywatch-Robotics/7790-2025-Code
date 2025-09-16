@@ -118,7 +118,7 @@ public final class Constants
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -17.32632f;
+    public static final float min = -60f;
     public static final float max = 0.0f;
 
     // elevator set positions
@@ -162,9 +162,12 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 1.8f;
     
-    public static final float P = 1.5f;
+    /* public static final float P = 1.5f;
     public static final float I = 0.0f;
-    public static final float D = 0.1f;
+    public static final float D = 0.1f; */
+    public static final float P = 0.0f;
+    public static final float I = 0.0f;
+    public static final float D = 0.0f;
     
     public static final float maxVelocity = 500;
     public static final float maxAcceleration = 70;
@@ -174,7 +177,7 @@ public final class Constants
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
     //public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
-    public static final float kG = 0;   // Gravity compensation (voltage)
+    public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
     public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
     public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }
