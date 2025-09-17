@@ -100,7 +100,7 @@ public final class Constants
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
-    public static final float feedforwardOffset = 0.25f;
+    public static final float feedforwardOffset = 0.9f;
 
     // PID position tolerance
     public static final float positionTolerance = 0.01f;
