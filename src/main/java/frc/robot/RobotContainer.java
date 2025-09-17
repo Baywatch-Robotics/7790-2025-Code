@@ -333,28 +333,28 @@ public class RobotContainer {
           intake.stopCommand()
           .andThen(indexer.stopCommand())
           .andThen(intake.stowCommand())
+          .andThen(endEffector.endEffectorZeroSpeedCommand())
     );
 
     // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-      Commands.runOnce(() -> {
-        endEffector.endEffectorOuttakeCommand();
-        Arm.ArmScoreCommand(buttonBox);
-        intake.deployCommand();
-        intake.outtakeCommand();
-        indexer.reverseCommand();
-      })
+      Commands.either(
+          intake.deployCommand()
+          .andThen(intake.outtakeCommand())
+          .andThen(indexer.reverseCommand()),
+          Arm.ArmScoreCommand(buttonBox),
+          endEffector.coralLoadedTrigger().negate()
+      )
+      .andThen(endEffector.endEffectorOuttakeCommand()
+      .andThen(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
     );
     rightTriggerPressed.onFalse(
-      Commands.runOnce(() -> {
-          intake.stopCommand();
-          indexer.stopCommand();
-          intake.stowCommand();
-          endEffector.endEffectorZeroSpeedCommand();
-          led.setAlliancePattern();
-          new InstantCommand(() -> buttonBox.clearTargets());
-        })
+      endEffector.endEffectorZeroSpeedCommand()
+      .andThen(intake.stopCommand())
+      .andThen(indexer.stopCommand())
+      .andThen(intake.stowCommand())
+      .andThen(led.runPattern("RED_BLUE_GRADIENT").repeatedly())
     );
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));

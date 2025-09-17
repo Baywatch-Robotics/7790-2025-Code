@@ -47,7 +47,7 @@ public final class Configs {
     public static final SparkMaxConfig endEffectorConfig = new SparkMaxConfig();
     
     static {
-      endEffectorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      endEffectorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
 
       endEffectorConfig
       .inverted(true);
