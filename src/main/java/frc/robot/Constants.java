@@ -84,7 +84,7 @@ public final class Constants
 
     public static final float realL1Angle = 0.7f;
 
-    public static final float P = 0.0f;
+    public static final float P = 4.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
@@ -96,7 +96,7 @@ public final class Constants
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = .5f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kG = 1.5f;  // Gravity compensation (tune this based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
