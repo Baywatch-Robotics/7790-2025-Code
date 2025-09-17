@@ -57,7 +57,7 @@ public final class Configs {
     public static final SparkMaxConfig ArmConfig = new SparkMaxConfig();
 
     static {
-      ArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      ArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
