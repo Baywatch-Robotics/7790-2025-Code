@@ -96,7 +96,7 @@ public final class Constants
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 1.0f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kG = .5f;  // Gravity compensation (tune this based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
