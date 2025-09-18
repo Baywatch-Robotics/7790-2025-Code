@@ -338,8 +338,8 @@ public class RobotContainer {
 
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-      CommandFactory.placeBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox
-      .andThen(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
+      CommandFactory.placeBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox)
+      .andThen(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly())
     );
     rightTriggerPressed.onFalse(
       endEffector.endEffectorZeroSpeedCommand()
