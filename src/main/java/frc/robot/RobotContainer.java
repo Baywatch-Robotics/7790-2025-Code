@@ -245,6 +245,9 @@ public class RobotContainer {
   public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command leftLollipopAuto = CommandFactory.LeftLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command leftIntakeLollipopAuto = CommandFactory.LeftIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  
+  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   public Command rightIntakeLollipopAuto = CommandFactory.RightIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command rightLollipopAuto = CommandFactory.RightLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
@@ -888,8 +891,10 @@ public class RobotContainer {
       }
     }));
 
-    chooser.addOption("Left", leftAuto);
     chooser.setDefaultOption("Right", rightAuto);
+    chooser.setDefaultOption("Right Center", rightCenterAuto);
+    chooser.setDefaultOption("Left Center", leftCenterAuto);
+    chooser.addOption("Left", leftAuto);
     chooser.addOption("Left Lollipop", leftLollipopAuto);
     chooser.addOption("Left Intake Lollipop", leftIntakeLollipopAuto);
     chooser.addOption("Right Lollipop", rightLollipopAuto);
@@ -899,7 +904,6 @@ public class RobotContainer {
     SmartDashboard.putData(chooser);
   }
 
-  // Removed: toggleClimbModeCommand() – no longer needed
 
   /**
    * Command to toggle full speed mode on/off
