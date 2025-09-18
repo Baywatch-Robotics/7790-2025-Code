@@ -62,12 +62,12 @@ public final class Constants
     public static final float maxManual = .9f;
     
     
-    public static final float scoreAngleLOW = 0.55f;
-    public static final float scoreAngleHIGH = 0.6f;
+    public static final float scoreAngleLOW = 0.75f;
+    public static final float scoreAngleHIGH = 0.8f;
     public static final float scoreAngleLOWBackwards = (0.4f - scoreAngleLOW) + 0.4f;
     public static final float scoreAngleHIGHBackwards = (0.4f - scoreAngleHIGH) + 0.4f;
-    public static final float placeAngleHIGH = 0.6f;
-    public static final float placeAngleLOW = 0.55f;
+    public static final float placeAngleHIGH = 0.7f;
+    public static final float placeAngleLOW = 0.675f;
     public static final float placeAngleLOWBackwards = (0.4f - placeAngleLOW) + 0.4f;
     public static final float placeAngleHIGHBackwards = (0.4f - placeAngleHIGH) + 0.4f;
     public static final float processorAngle = 0.7f;

@@ -103,7 +103,7 @@ public class CommandFactory {
 
   public static Command intakeHighBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = arm.ArmScoreLOWCommand()
+    Command command  = arm.ArmReefAlgaeCommand()
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorHighBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))
@@ -116,7 +116,7 @@ public class CommandFactory {
 
   public static Command intakeLowBall(EndEffector endEffector, Arm arm, Elevator elevator) {
       
-    Command command  = arm.ArmScoreLOWCommand()
+    Command command  = arm.ArmReefAlgaeCommand()
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
     .andThen(elevator.setElevatorLowBallCommand())
     .andThen(new WaitUntilCommand(elevator.isAtSetpoint()))

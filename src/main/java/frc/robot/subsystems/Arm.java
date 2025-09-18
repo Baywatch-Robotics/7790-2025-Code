@@ -147,6 +147,11 @@ public class Arm extends SubsystemBase {
         ArmDesiredAngle = ArmConstants.processorAngle;
     }
 
+    public Command ArmReefAlgaeCommand()
+    {
+        Command command = new InstantCommand(() -> setAlgaeAngle());
+        return command;
+    }
     public Command ArmProcessorCommand()
     {
         Command command = new InstantCommand(() -> setProcessorAngle());
