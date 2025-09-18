@@ -863,6 +863,11 @@ public class RobotContainer {
     driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
     driverXbox.pov(90).onTrue(CommandFactory.setCoralFinishIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer));
     driverXbox.pov(270).onTrue(CommandFactory.setCoralOuttakeCommand(intake, indexer, null, led));
+    driverXbox.pov(270).onFalse(
+          intake.stopCommand()
+          .andThen(indexer.stopCommand())
+          .andThen(intake.stowCommand())
+    );
 
     //opXbox.start().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(true)));
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));
