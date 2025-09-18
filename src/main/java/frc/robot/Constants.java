@@ -24,7 +24,7 @@ public final class Constants
 
   public static final float ROBOT_MASS = (float) Units.lbsToKilograms(115); 
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
-  public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms sprk max velocity lag
+  public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms spark max velocity lag
   public static final float MAX_SPEED  = (float) Units.feetToMeters(17.6);
   public static final float WHEEL_LOCK_TIME = 10;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
@@ -70,8 +70,6 @@ public final class Constants
     public static final float placeAngleLOW = 0.55f;
     public static final float placeAngleLOWBackwards = (0.4f - placeAngleLOW) + 0.4f;
     public static final float placeAngleHIGHBackwards = (0.4f - placeAngleHIGH) + 0.4f;
-    public static final float netPlaceAngle = 0.45f;
-    public static final float netPlaceAngleBackwards = (0.4f - netPlaceAngle) + 0.4f;
     public static final float processorAngle = 0.7f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.0f; // This should be between ballAngle and scoreAngleHIGH
@@ -84,6 +82,8 @@ public final class Constants
     public static final float algaeAngle = 0.65f;
     public static final float netAngle = 0.425f;
     public static final float netAngleBackwards = (0.4f - netAngle) + 0.4f;
+    public static final float netPlaceAngle = 0.425f;
+    public static final float netPlaceAngleBackwards = (0.4f - netPlaceAngle) + 0.4f;
     public static final float L1Angle = 0.7f;
 
     public static final float realL1Angle = 0.7f;
