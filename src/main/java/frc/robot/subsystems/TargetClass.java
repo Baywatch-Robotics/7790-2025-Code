@@ -123,6 +123,18 @@ public class TargetClass {
                 target.setZ(TargetClassConstants.SRPositionZ);
                 target.setSource(true);
                 break;
+            case "PSL":
+                target.setX(TargetClassConstants.PSLPositionX);
+                target.setY(TargetClassConstants.PSLPositionY);
+                target.setZ(TargetClassConstants.PSLPositionZ);
+                target.setSource(true);
+                break;
+            case "PSR":
+                target.setX(TargetClassConstants.PSRPositionX);
+                target.setY(TargetClassConstants.PSRPositionY);
+                target.setZ(TargetClassConstants.PSRPositionZ);
+                target.setSource(true);
+                break;
             case "PL0":
                 target.setX(TargetClassConstants.PLPositionX);
                 target.setY(TargetClassConstants.PLPositionY);

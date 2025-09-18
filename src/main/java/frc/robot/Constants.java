@@ -24,8 +24,8 @@ public final class Constants
 
   public static final float ROBOT_MASS = (float) Units.lbsToKilograms(115); 
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
-  public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms sprk max velocity lag
-  public static final float MAX_SPEED  = (float) Units.feetToMeters(22.1);
+  public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms spark max velocity lag
+  public static final float MAX_SPEED  = (float) Units.feetToMeters(17.6);
   public static final float WHEEL_LOCK_TIME = 10;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
@@ -62,13 +62,15 @@ public final class Constants
     public static final float maxManual = .9f;
     
     
-    public static final float scoreAngleLOW = 0.55f;
-    public static final float scoreAngleHIGH = 0.6f;
+    public static final float scoreAngleLOW = 0.75f;
+    public static final float scoreAngleHIGH = 0.8f;
     public static final float scoreAngleLOWBackwards = (0.4f - scoreAngleLOW) + 0.4f;
     public static final float scoreAngleHIGHBackwards = (0.4f - scoreAngleHIGH) + 0.4f;
     public static final float placeAngleHIGH = 0.7f;
-    public static final float placeAngleLOW = 0.65f;
-    public static final float netPlaceAngle = 0.45f;
+    public static final float placeAngleLOW = 0.675f;
+    public static final float placeAngleLOWBackwards = (0.4f - placeAngleLOW) + 0.4f;
+    public static final float placeAngleHIGHBackwards = (0.4f - placeAngleHIGH) + 0.4f;
+    public static final float processorAngle = 0.7f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.0f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
@@ -80,6 +82,8 @@ public final class Constants
     public static final float algaeAngle = 0.65f;
     public static final float netAngle = 0.425f;
     public static final float netAngleBackwards = (0.4f - netAngle) + 0.4f;
+    public static final float netPlaceAngle = 0.425f;
+    public static final float netPlaceAngleBackwards = (0.4f - netPlaceAngle) + 0.4f;
     public static final float L1Angle = 0.7f;
 
     public static final float realL1Angle = 0.7f;
@@ -89,8 +93,8 @@ public final class Constants
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 0.5f;
-    public static final float maxAcceleration = 0.5f;
+    public static final float maxVelocity = 2.5f;
+    public static final float maxAcceleration = 2.5f;
 
     public static final float allowedClosedLoopError = 0.005f;
     
@@ -123,14 +127,17 @@ public final class Constants
 
     // elevator set positions
     public static final float L4Pose = -48f;
-    public static final float L3LPose = -20f;
-    public static final float L3RPose = -20f;
+    public static final float L3Pose = -25f;
+    public static final float L2Pose = -15f;
+    public static final float L1Pose = -15f;
 
-    public static final float L2RPose = -10f;
-    public static final float L2LPose = -10f;
     public static final float pickupPose = -29.0f;
     public static final float lollipopPose = -2.52f;
     public static final float hoverPose = -32.5f;
+    
+    public static final float L4PlacePose = -35f;
+    public static final float L3PlacePose = -25f;
+    public static final float L2PlacePose = -10f;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
@@ -169,7 +176,6 @@ public final class Constants
     public static final float maxVelocity = 500;
     public static final float maxAcceleration = 70;
 
-    public static final float L1ScoreHeight = -11.2693f;
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
@@ -326,13 +332,21 @@ public final class Constants
     public static final float LeftLLStartZ = (float)Units.degreesToRadians(180.0);
     public static final float LeftLLIStartZ = (float)Units.degreesToRadians(0.0);
 
+    public static final float PSLPositionX = (float)Units.inchesToMeters(77);
+    public static final float PSLPositionY = (float)Units.inchesToMeters(254);
+    public static final float PSLPositionZ = (float)Units.degreesToRadians(0);
+
+    public static final float PSRPositionX = (float)Units.inchesToMeters(77);
+    public static final float PSRPositionY = (float)Units.inchesToMeters(63);
+    public static final float PSRPositionZ = (float)Units.degreesToRadians(0);
+
     public static final float SLPositionX = (float)Units.inchesToMeters(67);
     public static final float SLPositionY = (float)Units.inchesToMeters(254);
-    public static final float SLPositionZ = (float)Units.degreesToRadians(306);
+    public static final float SLPositionZ = (float)Units.degreesToRadians(0);
 
     public static final float SRPositionX = (float)Units.inchesToMeters(67);
     public static final float SRPositionY = (float)Units.inchesToMeters(63);
-    public static final float SRPositionZ = (float)Units.degreesToRadians(54);
+    public static final float SRPositionZ = (float)Units.degreesToRadians(0);
 
     public static final float PLPositionX = (float)Units.inchesToMeters(-120);
     public static final float PLPositionY = (float)Units.inchesToMeters(200);
@@ -445,23 +459,23 @@ public final class Constants
     public static final float zValueC3XX = (float)Units.degreesToRadians(120);
     public static final float zValueC30X = (float)Units.degreesToRadians(300);
     
-    public static final float xValueC3X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueC3X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueC3X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueC3X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
 
-    public static final float xValueC3X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueC3X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueC3X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueC3X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
     
-    public static final float xValueC330 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueC330 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueC331 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueC331 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
 
-    public static final float xValueC331 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueC331 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueC330 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueC330 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
     
-    public static final float xValueS330 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueS330 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueS331 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC3XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueS331 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC3XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC3XX + Math.PI);
 
-    public static final float xValueS331 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
-    public static final float yValueS331 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
+    public static final float xValueS330 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC3XX + Math.PI) - RightOffset * (float)Math.sin(zValueC3XX + Math.PI);
+    public static final float yValueS330 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC3XX + Math.PI) + RightOffset * (float)Math.cos(zValueC3XX + Math.PI);
 
     public static final float xValueA3X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC3XX + Math.PI);
     public static final float yValueA3X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC3XX + Math.PI);
@@ -475,23 +489,23 @@ public final class Constants
     public static final float zValueC4XX = (float)Units.degreesToRadians(180);
     public static final float zValueC40X = (float)Units.degreesToRadians(0);
     
-    public static final float xValueC4X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueC4X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueC4X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueC4X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
 
-    public static final float xValueC4X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueC4X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueC4X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueC4X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
     
-    public static final float xValueC430 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueC430 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueC431 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueC431 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
 
-    public static final float xValueC431 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueC431 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueC430 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueC430 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
     
-    public static final float xValueS430 = hexagonCenterX + (hexagonRadius - BackOffsetAutoBack) * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueS430 = hexagonCenterY + (hexagonRadius - BackOffsetAutoBack) * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueS431 = hexagonCenterX + (hexagonRadius - BackOffsetAutoBack) * (float)Math.cos(zValueC4XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueS431 = hexagonCenterY + (hexagonRadius - BackOffsetAutoBack) * (float)Math.sin(zValueC4XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC4XX + Math.PI);
 
-    public static final float xValueS431 = hexagonCenterX + (hexagonRadius - BackOffsetAutoBack) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
-    public static final float yValueS431 = hexagonCenterY + (hexagonRadius - BackOffsetAutoBack) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
+    public static final float xValueS430 = hexagonCenterX + (hexagonRadius - BackOffsetAutoBack) * (float)Math.cos(zValueC4XX + Math.PI) - RightOffset * (float)Math.sin(zValueC4XX + Math.PI);
+    public static final float yValueS430 = hexagonCenterY + (hexagonRadius - BackOffsetAutoBack) * (float)Math.sin(zValueC4XX + Math.PI) + RightOffset * (float)Math.cos(zValueC4XX + Math.PI);
 
     public static final float xValueA4X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC4XX + Math.PI);
     public static final float yValueA4X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC4XX + Math.PI);
@@ -505,23 +519,23 @@ public final class Constants
     public static final float zValueC5XX = (float)Units.degreesToRadians(240);
     public static final float zValueC50X = (float)Units.degreesToRadians(60);
     
-    public static final float xValueC5X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueC5X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueC5X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueC5X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
 
-    public static final float xValueC5X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueC5X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueC5X0 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueC5X0 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
     
-    public static final float xValueC530 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueC530 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueC531 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueC531 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
 
-    public static final float xValueC531 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueC531 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueC530 = hexagonCenterX + (hexagonRadius - BackOffset) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueC530 = hexagonCenterY + (hexagonRadius - BackOffset) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
     
-    public static final float xValueS530 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueS530 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueS531 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC5XX + Math.PI) + LeftOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueS531 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC5XX + Math.PI) - LeftOffset * (float)Math.cos(zValueC5XX + Math.PI);
 
-    public static final float xValueS531 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
-    public static final float yValueS531 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
+    public static final float xValueS530 = hexagonCenterX + (hexagonRadius - BackOffsetAuto) * (float)Math.cos(zValueC5XX + Math.PI) - RightOffset * (float)Math.sin(zValueC5XX + Math.PI);
+    public static final float yValueS530 = hexagonCenterY + (hexagonRadius - BackOffsetAuto) * (float)Math.sin(zValueC5XX + Math.PI) + RightOffset * (float)Math.cos(zValueC5XX + Math.PI);
 
     public static final float xValueA5X1 = hexagonCenterX + hexagonRadius * (float)Math.cos(zValueC5XX + Math.PI);
     public static final float yValueA5X1 = hexagonCenterY + hexagonRadius * (float)Math.sin(zValueC5XX + Math.PI);

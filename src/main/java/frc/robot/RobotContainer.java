@@ -245,6 +245,9 @@ public class RobotContainer {
   public Command leftAuto = CommandFactory.LeftAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command leftLollipopAuto = CommandFactory.LeftLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command leftIntakeLollipopAuto = CommandFactory.LeftIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  
+  public Command rightCenterAuto = CommandFactory.RightCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
+  public Command leftCenterAuto = CommandFactory.LeftCenterAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
 
   public Command rightIntakeLollipopAuto = CommandFactory.RightIntakeLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
   public Command rightLollipopAuto = CommandFactory.RightLollipopAutonCommand(endEffector, Arm, elevator, buttonBox, drivebase, this, led, intake, indexer);
@@ -320,7 +323,7 @@ public class RobotContainer {
     
     
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    leftTriggerPressed.onTrue(
+    driverXbox.pov(90).onTrue(
       Commands.runOnce(() -> {
         if (!algaeModeEnabled) {
           CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
@@ -329,32 +332,29 @@ public class RobotContainer {
         }
       })
     );
-    leftTriggerPressed.onFalse(
+    driverXbox.pov(90).onFalse(
           intake.stopCommand()
           .andThen(indexer.stopCommand())
           .andThen(intake.stowCommand())
           .andThen(endEffector.endEffectorZeroSpeedCommand())
     );
+    leftTriggerPressed.onTrue(CommandFactory.setCoralFinishIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer));
+    driverXbox.pov(270).onTrue(CommandFactory.setCoralOuttakeCommand(intake, indexer, null, led));
+    driverXbox.pov(270).onFalse(
+          intake.stopCommand()
+          .andThen(indexer.stopCommand())
+          .andThen(intake.stowCommand())
+    );
 
-    // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-      Commands.either(
-          intake.deployCommand()
-          .andThen(intake.outtakeCommand())
-          .andThen(indexer.reverseCommand()),
-          Arm.ArmScoreCommand(buttonBox),
-          endEffector.coralLoadedTrigger().negate()
-      )
-      .andThen(endEffector.endEffectorOuttakeCommand()
-      .andThen(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly()))
+      CommandFactory.placeBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox)
+      .andThen(led.runPattern("MANUAL_SHOOTING_PATTERN").repeatedly())
     );
     rightTriggerPressed.onFalse(
       endEffector.endEffectorZeroSpeedCommand()
-      .andThen(intake.stopCommand())
-      .andThen(indexer.stopCommand())
-      .andThen(intake.stowCommand())
-      .andThen(led.runPattern("RED_BLUE_GRADIENT").repeatedly())
+      .andThen(led.setAlliancePattern())
+      .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     );
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
@@ -891,8 +891,10 @@ public class RobotContainer {
       }
     }));
 
-    chooser.addOption("Left", leftAuto);
     chooser.setDefaultOption("Right", rightAuto);
+    chooser.setDefaultOption("Right Center", rightCenterAuto);
+    chooser.setDefaultOption("Left Center", leftCenterAuto);
+    chooser.addOption("Left", leftAuto);
     chooser.addOption("Left Lollipop", leftLollipopAuto);
     chooser.addOption("Left Intake Lollipop", leftIntakeLollipopAuto);
     chooser.addOption("Right Lollipop", rightLollipopAuto);
@@ -902,7 +904,6 @@ public class RobotContainer {
     SmartDashboard.putData(chooser);
   }
 
-  // Removed: toggleClimbModeCommand() – no longer needed
 
   /**
    * Command to toggle full speed mode on/off
