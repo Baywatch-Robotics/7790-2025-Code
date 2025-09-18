@@ -143,26 +143,19 @@ public class CommandFactory {
   
 public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = arm.ArmBasedOnQueueCommand(buttonBox)
-    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
+  Command command = elevator.elevatorBasedOnQueueCommand(buttonBox)
+    //.andThen(new WaitCommand(.25))
+    .andThen(arm.ArmBasedOnQueueCommand(buttonBox));
     
-    command.addRequirements(endEffector, arm, elevator);
-    return command; 
-}
-  
-public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
-
-  Command command = arm.ArmPlaceBasedOnQueueCommand(buttonBox)
-    .andThen(elevator.elevatorPlaceBasedOnQueueCommand(buttonBox))
-    .andThen(endEffector.endEffectorOuttakeCommand());
     command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
   
 public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = arm.ArmBasedOnQueueCommandRight(buttonBox)
-    .andThen(elevator.elevatorBasedOnQueueCommandRight(buttonBox));
+  Command command = elevator.elevatorBasedOnQueueCommandRight(buttonBox)
+  //.andThen(new WaitCommand(.25))
+    .andThen(arm.ArmBasedOnQueueCommandRight(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
     return command; 
@@ -170,9 +163,21 @@ public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm
   
 public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = arm.ArmBasedOnQueueCommandLeft(buttonBox)
-    .andThen(elevator.elevatorBasedOnQueueCommandLeft(buttonBox));
+  Command command = elevator.elevatorBasedOnQueueCommandLeft(buttonBox)
+  //.andThen(new WaitCommand(.25))
+    .andThen(arm.ArmBasedOnQueueCommandLeft(buttonBox));
     
+    command.addRequirements(endEffector, arm, elevator);
+    return command; 
+}
+  
+public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = elevator.elevatorPlaceBasedOnQueueCommand(buttonBox)
+    //.andThen(new WaitCommand(.25))
+    .andThen(arm.ArmPlaceBasedOnQueueCommand(buttonBox))
+    //.andThen(new WaitCommand(.25))
+    .andThen(endEffector.endEffectorOuttakeCommand());
     command.addRequirements(endEffector, arm, elevator);
     return command; 
 }
