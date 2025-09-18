@@ -277,9 +277,8 @@ public class SlowProfileToPose extends Command {
                     targetPose.getTranslation(),
                     new Rotation2d(
                         Math.atan2(
-                            // Direction: current -> target
-                            targetPose.getTranslation().getY() - currentPose.getTranslation().getY(),
-                            targetPose.getTranslation().getX() - currentPose.getTranslation().getX())))
+                            currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
+                            currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
                 .transformBy(GeomUtil.toTransform2d(driveController.getSetpoint().position, 0.0))
                 .getTranslation();
 
@@ -316,9 +315,8 @@ public class SlowProfileToPose extends Command {
                     Translation2d.kZero,
                     new Rotation2d(
                         Math.atan2(
-                            // Direction: current -> target
-                            targetPose.getTranslation().getY() - currentPose.getTranslation().getY(),
-                            targetPose.getTranslation().getX() - currentPose.getTranslation().getX())))
+                            currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
+                            currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
                 .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
                 .getTranslation();
 
