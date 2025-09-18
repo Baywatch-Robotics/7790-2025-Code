@@ -277,8 +277,9 @@ public class ProfileToPose extends Command {
                     targetPose.getTranslation(),
                     new Rotation2d(
                         Math.atan2(
-                            currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-                            currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
+                            // Use target - current so the direction is from current -> target
+                            targetPose.getTranslation().getY() - currentPose.getTranslation().getY(),
+                            targetPose.getTranslation().getX() - currentPose.getTranslation().getX())))
                 .transformBy(GeomUtil.toTransform2d(driveController.getSetpoint().position, 0.0))
                 .getTranslation();
 
@@ -315,8 +316,9 @@ public class ProfileToPose extends Command {
                     Translation2d.kZero,
                     new Rotation2d(
                         Math.atan2(
-                            currentPose.getTranslation().getY() - targetPose.getTranslation().getY(),
-                            currentPose.getTranslation().getX() - targetPose.getTranslation().getX())))
+                            // Use target - current so the robot drives toward the target
+                            targetPose.getTranslation().getY() - currentPose.getTranslation().getY(),
+                            targetPose.getTranslation().getX() - currentPose.getTranslation().getX())))
                 .transformBy(GeomUtil.toTransform2d(driveVelocityScalar, 0.0))
                 .getTranslation();
 

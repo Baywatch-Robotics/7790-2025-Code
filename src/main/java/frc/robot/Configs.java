@@ -21,7 +21,7 @@ public final class Configs {
        * feedback sensor as the primary encoder.
        */
       elevatorConfig
-          .inverted(false)
+          .inverted(true)
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control

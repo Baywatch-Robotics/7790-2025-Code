@@ -194,7 +194,7 @@ public class RobotContainer {
       () -> driveX.getAsDouble())
       .withControllerRotationAxis(() -> angSpeed.getAsDouble())
       .deadband(Constants.DEADBAND)
-      .scaleTranslation(1)
+      .scaleTranslation(-1) // Invert translation only (X/Y). Rotation unchanged.
       .allianceRelativeControl(true);
 
   /**

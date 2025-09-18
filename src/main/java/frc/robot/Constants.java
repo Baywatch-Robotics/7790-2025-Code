@@ -74,7 +74,7 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float pickUpAngle = 0.883333333f;
+    public static final float pickUpAngle = 0.8675f;
     public static final float lollipopAngle = 0.65f;
     public static final float outLoadAngle = 0.6f;
     public static final float algaeAngle = 0.65f;
@@ -84,7 +84,7 @@ public final class Constants
 
     public static final float realL1Angle = 0.7f;
 
-    public static final float P = 4.0f;
+    public static final float P = 2.5f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
 
@@ -122,15 +122,15 @@ public final class Constants
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -17.32632f;
-    public static final float L3LPose = -9.0396f;
-    public static final float L3RPose = -9.0396f;
+    public static final float L4Pose = -48f;
+    public static final float L3LPose = -20f;
+    public static final float L3RPose = -20f;
 
-    public static final float L2RPose = -3.9312f;
-    public static final float L2LPose = -3.9312f;
+    public static final float L2RPose = -10f;
+    public static final float L2LPose = -10f;
     public static final float pickupPose = -29.0f;
     public static final float lollipopPose = -2.52f;
-    public static final float hoverPose = -33.0f;
+    public static final float hoverPose = -32.5f;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
