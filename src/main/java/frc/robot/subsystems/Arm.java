@@ -440,6 +440,7 @@ public class Arm extends SubsystemBase {
             0                       // Zero acceleration for now
         );
         
+        SmartDashboard.putNumber("Arm Current", ArmMotor.getOutputCurrent());
         SmartDashboard.putNumber(" Arm Desired Angle", ArmDesiredAngle);
         SmartDashboard.putNumber(" Arm Current Angle", currentPosition);
         SmartDashboard.putNumber(" Arm Feedforward", feedforwardOutput);

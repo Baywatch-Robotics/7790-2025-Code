@@ -40,15 +40,15 @@ public final class Constants
 
   
   public static final class EndEffectorConstants{
-    public static final int ID = 20;
-    public static final float intake = 0.50f;
-    public static final float outtake = -.50f;
-    public static final float currentThreshold = 15;
+    public static final int ID = 19;
+    public static final float intake = -0.50f;
+    public static final float outtake = 0.50f;
+    public static final float currentThreshold = 100;
     public static final float DEBOUNCE_TIME = 0.075f; // Time to debounce current threshold (seconds)
   }
 
   public static final class ArmConstants{
-    public static final int ID = 19;
+    public static final int ID = 18;
 
     public static final float angleOffset = .35f;
 
@@ -78,7 +78,7 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float pickUpAngle = 0.883333333f;
+    public static final float pickUpAngle = 0.8675f;
     public static final float lollipopAngle = 0.65f;
     public static final float outLoadAngle = 0.6f;
     public static final float algaeAngle = 0.65f;
@@ -93,18 +93,18 @@ public final class Constants
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 3;
-    public static final float maxAcceleration = 3;
+    public static final float maxVelocity = 0.5f;
+    public static final float maxAcceleration = 0.5f;
 
     public static final float allowedClosedLoopError = 0.005f;
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = .6f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kG = 1.5f;  // Gravity compensation (tune this based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
-    public static final float feedforwardOffset = 0.25f;
+    public static final float feedforwardOffset = 0.9f;
 
     // PID position tolerance
     public static final float positionTolerance = 0.01f;
@@ -115,30 +115,25 @@ public final class Constants
     
     public static final int ID = 17;
 
-    public static final int slaveID = 18;
+    public static final int slaveID = 40;
     
     public static final float manualMultiplier = .5f;
     //public static final float manualMultiplier = .2f; //For Testing
 
     //Gray Spools
     //public static final float min = -44f;
-    public static final float min = -60f;
+    public static final float min = -48f;
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -17.32632f;
-    public static final float L3Pose = -17.32632f;
-    public static final float L2Pose = -17.32632f;
-    public static final float L1Pose = -11.2693f;
+    public static final float L4Pose = -48f;
+    public static final float L3Pose = -25f;
+    public static final float L2Pose = -15f;
+    public static final float L1Pose = -15f;
 
-    public static final float L3LPose = -9.0396f;
-    public static final float L3RPose = -9.0396f;
-    public static final float L2RPose = -3.9312f;
-    public static final float L2LPose = -3.9312f;
-
-    public static final float pickupPose = -9.2241f;
+    public static final float pickupPose = -29.0f;
     public static final float lollipopPose = -2.52f;
-    public static final float hoverPose = -12.4425f;
+    public static final float hoverPose = -32.5f;
     
     public static final float L4PlacePose = -35f;
     public static final float L3PlacePose = -25f;
@@ -174,10 +169,7 @@ public final class Constants
     // Intake clearance thresholds
     public static final float INTAKE_CLEARANCE_MARGIN = 1.8f;
     
-    /* public static final float P = 1.5f;
-    public static final float I = 0.0f;
-    public static final float D = 0.1f; */
-    public static final float P = 0.0f;
+    public static final float P = 2.0f;
     public static final float I = 0.0f;
     public static final float D = 0.0f;
     
@@ -188,15 +180,15 @@ public final class Constants
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;
     //public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
-    public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
-    public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
-    public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
+    public static final float kG = 0.35f;   // Gravity compensation (voltage)
+    public static final float kV = 0.3f;   // Velocity feedforward (voltage per unit/s)  
+    public static final float kA = 0.15f;  // Acceleration feedforward (voltage per unit/s²)
   }
 
   public static final class LEDConstants{
     
-    public static final int port = 0;
-    public static final int length = 104;
+    public static final int port = 1;
+    public static final int length = 43;
 
     // Add flash pattern constants
     public static final double FLASH_ON_DURATION = 0.05;     // Time flash stays on (seconds)
@@ -210,7 +202,7 @@ public final class Constants
     public static final int LEFT_LEDS = 43;
     public static final int TOP_LEDS = 18;
     public static final int RIGHT_LEDS = 43;
-    public static final int TOTAL_LEDS = LEFT_LEDS + TOP_LEDS + RIGHT_LEDS;
+    public static final int TOTAL_LEDS = LEFT_LEDS;
     
     // WS2812B LED power specifications
     public static final double MILLIAMPS_PER_LED_FULL_WHITE = 60.0; // mA per LED at full white
@@ -289,21 +281,21 @@ public final class Constants
   public static final class AprilTagVisionConstants{
 
 
-    public static final float rightCamXOffset = (float)Units.inchesToMeters(4.814);
-    public static final float rightCamYOffset = (float)Units.inchesToMeters(-8.771);
-    public static final float rightCamZOffset = (float)Units.inchesToMeters(16.194);
+    public static final float rightCamXOffset = (float)Units.inchesToMeters(-6.5170);
+    public static final float rightCamYOffset = (float)Units.inchesToMeters(7.9095);
+    public static final float rightCamZOffset = (float)Units.inchesToMeters(34.51595);
 
     public static final float rightCamRoll = (float)Units.degreesToRadians(0.0);
-    public static final float rightCamPitch = (float)Units.degreesToRadians(15.0);
-    public static final float rightCamYaw = (float)Units.degreesToRadians(15.0);
+    public static final float rightCamPitch = (float)Units.degreesToRadians(30.0);
+    public static final float rightCamYaw = (float)Units.degreesToRadians(165.0);
 
-    public static final float leftCamXOffset = (float)Units.inchesToMeters(5.672);
-    public static final float leftCamYOffset = (float)Units.inchesToMeters(-7.956);
-    public static final float leftCamZOffset = (float)Units.inchesToMeters(34.184);
+    public static final float leftCamXOffset = (float)Units.inchesToMeters(6.4502);
+    public static final float leftCamYOffset = (float)Units.inchesToMeters(7.9095);
+    public static final float leftCamZOffset = (float)Units.inchesToMeters(34.51595);
 
     public static final float leftCamRoll = (float)Units.degreesToRadians(0.0);
     public static final float leftCamPitch = (float)Units.degreesToRadians(30.0);
-    public static final float leftCamYaw = (float)Units.degreesToRadians(15.0);
+    public static final float leftCamYaw = (float)Units.degreesToRadians(-15.0);
 
     public static final float limelightXOffset = (float)Units.inchesToMeters(-1.588);
     public static final float limelightYOffset = (float)Units.inchesToMeters(2.137);
@@ -775,8 +767,8 @@ public final class Constants
     public static final int leftMotorID  = 15;
     public static final int rightMotorID = 16;      // Will be inverted in config
 
-    public static final double runSpeed      = 0.6; // Forward index
-    public static final double reverseSpeed  = -0.6;
+    public static final double runSpeed      = 0.3; // Forward index
+    public static final double reverseSpeed  = -0.3;
 
     public static final int currentLimit = 30;
 

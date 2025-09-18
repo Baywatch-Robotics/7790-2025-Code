@@ -21,7 +21,7 @@ public final class Configs {
        * feedback sensor as the primary encoder.
        */
       elevatorConfig
-          .inverted(false)
+          .inverted(true)
           .closedLoop
           .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
           // Set PID values for position control
@@ -47,7 +47,7 @@ public final class Configs {
     public static final SparkMaxConfig endEffectorConfig = new SparkMaxConfig();
     
     static {
-      endEffectorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(20).voltageCompensation(12);
+      endEffectorConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
 
       endEffectorConfig
       .inverted(true);
@@ -57,7 +57,7 @@ public final class Configs {
     public static final SparkMaxConfig ArmConfig = new SparkMaxConfig();
 
     static {
-      ArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(40).voltageCompensation(12);
+      ArmConfig.idleMode(IdleMode.kBrake).smartCurrentLimit(80).voltageCompensation(12);
       /*
        * Configure the closed loop controller. We want to make sure we set the
        * feedback sensor as the primary encoder.
