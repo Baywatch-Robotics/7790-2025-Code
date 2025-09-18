@@ -101,6 +101,18 @@ public class Arm extends SubsystemBase {
     private void setScoreHIGHBackwards() {
         ArmDesiredAngle = ArmConstants.scoreAngleHIGHBackwards;
     }
+    private void setPlaceLOW() {
+        ArmDesiredAngle = ArmConstants.placeAngleLOW;
+    }
+    private void setPlaceHIGH() {
+        ArmDesiredAngle = ArmConstants.placeAngleHIGH;
+    }
+    private void setPlaceLOWBackwards() {
+        ArmDesiredAngle = ArmConstants.placeAngleLOWBackwards;
+    }
+    private void setPlaceHIGHBackwards() {
+        ArmDesiredAngle = ArmConstants.placeAngleHIGHBackwards;
+    }
     private void setPickUp() {
         ArmDesiredAngle = ArmConstants.pickUpAngle;
     }
@@ -116,11 +128,30 @@ public class Arm extends SubsystemBase {
     private void setScoreL1Real() {
         ArmDesiredAngle = ArmConstants.realL1Angle;
     }
-
     public void setAlgaeAngle() {
         ArmDesiredAngle = ArmConstants.algaeAngle;
     }
+    public void setNetAngle() {
+        ArmDesiredAngle = ArmConstants.netAngle;
+    }
+    public void setNetBackwardsAngle() {
+        ArmDesiredAngle = ArmConstants.netAngleBackwards;
+    }
+    public void setNetPlaceAngle() {
+        ArmDesiredAngle = ArmConstants.netPlaceAngle;
+    }
+    public void setNetPlaceBackwardsAngle() {
+        ArmDesiredAngle = ArmConstants.netPlaceAngleBackwards;
+    }
+    public void setProcessorAngle() {
+        ArmDesiredAngle = ArmConstants.processorAngle;
+    }
 
+    public Command ArmProcessorCommand()
+    {
+        Command command = new InstantCommand(() -> setProcessorAngle());
+        return command;
+    }
     public Command ArmScoreLOWCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOW());
@@ -131,7 +162,6 @@ public class Arm extends SubsystemBase {
         Command command = new InstantCommand(() -> this.setScoreHIGH());
         return command;
     }
-
     public Command ArmScoreLOWBackwardsCommand()
     {
         Command command = new InstantCommand(() -> setScoreLOWBackwards());
@@ -140,6 +170,46 @@ public class Arm extends SubsystemBase {
     public Command ArmScoreHIGHBackwardsCommand()
     {
         Command command = new InstantCommand(() -> this.setScoreHIGHBackwards());
+        return command;
+    }
+    public Command ArmPlaceLOWCommand()
+    {
+        Command command = new InstantCommand(() -> setPlaceLOW());
+        return command;
+    }
+    public Command ArmPlaceHIGHCommand()
+    {
+        Command command = new InstantCommand(() -> this.setPlaceHIGH());
+        return command;
+    }
+    public Command ArmPlaceLOWBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> setPlaceLOWBackwards());
+        return command;
+    }
+    public Command ArmPlaceHIGHBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> this.setPlaceHIGHBackwards());
+        return command;
+    }
+    public Command ArmScoreNetCommand()
+    {
+        Command command = new InstantCommand(() -> setNetAngle());
+        return command;
+    }
+    public Command ArmScoreNetBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> this.setNetBackwardsAngle());
+        return command;
+    }
+    public Command ArmPlaceNetCommand()
+    {
+        Command command = new InstantCommand(() -> setNetPlaceAngle());
+        return command;
+    }
+    public Command ArmPlaceNetBackwardsCommand()
+    {
+        Command command = new InstantCommand(() -> this.setNetPlaceBackwardsAngle());
         return command;
     }
 
@@ -183,8 +253,17 @@ public class Arm extends SubsystemBase {
 
             if (currentLevelSupplier != null && currentSideSupplier != null) {
                 if (isAlgaeSupplier.getAsBoolean()) {
-                    // Handle algae targets - both levels use same arm angle
+                    if (currentLevelSupplier.getAsInt() == 3) 
+                        {if (currentRotationSupplier.getAsBoolean()) {
+                        setNetAngle();
+                        } else {
+                        setNetBackwardsAngle();
+                        }
+                    } else if (currentLevelSupplier.getAsInt() == 1) {
+                        setProcessorAngle();
+                    } else {
                     setAlgaeAngle();
+                    }
                 } else {
                     // Existing coral logic
                     if (currentLevelSupplier.getAsInt() == 0) {
@@ -213,6 +292,54 @@ public class Arm extends SubsystemBase {
         });
         return command;
     }
+    
+    public Command ArmPlaceBasedOnQueueCommand(ButtonBox buttonBox) {
+
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
+        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
+        BooleanSupplier currentRotationSupplier = buttonBox.currentisForwardsSupplier;
+        BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
+
+        Command command = new InstantCommand(() -> {
+
+            if (currentLevelSupplier != null && currentSideSupplier != null) {
+                if (isAlgaeSupplier.getAsBoolean()) {
+                    if (currentLevelSupplier.getAsInt() == 3) 
+                        {if (currentRotationSupplier.getAsBoolean()) {
+                        setNetPlaceAngle();
+                        } else {
+                        setNetPlaceBackwardsAngle();
+                        }
+                    }
+                    } else {
+                    // Existing coral logic
+                    if (currentLevelSupplier.getAsInt() == 0) {
+                        setScoreL1();
+                    } else if (currentLevelSupplier.getAsInt() == 1) {
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setPlaceLOW();
+                        } else {
+                            setPlaceLOWBackwards();
+                        }
+                    } else if (currentLevelSupplier.getAsInt() == 2) {
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setPlaceLOW();
+                        } else {
+                            setPlaceLOWBackwards();
+                        }
+                    } else if (currentLevelSupplier.getAsInt() == 3) {
+                        if (currentRotationSupplier.getAsBoolean()) {
+                            setPlaceHIGH();
+                        } else {
+                            setPlaceHIGHBackwards();
+                        }
+                    }
+                }
+            }
+        });
+        return command;
+    }
+
 
     public Trigger isClearToElevate() {
         return new Trigger(() -> ArmEncoder.getPosition() >= 0.5);

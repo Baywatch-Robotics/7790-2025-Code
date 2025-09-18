@@ -66,9 +66,13 @@ public final class Constants
     public static final float scoreAngleHIGH = 0.6f;
     public static final float scoreAngleLOWBackwards = (0.4f - scoreAngleLOW) + 0.4f;
     public static final float scoreAngleHIGHBackwards = (0.4f - scoreAngleHIGH) + 0.4f;
-    public static final float placeAngleHIGH = 0.7f;
-    public static final float placeAngleLOW = 0.65f;
+    public static final float placeAngleHIGH = 0.6f;
+    public static final float placeAngleLOW = 0.55f;
+    public static final float placeAngleLOWBackwards = (0.4f - placeAngleLOW) + 0.4f;
+    public static final float placeAngleHIGHBackwards = (0.4f - placeAngleHIGH) + 0.4f;
     public static final float netPlaceAngle = 0.45f;
+    public static final float netPlaceAngleBackwards = (0.4f - netPlaceAngle) + 0.4f;
+    public static final float processorAngle = 0.7f;
     // Minimum angle allowed in reef zone (prevents arm from going too low in reef)
     public static final float reefZoneMinimumAngle = 0.0f; // This should be between ballAngle and scoreAngleHIGH
     // Debounce time when exiting reef zone (seconds)
@@ -123,14 +127,22 @@ public final class Constants
 
     // elevator set positions
     public static final float L4Pose = -17.32632f;
+    public static final float L3Pose = -17.32632f;
+    public static final float L2Pose = -17.32632f;
+    public static final float L1Pose = -11.2693f;
+
     public static final float L3LPose = -9.0396f;
     public static final float L3RPose = -9.0396f;
-
     public static final float L2RPose = -3.9312f;
     public static final float L2LPose = -3.9312f;
+
     public static final float pickupPose = -9.2241f;
     public static final float lollipopPose = -2.52f;
     public static final float hoverPose = -12.4425f;
+    
+    public static final float L4PlacePose = -35f;
+    public static final float L3PlacePose = -25f;
+    public static final float L2PlacePose = -10f;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
@@ -172,7 +184,6 @@ public final class Constants
     public static final float maxVelocity = 500;
     public static final float maxAcceleration = 70;
 
-    public static final float L1ScoreHeight = -11.2693f;
     
     // Feedforward constants for ElevatorFeedforward
     public static final float kS = 0.0f;

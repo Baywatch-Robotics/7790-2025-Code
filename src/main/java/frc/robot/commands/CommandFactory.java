@@ -20,7 +20,6 @@ public class CommandFactory {
    
     public static Command setCoralIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
       
-      // Run the LED pattern first as a separate command
       Command ledCommand = led.runPattern("INTAKE_PATTERN");
       
       Command intakeStart = intake.deployCommand()
@@ -28,21 +27,46 @@ public class CommandFactory {
         .andThen(indexer.indexCommand())
         .andThen(elevator.setElevatorHoverCommand())
         .andThen(arm.ArmPickUpCommand())
-        .andThen(endEffector.endEffectorIntakeCommand())
-        .andThen(new WaitUntilCommand(indexer.coralIndexedTrigger()))
-        .andThen(indexer.stopCommand())
-        .andThen(intake.stopCommand())
-        .andThen(elevator.setElevatorPickupCommand())
-        .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
-        .andThen(endEffector.endEffectorZeroSpeedCommand())
-        .andThen(elevator.setElevatorHoverCommand())
-        .andThen(intake.stowCommand());
+        .andThen(endEffector.endEffectorIntakeCommand());
 
       Command command = ledCommand
         .andThen(intakeStart);
 
       command.addRequirements(endEffector, arm, elevator, intake);
 
+      return command;
+  }
+  public static Command setCoralFinishIntakeCommand(EndEffector endEffector, Arm arm, Elevator elevator, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer) {
+    
+    Command ledCommand = led.runPattern("INTAKE_PATTERN");
+    
+    Command intakeStart = indexer.stopCommand()
+      .andThen(intake.stopCommand())
+      .andThen(elevator.setElevatorPickupCommand())
+      .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
+      .andThen(endEffector.endEffectorZeroSpeedCommand())
+      .andThen(elevator.setElevatorHoverCommand())
+      .andThen(intake.stowCommand());
+
+    Command command = ledCommand
+      .andThen(intakeStart);
+
+    command.addRequirements(endEffector, arm, elevator, intake);
+
+    return command;
+  }
+
+  public static Command setCoralOuttakeCommand(Intake intake, Indexer indexer, RobotContainer robotContainer, LED led) {
+    
+    
+      Command command  = led.runPattern("INTAKE_PATTERN")
+      .andThen(intake.deployCommand())
+      .andThen(intake.outtakeCommand())
+      .andThen(indexer.reverseCommand());
+  
+  
+      command.addRequirements(intake, indexer);
+  
       return command;
   }
   
@@ -122,6 +146,15 @@ public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm,
   Command command = arm.ArmBasedOnQueueCommand(buttonBox)
     .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
     
+    command.addRequirements(endEffector, arm, elevator);
+    return command; 
+}
+  
+public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
+
+  Command command = arm.ArmPlaceBasedOnQueueCommand(buttonBox)
+    .andThen(elevator.elevatorPlaceBasedOnQueueCommand(buttonBox))
+    .andThen(endEffector.endEffectorOuttakeCommand());
     command.addRequirements(endEffector, arm, elevator);
     return command; 
 }

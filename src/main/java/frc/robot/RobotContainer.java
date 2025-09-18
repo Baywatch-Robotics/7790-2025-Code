@@ -335,26 +335,14 @@ public class RobotContainer {
           .andThen(intake.stowCommand())
     );
 
-    // Right trigger - outtake
     Trigger rightTriggerPressed = driverXbox.axisMagnitudeGreaterThan(3, 0.2);
     rightTriggerPressed.onTrue(
-      Commands.runOnce(() -> {
-        endEffector.endEffectorOuttakeCommand();
-        Arm.ArmScoreCommand(buttonBox);
-        intake.deployCommand();
-        intake.outtakeCommand();
-        indexer.reverseCommand();
-      })
+      CommandFactory.placeBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox)
     );
     rightTriggerPressed.onFalse(
-      Commands.runOnce(() -> {
-          intake.stopCommand();
-          indexer.stopCommand();
-          intake.stowCommand();
-          endEffector.endEffectorZeroSpeedCommand();
-          led.setAlliancePattern();
-          new InstantCommand(() -> buttonBox.clearTargets());
-        })
+      endEffector.endEffectorZeroSpeedCommand()
+      .andThen(led.setAlliancePattern())
+      .andThen(new InstantCommand(() -> buttonBox.clearTargets()))
     );
 
     buttonBox1.button(3).onTrue(new InstantCommand(() -> buttonBox.deleteFirstTarget()));
@@ -871,6 +859,8 @@ public class RobotContainer {
     driverXbox.a().onTrue(CommandFactory.scoreL1CommandNOSHOOT(endEffector, Arm, elevator));
 
     driverXbox.pov(0).onTrue(toggleAlgaeModeCommand());
+    driverXbox.pov(90).onTrue(CommandFactory.setCoralFinishIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer));
+    driverXbox.pov(270).onTrue(CommandFactory.setCoralOuttakeCommand(intake, indexer, null, led));
 
     //opXbox.start().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(true)));
     //opXbox.back().onTrue(new InstantCommand(() -> drivebase.oldCameraMode(false)));

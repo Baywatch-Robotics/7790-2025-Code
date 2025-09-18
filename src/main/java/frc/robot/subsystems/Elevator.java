@@ -94,27 +94,26 @@ public class Elevator extends SubsystemBase {
     private void setFullRetract() {
         elevatorDesiredPosition = ElevatorConstants.downPosition;
     }
-
     private void setL4() {
         elevatorDesiredPosition = ElevatorConstants.L4Pose;
     }
-
-    private void setL3L() {
-        elevatorDesiredPosition = ElevatorConstants.L3LPose;
+    private void setL3() {
+        elevatorDesiredPosition = ElevatorConstants.L3Pose;
     }
-    private void setL3R() {
-        elevatorDesiredPosition = ElevatorConstants.L3RPose;
+    private void setL2() {
+        elevatorDesiredPosition = ElevatorConstants.L2Pose;
     }
-
-    private void setL2L() {
-        elevatorDesiredPosition = ElevatorConstants.L2LPose;
-    }
-    private void setL2R() {
-        elevatorDesiredPosition = ElevatorConstants.L2RPose;
-    }
-
     private void setL1() {
-        elevatorDesiredPosition = ElevatorConstants.L1ScoreHeight;
+        elevatorDesiredPosition = ElevatorConstants.L1Pose;
+    }
+    private void setPlaceL4() {
+        elevatorDesiredPosition = ElevatorConstants.L4PlacePose;
+    }
+    private void setPlaceL3() {
+        elevatorDesiredPosition = ElevatorConstants.L3PlacePose;
+    }
+    private void setPlaceL2() {
+        elevatorDesiredPosition = ElevatorConstants.L2PlacePose;
     }
     public void setPickup() {
         elevatorDesiredPosition = ElevatorConstants.pickupPose;
@@ -160,26 +159,33 @@ public class Elevator extends SubsystemBase {
         return command;
     }
 
-    public Command setElevatorL3LCommand() {
-        Command command = new InstantCommand(() -> setL3L());
-        return command;
-    }
-    public Command setElevatorL3RCommand() {
-        Command command = new InstantCommand(() -> setL3R());
+    public Command setElevatorL3Command() {
+        Command command = new InstantCommand(() -> setL3());
         return command;
     }
 
-    public Command setElevatorL2LCommand() {
-        Command command = new InstantCommand(() -> setL2L());
-        return command;
-    }
-    public Command setElevatorL2RCommand() {
-        Command command = new InstantCommand(() -> setL2R());
+    public Command setElevatorL2Command() {
+        Command command = new InstantCommand(() -> setL2());
         return command;
     }
 
     public Command setElevatorL1Command() {
         Command command = new InstantCommand(() -> setL1());
+        return command;
+    }
+
+    public Command setElevatorPlaceL4Command() {
+        Command command = new InstantCommand(() -> setPlaceL4());
+        return command;
+    }
+
+    public Command setElevatorPlaceL3Command() {
+        Command command = new InstantCommand(() -> setPlaceL3());
+        return command;
+    }
+
+    public Command setElevatorPlaceL2Command() {
+        Command command = new InstantCommand(() -> setPlaceL2());
         return command;
     }
 
@@ -295,18 +301,33 @@ public class Elevator extends SubsystemBase {
                 // Existing coral logic
                 if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
                     new InstantCommand();
-                } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+                } else if (currentLevelSupplier.getAsInt() == 0) {
                     new InstantCommand();
-                } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
-                    setL2L();
-                } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
-                    setL2R();
-                } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
-                    setL3L();
-                } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
-                    setL3R();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    setL2();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setL3();
                 } else if (currentLevelSupplier.getAsInt() == 3) {
                     setL4();
+                }
+            }
+        });
+        return command;
+    }
+    public Command elevatorPlaceBasedOnQueueCommand(ButtonBox buttonBox) {
+        IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
+        BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
+
+        Command command = new InstantCommand(() -> {
+            if (isAlgaeSupplier.getAsBoolean()) {
+            } else {
+                if (currentLevelSupplier.getAsInt() == 0) {;
+                } else if (currentLevelSupplier.getAsInt() == 1) {
+                    setPlaceL2();
+                } else if (currentLevelSupplier.getAsInt() == 2) {
+                    setPlaceL3();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    setPlaceL4();
                 }
             }
         });
@@ -599,16 +620,12 @@ public class Elevator extends SubsystemBase {
 
             if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
                 new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+            } else if (currentLevelSupplier.getAsInt() == 0) {
                 new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
-                setL2L();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
-                setL2R();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
-                setL3L();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
-                setL3R();
+            } else if (currentLevelSupplier.getAsInt() == 1) {
+                setL2();
+            } else if (currentLevelSupplier.getAsInt() == 2) {
+                setL3();
             } else if (currentLevelSupplier.getAsInt() == 3) {
                 setL4();
             }
@@ -629,16 +646,12 @@ public class Elevator extends SubsystemBase {
 
             if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
                 new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == false) {
+            } else if (currentLevelSupplier.getAsInt() == 0) {
                 new InstantCommand();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == true) {
-                setL2L();
-            } else if (currentLevelSupplier.getAsInt() == 1 && currentSideSupplier.getAsBoolean() == false) {
-                setL2R();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == true) {
-                setL3L();
-            } else if (currentLevelSupplier.getAsInt() == 2 && currentSideSupplier.getAsBoolean() == false) {
-                setL3R();
+            } else if (currentLevelSupplier.getAsInt() == 1) {
+                setL2();
+            } else if (currentLevelSupplier.getAsInt() == 2) {
+                setL3();
             } else if (currentLevelSupplier.getAsInt() == 3) {
                 setL4();
             }
