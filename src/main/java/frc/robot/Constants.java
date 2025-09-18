@@ -25,7 +25,7 @@ public final class Constants
   public static final float ROBOT_MASS = (float) Units.lbsToKilograms(115); 
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final float LOOP_TIME  = 0.13f; //s, 20ms + 110ms sprk max velocity lag
-  public static final float MAX_SPEED  = (float) Units.feetToMeters(22.1);
+  public static final float MAX_SPEED  = (float) Units.feetToMeters(17.6);
   public static final float WHEEL_LOCK_TIME = 10;
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
@@ -93,8 +93,8 @@ public final class Constants
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 0.5f;
-    public static final float maxAcceleration = 0.5f;
+    public static final float maxVelocity = 2.5f;
+    public static final float maxAcceleration = 2.5f;
 
     public static final float allowedClosedLoopError = 0.005f;
     
