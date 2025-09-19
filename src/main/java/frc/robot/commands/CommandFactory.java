@@ -26,8 +26,10 @@ public class CommandFactory {
         .andThen(intake.intakeCommand())
         .andThen(indexer.indexCommand())
         .andThen(elevator.setElevatorHoverCommand())
+        .andThen(new WaitCommand(1.0))
         .andThen(arm.ArmPickUpCommand())
-        .andThen(endEffector.endEffectorIntakeCommand());
+        .andThen(endEffector.endEffectorIntakeCommand())
+        ;
 
       Command command = ledCommand
         .andThen(intakeStart);
@@ -42,6 +44,7 @@ public class CommandFactory {
     
     Command intakeStart = indexer.stopCommand()
       .andThen(intake.stopCommand())
+      .andThen(endEffector.endEffectorIntakeCommand())
       .andThen(elevator.setElevatorPickupCommand())
       .andThen(new WaitUntilCommand(endEffector.coralLoadedTrigger()))
       .andThen(endEffector.endEffectorZeroSpeedCommand())
@@ -76,7 +79,7 @@ public class CommandFactory {
     
     
       Command command  = led.runPattern("INTAKE_PATTERN")
-      .andThen (endEffector.endEffectorIntakeCommand())
+      .andThen(endEffector.endEffectorIntakeCommand())
       .andThen(arm.ArmLollipopCommand())
       .andThen(new WaitUntilCommand(arm.isClearToDescend()))
       .andThen(elevator.setElevatorLollipopCommand())
@@ -143,9 +146,9 @@ public class CommandFactory {
   
 public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = elevator.elevatorBasedOnQueueCommand(buttonBox)
-    //.andThen(new WaitCommand(.25))
-    .andThen(arm.ArmBasedOnQueueCommand(buttonBox));
+  Command command = arm.ArmBasedOnQueueCommand(buttonBox)
+    .andThen(new WaitCommand(1))
+    .andThen(elevator.elevatorBasedOnQueueCommand(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
     return command; 
@@ -153,9 +156,9 @@ public static Command scoreBasedOnQueueCommand(EndEffector endEffector, Arm arm,
   
 public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = elevator.elevatorBasedOnQueueCommandRight(buttonBox)
-  //.andThen(new WaitCommand(.25))
-    .andThen(arm.ArmBasedOnQueueCommandRight(buttonBox));
+  Command command = arm.ArmBasedOnQueueCommandRight(buttonBox)
+    .andThen(new WaitCommand(1))
+    .andThen(elevator.elevatorBasedOnQueueCommandRight(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
     return command; 
@@ -163,9 +166,9 @@ public static Command scoreBasedOnQueueCommandRight(EndEffector endEffector, Arm
   
 public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = elevator.elevatorBasedOnQueueCommandLeft(buttonBox)
-  //.andThen(new WaitCommand(.25))
-    .andThen(arm.ArmBasedOnQueueCommandLeft(buttonBox));
+  Command command = arm.ArmBasedOnQueueCommandLeft(buttonBox)
+    .andThen(new WaitCommand(1))
+    .andThen(elevator.elevatorBasedOnQueueCommandLeft(buttonBox));
     
     command.addRequirements(endEffector, arm, elevator);
     return command; 
@@ -173,10 +176,10 @@ public static Command scoreBasedOnQueueCommandLeft(EndEffector endEffector, Arm 
   
 public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox){
 
-  Command command = elevator.elevatorPlaceBasedOnQueueCommand(buttonBox)
-    //.andThen(new WaitCommand(.25))
-    .andThen(arm.ArmPlaceBasedOnQueueCommand(buttonBox))
-    //.andThen(new WaitCommand(.25))
+  Command command = arm.ArmPlaceBasedOnQueueCommand(buttonBox)
+    .andThen(new WaitCommand(.5))
+    .andThen(elevator.elevatorPlaceBasedOnQueueCommand(buttonBox))
+    .andThen(new WaitCommand(.25))
     .andThen(endEffector.endEffectorOuttakeCommand());
     command.addRequirements(endEffector, arm, elevator);
     return command; 

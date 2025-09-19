@@ -322,8 +322,11 @@ public class RobotContainer {
     }));
     
     
+    driverXbox.pov(180).onTrue(
+          CommandFactory.scoreBasedOnQueueCommand(endEffector, Arm, elevator, buttonBox)
+    );
     Trigger leftTriggerPressed = driverXbox.axisMagnitudeGreaterThan(2, 0.2);
-    driverXbox.pov(90).onTrue(
+    driverXbox.pov(270).onTrue(
       Commands.runOnce(() -> {
         if (!algaeModeEnabled) {
           CommandFactory.setCoralIntakeCommand(endEffector, Arm, elevator, this, led, intake, indexer).schedule();
@@ -332,15 +335,16 @@ public class RobotContainer {
         }
       })
     );
-    driverXbox.pov(90).onFalse(
+    driverXbox.pov(270).onFalse(
           intake.stopCommand()
           .andThen(indexer.stopCommand())
           .andThen(intake.stowCommand())
           .andThen(endEffector.endEffectorZeroSpeedCommand())
     );
     leftTriggerPressed.onTrue(CommandFactory.setCoralFinishIntakeCommand(endEffector, Arm, elevator, null, led, intake, indexer));
-    driverXbox.pov(270).onTrue(CommandFactory.setCoralOuttakeCommand(intake, indexer, null, led));
-    driverXbox.pov(270).onFalse(
+    leftTriggerPressed.onFalse(endEffector.endEffectorZeroSpeedCommand());
+    driverXbox.pov(90).onTrue(CommandFactory.setCoralOuttakeCommand(intake, indexer, null, led));
+    driverXbox.pov(90).onFalse(
           intake.stopCommand()
           .andThen(indexer.stopCommand())
           .andThen(intake.stowCommand())
@@ -1138,7 +1142,7 @@ public class RobotContainer {
     // Update drive suppliers with new speed
     driveY = () -> -driverXbox.getLeftY() * targetDriveSpeed;
     driveX = () -> -driverXbox.getLeftX() * targetDriveSpeed;
-    angSpeed = () -> driverXbox.getRightX() * targetDriveSpeed;
+    angSpeed = () -> -driverXbox.getRightX() * targetDriveSpeed;
   }
 
   /**

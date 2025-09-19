@@ -43,14 +43,14 @@ public final class Constants
     public static final int ID = 19;
     public static final float intake = -0.50f;
     public static final float outtake = 0.50f;
-    public static final float currentThreshold = 100;
+    public static final float currentThreshold = 15;
     public static final float DEBOUNCE_TIME = 0.075f; // Time to debounce current threshold (seconds)
   }
 
   public static final class ArmConstants{
     public static final int ID = 18;
 
-    public static final float angleOffset = .35f;
+    public static final float angleOffset = .9f;
 
     public static final float manualMultiplier = -0.005f;
 
@@ -62,12 +62,12 @@ public final class Constants
     public static final float maxManual = .9f;
     
     
-    public static final float scoreAngleLOW = 0.75f;
-    public static final float scoreAngleHIGH = 0.8f;
+    public static final float scoreAngleLOW = 0.425f;
+    public static final float scoreAngleHIGH = 0.434f;
     public static final float scoreAngleLOWBackwards = (0.4f - scoreAngleLOW) + 0.4f;
     public static final float scoreAngleHIGHBackwards = (0.4f - scoreAngleHIGH) + 0.4f;
-    public static final float placeAngleHIGH = 0.7f;
-    public static final float placeAngleLOW = 0.675f;
+    public static final float placeAngleHIGH = 0.491f;
+    public static final float placeAngleLOW = 0.465f;
     public static final float placeAngleLOWBackwards = (0.4f - placeAngleLOW) + 0.4f;
     public static final float placeAngleHIGHBackwards = (0.4f - placeAngleHIGH) + 0.4f;
     public static final float processorAngle = 0.7f;
@@ -76,7 +76,7 @@ public final class Constants
     // Debounce time when exiting reef zone (seconds)
     public static final float reefZoneExitDebounceTime = 0.5f;
 
-    public static final float pickUpAngle = 0.8675f;
+    public static final float pickUpAngle = 0.8275f;
     public static final float lollipopAngle = 0.65f;
     public static final float outLoadAngle = 0.6f;
     public static final float algaeAngle = 0.65f;
@@ -93,14 +93,14 @@ public final class Constants
     public static final float D = 0.0f;
 
     // Uncomment profile constants
-    public static final float maxVelocity = 2.5f;
-    public static final float maxAcceleration = 2.5f;
+    public static final float maxVelocity = 0.5f;
+    public static final float maxAcceleration = 0.5f;
 
     public static final float allowedClosedLoopError = 0.005f;
     
     // New feedforward constants
     public static final float kS = 0.0f;  // Static friction compensation
-    public static final float kG = 1.5f;  // Gravity compensation (tune this based on arm mass)
+    public static final float kG = 0.25f;  // Gravity compensation (tune this based on arm mass)
     public static final float kV = 0.0f;  // Velocity feedforward
     public static final float kA = 0.0f;  // Acceleration feedforward
     
@@ -126,18 +126,18 @@ public final class Constants
     public static final float max = 0.0f;
 
     // elevator set positions
-    public static final float L4Pose = -48f;
-    public static final float L3Pose = -25f;
-    public static final float L2Pose = -15f;
+    public static final float L4Pose = -46.38f;
+    public static final float L3Pose = -23.64f;
+    public static final float L2Pose = -9.8f;
     public static final float L1Pose = -15f;
 
-    public static final float pickupPose = -29.0f;
+    public static final float pickupPose = -27.3f;
     public static final float lollipopPose = -2.52f;
     public static final float hoverPose = -32.5f;
     
-    public static final float L4PlacePose = -35f;
-    public static final float L3PlacePose = -25f;
-    public static final float L2PlacePose = -10f;
+    public static final float L4PlacePose = -46.38f;
+    public static final float L3PlacePose = -18.16f;
+    public static final float L2PlacePose = -5.32f;
 
     //-6.296857f WHEN TO DISABLE FEED FORWARD
     
@@ -181,8 +181,8 @@ public final class Constants
     public static final float kS = 0.0f;
     //public static final float kG = 0.04130375012755394f;   // Gravity compensation (voltage)
     public static final float kG = 0.35f;   // Gravity compensation (voltage)
-    public static final float kV = 0.3f;   // Velocity feedforward (voltage per unit/s)  
-    public static final float kA = 0.15f;  // Acceleration feedforward (voltage per unit/s²)
+    public static final float kV = 0.0f;   // Velocity feedforward (voltage per unit/s)  
+    public static final float kA = 0.0f;  // Acceleration feedforward (voltage per unit/s²)
   }
 
   public static final class LEDConstants{
@@ -398,7 +398,7 @@ public final class Constants
     
     // Offset constants
     public static final float LeftOffset = (float)Units.inchesToMeters(7.5);
-    public static final float RightOffset = (float)Units.inchesToMeters(7.5);
+    public static final float RightOffset = (float)Units.inchesToMeters(7);
     public static final float BackOffset = (float)Units.inchesToMeters(-4.0);
     public static final float BackOffsetAuto = (float)Units.inchesToMeters(-5.5);
     public static final float BackOffsetAutoBack = (float)Units.inchesToMeters(-4.5);
