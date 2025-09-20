@@ -144,6 +144,10 @@ public class EndEffector extends SubsystemBase {
         endEffectorMotor.set(EndEffectorConstants.outtake);
     }
 
+    private void fullOuttake() {
+        endEffectorMotor.set(EndEffectorConstants.fullOuttake);
+    }
+
     // Commands
     public Command endEffectorZeroSpeedCommand() {
         return new InstantCommand(this::setZeroSpeed, this);
@@ -155,6 +159,10 @@ public class EndEffector extends SubsystemBase {
 
     public Command endEffectorOuttakeCommand() {
         return new InstantCommand(this::setOuttake, this);
+    }
+
+    public Command endEffectorFullOuttakeCommand() {
+        return new InstantCommand(this::fullOuttake, this);
     }
 
     public void setisL1ScoringFalse() {

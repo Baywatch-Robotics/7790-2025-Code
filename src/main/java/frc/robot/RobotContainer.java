@@ -849,8 +849,9 @@ public class RobotContainer {
     // buttonBox.addTarget("SR")));
 
     // Modified: combine zero gyro with full speed toggle
-    driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
+    //driverXbox.back().onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
 
+    driverXbox.back().onTrue(new InstantCommand(() -> buttonBox.clearTargets()));
     driverXbox.start().onTrue(toggleFullSpeedModeCommand());
 
     /*driverXbox.x().onTrue(endEffector.endEffectorIntakeCommand());
@@ -908,6 +909,8 @@ public class RobotContainer {
 
      
     SmartDashboard.putData(chooser);
+
+    driverXbox.rightStick().onTrue(endEffector.endEffectorFullOuttakeCommand());
   }
 
 

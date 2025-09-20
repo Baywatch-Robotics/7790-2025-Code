@@ -43,6 +43,7 @@ public final class Constants
     public static final int ID = 19;
     public static final float intake = -0.50f;
     public static final float outtake = 0.25f;
+    public static final float fullOuttake = 1.0f;
     public static final float currentThreshold = 15;
     public static final float DEBOUNCE_TIME = 0.075f; // Time to debounce current threshold (seconds)
   }
@@ -808,7 +809,7 @@ public final class Constants
 
     // Feedforward constants (ArmFeedforward) - start conservative and tune on robot
     public static final double kS = 0.0;  // Static friction compensation (volts)
-    public static final double kG = 0.9;  // Gravity compensation (volts) - tune up/down as needed
+    public static final double kG = 1.0;  // Gravity compensation (volts) - tune up/down as needed
     public static final double kV = 0.5;  // Velocity feedforward (V per rad/s)
     public static final double kA = 0.5;  // Acceleration feedforward (V per rad/s^2)
     // Offset applied before feedforward conversion (rotations)
