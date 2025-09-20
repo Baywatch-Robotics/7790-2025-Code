@@ -111,6 +111,11 @@ public class TargetClass {
         //0 forward, 1 backward
 
         switch(name) {
+            case "D":
+                target.setX(TargetClassConstants.AutoDriveX);
+                target.setY(TargetClassConstants.AutoDriveY);
+                target.setZ(TargetClassConstants.AutoDriveZ);
+                break;
             case "SL":
                 target.setX(TargetClassConstants.SLPositionX);
                 target.setY(TargetClassConstants.SLPositionY);

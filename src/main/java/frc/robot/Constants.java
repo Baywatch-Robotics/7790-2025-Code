@@ -332,6 +332,10 @@ public final class Constants
     public static final float LeftLLStartZ = (float)Units.degreesToRadians(180.0);
     public static final float LeftLLIStartZ = (float)Units.degreesToRadians(0.0);
 
+    public static final float AutoDriveX = (float)Units.inchesToMeters(270);
+    public static final float AutoDriveY = (float)Units.inchesToMeters(158.5);
+    public static final float AutoDriveZ = (float)Units.degreesToRadians(180);
+
     public static final float PSLPositionX = (float)Units.inchesToMeters(77);
     public static final float PSLPositionY = (float)Units.inchesToMeters(254);
     public static final float PSLPositionZ = (float)Units.degreesToRadians(0);

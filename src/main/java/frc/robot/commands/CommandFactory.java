@@ -688,6 +688,19 @@ public static Command LeftCenterAutonCommand(EndEffector endEffector, Arm arm, E
     return command; 
 }
 
+public static Command DriveAutonCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer, LED led, Intake intake, Indexer indexer){
+
+    Command command = new InstantCommand(() -> buttonBox.addTarget("D"))
+    .andThen(intake.stowCommand())
+    .andThen(elevator.setElevatorL2Command())
+    .andThen(new InstantCommand(() -> { drivebase.startDriveToPose(buttonBox, elevator).schedule();}))
+    .andThen(new WaitCommand(5))
+    .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
+    
+    command.addRequirements(endEffector, arm, elevator);
+    return command; 
+}
+
 public static Command algaeRemoveBasedOnQueueCommand(EndEffector endEffector, Arm arm, Elevator elevator, ButtonBox buttonBox, SwerveSubsystem drivebase, RobotContainer robotContainer) {
     Command command = arm.ArmReefAlgaeCommand()
     .andThen(new WaitUntilCommand(arm.isClearToElevate()))
