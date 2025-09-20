@@ -106,6 +106,9 @@ public class Elevator extends SubsystemBase {
     private void setL1() {
         elevatorDesiredPosition = ElevatorConstants.L1Pose;
     }
+    private void setProcessor() {
+        elevatorDesiredPosition = ElevatorConstants.ProcessorPose;
+    }
     private void setPlaceL4() {
         elevatorDesiredPosition = ElevatorConstants.L4PlacePose;
     }
@@ -129,10 +132,6 @@ public class Elevator extends SubsystemBase {
     
     public void setHighBall() {
         elevatorDesiredPosition = ElevatorConstants.highBallPose;
-    }
-    
-    public void setHighBallBelow() {
-        elevatorDesiredPosition = ElevatorConstants.highBallBelowPose;
     }
 
     public void setLowBall() {
@@ -211,11 +210,6 @@ public class Elevator extends SubsystemBase {
         return command;
     }
     
-    public Command setElevatorHighBallBelowCommand() {
-        Command command = new InstantCommand(() -> setHighBallBelow());
-        return command;
-    }
-    
     public Command setElevatorLowBallCommand() {
         Command command = new InstantCommand(() -> setLowBall());
         return command;
@@ -286,23 +280,24 @@ public class Elevator extends SubsystemBase {
     // Update elevatorBasedOnQueueCommand to handle algae
     public Command elevatorBasedOnQueueCommand(ButtonBox buttonBox) {
         IntSupplier currentLevelSupplier = buttonBox.currentLevelSupplier;
-        BooleanSupplier currentSideSupplier = buttonBox.currentisLeftSupplier;
         BooleanSupplier isAlgaeSupplier = buttonBox.isAlgaeTargetSupplier;
 
         Command command = new InstantCommand(() -> {
             if (isAlgaeSupplier.getAsBoolean()) {
                 // Handle algae targets
-                if (currentLevelSupplier.getAsInt() == 1) {
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    setProcessor();
+                } else if (currentLevelSupplier.getAsInt() == 1) {
                     setAlgaeLevel1();
                 } else if (currentLevelSupplier.getAsInt() == 2) {
                     setAlgaeLevel2();
+                } else if (currentLevelSupplier.getAsInt() == 3) {
+                    setL4();
                 }
             } else {
                 // Existing coral logic
-                if (currentLevelSupplier.getAsInt() == 0 && currentSideSupplier.getAsBoolean() == true) {
-                    new InstantCommand();
-                } else if (currentLevelSupplier.getAsInt() == 0) {
-                    new InstantCommand();
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    setL1();
                 } else if (currentLevelSupplier.getAsInt() == 1) {
                     setL2();
                 } else if (currentLevelSupplier.getAsInt() == 2) {
@@ -320,8 +315,14 @@ public class Elevator extends SubsystemBase {
 
         Command command = new InstantCommand(() -> {
             if (isAlgaeSupplier.getAsBoolean()) {
+                if (currentLevelSupplier.getAsInt() == 3) {
+                    setL4();
+                } else if (currentLevelSupplier.getAsInt() == 0) {
+                    setProcessor();
+                } 
             } else {
-                if (currentLevelSupplier.getAsInt() == 0) {;
+                if (currentLevelSupplier.getAsInt() == 0) {
+                    setL1();
                 } else if (currentLevelSupplier.getAsInt() == 1) {
                     setPlaceL2();
                 } else if (currentLevelSupplier.getAsInt() == 2) {

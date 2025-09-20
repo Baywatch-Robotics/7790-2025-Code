@@ -264,7 +264,7 @@ public class Arm extends SubsystemBase {
                         } else {
                         setNetBackwardsAngle();
                         }
-                    } else if (currentLevelSupplier.getAsInt() == 1) {
+                    } else if (currentLevelSupplier.getAsInt() == 0) {
                         setProcessorAngle();
                     } else {
                     setAlgaeAngle();
