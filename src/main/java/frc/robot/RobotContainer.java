@@ -1316,6 +1316,10 @@ public class RobotContainer {
       currentSelection = "Left";
     } else if (selectedCommand == rightAuto) {
       currentSelection = "Right";
+    } else if (selectedCommand == rightCenterAuto) {
+      currentSelection = "RightCenter";
+    } else if (selectedCommand == leftCenterAuto) {
+      currentSelection = "LeftCenter";
     } else if (selectedCommand == rightLollipopAuto) {
       currentSelection = "RightLollipop";
     } else if (selectedCommand == rightIntakeLollipopAuto) {
@@ -1343,6 +1347,30 @@ public class RobotContainer {
         drivebase.resetOdometry(allianceRelativeLeftPose);
         
         SmartDashboard.putString("Auto Pose Initialized", "Left Start Position");
+      } else if (currentSelection.equals("LeftCenter")) {
+        // Set pose for Right Lollipop autonomous
+        Pose2d rightLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.CenterStartX,
+            Constants.TargetClassConstants.CenterStartY,
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightLollipopPose = TargetClass.toPose2d(rightLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeRightLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Left Center Start Position");
+      } else if (currentSelection.equals("RightCenter")) {
+        // Set pose for Right Lollipop autonomous
+        Pose2d rightLollipopStartPose = new Pose2d(
+            Constants.TargetClassConstants.CenterStartX,
+            Constants.TargetClassConstants.CenterStartY,
+            new Rotation2d(Constants.TargetClassConstants.CenterStartZ));
+        
+        // Convert to alliance-relative coordinates
+        Pose2d allianceRelativeRightLollipopPose = TargetClass.toPose2d(rightLollipopStartPose);
+        drivebase.resetOdometry(allianceRelativeRightLollipopPose);
+        
+        SmartDashboard.putString("Auto Pose Initialized", "Right Center Start Position");
       } else if (currentSelection.equals("RightLollipop")) {
         // Set pose for Right Lollipop autonomous
         Pose2d rightLollipopStartPose = new Pose2d(

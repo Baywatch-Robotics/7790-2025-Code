@@ -215,7 +215,7 @@ public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm,
       String name = t.getName();
       if (name == null) return;
       // Require: starts with 'C', has at least 5 chars for C F L X X, and is level 3
-      if (!name.startsWith("C") || name.length() < 5 || name.charAt(2) != '3') return;
+      if (name.startsWith("A") || name.length() < 5 || name.charAt(2) != '3') return;
 
       char faceChar = name.charAt(1);
       String xx = name.substring(3, 5); // "00", "01", "10", "11"
@@ -232,7 +232,7 @@ public static Command placeBasedOnQueueCommand(EndEffector endEffector, Arm arm,
       buttonBox.addTarget(newName);
       drivebase.startDriveToPose(buttonBox, elevator).schedule();
     }))
-    .andThen(new WaitCommand(2.0))
+    .andThen(new WaitCommand(1.0))
     .andThen(drivebase.stopDriveToPoseCommand())
     .andThen(new InstantCommand(() -> buttonBox.clearTargets()));
   command.addRequirements(endEffector, arm, elevator);
